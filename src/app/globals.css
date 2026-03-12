@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0f172a;
+  --card: #1e293b;
+  --border: #334155;
+  --accent: #6366f1;
+}
+
+body {
+  background-color: #0f172a;
+  color: white;
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6366f1;
+}
+
+/* Form input base styles */
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='time'],
+input[type='datetime-local'],
+select,
+textarea {
+  background-color: #0f172a;
+  border: 1px solid #334155;
+  color: white;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+input[type='text']:focus,
+input[type='email']:focus,
+input[type='password']:focus,
+input[type='time']:focus,
+input[type='datetime-local']:focus,
+select:focus,
+textarea:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #64748b;
+}
+
+select option {
+  background-color: #1e293b;
+  color: white;
+}
+
+/* iPhone safe area (notch/home bar) */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Prevent iOS double-tap zoom on buttons */
+button, a {
+  touch-action: manipulation;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
