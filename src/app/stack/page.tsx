@@ -5,7 +5,7 @@ import {
   Layers,
   Plus,
   Trash2,
-  Toggle,
+  Power,
   Loader2,
   FlaskConical,
   Pill,
