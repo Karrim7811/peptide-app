@@ -13,6 +13,7 @@ import {
   LogOut,
   Menu,
   X,
+  Calculator,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -22,6 +23,8 @@ const navLinks = [
   { href: '/stack', label: 'My Stack', icon: Layers },
   { href: '/reminders', label: 'Reminders', icon: Bell },
   { href: '/log', label: 'Dose Log', icon: BookOpen },
+  { href: '/dosing', label: 'Dosing', icon: Calculator },
+  { href: '/stacks', label: 'Stacks', icon: Layers },
 ]
 
 export default function Navbar() {
