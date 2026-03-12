@@ -1,5 +1,15 @@
-<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192' viewBox='0 0 192 192'>
-  <rect width='192' height='192' rx='38' fill='#0f172a'/>
-  <rect x='19' y='19' width='154' height='154' rx='30' fill='#6366f1'/>
-  <text x='96' y='120' font-family='Arial' font-weight='bold' font-size='100' fill='white' text-anchor='middle'>P</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="192" y2="192" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="40" fill="url(#bg)"/>
+  <path d="M80 56 L80 96 L56 136 Q52 144 60 148 L132 148 Q140 144 136 136 L112 96 L112 56 Z" fill="none" stroke="#6366f1" stroke-width="6" stroke-linejoin="round"/>
+  <rect x="76" y="48" width="40" height="12" rx="4" fill="#6366f1"/>
+  <path d="M65 124 Q60 136 68 142 L124 142 Q132 136 127 124 Z" fill="#6366f1" opacity="0.7"/>
+  <circle cx="90" cy="132" r="4" fill="#a5b4fc" opacity="0.8"/>
+  <circle cx="105" cy="126" r="3" fill="#a5b4fc" opacity="0.6"/>
+  <circle cx="95" cy="118" r="2" fill="#a5b4fc" opacity="0.5"/>
 </svg>
