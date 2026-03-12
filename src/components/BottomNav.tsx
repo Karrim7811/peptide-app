@@ -2,14 +2,24 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Shield, Layers, Bell, BookOpen, Calculator } from 'lucide-react'
+import {
+  LayoutDashboard, Shield, Layers, Bell, BookOpen, Calculator,
+  FlaskRound, MapPin, Package, FileText, AlertCircle, MessageSquare, RotateCcw,
+} from 'lucide-react'
 
 const navLinks = [
   { href: '/dashboard', label: 'Home', icon: LayoutDashboard },
-  { href: '/checker', label: 'Checker', icon: Shield },
   { href: '/stack', label: 'My Stack', icon: Layers },
+  { href: '/checker', label: 'Checker', icon: Shield },
+  { href: '/ai-chat', label: 'AI Chat', icon: MessageSquare },
   { href: '/dosing', label: 'Dosing', icon: Calculator },
+  { href: '/reconstitution', label: 'Recon', icon: FlaskRound },
+  { href: '/cycle', label: 'Cycles', icon: RotateCcw },
+  { href: '/sites', label: 'Sites', icon: MapPin },
+  { href: '/inventory', label: 'Inventory', icon: Package },
   { href: '/stacks', label: 'Popular', icon: Layers },
+  { href: '/notes', label: 'Notes', icon: FileText },
+  { href: '/side-effects', label: 'Side FX', icon: AlertCircle },
   { href: '/reminders', label: 'Reminders', icon: Bell },
   { href: '/log', label: 'Log', icon: BookOpen },
 ]

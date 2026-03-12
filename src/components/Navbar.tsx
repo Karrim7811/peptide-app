@@ -14,6 +14,13 @@ import {
   Menu,
   X,
   Calculator,
+  FlaskRound,
+  MapPin,
+  Package,
+  FileText,
+  AlertCircle,
+  MessageSquare,
+  RotateCcw,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -25,6 +32,13 @@ const navLinks = [
   { href: '/log', label: 'Dose Log', icon: BookOpen },
   { href: '/dosing', label: 'Dosing', icon: Calculator },
   { href: '/stacks', label: 'Popular Stacks', icon: Layers },
+  { href: '/reconstitution', label: 'Reconstitution', icon: FlaskRound },
+  { href: '/cycle', label: 'Cycles', icon: RotateCcw },
+  { href: '/sites', label: 'Injection Sites', icon: MapPin },
+  { href: '/inventory', label: 'Inventory', icon: Package },
+  { href: '/notes', label: 'Research Notes', icon: FileText },
+  { href: '/side-effects', label: 'Side Effects', icon: AlertCircle },
+  { href: '/ai-chat', label: 'PeptideAI', icon: MessageSquare },
 ]
 
 export default function Navbar() {
