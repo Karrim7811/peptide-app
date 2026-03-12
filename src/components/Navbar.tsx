@@ -24,7 +24,7 @@ const navLinks = [
   { href: '/reminders', label: 'Reminders', icon: Bell },
   { href: '/log', label: 'Dose Log', icon: BookOpen },
   { href: '/dosing', label: 'Dosing', icon: Calculator },
-  { href: '/stacks', label: 'Stacks', icon: Layers },
+  { href: '/stacks', label: 'Popular Stacks', icon: Layers },
 ]
 
 export default function Navbar() {

@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Layers, ChevronDown, ChevronUp, AlertTriangle, Filter } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Layers, ChevronDown, ChevronUp, AlertTriangle, Filter, ArrowLeft, Check, Loader2 } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -202,6 +204,39 @@ function TagBadge({ label, active, onClick }: { label: string; active: boolean; 
 
 function StackCard({ stack }: { stack: Stack }) {
   const [expanded, setExpanded] = useState(false)
+  const [importing, setImporting] = useState(false)
+  const [imported, setImported] = useState(false)
+
+  async function handleAddToMyStack() {
+    setImporting(true)
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      setImporting(false)
+      return
+    }
+
+    const inserts = stack.components.map((c) => {
+      const parts = c.dose.trim().split(' ')
+      const dose = parts[0] ?? ''
+      const unit = parts[1] ?? 'mcg'
+      return {
+        user_id: user.id,
+        name: c.peptide,
+        type: 'peptide' as const,
+        dose,
+        unit,
+        active: true,
+        notes: '',
+      }
+    })
+
+    await supabase.from('stack_items').insert(inserts)
+
+    setImporting(false)
+    setImported(true)
+    setTimeout(() => setImported(false), 2000)
+  }
 
   return (
     <div className="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden transition-all">
@@ -294,6 +329,36 @@ function StackCard({ stack }: { stack: Stack }) {
               </table>
             </div>
           </div>
+
+          {/* Add to My Stack button */}
+          <div>
+            <button
+              onClick={handleAddToMyStack}
+              disabled={importing || imported}
+              className={`flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg transition-colors ${
+                imported
+                  ? 'bg-emerald-600 text-white cursor-default'
+                  : 'bg-indigo-600 hover:bg-indigo-500 text-white'
+              } ${importing ? 'opacity-70 cursor-not-allowed' : ''}`}
+            >
+              {importing ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Adding...
+                </>
+              ) : imported ? (
+                <>
+                  <Check className="w-4 h-4" />
+                  Added to My Stack!
+                </>
+              ) : (
+                <>
+                  <Layers className="w-4 h-4" />
+                  Add to My Stack
+                </>
+              )}
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -303,6 +368,7 @@ function StackCard({ stack }: { stack: Stack }) {
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function StacksPage() {
+  const router = useRouter()
   const [activeTags, setActiveTags] = useState<string[]>([])
   const [showFilters, setShowFilters] = useState(false)
   const [difficultyFilter, setDifficultyFilter] = useState<string>('All')
@@ -333,6 +399,13 @@ export default function StacksPage() {
       {/* Header */}
       <div>
         <div className="flex items-center gap-3 mb-1">
+          <button
+            onClick={() => router.back()}
+            className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
+            title="Go back"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
           <div className="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center">
             <Layers className="w-5 h-5 text-indigo-400" />
           </div>

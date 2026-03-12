@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   Layers,
   Plus,
@@ -12,6 +13,7 @@ import {
   Leaf,
   X,
   ChevronDown,
+  ArrowLeft,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { StackItem } from '@/types'
@@ -25,12 +27,15 @@ const PEPTIDE_NAMES = [
   'CJC-1295 (with DAC)',
   'Semaglutide',
   'Tirzepatide',
+  'Retatrutide',
   'Sermorelin',
   'Hexarelin',
   'GHRP-2',
   'GHRP-6',
   'IGF-1 LR3',
+  'IGF-1 DES',
   'Melanotan II',
+  'Melanotan I (MT-1)',
   'PT-141 (Bremelanotide)',
   'Epithalon',
   'Thymosin Alpha-1 (Tα1)',
@@ -42,6 +47,30 @@ const PEPTIDE_NAMES = [
   'BPC-157 + TB-500 (combined)',
   'Tesamorelin',
   'PEG-MGF',
+  'Kisspeptin-10',
+  'Gonadorelin',
+  'Oxytocin',
+  'HGH (Human Growth Hormone)',
+  'Follistatin 344',
+  'DSIP (Delta Sleep-Inducing Peptide)',
+  'LL-37',
+  'KPV',
+  'VIP (Vasoactive Intestinal Peptide)',
+  'MOTS-c',
+  'SS-31 (Elamipretide)',
+  '5-Amino-1MQ',
+  'Triptorelin',
+  'Glutathione',
+  'NMN (Nicotinamide Mononucleotide)',
+  'Humanin',
+  'Dihexa',
+  'Thymalin',
+  'Pinealon',
+  'Larazotide',
+  'Cagrilintide',
+  'Pramlintide (Amylin)',
+  'SNAP-8',
+  'Cortagen',
 ]
 
 const TYPE_CONFIG = {
@@ -66,11 +95,12 @@ const EMPTY_FORM = {
   name: '',
   type: 'peptide' as StackItem['type'],
   dose: '',
-  unit: 'mg',
+  unit: 'mcg',
   notes: '',
 }
 
 export default function StackPage() {
+  const router = useRouter()
   const [items, setItems] = useState<StackItem[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -150,7 +180,7 @@ export default function StackPage() {
       name: form.name.trim(),
       type: form.type,
       dose: form.dose.trim(),
-      unit: form.unit.trim(),
+      unit: form.unit,
       notes: form.notes.trim(),
       active: true,
     })
@@ -192,12 +222,21 @@ export default function StackPage() {
     <div className="max-w-3xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-            <Layers className="w-6 h-6 text-indigo-400" />
-            My Stack
-          </h1>
-          <p className="text-slate-400 mt-1">Manage your peptides, medications, and supplements.</p>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => router.back()}
+            className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
+            title="Go back"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+              <Layers className="w-6 h-6 text-indigo-400" />
+              My Stack
+            </h1>
+            <p className="text-slate-400 mt-1">Manage your peptides, medications, and supplements.</p>
+          </div>
         </div>
         <button
           onClick={() => {
@@ -283,12 +322,21 @@ export default function StackPage() {
 
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-2">Unit</label>
-                <input
-                  type="text"
-                  value={form.unit}
-                  onChange={(e) => setForm({ ...form, unit: e.target.value })}
-                  placeholder="e.g. mcg, mg, IU"
-                />
+                <div className="relative">
+                  <select
+                    value={form.unit}
+                    onChange={(e) => setForm({ ...form, unit: e.target.value })}
+                    className="appearance-none pr-8"
+                  >
+                    <option value="mcg">mcg</option>
+                    <option value="mg">mg</option>
+                    <option value="mL">mL</option>
+                    <option value="IU">IU</option>
+                    <option value="nmol">nmol</option>
+                    <option value="units">units</option>
+                  </select>
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                </div>
               </div>
             </div>
 

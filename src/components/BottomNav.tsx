@@ -7,9 +7,9 @@ import { LayoutDashboard, Shield, Layers, Bell, BookOpen, Calculator } from 'luc
 const navLinks = [
   { href: '/dashboard', label: 'Home', icon: LayoutDashboard },
   { href: '/checker', label: 'Checker', icon: Shield },
-  { href: '/stack', label: 'Stack', icon: Layers },
+  { href: '/stack', label: 'My Stack', icon: Layers },
   { href: '/dosing', label: 'Dosing', icon: Calculator },
-  { href: '/stacks', label: 'Stacks', icon: Layers },
+  { href: '/stacks', label: 'Popular', icon: Layers },
   { href: '/reminders', label: 'Reminders', icon: Bell },
   { href: '/log', label: 'Log', icon: BookOpen },
 ]
