@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { FlaskConical, Shield, Clock, BarChart3 } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col">
