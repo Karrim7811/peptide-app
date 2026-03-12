@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import {
   Layers,
   Plus,
@@ -15,6 +15,34 @@ import {
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { StackItem } from '@/types'
+
+const PEPTIDE_NAMES = [
+  'BPC-157',
+  'TB-500',
+  'GHK-Cu',
+  'Ipamorelin',
+  'CJC-1295 (no DAC)',
+  'CJC-1295 (with DAC)',
+  'Semaglutide',
+  'Tirzepatide',
+  'Sermorelin',
+  'Hexarelin',
+  'GHRP-2',
+  'GHRP-6',
+  'IGF-1 LR3',
+  'Melanotan II',
+  'PT-141 (Bremelanotide)',
+  'Epithalon',
+  'Thymosin Alpha-1 (Tα1)',
+  'AOD-9604',
+  'NAD+',
+  'Selank',
+  'Semax',
+  'MK-677 (Ibutamoren)',
+  'BPC-157 + TB-500 (combined)',
+  'Tesamorelin',
+  'PEG-MGF',
+]
 
 const TYPE_CONFIG = {
   peptide: {
@@ -51,8 +79,40 @@ export default function StackPage() {
   const [formError, setFormError] = useState('')
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [togglingId, setTogglingId] = useState<string | null>(null)
+  const [suggestions, setSuggestions] = useState<string[]>([])
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const nameRef = useRef<HTMLDivElement>(null)
 
   const supabase = createClient()
+
+  // Close suggestions on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (nameRef.current && !nameRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  function handleNameChange(value: string) {
+    setForm({ ...form, name: value })
+    if (value.trim().length > 0 && form.type === 'peptide') {
+      const filtered = PEPTIDE_NAMES.filter((p) =>
+        p.toLowerCase().includes(value.toLowerCase())
+      )
+      setSuggestions(filtered)
+      setShowSuggestions(filtered.length > 0)
+    } else {
+      setShowSuggestions(false)
+    }
+  }
+
+  function selectSuggestion(name: string) {
+    setForm({ ...form, name })
+    setShowSuggestions(false)
+  }
 
   const fetchItems = useCallback(async () => {
     setLoading(true)
@@ -163,17 +223,36 @@ export default function StackPage() {
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
+              <div ref={nameRef} className="relative">
                 <label className="block text-sm font-medium text-slate-300 mb-2">
                   Name <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="text"
                   value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  onChange={(e) => handleNameChange(e.target.value)}
+                  onFocus={() => {
+                    if (form.name.trim().length > 0 && suggestions.length > 0) {
+                      setShowSuggestions(true)
+                    }
+                  }}
                   placeholder="e.g. BPC-157"
                   required
+                  autoComplete="off"
                 />
+                {showSuggestions && (
+                  <ul className="absolute z-50 mt-1 w-full bg-slate-800 border border-slate-600 rounded-lg shadow-xl max-h-52 overflow-y-auto">
+                    {suggestions.map((s) => (
+                      <li
+                        key={s}
+                        onMouseDown={() => selectSuggestion(s)}
+                        className="px-4 py-2.5 text-sm text-slate-200 hover:bg-indigo-600/40 cursor-pointer transition-colors"
+                      >
+                        {s}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
 
               <div>
