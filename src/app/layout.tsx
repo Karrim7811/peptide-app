@@ -5,6 +5,19 @@ export const metadata: Metadata = {
   title: 'Peptide Cortex',
   description: 'AI-Powered Peptide Intelligence Engine — track, optimize, and analyze your peptide protocol.',
   manifest: '/manifest.json',
+  metadataBase: new URL('https://peptidecortex.ai'),
+  openGraph: {
+    title: 'Peptide Cortex',
+    description: 'AI-Powered Peptide Intelligence Engine — track, optimize, and analyze your peptide protocol.',
+    url: 'https://peptidecortex.ai',
+    siteName: 'Peptide Cortex',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Peptide Cortex',
+    description: 'AI-Powered Peptide Intelligence Engine — track, optimize, and analyze your peptide protocol.',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
