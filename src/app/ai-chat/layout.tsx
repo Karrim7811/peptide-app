@@ -8,9 +8,9 @@ export default async function AiChatLayout({ children }: { children: React.React
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-[#FAFAF8]">
       <Sidebar />
-      <div className="md:ml-64">
+      <div className="md:ml-[240px]">
         <main className="max-w-4xl mx-auto px-4 py-8 pb-24 md:pb-8">{children}</main>
       </div>
       <BottomNav />

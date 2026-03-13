@@ -50,9 +50,9 @@ const LEVEL_CONFIG = {
     label: 'Potentially Dangerous',
   },
   unknown: {
-    color: 'text-slate-400',
-    bg: 'bg-slate-700/50 border-slate-600',
-    badge: 'bg-slate-700 text-slate-300 border border-slate-600',
+    color: 'text-[#B0AAA0]',
+    bg: 'bg-[#F2F0ED]/50 border-[#D0CCC6]',
+    badge: 'bg-[#F2F0ED] text-[#3A3730] border border-[#D0CCC6]',
     icon: HelpCircle,
     label: 'Unknown Interaction',
   },
@@ -76,7 +76,7 @@ function SuggestionDropdown({
 
   return (
     <div className="relative">
-      <label className="block text-sm font-medium text-slate-300 mb-2">{label}</label>
+      <label className="block text-sm font-medium text-[#3A3730] mb-2">{label}</label>
       <div className="relative">
         <input
           type="text"
@@ -90,10 +90,10 @@ function SuggestionDropdown({
           placeholder={placeholder}
           className="pr-8"
         />
-        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B0AAA0] pointer-events-none" />
       </div>
       {open && filtered.length > 0 && (
-        <div className="absolute z-20 top-full mt-1 w-full bg-slate-800 border border-slate-600 rounded-lg shadow-xl max-h-52 overflow-y-auto">
+        <div className="absolute z-20 top-full mt-1 w-full bg-white border border-[#D0CCC6] rounded-lg shadow-xl max-h-52 overflow-y-auto">
           {filtered.map((p) => (
             <button
               key={p}
@@ -102,7 +102,7 @@ function SuggestionDropdown({
                 onChange(p)
                 setOpen(false)
               }}
-              className="w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition-colors"
+              className="w-full text-left px-3 py-2 text-sm text-[#3A3730] hover:bg-[#F2F0ED] hover:text-[#1A1915] transition-colors"
             >
               {p}
             </button>
@@ -191,17 +191,17 @@ export default function CheckerPage() {
     <div className="max-w-2xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-          <Shield className="w-6 h-6 text-indigo-400" />
+        <h1 className="text-2xl font-bold text-[#1A1915] flex items-center gap-2">
+          <Shield className="w-6 h-6 text-[#1A8A9E]" />
           Interaction Checker
         </h1>
-        <p className="text-slate-400 mt-1">
+        <p className="text-[#B0AAA0] mt-1">
           AI-powered interaction analysis for peptides, medications, and supplements.
         </p>
       </div>
 
       {/* Checker Card */}
-      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+      <div className="bg-white border border-[#E8E5E0] rounded-xl p-6">
         <form onSubmit={handleCheck} className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <SuggestionDropdown
@@ -221,7 +221,7 @@ export default function CheckerPage() {
           <button
             type="submit"
             disabled={loading || !itemA.trim() || !itemB.trim()}
-            className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+            className="w-full bg-[#1A8A9E] hover:bg-[#1A8A9E] disabled:opacity-50 disabled:cursor-not-allowed text-[#1A1915] font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
           >
             {loading ? (
               <>
@@ -237,7 +237,7 @@ export default function CheckerPage() {
           </button>
         </form>
 
-        <p className="text-xs text-slate-500 mt-3 text-center">
+        <p className="text-xs text-[#B0AAA0] mt-3 text-center">
           For informational purposes only. Always consult a qualified healthcare provider.
         </p>
       </div>
@@ -260,7 +260,7 @@ export default function CheckerPage() {
                 <span className={`text-xs font-semibold px-3 py-1 rounded-full ${levelCfg.badge}`}>
                   {levelCfg.label}
                 </span>
-                <span className="text-slate-400 text-sm">
+                <span className="text-[#B0AAA0] text-sm">
                   {itemA} &harr; {itemB}
                 </span>
               </div>
@@ -269,26 +269,26 @@ export default function CheckerPage() {
 
           {/* Summary */}
           <div>
-            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Summary</h3>
-            <p className="text-white text-sm leading-relaxed">{result.summary}</p>
+            <h3 className="text-xs font-semibold text-[#B0AAA0] uppercase tracking-wider mb-1">Summary</h3>
+            <p className="text-[#1A1915] text-sm leading-relaxed">{result.summary}</p>
           </div>
 
           {/* Details */}
           <div>
-            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Details</h3>
-            <p className="text-slate-300 text-sm leading-relaxed">{result.details}</p>
+            <h3 className="text-xs font-semibold text-[#B0AAA0] uppercase tracking-wider mb-1">Details</h3>
+            <p className="text-[#3A3730] text-sm leading-relaxed">{result.details}</p>
           </div>
 
           {/* Recommendations */}
           {result.recommendations && result.recommendations.length > 0 && (
             <div>
-              <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              <h3 className="text-xs font-semibold text-[#B0AAA0] uppercase tracking-wider mb-2">
                 Recommendations
               </h3>
               <ul className="space-y-1.5">
                 {result.recommendations.map((rec, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                    <span className="text-indigo-400 mt-0.5 shrink-0">•</span>
+                  <li key={i} className="flex items-start gap-2 text-sm text-[#3A3730]">
+                    <span className="text-[#1A8A9E] mt-0.5 shrink-0">•</span>
                     {rec}
                   </li>
                 ))}
@@ -300,26 +300,26 @@ export default function CheckerPage() {
 
       {/* History */}
       {history.length > 0 && (
-        <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+        <div className="bg-white border border-[#E8E5E0] rounded-xl overflow-hidden">
           <button
             onClick={() => setShowHistory(!showHistory)}
-            className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-slate-700/50 transition-colors"
+            className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-[#F2F0ED]/50 transition-colors"
           >
-            <span className="flex items-center gap-2 text-sm font-medium text-slate-300">
-              <History className="w-4 h-4 text-indigo-400" />
+            <span className="flex items-center gap-2 text-sm font-medium text-[#3A3730]">
+              <History className="w-4 h-4 text-[#1A8A9E]" />
               Recent Checks ({history.length})
             </span>
             <ChevronDown
-              className={`w-4 h-4 text-slate-400 transition-transform ${showHistory ? 'rotate-180' : ''}`}
+              className={`w-4 h-4 text-[#B0AAA0] transition-transform ${showHistory ? 'rotate-180' : ''}`}
             />
           </button>
 
           {showHistory && (
-            <div className="border-t border-slate-700">
+            <div className="border-t border-[#E8E5E0]">
               <div className="flex justify-end px-4 py-2">
                 <button
                   onClick={clearHistory}
-                  className="text-xs text-slate-500 hover:text-red-400 flex items-center gap-1 transition-colors"
+                  className="text-xs text-[#B0AAA0] hover:text-red-400 flex items-center gap-1 transition-colors"
                 >
                   <X className="w-3 h-3" />
                   Clear history
@@ -332,13 +332,13 @@ export default function CheckerPage() {
                     <button
                       key={i}
                       onClick={() => loadFromHistory(entry)}
-                      className="w-full flex items-center justify-between px-6 py-3 hover:bg-slate-700/30 transition-colors text-left"
+                      className="w-full flex items-center justify-between px-6 py-3 hover:bg-[#F2F0ED] transition-colors text-left"
                     >
                       <div>
-                        <p className="text-sm text-white">
+                        <p className="text-sm text-[#1A1915]">
                           {entry.itemA} &harr; {entry.itemB}
                         </p>
-                        <p className="text-xs text-slate-500 mt-0.5">
+                        <p className="text-xs text-[#B0AAA0] mt-0.5">
                           {new Date(entry.timestamp).toLocaleDateString()}
                         </p>
                       </div>
@@ -355,8 +355,8 @@ export default function CheckerPage() {
       )}
 
       {/* Common Peptides Reference */}
-      <div className="bg-slate-800 border border-slate-700 rounded-xl p-5">
-        <h3 className="text-sm font-medium text-slate-300 mb-3">Common Peptides &amp; Compounds</h3>
+      <div className="bg-white border border-[#E8E5E0] rounded-xl p-5">
+        <h3 className="text-sm font-medium text-[#3A3730] mb-3">Common Peptides &amp; Compounds</h3>
         <div className="flex flex-wrap gap-2">
           {COMMON_PEPTIDES.map((p) => (
             <button
@@ -367,13 +367,13 @@ export default function CheckerPage() {
                 else if (!itemB) setItemB(p)
                 else setItemA(p)
               }}
-              className="text-xs bg-slate-700 hover:bg-indigo-600/30 hover:text-indigo-300 text-slate-300 px-3 py-1.5 rounded-lg transition-colors border border-slate-600 hover:border-indigo-500/40"
+              className="text-xs bg-[#F2F0ED] hover:bg-[#1A8A9E]/15 hover:text-[#1A8A9E] text-[#3A3730] px-3 py-1.5 rounded-lg transition-colors border border-[#D0CCC6] hover:border-[#1A8A9E]/40"
             >
               {p}
             </button>
           ))}
         </div>
-        <p className="text-xs text-slate-600 mt-3">
+        <p className="text-xs text-[#B0AAA0] mt-3">
           Click any compound to fill the inputs above.
         </p>
       </div>

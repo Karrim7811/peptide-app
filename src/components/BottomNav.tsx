@@ -32,20 +32,33 @@ export default function BottomNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-slate-800 border-t border-slate-700 safe-area-pb">
-      <div className="flex items-center justify-around h-16 px-1 overflow-x-auto scrollbar-none">
+    <nav
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 safe-area-pb"
+      style={{ background: '#1A1915', borderTop: '1px solid #2A2720' }}
+    >
+      <div className="flex items-center h-16 px-1 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
         {navLinks.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(href + '/')
           return (
             <Link
               key={href}
               href={href}
-              className={`flex flex-col items-center gap-0.5 px-2 py-2 rounded-lg transition-colors shrink-0 ${
-                active ? 'text-indigo-400' : 'text-slate-500'
-              }`}
+              className="flex flex-col items-center gap-0.5 px-2 py-2 rounded-lg shrink-0"
+              style={{
+                textDecoration: 'none',
+                color: active ? '#1A8A9E' : '#555',
+                minWidth: 48,
+              }}
             >
               <Icon className="w-5 h-5 shrink-0" />
-              <span className="text-[9px] font-medium truncate">{label}</span>
+              <span style={{
+                fontSize: 9,
+                fontFamily: 'Jost, sans-serif',
+                fontWeight: active ? 400 : 300,
+                letterSpacing: '0.02em',
+              }}>
+                {label}
+              </span>
             </Link>
           )
         })}

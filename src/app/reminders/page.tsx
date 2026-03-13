@@ -150,11 +150,11 @@ export default function RemindersPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-            <Bell className="w-6 h-6 text-indigo-400" />
+          <h1 className="text-2xl font-bold text-[#1A1915] flex items-center gap-2">
+            <Bell className="w-6 h-6 text-[#1A8A9E]" />
             Dosing Reminders
           </h1>
-          <p className="text-slate-400 mt-1">
+          <p className="text-[#B0AAA0] mt-1">
             Set reminders for each compound in your stack.
           </p>
         </div>
@@ -163,7 +163,7 @@ export default function RemindersPage() {
             setShowForm(!showForm)
             setFormError('')
           }}
-          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg transition-colors text-sm"
+          className="flex items-center gap-2 bg-[#1A8A9E] hover:bg-[#1A8A9E] text-[#1A1915] font-semibold px-4 py-2 rounded-lg transition-colors text-sm"
         >
           {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
           {showForm ? 'Cancel' : 'Add Reminder'}
@@ -172,8 +172,8 @@ export default function RemindersPage() {
 
       {/* Add Form */}
       {showForm && (
-        <div className="bg-slate-800 border border-indigo-500/30 rounded-xl p-6">
-          <h2 className="text-base font-semibold text-white mb-5">New Reminder</h2>
+        <div className="bg-white border border-[#1A8A9E]/30 rounded-xl p-6">
+          <h2 className="text-base font-semibold text-[#1A1915] mb-5">New Reminder</h2>
           <form onSubmit={handleAdd} className="space-y-4">
             {formError && (
               <div className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg px-4 py-3 text-sm">
@@ -189,7 +189,7 @@ export default function RemindersPage() {
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                    <label className="block text-sm font-medium text-[#3A3730] mb-2">
                       Stack Item <span className="text-red-400">*</span>
                     </label>
                     <div className="relative">
@@ -206,12 +206,12 @@ export default function RemindersPage() {
                           </option>
                         ))}
                       </select>
-                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B0AAA0] pointer-events-none" />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                    <label className="block text-sm font-medium text-[#3A3730] mb-2">
                       Time <span className="text-red-400">*</span>
                     </label>
                     <input
@@ -224,8 +224,8 @@ export default function RemindersPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Dose Override <span className="text-slate-500">(optional)</span>
+                  <label className="block text-sm font-medium text-[#3A3730] mb-2">
+                    Dose Override <span className="text-[#B0AAA0]">(optional)</span>
                   </label>
                   <input
                     type="text"
@@ -236,7 +236,7 @@ export default function RemindersPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-3">
+                  <label className="block text-sm font-medium text-[#3A3730] mb-3">
                     Days of Week <span className="text-red-400">*</span>
                   </label>
                   <div className="flex gap-2 flex-wrap">
@@ -247,8 +247,8 @@ export default function RemindersPage() {
                         onClick={() => toggleDay(day.value)}
                         className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                           form.days_of_week.includes(day.value)
-                            ? 'bg-indigo-600 text-white'
-                            : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
+                            ? 'bg-[#1A8A9E] text-[#1A1915]'
+                            : 'bg-[#F2F0ED] text-[#B0AAA0] hover:bg-[#E8E5E0]'
                         }`}
                       >
                         {day.label}
@@ -265,7 +265,7 @@ export default function RemindersPage() {
                               : [0, 1, 2, 3, 4, 5, 6],
                         })
                       }
-                      className="px-3 py-1.5 rounded-lg text-sm text-slate-500 hover:text-slate-300 transition-colors"
+                      className="px-3 py-1.5 rounded-lg text-sm text-[#B0AAA0] hover:text-[#3A3730] transition-colors"
                     >
                       {form.days_of_week.length === 7 ? 'Clear all' : 'Select all'}
                     </button>
@@ -276,7 +276,7 @@ export default function RemindersPage() {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors text-sm"
+                    className="flex items-center gap-2 bg-[#1A8A9E] hover:bg-[#1A8A9E] disabled:opacity-50 text-[#1A1915] font-semibold px-5 py-2.5 rounded-lg transition-colors text-sm"
                   >
                     {saving ? (
                       <>
@@ -296,7 +296,7 @@ export default function RemindersPage() {
                       setShowForm(false)
                       setForm(EMPTY_FORM)
                     }}
-                    className="text-slate-400 hover:text-white px-4 py-2.5 rounded-lg hover:bg-slate-700 transition-colors text-sm"
+                    className="text-[#B0AAA0] hover:text-[#1A1915] px-4 py-2.5 rounded-lg hover:bg-[#F2F0ED] transition-colors text-sm"
                   >
                     Cancel
                   </button>
@@ -310,22 +310,22 @@ export default function RemindersPage() {
       {/* Content */}
       {loading ? (
         <div className="flex items-center justify-center py-16">
-          <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
+          <Loader2 className="w-8 h-8 text-[#1A8A9E] animate-spin" />
         </div>
       ) : reminders.length === 0 ? (
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-12 text-center">
-          <Clock className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-          <p className="text-slate-400 mb-2">No reminders set</p>
-          <p className="text-slate-500 text-sm">
+        <div className="bg-white border border-[#E8E5E0] rounded-xl p-12 text-center">
+          <Clock className="w-12 h-12 text-[#B0AAA0] mx-auto mb-3" />
+          <p className="text-[#B0AAA0] mb-2">No reminders set</p>
+          <p className="text-[#B0AAA0] text-sm">
             Add reminders to keep track of your dosing schedule.
           </p>
         </div>
       ) : (
         <div className="space-y-6">
           {Object.entries(grouped).map(([itemName, itemReminders]) => (
-            <div key={itemName} className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
-              <div className="px-5 py-3 border-b border-slate-700 bg-slate-800/80">
-                <h3 className="font-semibold text-white text-sm">{itemName}</h3>
+            <div key={itemName} className="bg-white border border-[#E8E5E0] rounded-xl overflow-hidden">
+              <div className="px-5 py-3 border-b border-[#E8E5E0] bg-white/80">
+                <h3 className="font-semibold text-[#1A1915] text-sm">{itemName}</h3>
               </div>
               <div className="divide-y divide-slate-700/50">
                 {itemReminders.map((reminder) => (
@@ -370,12 +370,12 @@ function ReminderRow({
     <div className={`px-5 py-4 flex items-center gap-4 ${!reminder.active ? 'opacity-50' : ''}`}>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-3 mb-2">
-          <span className="text-white font-medium text-sm flex items-center gap-1.5">
-            <Clock className="w-4 h-4 text-indigo-400" />
+          <span className="text-[#1A1915] font-medium text-sm flex items-center gap-1.5">
+            <Clock className="w-4 h-4 text-[#1A8A9E]" />
             {timeStr}
           </span>
           {reminder.dose && (
-            <span className="text-xs text-slate-400 bg-slate-700 px-2 py-0.5 rounded-full">
+            <span className="text-xs text-[#B0AAA0] bg-[#F2F0ED] px-2 py-0.5 rounded-full">
               {reminder.dose}
             </span>
           )}
@@ -386,8 +386,8 @@ function ReminderRow({
               key={day.value}
               className={`text-xs px-2 py-0.5 rounded-md font-medium ${
                 reminder.days_of_week.includes(day.value)
-                  ? 'bg-indigo-600/30 text-indigo-300'
-                  : 'text-slate-600'
+                  ? 'bg-[#1A8A9E]/15 text-[#1A8A9E]'
+                  : 'text-[#B0AAA0]'
               }`}
             >
               {day.label}
@@ -402,7 +402,7 @@ function ReminderRow({
           onClick={() => onToggle(reminder)}
           disabled={toggling}
           className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ${
-            reminder.active ? 'bg-indigo-600' : 'bg-slate-600'
+            reminder.active ? 'bg-[#1A8A9E]' : 'bg-[#E8E5E0]'
           } ${toggling ? 'opacity-50' : ''}`}
         >
           <span
@@ -416,7 +416,7 @@ function ReminderRow({
         <button
           onClick={() => onDelete(reminder.id)}
           disabled={deleting}
-          className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
+          className="p-1.5 text-[#B0AAA0] hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
         >
           {deleting ? (
             <Loader2 className="w-4 h-4 animate-spin" />

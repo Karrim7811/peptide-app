@@ -37,8 +37,8 @@ function InputCard({
   placeholder: string
 }) {
   return (
-    <div className="bg-slate-800 border border-slate-700 rounded-xl p-4">
-      <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+    <div className="bg-white border border-[#E8E5E0] rounded-xl p-4">
+      <label className="block text-xs font-semibold text-[#B0AAA0] uppercase tracking-wider mb-3">
         {label}
       </label>
       <div className="flex items-center gap-3">
@@ -49,9 +49,9 @@ function InputCard({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors text-sm"
+          className="flex-1 bg-[#FAFAF8] border border-[#E8E5E0] rounded-lg px-4 py-2.5 text-[#1A1915] placeholder-[#B0AAA0] focus:outline-none focus:border-[#1A8A9E] focus:ring-1 focus:ring-[#1A8A9E] transition-colors text-sm"
         />
-        <span className="text-slate-400 text-sm font-medium w-10 text-right shrink-0">{unit}</span>
+        <span className="text-[#B0AAA0] text-sm font-medium w-10 text-right shrink-0">{unit}</span>
       </div>
     </div>
   )
@@ -67,9 +67,9 @@ function ResultBox({
   large?: boolean
 }) {
   return (
-    <div className="bg-slate-900 border border-slate-700 rounded-xl px-5 py-4">
-      <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-1">{label}</p>
-      <p className={`font-bold text-indigo-400 ${large ? 'text-3xl' : 'text-xl'}`}>{value}</p>
+    <div className="bg-[#FAFAF8] border border-[#E8E5E0] rounded-xl px-5 py-4">
+      <p className="text-xs text-[#B0AAA0] uppercase tracking-wider font-semibold mb-1">{label}</p>
+      <p className={`font-bold text-[#1A8A9E] ${large ? 'text-3xl' : 'text-xl'}`}>{value}</p>
     </div>
   )
 }
@@ -85,7 +85,7 @@ interface AiResult {
 
 const SENTIMENT_COLORS: Record<string, string> = {
   positive: 'text-emerald-400',
-  neutral: 'text-slate-300',
+  neutral: 'text-[#3A3730]',
   negative: 'text-red-400',
   warning: 'text-amber-400',
 }
@@ -181,66 +181,66 @@ export default function ReconstitutionPage() {
       <div className="flex items-center gap-4">
         <button
           onClick={() => router.back()}
-          className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 text-slate-400 hover:text-white hover:border-slate-600 transition-colors shrink-0"
+          className="flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-[#E8E5E0] text-[#B0AAA0] hover:text-[#1A1915] hover:border-[#D0CCC6] transition-colors shrink-0"
           aria-label="Go back"
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center shrink-0">
-            <FlaskConical className="w-5 h-5 text-indigo-400" />
+          <div className="w-10 h-10 rounded-xl bg-[#1A8A9E]/12 flex items-center justify-center shrink-0">
+            <FlaskConical className="w-5 h-5 text-[#1A8A9E]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white leading-tight">Reconstitution Calculator</h1>
-            <p className="text-slate-400 text-sm">AI-powered BAC water recommendations + manual calculator</p>
+            <h1 className="text-2xl font-bold text-[#1A1915] leading-tight">Reconstitution Calculator</h1>
+            <p className="text-[#B0AAA0] text-sm">AI-powered BAC water recommendations + manual calculator</p>
           </div>
         </div>
       </div>
 
       {/* ── Section 0: AI Peptide Assistant ───────────────────────────────────── */}
-      <section className="bg-slate-800 border border-indigo-500/30 rounded-2xl overflow-hidden">
-        <div className="flex items-center gap-2 px-6 py-4 border-b border-slate-700 bg-gradient-to-r from-indigo-500/15 to-transparent">
-          <Sparkles className="w-4 h-4 text-indigo-400" />
-          <h2 className="text-base font-semibold text-white">AI Reconstitution Advisor</h2>
-          <span className="text-xs text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full ml-auto">AI</span>
+      <section className="bg-white border border-[#1A8A9E]/30 rounded-2xl overflow-hidden">
+        <div className="flex items-center gap-2 px-6 py-4 border-b border-[#E8E5E0] bg-gradient-to-r from-[#1A8A9E]/10 to-transparent">
+          <Sparkles className="w-4 h-4 text-[#1A8A9E]" />
+          <h2 className="text-base font-semibold text-[#1A1915]">AI Reconstitution Advisor</h2>
+          <span className="text-xs text-[#1A8A9E] bg-[#1A8A9E]/8 px-2 py-0.5 rounded-full ml-auto">AI</span>
         </div>
 
         <div className="p-6 space-y-4">
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-[#B0AAA0]">
             Select your peptide and enter the vial amount — AI will recommend how much BAC water to add and auto-fill the calculator below.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Peptide Selector */}
             <div className="relative">
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-[#B0AAA0] uppercase tracking-wider mb-2">
                 Peptide
               </label>
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="w-full flex items-center justify-between bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-left focus:outline-none focus:border-indigo-500 transition-colors"
+                className="w-full flex items-center justify-between bg-[#FAFAF8] border border-[#E8E5E0] rounded-lg px-4 py-2.5 text-sm text-left focus:outline-none focus:border-[#1A8A9E] transition-colors"
               >
-                <span className={selectedPeptide ? 'text-white' : 'text-slate-600'}>
+                <span className={selectedPeptide ? 'text-[#1A1915]' : 'text-[#B0AAA0]'}>
                   {selectedPeptide || 'Select peptide...'}
                 </span>
-                <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`w-4 h-4 text-[#B0AAA0] transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {dropdownOpen && (
-                <div className="absolute top-full mt-1 w-full z-50 bg-slate-900 border border-slate-700 rounded-xl shadow-xl overflow-hidden">
-                  <div className="p-2 border-b border-slate-700">
+                <div className="absolute top-full mt-1 w-full z-50 bg-[#FAFAF8] border border-[#E8E5E0] rounded-xl shadow-xl overflow-hidden">
+                  <div className="p-2 border-b border-[#E8E5E0]">
                     <input
                       type="text"
                       placeholder="Search peptides..."
                       value={peptideSearch}
                       onChange={(e) => setPeptideSearch(e.target.value)}
-                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+                      className="w-full bg-white border border-[#E8E5E0] rounded-lg px-3 py-2 text-sm text-[#1A1915] placeholder-[#B0AAA0] focus:outline-none focus:border-[#1A8A9E]"
                       autoFocus
                     />
                   </div>
                   <div className="max-h-52 overflow-y-auto">
                     {filteredPeptides.length === 0 ? (
-                      <p className="text-center text-slate-500 text-sm py-4">No peptides found</p>
+                      <p className="text-center text-[#B0AAA0] text-sm py-4">No peptides found</p>
                     ) : (
                       filteredPeptides.map((name) => (
                         <button
@@ -250,8 +250,8 @@ export default function ReconstitutionPage() {
                             setDropdownOpen(false)
                             setPeptideSearch('')
                           }}
-                          className={`w-full text-left px-4 py-2.5 text-sm hover:bg-slate-800 transition-colors ${
-                            selectedPeptide === name ? 'text-indigo-400 bg-indigo-500/10' : 'text-slate-300'
+                          className={`w-full text-left px-4 py-2.5 text-sm hover:bg-white transition-colors ${
+                            selectedPeptide === name ? 'text-[#1A8A9E] bg-[#1A8A9E]/8' : 'text-[#3A3730]'
                           }`}
                         >
                           {name}
@@ -265,7 +265,7 @@ export default function ReconstitutionPage() {
 
             {/* Amount input */}
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-[#B0AAA0] uppercase tracking-wider mb-2">
                 Vial Amount
               </label>
               <div className="flex items-center gap-3">
@@ -276,9 +276,9 @@ export default function ReconstitutionPage() {
                   value={aiMg}
                   onChange={(e) => setAiMg(e.target.value)}
                   placeholder="e.g. 5"
-                  className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors text-sm"
+                  className="flex-1 bg-[#FAFAF8] border border-[#E8E5E0] rounded-lg px-4 py-2.5 text-[#1A1915] placeholder-[#B0AAA0] focus:outline-none focus:border-[#1A8A9E] focus:ring-1 focus:ring-[#1A8A9E] transition-colors text-sm"
                 />
-                <span className="text-slate-400 text-sm font-medium w-10 text-right shrink-0">mg</span>
+                <span className="text-[#B0AAA0] text-sm font-medium w-10 text-right shrink-0">mg</span>
               </div>
             </div>
           </div>
@@ -286,7 +286,7 @@ export default function ReconstitutionPage() {
           <button
             onClick={handleAiCalculate}
             disabled={!selectedPeptide || !aiMg || aiLoading}
-            className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-xl px-6 py-3 transition-colors"
+            className="w-full flex items-center justify-center gap-2 bg-[#1A8A9E] hover:bg-[#1A8A9E] disabled:opacity-50 disabled:cursor-not-allowed text-[#1A1915] font-semibold rounded-xl px-6 py-3 transition-colors"
           >
             {aiLoading ? (
               <>
@@ -307,45 +307,45 @@ export default function ReconstitutionPage() {
 
           {/* AI Result */}
           {aiResult && (
-            <div className="bg-slate-900 border border-indigo-500/30 rounded-xl p-5 space-y-4">
+            <div className="bg-[#FAFAF8] border border-[#1A8A9E]/30 rounded-xl p-5 space-y-4">
               <div className="flex items-center gap-2 mb-1">
-                <Sparkles className="w-4 h-4 text-indigo-400" />
-                <p className="text-sm font-semibold text-indigo-400">AI Recommendation for {selectedPeptide}</p>
+                <Sparkles className="w-4 h-4 text-[#1A8A9E]" />
+                <p className="text-sm font-semibold text-[#1A8A9E]">AI Recommendation for {selectedPeptide}</p>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
-                <div className="bg-slate-800 rounded-lg p-3 text-center">
-                  <p className="text-xs text-slate-500 mb-1">BAC Water</p>
-                  <p className="text-xl font-bold text-indigo-400">{aiResult.recommendedBacWaterMl} mL</p>
+                <div className="bg-white rounded-lg p-3 text-center">
+                  <p className="text-xs text-[#B0AAA0] mb-1">BAC Water</p>
+                  <p className="text-xl font-bold text-[#1A8A9E]">{aiResult.recommendedBacWaterMl} mL</p>
                 </div>
-                <div className="bg-slate-800 rounded-lg p-3 text-center">
-                  <p className="text-xs text-slate-500 mb-1">Concentration</p>
-                  <p className="text-lg font-bold text-white">{aiResult.concentrationMgPerMl} mg/mL</p>
+                <div className="bg-white rounded-lg p-3 text-center">
+                  <p className="text-xs text-[#B0AAA0] mb-1">Concentration</p>
+                  <p className="text-lg font-bold text-[#1A1915]">{aiResult.concentrationMgPerMl} mg/mL</p>
                 </div>
-                <div className="bg-slate-800 rounded-lg p-3 text-center">
-                  <p className="text-xs text-slate-500 mb-1">= mcg/mL</p>
-                  <p className="text-lg font-bold text-white">{aiResult.concentrationMcgPerMl?.toLocaleString()}</p>
+                <div className="bg-white rounded-lg p-3 text-center">
+                  <p className="text-xs text-[#B0AAA0] mb-1">= mcg/mL</p>
+                  <p className="text-lg font-bold text-[#1A1915]">{aiResult.concentrationMcgPerMl?.toLocaleString()}</p>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <div className="bg-slate-800/60 rounded-lg px-4 py-3">
-                  <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Reasoning</p>
-                  <p className="text-sm text-slate-300">{aiResult.reasoning}</p>
+                <div className="bg-[#F2F0ED] rounded-lg px-4 py-3">
+                  <p className="text-xs text-[#B0AAA0] uppercase tracking-wide mb-1">Reasoning</p>
+                  <p className="text-sm text-[#3A3730]">{aiResult.reasoning}</p>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="bg-slate-800/60 rounded-lg px-3 py-2">
-                    <p className="text-xs text-slate-500 mb-0.5">Typical Dose Range</p>
+                  <div className="bg-[#F2F0ED] rounded-lg px-3 py-2">
+                    <p className="text-xs text-[#B0AAA0] mb-0.5">Typical Dose Range</p>
                     <p className="text-sm text-emerald-400 font-medium">{aiResult.tipicalDoseRange}</p>
                   </div>
-                  <div className="bg-slate-800/60 rounded-lg px-3 py-2">
-                    <p className="text-xs text-slate-500 mb-0.5">Storage</p>
+                  <div className="bg-[#F2F0ED] rounded-lg px-3 py-2">
+                    <p className="text-xs text-[#B0AAA0] mb-0.5">Storage</p>
                     <p className="text-sm text-amber-400 font-medium">{aiResult.storageNote}</p>
                   </div>
                 </div>
               </div>
 
-              <p className="text-xs text-slate-600 text-center">
+              <p className="text-xs text-[#B0AAA0] text-center">
                 ✓ Values auto-filled in the manual calculator below
               </p>
             </div>
@@ -354,10 +354,10 @@ export default function ReconstitutionPage() {
       </section>
 
       {/* ── Section 1: Reconstitution ─────────────────────────────────────────── */}
-      <section className="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
-        <div className="flex items-center gap-2 px-6 py-4 border-b border-slate-700 bg-gradient-to-r from-indigo-500/10 to-transparent">
-          <FlaskConical className="w-4 h-4 text-indigo-400" />
-          <h2 className="text-base font-semibold text-white">Manual Reconstitution</h2>
+      <section className="bg-white border border-[#E8E5E0] rounded-2xl overflow-hidden">
+        <div className="flex items-center gap-2 px-6 py-4 border-b border-[#E8E5E0] bg-gradient-to-r from-[#1A8A9E]/8 to-transparent">
+          <FlaskConical className="w-4 h-4 text-[#1A8A9E]" />
+          <h2 className="text-base font-semibold text-[#1A1915]">Manual Reconstitution</h2>
         </div>
 
         <div className="p-6 space-y-4">
@@ -393,9 +393,9 @@ export default function ReconstitutionPage() {
               />
             </div>
           ) : (
-            <div className="bg-slate-900 border border-dashed border-slate-700 rounded-xl px-5 py-6 text-center">
-              <Droplets className="w-8 h-8 text-slate-700 mx-auto mb-2" />
-              <p className="text-slate-500 text-sm">Enter vial size and BAC water to calculate concentration</p>
+            <div className="bg-[#FAFAF8] border border-dashed border-[#E8E5E0] rounded-xl px-5 py-6 text-center">
+              <Droplets className="w-8 h-8 text-[#3A3730] mx-auto mb-2" />
+              <p className="text-[#B0AAA0] text-sm">Enter vial size and BAC water to calculate concentration</p>
             </div>
           )}
         </div>
@@ -403,16 +403,16 @@ export default function ReconstitutionPage() {
 
       {/* ── Section 2: Dose Calculator (only shown when concentration known) ──── */}
       {concentration !== null && (
-        <section className="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
-          <div className="flex items-center gap-2 px-6 py-4 border-b border-slate-700 bg-gradient-to-r from-indigo-500/10 to-transparent">
-            <Calculator className="w-4 h-4 text-indigo-400" />
-            <h2 className="text-base font-semibold text-white">Dose Calculator</h2>
+        <section className="bg-white border border-[#E8E5E0] rounded-2xl overflow-hidden">
+          <div className="flex items-center gap-2 px-6 py-4 border-b border-[#E8E5E0] bg-gradient-to-r from-[#1A8A9E]/8 to-transparent">
+            <Calculator className="w-4 h-4 text-[#1A8A9E]" />
+            <h2 className="text-base font-semibold text-[#1A1915]">Dose Calculator</h2>
           </div>
 
           <div className="p-6 space-y-4">
             {/* Desired dose input + unit toggle */}
-            <div className="bg-slate-800 border border-slate-700 rounded-xl p-4">
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+            <div className="bg-white border border-[#E8E5E0] rounded-xl p-4">
+              <label className="block text-xs font-semibold text-[#B0AAA0] uppercase tracking-wider mb-3">
                 Desired Dose
               </label>
               <div className="flex items-center gap-3">
@@ -423,16 +423,16 @@ export default function ReconstitutionPage() {
                   value={desiredDose}
                   onChange={(e) => setDesiredDose(e.target.value)}
                   placeholder="e.g. 250"
-                  className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors text-sm"
+                  className="flex-1 bg-[#FAFAF8] border border-[#E8E5E0] rounded-lg px-4 py-2.5 text-[#1A1915] placeholder-[#B0AAA0] focus:outline-none focus:border-[#1A8A9E] focus:ring-1 focus:ring-[#1A8A9E] transition-colors text-sm"
                 />
                 {/* Unit toggle */}
-                <div className="flex rounded-lg overflow-hidden border border-slate-700 shrink-0">
+                <div className="flex rounded-lg overflow-hidden border border-[#E8E5E0] shrink-0">
                   <button
                     onClick={() => setDoseUnit('mcg')}
                     className={`px-3 py-2.5 text-sm font-semibold transition-colors ${
                       doseUnit === 'mcg'
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-slate-900 text-slate-400 hover:text-white'
+                        ? 'bg-[#1A8A9E] text-[#1A1915]'
+                        : 'bg-[#FAFAF8] text-[#B0AAA0] hover:text-[#1A1915]'
                     }`}
                   >
                     mcg
@@ -441,8 +441,8 @@ export default function ReconstitutionPage() {
                     onClick={() => setDoseUnit('mg')}
                     className={`px-3 py-2.5 text-sm font-semibold transition-colors ${
                       doseUnit === 'mg'
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-slate-900 text-slate-400 hover:text-white'
+                        ? 'bg-[#1A8A9E] text-[#1A1915]'
+                        : 'bg-[#FAFAF8] text-[#B0AAA0] hover:text-[#1A1915]'
                     }`}
                   >
                     mg
@@ -469,14 +469,14 @@ export default function ReconstitutionPage() {
                     value={`${doseCalc.u40.toFixed(1)} units`}
                   />
                 </div>
-                <p className="text-xs text-slate-600 px-1">
+                <p className="text-xs text-[#B0AAA0] px-1">
                   U-100 = 0.01 mL per unit &nbsp;·&nbsp; U-40 = 0.025 mL per unit
                 </p>
               </div>
             ) : (
-              <div className="bg-slate-900 border border-dashed border-slate-700 rounded-xl px-5 py-6 text-center">
-                <Calculator className="w-8 h-8 text-slate-700 mx-auto mb-2" />
-                <p className="text-slate-500 text-sm">Enter your desired dose above to calculate injection volume</p>
+              <div className="bg-[#FAFAF8] border border-dashed border-[#E8E5E0] rounded-xl px-5 py-6 text-center">
+                <Calculator className="w-8 h-8 text-[#3A3730] mx-auto mb-2" />
+                <p className="text-[#B0AAA0] text-sm">Enter your desired dose above to calculate injection volume</p>
               </div>
             )}
           </div>
@@ -484,22 +484,22 @@ export default function ReconstitutionPage() {
       )}
 
       {/* ── Section 3: Quick Reference Table ─────────────────────────────────── */}
-      <section className="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
-        <div className="flex items-center gap-2 px-6 py-4 border-b border-slate-700">
-          <Droplets className="w-4 h-4 text-indigo-400" />
-          <h2 className="text-base font-semibold text-white">Quick Reference</h2>
-          <span className="text-xs text-slate-500 ml-1">(mcg/mL)</span>
+      <section className="bg-white border border-[#E8E5E0] rounded-2xl overflow-hidden">
+        <div className="flex items-center gap-2 px-6 py-4 border-b border-[#E8E5E0]">
+          <Droplets className="w-4 h-4 text-[#1A8A9E]" />
+          <h2 className="text-base font-semibold text-[#1A1915]">Quick Reference</h2>
+          <span className="text-xs text-[#B0AAA0] ml-1">(mcg/mL)</span>
         </div>
 
         <div className="p-4 overflow-x-auto">
           <table className="w-full text-sm border-collapse">
             <thead>
-              <tr className="bg-indigo-600/20">
-                <th className="text-left px-4 py-2.5 text-indigo-300 font-semibold rounded-tl-lg">
+              <tr className="bg-[#1A8A9E]/12">
+                <th className="text-left px-4 py-2.5 text-[#1A8A9E] font-semibold rounded-tl-lg">
                   Vial \ Water
                 </th>
                 {WATER_AMOUNTS.map((w) => (
-                  <th key={w} className="px-4 py-2.5 text-indigo-300 font-semibold text-center">
+                  <th key={w} className="px-4 py-2.5 text-[#1A8A9E] font-semibold text-center">
                     {w} mL
                   </th>
                 ))}
@@ -509,11 +509,11 @@ export default function ReconstitutionPage() {
               {quickRef.map((row, ri) => (
                 <tr
                   key={ri}
-                  className="border-t border-slate-700/60 hover:bg-slate-700/30 transition-colors"
+                  className="border-t border-[#E8E5E0] hover:bg-[#F2F0ED] transition-colors"
                 >
-                  <td className="px-4 py-3 text-slate-300 font-medium">{VIAL_SIZES[ri]} mg</td>
+                  <td className="px-4 py-3 text-[#3A3730] font-medium">{VIAL_SIZES[ri]} mg</td>
                   {row.map((cell, ci) => (
-                    <td key={ci} className="px-4 py-3 text-slate-200 text-center tabular-nums">
+                    <td key={ci} className="px-4 py-3 text-[#3A3730] text-center tabular-nums">
                       {cell.conc.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                     </td>
                   ))}
@@ -525,10 +525,10 @@ export default function ReconstitutionPage() {
       </section>
 
       {/* ── Info tip ─────────────────────────────────────────────────────────── */}
-      <div className="bg-slate-800 border border-indigo-500/20 rounded-xl px-5 py-4 flex gap-3">
-        <Info className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" />
-        <p className="text-slate-300 text-sm leading-relaxed">
-          <span className="font-semibold text-white">Tip:</span> Always use bacteriostatic water (BAC water).
+      <div className="bg-white border border-[#1A8A9E]/20 rounded-xl px-5 py-4 flex gap-3">
+        <Info className="w-5 h-5 text-[#1A8A9E] shrink-0 mt-0.5" />
+        <p className="text-[#3A3730] text-sm leading-relaxed">
+          <span className="font-semibold text-[#1A1915]">Tip:</span> Always use bacteriostatic water (BAC water).
           Sterile water can be used but the peptide degrades faster and does not allow multi-dose use.
         </p>
       </div>

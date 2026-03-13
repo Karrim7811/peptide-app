@@ -17,7 +17,7 @@ import MarketPulse from './MarketPulse'
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 const TYPE_COLORS: Record<string, string> = {
-  peptide: 'bg-indigo-500/20 text-indigo-300',
+  peptide: 'bg-[#1A8A9E]/12 text-[#1A8A9E]',
   medication: 'bg-blue-500/20 text-blue-300',
   supplement: 'bg-emerald-500/20 text-emerald-300',
 }
@@ -71,8 +71,8 @@ export default async function DashboardPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-        <p className="text-slate-400 mt-1">
+        <h1 className="text-2xl font-bold text-[#1A1915]">Dashboard</h1>
+        <p className="text-[#B0AAA0] mt-1">
           {format(new Date(), 'EEEE, MMMM d, yyyy')}
         </p>
       </div>
@@ -80,25 +80,25 @@ export default async function DashboardPage() {
       {/* Stats Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          icon={<Layers className="w-5 h-5 text-indigo-400" />}
+          icon={<Layers className="w-5 h-5 text-[#1A8A9E]" />}
           label="Active Items"
           value={activeStack.length}
           href="/stack"
         />
         <StatCard
-          icon={<Bell className="w-5 h-5 text-indigo-400" />}
+          icon={<Bell className="w-5 h-5 text-[#1A8A9E]" />}
           label="Today's Reminders"
           value={todayReminders.length}
           href="/reminders"
         />
         <StatCard
-          icon={<BookOpen className="w-5 h-5 text-indigo-400" />}
+          icon={<BookOpen className="w-5 h-5 text-[#1A8A9E]" />}
           label="Logs This Week"
           value={logs.length}
           href="/log"
         />
         <StatCard
-          icon={<Shield className="w-5 h-5 text-indigo-400" />}
+          icon={<Shield className="w-5 h-5 text-[#1A8A9E]" />}
           label="Check Interactions"
           value="AI"
           href="/checker"
@@ -108,22 +108,22 @@ export default async function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Today's Reminders */}
-        <div className="lg:col-span-1 bg-slate-800 border border-slate-700 rounded-xl p-6">
+        <div className="lg:col-span-1 bg-white border border-[#E8E5E0] rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-white flex items-center gap-2">
-              <Bell className="w-4 h-4 text-indigo-400" />
+            <h2 className="font-semibold text-[#1A1915] flex items-center gap-2">
+              <Bell className="w-4 h-4 text-[#1A8A9E]" />
               Today&apos;s Reminders
             </h2>
-            <Link href="/reminders" className="text-xs text-indigo-400 hover:text-indigo-300">
+            <Link href="/reminders" className="text-xs text-[#1A8A9E] hover:text-[#1A8A9E]">
               View all
             </Link>
           </div>
 
           {todayReminders.length === 0 ? (
             <div className="text-center py-8">
-              <Clock className="w-8 h-8 text-slate-600 mx-auto mb-2" />
-              <p className="text-slate-500 text-sm">No reminders for today</p>
-              <Link href="/reminders" className="text-indigo-400 text-xs hover:underline mt-1 inline-block">
+              <Clock className="w-8 h-8 text-[#B0AAA0] mx-auto mb-2" />
+              <p className="text-[#B0AAA0] text-sm">No reminders for today</p>
+              <Link href="/reminders" className="text-[#1A8A9E] text-xs hover:underline mt-1 inline-block">
                 Add a reminder
               </Link>
             </div>
@@ -132,19 +132,19 @@ export default async function DashboardPage() {
               {todayReminders.map((reminder: Reminder) => (
                 <div
                   key={reminder.id}
-                  className="flex items-center justify-between bg-slate-900/50 rounded-lg px-3 py-2.5"
+                  className="flex items-center justify-between bg-[#F2F0ED] rounded-lg px-3 py-2.5"
                 >
                   <div>
-                    <p className="text-sm font-medium text-white">
+                    <p className="text-sm font-medium text-[#1A1915]">
                       {reminder.stack_item?.name ?? 'Unknown'}
                     </p>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-[#B0AAA0]">
                       {reminder.time} &bull; {reminder.dose || reminder.stack_item?.dose || 'No dose set'}
                     </p>
                   </div>
                   <Link
                     href="/log"
-                    className="text-xs bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 px-2 py-1 rounded transition-colors"
+                    className="text-xs bg-[#1A8A9E]/15 hover:bg-[#1A8A9E]/30 text-[#1A8A9E] px-2 py-1 rounded transition-colors"
                   >
                     Log
                   </Link>
@@ -155,25 +155,25 @@ export default async function DashboardPage() {
         </div>
 
         {/* Active Stack */}
-        <div className="lg:col-span-1 bg-slate-800 border border-slate-700 rounded-xl p-6">
+        <div className="lg:col-span-1 bg-white border border-[#E8E5E0] rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-white flex items-center gap-2">
-              <Layers className="w-4 h-4 text-indigo-400" />
+            <h2 className="font-semibold text-[#1A1915] flex items-center gap-2">
+              <Layers className="w-4 h-4 text-[#1A8A9E]" />
               My Active Stack
-              <span className="bg-slate-700 text-slate-300 text-xs px-2 py-0.5 rounded-full">
+              <span className="bg-[#F2F0ED] text-[#3A3730] text-xs px-2 py-0.5 rounded-full">
                 {activeStack.length}
               </span>
             </h2>
-            <Link href="/stack" className="text-xs text-indigo-400 hover:text-indigo-300">
+            <Link href="/stack" className="text-xs text-[#1A8A9E] hover:text-[#1A8A9E]">
               Manage
             </Link>
           </div>
 
           {activeStack.length === 0 ? (
             <div className="text-center py-8">
-              <FlaskConical className="w-8 h-8 text-slate-600 mx-auto mb-2" />
-              <p className="text-slate-500 text-sm">No items in your stack</p>
-              <Link href="/stack" className="text-indigo-400 text-xs hover:underline mt-1 inline-block">
+              <FlaskConical className="w-8 h-8 text-[#B0AAA0] mx-auto mb-2" />
+              <p className="text-[#B0AAA0] text-sm">No items in your stack</p>
+              <Link href="/stack" className="text-[#1A8A9E] text-xs hover:underline mt-1 inline-block">
                 Add your first item
               </Link>
             </div>
@@ -182,17 +182,17 @@ export default async function DashboardPage() {
               {activeStack.slice(0, 5).map((item: StackItem) => (
                 <div
                   key={item.id}
-                  className="flex items-center justify-between bg-slate-900/50 rounded-lg px-3 py-2.5"
+                  className="flex items-center justify-between bg-[#F2F0ED] rounded-lg px-3 py-2.5"
                 >
                   <div>
-                    <p className="text-sm font-medium text-white">{item.name}</p>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-sm font-medium text-[#1A1915]">{item.name}</p>
+                    <p className="text-xs text-[#B0AAA0]">
                       {item.dose} {item.unit}
                     </p>
                   </div>
                   <span
                     className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                      TYPE_COLORS[item.type] ?? 'bg-slate-700 text-slate-300'
+                      TYPE_COLORS[item.type] ?? 'bg-[#F2F0ED] text-[#3A3730]'
                     }`}
                   >
                     {item.type}
@@ -202,7 +202,7 @@ export default async function DashboardPage() {
               {activeStack.length > 5 && (
                 <Link
                   href="/stack"
-                  className="flex items-center justify-center gap-1 text-xs text-slate-400 hover:text-indigo-400 pt-1"
+                  className="flex items-center justify-center gap-1 text-xs text-[#B0AAA0] hover:text-[#1A8A9E] pt-1"
                 >
                   +{activeStack.length - 5} more <ChevronRight className="w-3 h-3" />
                 </Link>
@@ -212,22 +212,22 @@ export default async function DashboardPage() {
         </div>
 
         {/* Recent Logs */}
-        <div className="lg:col-span-1 bg-slate-800 border border-slate-700 rounded-xl p-6">
+        <div className="lg:col-span-1 bg-white border border-[#E8E5E0] rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-white flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-indigo-400" />
+            <h2 className="font-semibold text-[#1A1915] flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-[#1A8A9E]" />
               Recent Logs
             </h2>
-            <Link href="/log" className="text-xs text-indigo-400 hover:text-indigo-300">
+            <Link href="/log" className="text-xs text-[#1A8A9E] hover:text-[#1A8A9E]">
               View all
             </Link>
           </div>
 
           {logs.length === 0 ? (
             <div className="text-center py-8">
-              <BookOpen className="w-8 h-8 text-slate-600 mx-auto mb-2" />
-              <p className="text-slate-500 text-sm">No doses logged yet</p>
-              <Link href="/log" className="text-indigo-400 text-xs hover:underline mt-1 inline-block">
+              <BookOpen className="w-8 h-8 text-[#B0AAA0] mx-auto mb-2" />
+              <p className="text-[#B0AAA0] text-sm">No doses logged yet</p>
+              <Link href="/log" className="text-[#1A8A9E] text-xs hover:underline mt-1 inline-block">
                 Log your first dose
               </Link>
             </div>
@@ -236,17 +236,17 @@ export default async function DashboardPage() {
               {logs.slice(0, 5).map((log: DoseLog) => (
                 <div
                   key={log.id}
-                  className="bg-slate-900/50 rounded-lg px-3 py-2.5"
+                  className="bg-[#F2F0ED] rounded-lg px-3 py-2.5"
                 >
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-white">
+                    <p className="text-sm font-medium text-[#1A1915]">
                       {log.stack_item?.name ?? 'Unknown'}
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-[#B0AAA0]">
                       {format(new Date(log.taken_at), 'MMM d')}
                     </p>
                   </div>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="text-xs text-[#B0AAA0] mt-0.5">
                     {log.dose || 'No dose recorded'} &bull; {format(new Date(log.taken_at), 'h:mm a')}
                   </p>
                 </div>
@@ -257,33 +257,33 @@ export default async function DashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-        <h2 className="font-semibold text-white mb-4">Quick Actions</h2>
+      <div className="bg-white border border-[#E8E5E0] rounded-xl p-6">
+        <h2 className="font-semibold text-[#1A1915] mb-4">Quick Actions</h2>
         <div className="flex flex-wrap gap-3">
           <Link
             href="/checker"
-            className="flex items-center gap-2 bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-indigo-300 px-4 py-2 rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 bg-[#1A8A9E]/12 hover:bg-[#1A8A9E]/15 border border-[#1A8A9E]/30 text-[#1A8A9E] px-4 py-2 rounded-lg text-sm transition-colors"
           >
             <Shield className="w-4 h-4" />
             Check Interaction
           </Link>
           <Link
             href="/log"
-            className="flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-slate-300 px-4 py-2 rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 bg-[#F2F0ED] hover:bg-[#E8E5E0] text-[#3A3730] px-4 py-2 rounded-lg text-sm transition-colors"
           >
             <BookOpen className="w-4 h-4" />
             Log a Dose
           </Link>
           <Link
             href="/stack"
-            className="flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-slate-300 px-4 py-2 rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 bg-[#F2F0ED] hover:bg-[#E8E5E0] text-[#3A3730] px-4 py-2 rounded-lg text-sm transition-colors"
           >
             <Layers className="w-4 h-4" />
             Update Stack
           </Link>
           <Link
             href="/reminders"
-            className="flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-slate-300 px-4 py-2 rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 bg-[#F2F0ED] hover:bg-[#E8E5E0] text-[#3A3730] px-4 py-2 rounded-lg text-sm transition-colors"
           >
             <Bell className="w-4 h-4" />
             Add Reminder
@@ -313,16 +313,16 @@ function StatCard({
   return (
     <Link
       href={href}
-      className="bg-slate-800 border border-slate-700 rounded-xl p-5 hover:border-indigo-500/50 transition-colors group"
+      className="bg-white border border-[#E8E5E0] rounded-xl p-5 hover:border-[#1A8A9E]/50 transition-colors group"
     >
       <div className="flex items-center justify-between mb-3">
         {icon}
-        <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-indigo-400 transition-colors" />
+        <ChevronRight className="w-4 h-4 text-[#B0AAA0] group-hover:text-[#1A8A9E] transition-colors" />
       </div>
-      <p className={`font-bold ${isLink ? 'text-lg text-indigo-400' : 'text-2xl text-white'}`}>
+      <p className={`font-bold ${isLink ? 'text-lg text-[#1A8A9E]' : 'text-2xl text-[#1A1915]'}`}>
         {value}
       </p>
-      <p className="text-xs text-slate-400 mt-1">{label}</p>
+      <p className="text-xs text-[#B0AAA0] mt-1">{label}</p>
     </Link>
   )
 }

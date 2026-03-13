@@ -297,11 +297,11 @@ function StarRating({ rating }: { rating: number }) {
         <Star
           key={star}
           className={`w-3.5 h-3.5 ${
-            star <= Math.round(rating) ? 'text-amber-400 fill-amber-400' : 'text-slate-600'
+            star <= Math.round(rating) ? 'text-amber-400 fill-amber-400' : 'text-[#B0AAA0]'
           }`}
         />
       ))}
-      <span className="text-sm font-semibold text-white ml-1">{rating.toFixed(1)}</span>
+      <span className="text-sm font-semibold text-[#1A1915] ml-1">{rating.toFixed(1)}</span>
     </div>
   )
 }
@@ -332,7 +332,7 @@ const STATUS_BADGE: Record<VendorStatus, { label: string; color: string; icon: R
 const PRICE_COLORS: Record<string, string> = {
   Budget: 'text-emerald-400',
   'Mid-range': 'text-amber-400',
-  Premium: 'text-indigo-400',
+  Premium: 'text-[#1A8A9E]',
 }
 
 export default function VendorsPage() {
@@ -353,7 +353,7 @@ export default function VendorsPage() {
       <div className="flex items-center gap-4">
         <button
           onClick={() => router.back()}
-          className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 text-slate-400 hover:text-white hover:border-slate-600 transition-colors shrink-0"
+          className="flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-[#E8E5E0] text-[#B0AAA0] hover:text-[#1A1915] hover:border-[#D0CCC6] transition-colors shrink-0"
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
@@ -362,8 +362,8 @@ export default function VendorsPage() {
             <Store className="w-5 h-5 text-emerald-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white leading-tight">Top 10 Peptide Vendors</h1>
-            <p className="text-slate-400 text-sm">Best-reviewed research peptide stores online · Verified March 2026</p>
+            <h1 className="text-2xl font-bold text-[#1A1915] leading-tight">Top 10 Peptide Vendors</h1>
+            <p className="text-[#B0AAA0] text-sm">Best-reviewed research peptide stores online · Verified March 2026</p>
           </div>
         </div>
       </div>
@@ -376,7 +376,7 @@ export default function VendorsPage() {
             <p className="text-red-300 font-semibold text-sm mb-2">{INDUSTRY_ALERT.title}</p>
             <ul className="space-y-1">
               {INDUSTRY_ALERT.points.map((point, i) => (
-                <li key={i} className="text-xs text-slate-400 flex items-start gap-2">
+                <li key={i} className="text-xs text-[#B0AAA0] flex items-start gap-2">
                   <span className="text-red-500 mt-0.5 shrink-0">·</span>
                   {point}
                 </li>
@@ -389,7 +389,7 @@ export default function VendorsPage() {
       {/* Disclaimer */}
       <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl px-5 py-4 flex gap-3">
         <AlertCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-        <p className="text-slate-400 text-xs leading-relaxed">
+        <p className="text-[#B0AAA0] text-xs leading-relaxed">
           <span className="text-amber-300 font-semibold">For Research Use Only.</span> All vendors listed sell
           peptides labeled "for research purposes only." This is not an endorsement for human consumption.
           Verify vendor status independently before purchasing — the peptide vendor landscape is changing rapidly in 2026.
@@ -398,17 +398,17 @@ export default function VendorsPage() {
 
       {/* Stats bar */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 text-center">
+        <div className="bg-white border border-[#E8E5E0] rounded-xl p-4 text-center">
           <p className="text-2xl font-bold text-emerald-400">{operationalCount}</p>
-          <p className="text-xs text-slate-400 mt-1">Operational</p>
+          <p className="text-xs text-[#B0AAA0] mt-1">Operational</p>
         </div>
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 text-center">
-          <p className="text-2xl font-bold text-indigo-400">{affiliateCount}</p>
-          <p className="text-xs text-slate-400 mt-1">Affiliate Programs</p>
+        <div className="bg-white border border-[#E8E5E0] rounded-xl p-4 text-center">
+          <p className="text-2xl font-bold text-[#1A8A9E]">{affiliateCount}</p>
+          <p className="text-xs text-[#B0AAA0] mt-1">Affiliate Programs</p>
         </div>
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 text-center">
+        <div className="bg-white border border-[#E8E5E0] rounded-xl p-4 text-center">
           <p className="text-2xl font-bold text-red-400">{CLOSED_VENDORS.length}</p>
-          <p className="text-xs text-slate-400 mt-1">Confirmed Closed</p>
+          <p className="text-xs text-[#B0AAA0] mt-1">Confirmed Closed</p>
         </div>
       </div>
 
@@ -418,14 +418,14 @@ export default function VendorsPage() {
           onClick={() => setAffiliateOnly(!affiliateOnly)}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
             affiliateOnly
-              ? 'bg-indigo-600/20 border-indigo-500/40 text-indigo-300'
-              : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-white'
+              ? 'bg-[#1A8A9E]/12 border-[#1A8A9E]/40 text-[#1A8A9E]'
+              : 'bg-white border-[#E8E5E0] text-[#B0AAA0] hover:text-[#1A1915]'
           }`}
         >
           <DollarSign className="w-4 h-4" />
           Affiliate Programs Only
         </button>
-        <span className="text-xs text-slate-500">
+        <span className="text-xs text-[#B0AAA0]">
           {filteredVendors.length} vendors shown
         </span>
       </div>
@@ -438,29 +438,29 @@ export default function VendorsPage() {
           return (
             <div
               key={vendor.rank}
-              className={`bg-slate-800 border rounded-2xl overflow-hidden transition-colors ${
+              className={`bg-white border rounded-2xl overflow-hidden transition-colors ${
                 vendor.status === 'caution' ? 'border-orange-500/30' :
                 vendor.status === 'uncertain' ? 'border-amber-500/30' :
-                'border-slate-700 hover:border-slate-600'
+                'border-[#E8E5E0] hover:border-[#D0CCC6]'
               }`}
             >
               {/* Main row */}
               <div className="p-5">
                 <div className="flex items-start gap-4">
                   {/* Rank badge */}
-                  <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center shrink-0">
-                    <span className="text-sm font-bold text-indigo-400">#{vendor.rank}</span>
+                  <div className="w-10 h-10 rounded-xl bg-[#FAFAF8] border border-[#E8E5E0] flex items-center justify-center shrink-0">
+                    <span className="text-sm font-bold text-[#1A8A9E]">#{vendor.rank}</span>
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <h3 className="text-base font-bold text-white">{vendor.name}</h3>
+                      <h3 className="text-base font-bold text-[#1A1915]">{vendor.name}</h3>
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${statusCfg.color}`}>
                         {statusCfg.icon}
                         {statusCfg.label}
                       </span>
                       {vendor.affiliate.hasProgram && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-[#1A8A9E]/12 text-[#1A8A9E] border border-[#1A8A9E]/30">
                           <DollarSign className="w-3 h-3" />
                           Affiliate
                         </span>
@@ -476,7 +476,7 @@ export default function VendorsPage() {
                         href={`https://${vendor.website}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-xs text-slate-500 hover:text-indigo-400 transition-colors"
+                        className="flex items-center gap-1 text-xs text-[#B0AAA0] hover:text-[#1A8A9E] transition-colors"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <ExternalLink className="w-3 h-3" />
@@ -484,12 +484,12 @@ export default function VendorsPage() {
                       </a>
                     </div>
 
-                    <p className="text-sm text-slate-400 mb-3">{vendor.summary}</p>
+                    <p className="text-sm text-[#B0AAA0] mb-3">{vendor.summary}</p>
 
                     {/* Quality badges */}
                     <div className="flex flex-wrap gap-1.5 mb-3">
                       {vendor.qualityBadges.map((badge) => (
-                        <span key={badge} className="flex items-center gap-1 px-2 py-0.5 bg-slate-700 text-slate-300 text-xs rounded-lg">
+                        <span key={badge} className="flex items-center gap-1 px-2 py-0.5 bg-[#F2F0ED] text-[#3A3730] text-xs rounded-lg">
                           <Shield className="w-3 h-3 text-emerald-400" />
                           {badge}
                         </span>
@@ -499,19 +499,19 @@ export default function VendorsPage() {
                     {/* Specialties */}
                     <div className="flex flex-wrap gap-1.5">
                       {vendor.specialties.slice(0, 5).map((s) => (
-                        <span key={s} className="px-2 py-0.5 bg-slate-900 text-slate-400 text-xs rounded-md border border-slate-700">
+                        <span key={s} className="px-2 py-0.5 bg-[#FAFAF8] text-[#B0AAA0] text-xs rounded-md border border-[#E8E5E0]">
                           {s}
                         </span>
                       ))}
                       {vendor.specialties.length > 5 && (
-                        <span className="px-2 py-0.5 text-slate-500 text-xs">+{vendor.specialties.length - 5} more</span>
+                        <span className="px-2 py-0.5 text-[#B0AAA0] text-xs">+{vendor.specialties.length - 5} more</span>
                       )}
                     </div>
                   </div>
 
                   <button
                     onClick={() => setExpanded(isExpanded ? null : vendor.rank)}
-                    className="flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-300 transition-colors shrink-0"
+                    className="flex items-center gap-1 text-xs text-[#1A8A9E] hover:text-[#1A8A9E] transition-colors shrink-0"
                   >
                     {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                   </button>
@@ -520,7 +520,7 @@ export default function VendorsPage() {
 
               {/* Expanded details */}
               {isExpanded && (
-                <div className="border-t border-slate-700 bg-slate-900/30 p-5 space-y-4">
+                <div className="border-t border-[#E8E5E0] bg-[#FAFAF8]/30 p-5 space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Pros */}
                     <div>
@@ -529,7 +529,7 @@ export default function VendorsPage() {
                       </p>
                       <ul className="space-y-1">
                         {vendor.pros.map((pro) => (
-                          <li key={pro} className="text-sm text-slate-300 flex items-start gap-2">
+                          <li key={pro} className="text-sm text-[#3A3730] flex items-start gap-2">
                             <span className="text-emerald-500 mt-0.5">+</span>
                             {pro}
                           </li>
@@ -543,7 +543,7 @@ export default function VendorsPage() {
                       </p>
                       <ul className="space-y-1">
                         {vendor.cons.map((con) => (
-                          <li key={con} className={`text-sm flex items-start gap-2 ${con.startsWith('WARNING') ? 'text-red-300 font-medium' : 'text-slate-300'}`}>
+                          <li key={con} className={`text-sm flex items-start gap-2 ${con.startsWith('WARNING') ? 'text-red-300 font-medium' : 'text-[#3A3730]'}`}>
                             <span className="text-red-500 mt-0.5 shrink-0">−</span>
                             {con}
                           </li>
@@ -553,10 +553,10 @@ export default function VendorsPage() {
                   </div>
 
                   {/* Affiliate program details */}
-                  <div className={`rounded-xl p-4 border ${vendor.affiliate.hasProgram ? 'bg-indigo-500/10 border-indigo-500/20' : 'bg-slate-800 border-slate-700'}`}>
+                  <div className={`rounded-xl p-4 border ${vendor.affiliate.hasProgram ? 'bg-[#1A8A9E]/8 border-[#1A8A9E]/20' : 'bg-white border-[#E8E5E0]'}`}>
                     <p className="text-xs font-semibold uppercase tracking-wide mb-2 flex items-center gap-2">
                       <DollarSign className="w-3.5 h-3.5" />
-                      <span className={vendor.affiliate.hasProgram ? 'text-indigo-300' : 'text-slate-400'}>
+                      <span className={vendor.affiliate.hasProgram ? 'text-[#1A8A9E]' : 'text-[#B0AAA0]'}>
                         Affiliate Program
                       </span>
                     </p>
@@ -564,24 +564,24 @@ export default function VendorsPage() {
                       <div className="space-y-2">
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <p className="text-xs text-slate-500">Commission</p>
-                            <p className="text-sm font-bold text-indigo-400">{vendor.affiliate.commission}</p>
+                            <p className="text-xs text-[#B0AAA0]">Commission</p>
+                            <p className="text-sm font-bold text-[#1A8A9E]">{vendor.affiliate.commission}</p>
                           </div>
                           <div>
-                            <p className="text-xs text-slate-500">Cookie Duration</p>
-                            <p className="text-sm font-bold text-white">{vendor.affiliate.cookieDuration}</p>
+                            <p className="text-xs text-[#B0AAA0]">Cookie Duration</p>
+                            <p className="text-sm font-bold text-[#1A1915]">{vendor.affiliate.cookieDuration}</p>
                           </div>
                         </div>
                         <div>
-                          <p className="text-xs text-slate-500">Notes</p>
-                          <p className="text-sm text-slate-300">{vendor.affiliate.notes}</p>
+                          <p className="text-xs text-[#B0AAA0]">Notes</p>
+                          <p className="text-sm text-[#3A3730]">{vendor.affiliate.notes}</p>
                         </div>
                         {vendor.affiliate.signupUrl && (
                           <a
                             href={`https://${vendor.affiliate.signupUrl}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+                            className="inline-flex items-center gap-1.5 text-xs text-[#1A8A9E] hover:text-[#1A8A9E] transition-colors"
                           >
                             <ExternalLink className="w-3 h-3" />
                             Apply at {vendor.affiliate.signupUrl}
@@ -589,11 +589,11 @@ export default function VendorsPage() {
                         )}
                       </div>
                     ) : (
-                      <p className="text-sm text-slate-500">{vendor.affiliate.notes}</p>
+                      <p className="text-sm text-[#B0AAA0]">{vendor.affiliate.notes}</p>
                     )}
                   </div>
 
-                  <p className="text-xs text-slate-600 flex items-center gap-1">
+                  <p className="text-xs text-[#B0AAA0] flex items-center gap-1">
                     <Info className="w-3 h-3" />
                     Status verified: {vendor.verifiedDate} · {vendor.statusNote}
                   </p>
@@ -605,10 +605,10 @@ export default function VendorsPage() {
       </div>
 
       {/* Closed Vendors Warning Section */}
-      <div className="bg-slate-800 border border-red-500/20 rounded-2xl overflow-hidden">
+      <div className="bg-white border border-red-500/20 rounded-2xl overflow-hidden">
         <div className="flex items-center gap-2 px-6 py-4 border-b border-red-500/20 bg-red-500/5">
           <XCircle className="w-4 h-4 text-red-400" />
-          <h2 className="text-base font-semibold text-white">Closed / Defunct Vendors</h2>
+          <h2 className="text-base font-semibold text-[#1A1915]">Closed / Defunct Vendors</h2>
           <span className="text-xs text-red-400 ml-auto">Do not order from these</span>
         </div>
         <div className="divide-y divide-slate-700/50">
@@ -617,14 +617,14 @@ export default function VendorsPage() {
               <div className="flex items-start gap-3">
                 <XCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-semibold text-white flex items-center gap-2 flex-wrap">
+                  <p className="text-sm font-semibold text-[#1A1915] flex items-center gap-2 flex-wrap">
                     {v.name}
                     {v.wasGoldStandard && (
                       <span className="text-xs text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">Former Gold Standard</span>
                     )}
                     <span className="text-xs text-red-400">Closed {v.closedDate}</span>
                   </p>
-                  <p className="text-xs text-slate-400 mt-0.5">{v.notes}</p>
+                  <p className="text-xs text-[#B0AAA0] mt-0.5">{v.notes}</p>
                 </div>
               </div>
             </div>
@@ -634,7 +634,7 @@ export default function VendorsPage() {
 
       {/* Footer */}
       <div className="text-center pb-4">
-        <p className="text-xs text-slate-600">
+        <p className="text-xs text-[#B0AAA0]">
           Rankings based on community reviews, quality testing, affiliate program terms, and operational history.
           Verify all vendor status independently. Last researched: March 2026.
         </p>

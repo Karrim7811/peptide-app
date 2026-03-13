@@ -1,17 +1,14 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
-
 export const metadata: Metadata = {
-  title: 'PeptideTracker',
-  description: 'Track your peptides, medications, and supplements with AI-powered interaction checking.',
+  title: 'Peptide Cortex',
+  description: 'AI-Powered Peptide Intelligence Engine — track, optimize, and analyze your peptide protocol.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'black-translucent',
-    title: 'PeptideTracker',
+    statusBarStyle: 'default',
+    title: 'Peptide Cortex',
   },
 }
 
@@ -20,7 +17,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: '#0f172a',
+  themeColor: '#FAFAF8',
 }
 
 export default function RootLayout({
@@ -29,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <head>
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.svg" />
         <script
@@ -44,7 +41,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} bg-slate-900 text-white min-h-screen`}>
+      <body style={{ background: '#FAFAF8', color: '#1A1915' }}>
         {children}
       </body>
     </html>

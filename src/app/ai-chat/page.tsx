@@ -159,7 +159,7 @@ export default function AiChatPage() {
     return parts.map((part, i) => {
       if (part.startsWith('**') && part.endsWith('**')) {
         return (
-          <strong key={i} className="font-semibold text-white">
+          <strong key={i} className="font-semibold text-[#1A1915]">
             {part.slice(2, -2)}
           </strong>
         )
@@ -175,18 +175,18 @@ export default function AiChatPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.back()}
-            className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
+            className="p-1.5 text-[#B0AAA0] hover:text-[#1A1915] hover:bg-[#F2F0ED] rounded-lg transition-colors"
             title="Go back"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2.5">
-            <div className="bg-indigo-500/20 p-2 rounded-xl">
-              <Bot className="w-5 h-5 text-indigo-400" />
+            <div className="bg-[#1A8A9E]/12 p-2 rounded-xl">
+              <Bot className="w-5 h-5 text-[#1A8A9E]" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white leading-none">PeptideAI</h1>
-              <p className="text-xs text-slate-400 mt-0.5">Expert peptide assistant</p>
+              <h1 className="text-xl font-bold text-[#1A1915] leading-none">PeptideAI</h1>
+              <p className="text-xs text-[#B0AAA0] mt-0.5">Expert peptide assistant</p>
             </div>
           </div>
         </div>
@@ -194,7 +194,7 @@ export default function AiChatPage() {
         {messages.length > 0 && (
           <button
             onClick={handleClear}
-            className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-white hover:bg-slate-700 px-3 py-1.5 rounded-lg transition-colors"
+            className="flex items-center gap-1.5 text-sm text-[#B0AAA0] hover:text-[#1A1915] hover:bg-[#F2F0ED] px-3 py-1.5 rounded-lg transition-colors"
             title="Clear conversation"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -205,27 +205,27 @@ export default function AiChatPage() {
 
       {/* Stack context banner */}
       {stackNames.length > 0 && (
-        <div className="flex items-start gap-2.5 bg-indigo-500/10 border border-indigo-500/25 rounded-xl px-4 py-3 mb-4 shrink-0">
-          <FlaskConical className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
-          <p className="text-sm text-indigo-300">
+        <div className="flex items-start gap-2.5 bg-[#1A8A9E]/8 border border-[#1A8A9E]/25 rounded-xl px-4 py-3 mb-4 shrink-0">
+          <FlaskConical className="w-4 h-4 text-[#1A8A9E] shrink-0 mt-0.5" />
+          <p className="text-sm text-[#1A8A9E]">
             <span className="font-medium text-indigo-200">Your active stack detected:</span>{' '}
-            <span className="text-indigo-300/80">{stackNames.join(', ')}</span>
+            <span className="text-[#1A8A9E]/80">{stackNames.join(', ')}</span>
           </p>
         </div>
       )}
 
       {/* Messages area */}
-      <div className="flex-1 overflow-y-auto rounded-xl bg-slate-800/50 border border-slate-700 flex flex-col">
+      <div className="flex-1 overflow-y-auto rounded-xl bg-white/50 border border-[#E8E5E0] flex flex-col">
         <div className="flex-1 px-4 py-4 space-y-4">
           {messages.length === 0 ? (
             /* Welcome state */
             <div className="flex flex-col h-full">
               {/* Welcome bubble */}
               <div className="flex items-start gap-3">
-                <div className="shrink-0 w-8 h-8 rounded-full bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center mt-0.5">
-                  <Bot className="w-4 h-4 text-indigo-400" />
+                <div className="shrink-0 w-8 h-8 rounded-full bg-[#1A8A9E]/12 border border-[#1A8A9E]/30 flex items-center justify-center mt-0.5">
+                  <Bot className="w-4 h-4 text-[#1A8A9E]" />
                 </div>
-                <div className="bg-slate-800 text-slate-100 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[80%] border border-slate-700">
+                <div className="bg-white text-slate-100 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[80%] border border-[#E8E5E0]">
                   <p className="text-sm whitespace-pre-wrap leading-relaxed">
                     {renderContent(WELCOME_MESSAGE)}
                   </p>
@@ -235,8 +235,8 @@ export default function AiChatPage() {
               {/* Suggested questions */}
               <div className="mt-5 space-y-2">
                 <div className="flex items-center gap-2 px-1">
-                  <Sparkles className="w-3.5 h-3.5 text-slate-500" />
-                  <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">
+                  <Sparkles className="w-3.5 h-3.5 text-[#B0AAA0]" />
+                  <p className="text-xs text-[#B0AAA0] font-medium uppercase tracking-wider">
                     Suggested questions
                   </p>
                 </div>
@@ -246,7 +246,7 @@ export default function AiChatPage() {
                       key={q}
                       onClick={() => handleSuggestion(q)}
                       disabled={loading}
-                      className="text-sm bg-slate-700/60 hover:bg-indigo-600/30 border border-slate-600 hover:border-indigo-500/50 text-slate-300 hover:text-indigo-200 px-3 py-2 rounded-xl transition-all duration-150 text-left disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="text-sm bg-[#F2F0ED]/60 hover:bg-[#1A8A9E]/15 border border-[#D0CCC6] hover:border-[#1A8A9E]/50 text-[#3A3730] hover:text-indigo-200 px-3 py-2 rounded-xl transition-all duration-150 text-left disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {q}
                     </button>
@@ -266,14 +266,14 @@ export default function AiChatPage() {
                   <div
                     className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center mt-0.5 ${
                       msg.role === 'user'
-                        ? 'bg-indigo-600/30 border border-indigo-500/40'
-                        : 'bg-slate-700 border border-slate-600'
+                        ? 'bg-[#1A8A9E]/15 border border-[#1A8A9E]/40'
+                        : 'bg-[#F2F0ED] border border-[#D0CCC6]'
                     }`}
                   >
                     {msg.role === 'user' ? (
-                      <User className="w-4 h-4 text-indigo-300" />
+                      <User className="w-4 h-4 text-[#1A8A9E]" />
                     ) : (
-                      <Bot className="w-4 h-4 text-slate-300" />
+                      <Bot className="w-4 h-4 text-[#3A3730]" />
                     )}
                   </div>
 
@@ -281,8 +281,8 @@ export default function AiChatPage() {
                   <div
                     className={`px-4 py-3 max-w-[80%] text-sm leading-relaxed whitespace-pre-wrap ${
                       msg.role === 'user'
-                        ? 'bg-indigo-600 text-white rounded-2xl rounded-tr-sm'
-                        : 'bg-slate-800 text-slate-100 rounded-2xl rounded-tl-sm border border-slate-700'
+                        ? 'bg-[#1A8A9E] text-[#1A1915] rounded-2xl rounded-tr-sm'
+                        : 'bg-white text-slate-100 rounded-2xl rounded-tl-sm border border-[#E8E5E0]'
                     }`}
                   >
                     {msg.role === 'assistant' ? renderContent(msg.content) : msg.content}
@@ -293,10 +293,10 @@ export default function AiChatPage() {
               {/* Typing indicator */}
               {loading && (
                 <div className="flex items-start gap-3">
-                  <div className="shrink-0 w-8 h-8 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center mt-0.5">
-                    <Bot className="w-4 h-4 text-slate-300" />
+                  <div className="shrink-0 w-8 h-8 rounded-full bg-[#F2F0ED] border border-[#D0CCC6] flex items-center justify-center mt-0.5">
+                    <Bot className="w-4 h-4 text-[#3A3730]" />
                   </div>
-                  <div className="bg-slate-800 border border-slate-700 rounded-2xl rounded-tl-sm px-4 py-3">
+                  <div className="bg-white border border-[#E8E5E0] rounded-2xl rounded-tl-sm px-4 py-3">
                     <div className="flex items-center gap-1.5">
                       <span
                         className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
@@ -320,7 +320,7 @@ export default function AiChatPage() {
         </div>
 
         {/* Input area — pinned inside the scrollable card */}
-        <div className="shrink-0 border-t border-slate-700 bg-slate-800/80 px-4 py-3 rounded-b-xl">
+        <div className="shrink-0 border-t border-[#E8E5E0] bg-white/80 px-4 py-3 rounded-b-xl">
           <div className="flex items-end gap-3">
             <textarea
               ref={textareaRef}
@@ -330,13 +330,13 @@ export default function AiChatPage() {
               placeholder="Ask about dosing, protocols, stacking…"
               rows={1}
               disabled={loading}
-              className="flex-1 resize-none bg-slate-700 border border-slate-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/50 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-400 outline-none transition-colors disabled:opacity-50 min-h-[42px] max-h-24 leading-relaxed"
+              className="flex-1 resize-none bg-[#F2F0ED] border border-[#D0CCC6] focus:border-[#1A8A9E] focus:ring-1 focus:ring-[#1A8A9E]/50 rounded-xl px-4 py-2.5 text-sm text-[#1A1915] placeholder-slate-400 outline-none transition-colors disabled:opacity-50 min-h-[42px] max-h-24 leading-relaxed"
               style={{ overflow: 'hidden' }}
             />
             <button
               onClick={() => handleSend()}
               disabled={loading || !input.trim()}
-              className="shrink-0 w-10 h-10 flex items-center justify-center bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-xl transition-colors disabled:cursor-not-allowed"
+              className="shrink-0 w-10 h-10 flex items-center justify-center bg-[#1A8A9E] hover:bg-[#1A8A9E] disabled:bg-[#F2F0ED] disabled:text-[#B0AAA0] text-[#1A1915] rounded-xl transition-colors disabled:cursor-not-allowed"
               title="Send message"
             >
               {loading ? (
@@ -346,10 +346,10 @@ export default function AiChatPage() {
               )}
             </button>
           </div>
-          <p className="text-xs text-slate-500 mt-2 text-center">
-            Press <kbd className="bg-slate-700 text-slate-400 px-1 py-0.5 rounded text-[10px]">Enter</kbd> to send
+          <p className="text-xs text-[#B0AAA0] mt-2 text-center">
+            Press <kbd className="bg-[#F2F0ED] text-[#B0AAA0] px-1 py-0.5 rounded text-[10px]">Enter</kbd> to send
             &nbsp;·&nbsp;
-            <kbd className="bg-slate-700 text-slate-400 px-1 py-0.5 rounded text-[10px]">Shift+Enter</kbd> for newline
+            <kbd className="bg-[#F2F0ED] text-[#B0AAA0] px-1 py-0.5 rounded text-[10px]">Shift+Enter</kbd> for newline
           </p>
         </div>
       </div>

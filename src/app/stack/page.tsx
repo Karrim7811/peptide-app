@@ -24,7 +24,7 @@ const TYPE_CONFIG = {
   peptide: {
     label: 'Peptide',
     icon: FlaskConical,
-    color: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
+    color: 'bg-[#1A8A9E]/12 text-[#1A8A9E] border-[#1A8A9E]/30',
   },
   medication: {
     label: 'Medication',
@@ -172,17 +172,17 @@ export default function StackPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.back()}
-            className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
+            className="p-1.5 text-[#B0AAA0] hover:text-[#1A1915] hover:bg-[#F2F0ED] rounded-lg transition-colors"
             title="Go back"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-              <Layers className="w-6 h-6 text-indigo-400" />
+            <h1 className="text-2xl font-bold text-[#1A1915] flex items-center gap-2">
+              <Layers className="w-6 h-6 text-[#1A8A9E]" />
               My Stack
             </h1>
-            <p className="text-slate-400 mt-1">Manage your peptides, medications, and supplements.</p>
+            <p className="text-[#B0AAA0] mt-1">Manage your peptides, medications, and supplements.</p>
           </div>
         </div>
         <button
@@ -190,7 +190,7 @@ export default function StackPage() {
             setShowForm(!showForm)
             setFormError('')
           }}
-          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg transition-colors text-sm"
+          className="flex items-center gap-2 bg-[#1A8A9E] hover:bg-[#1A8A9E] text-[#1A1915] font-semibold px-4 py-2 rounded-lg transition-colors text-sm"
         >
           {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
           {showForm ? 'Cancel' : 'Add Item'}
@@ -199,8 +199,8 @@ export default function StackPage() {
 
       {/* Add Form */}
       {showForm && (
-        <div className="bg-slate-800 border border-indigo-500/30 rounded-xl p-6">
-          <h2 className="text-base font-semibold text-white mb-5">Add New Item</h2>
+        <div className="bg-white border border-[#1A8A9E]/30 rounded-xl p-6">
+          <h2 className="text-base font-semibold text-[#1A1915] mb-5">Add New Item</h2>
           <form onSubmit={handleAdd} className="space-y-4">
             {formError && (
               <div className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg px-4 py-3 text-sm">
@@ -210,7 +210,7 @@ export default function StackPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div ref={nameRef} className="relative">
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-[#3A3730] mb-2">
                   Name <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -227,12 +227,12 @@ export default function StackPage() {
                   autoComplete="off"
                 />
                 {showSuggestions && (
-                  <ul className="absolute z-50 mt-1 w-full bg-slate-800 border border-slate-600 rounded-lg shadow-xl max-h-52 overflow-y-auto">
+                  <ul className="absolute z-50 mt-1 w-full bg-white border border-[#D0CCC6] rounded-lg shadow-xl max-h-52 overflow-y-auto">
                     {suggestions.map((s) => (
                       <li
                         key={s}
                         onMouseDown={() => selectSuggestion(s)}
-                        className="px-4 py-2.5 text-sm text-slate-200 hover:bg-indigo-600/40 cursor-pointer transition-colors"
+                        className="px-4 py-2.5 text-sm text-[#3A3730] hover:bg-[#1A8A9E]/40 cursor-pointer transition-colors"
                       >
                         {s}
                       </li>
@@ -242,7 +242,7 @@ export default function StackPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Type</label>
+                <label className="block text-sm font-medium text-[#3A3730] mb-2">Type</label>
                 <div className="relative">
                   <select
                     value={form.type}
@@ -253,12 +253,12 @@ export default function StackPage() {
                     <option value="medication">Medication</option>
                     <option value="supplement">Supplement</option>
                   </select>
-                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B0AAA0] pointer-events-none" />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Dose</label>
+                <label className="block text-sm font-medium text-[#3A3730] mb-2">Dose</label>
                 <input
                   type="text"
                   value={form.dose}
@@ -268,7 +268,7 @@ export default function StackPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Unit</label>
+                <label className="block text-sm font-medium text-[#3A3730] mb-2">Unit</label>
                 <div className="relative">
                   <select
                     value={form.unit}
@@ -282,13 +282,13 @@ export default function StackPage() {
                     <option value="nmol">nmol</option>
                     <option value="units">units</option>
                   </select>
-                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B0AAA0] pointer-events-none" />
                 </div>
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Notes</label>
+              <label className="block text-sm font-medium text-[#3A3730] mb-2">Notes</label>
               <textarea
                 value={form.notes}
                 onChange={(e) => setForm({ ...form, notes: e.target.value })}
@@ -302,7 +302,7 @@ export default function StackPage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors text-sm"
+                className="flex items-center gap-2 bg-[#1A8A9E] hover:bg-[#1A8A9E] disabled:opacity-50 text-[#1A1915] font-semibold px-5 py-2.5 rounded-lg transition-colors text-sm"
               >
                 {saving ? (
                   <>
@@ -323,7 +323,7 @@ export default function StackPage() {
                   setForm(EMPTY_FORM)
                   setFormError('')
                 }}
-                className="text-slate-400 hover:text-white px-4 py-2.5 rounded-lg hover:bg-slate-700 transition-colors text-sm"
+                className="text-[#B0AAA0] hover:text-[#1A1915] px-4 py-2.5 rounded-lg hover:bg-[#F2F0ED] transition-colors text-sm"
               >
                 Cancel
               </button>
@@ -335,20 +335,20 @@ export default function StackPage() {
       {/* Loading */}
       {loading ? (
         <div className="flex items-center justify-center py-16">
-          <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
+          <Loader2 className="w-8 h-8 text-[#1A8A9E] animate-spin" />
         </div>
       ) : items.length === 0 ? (
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-12 text-center">
-          <FlaskConical className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-          <p className="text-slate-400 mb-2">Your stack is empty</p>
-          <p className="text-slate-500 text-sm">Add your first peptide, medication, or supplement above.</p>
+        <div className="bg-white border border-[#E8E5E0] rounded-xl p-12 text-center">
+          <FlaskConical className="w-12 h-12 text-[#B0AAA0] mx-auto mb-3" />
+          <p className="text-[#B0AAA0] mb-2">Your stack is empty</p>
+          <p className="text-[#B0AAA0] text-sm">Add your first peptide, medication, or supplement above.</p>
         </div>
       ) : (
         <div className="space-y-6">
           {/* Active Items */}
           {activeItems.length > 0 && (
             <div>
-              <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">
+              <h2 className="text-sm font-semibold text-[#B0AAA0] uppercase tracking-wider mb-3">
                 Active ({activeItems.length})
               </h2>
               <div className="space-y-3">
@@ -369,7 +369,7 @@ export default function StackPage() {
           {/* Inactive Items */}
           {inactiveItems.length > 0 && (
             <div>
-              <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">
+              <h2 className="text-sm font-semibold text-[#B0AAA0] uppercase tracking-wider mb-3">
                 Inactive ({inactiveItems.length})
               </h2>
               <div className="space-y-3 opacity-60">
@@ -409,30 +409,30 @@ function StackCard({
   const Icon = typeCfg.icon
 
   return (
-    <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 flex items-start gap-4">
-      <div className="bg-slate-900/50 p-2 rounded-lg mt-0.5">
-        <Icon className="w-5 h-5 text-slate-400" />
+    <div className="bg-white border border-[#E8E5E0] rounded-xl p-4 flex items-start gap-4">
+      <div className="bg-[#F2F0ED] p-2 rounded-lg mt-0.5">
+        <Icon className="w-5 h-5 text-[#B0AAA0]" />
       </div>
 
       <div className="flex-1 min-w-0">
         <div className="flex flex-wrap items-center gap-2 mb-1">
-          <span className="text-white font-medium">{item.name}</span>
+          <span className="text-[#1A1915] font-medium">{item.name}</span>
           <span className={`text-xs px-2 py-0.5 rounded-full border ${typeCfg.color}`}>
             {typeCfg.label}
           </span>
           {!item.active && (
-            <span className="text-xs px-2 py-0.5 rounded-full bg-slate-700 text-slate-400">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-[#F2F0ED] text-[#B0AAA0]">
               Inactive
             </span>
           )}
         </div>
         {(item.dose || item.unit) && (
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-[#B0AAA0]">
             {item.dose} {item.unit}
           </p>
         )}
         {item.notes && (
-          <p className="text-xs text-slate-500 mt-1 truncate">{item.notes}</p>
+          <p className="text-xs text-[#B0AAA0] mt-1 truncate">{item.notes}</p>
         )}
       </div>
 
@@ -443,7 +443,7 @@ function StackCard({
           disabled={toggling}
           title={item.active ? 'Deactivate' : 'Activate'}
           className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-            item.active ? 'bg-indigo-600' : 'bg-slate-600'
+            item.active ? 'bg-[#1A8A9E]' : 'bg-[#E8E5E0]'
           } ${toggling ? 'opacity-50' : ''}`}
         >
           <span
@@ -457,7 +457,7 @@ function StackCard({
         <button
           onClick={() => onDelete(item.id)}
           disabled={deleting}
-          className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
+          className="p-1.5 text-[#B0AAA0] hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
           title="Delete"
         >
           {deleting ? (

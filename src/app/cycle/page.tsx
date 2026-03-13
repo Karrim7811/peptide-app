@@ -93,13 +93,13 @@ function PeptideChip({
   onRemove?: () => void
 }) {
   return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#1A8A9E]/12 text-[#1A8A9E] border border-[#1A8A9E]/30">
       {name}
       {onRemove && (
         <button
           type="button"
           onClick={onRemove}
-          className="hover:text-white transition-colors"
+          className="hover:text-[#1A1915] transition-colors"
           aria-label={`Remove ${name}`}
         >
           <X className="w-3 h-3" />
@@ -110,9 +110,9 @@ function PeptideChip({
 }
 
 function PhaseBar({ pct, phase }: { pct: number; phase: 'ON' | 'OFF' }) {
-  const color = phase === 'ON' ? 'bg-indigo-500' : 'bg-amber-500'
+  const color = phase === 'ON' ? 'bg-[#1A8A9E]' : 'bg-amber-500'
   return (
-    <div className="w-full bg-slate-700 rounded-full h-1.5 overflow-hidden">
+    <div className="w-full bg-[#F2F0ED] rounded-full h-1.5 overflow-hidden">
       <div
         className={`h-full rounded-full transition-all ${color}`}
         style={{ width: `${pct}%` }}
@@ -136,18 +136,18 @@ function ActiveCycleCard({
   const phaseBadgeClass = isOn
     ? 'bg-green-500/20 text-green-300 border-green-500/40'
     : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-  const borderClass = isOn ? 'border-indigo-500/30' : 'border-amber-500/30'
+  const borderClass = isOn ? 'border-[#1A8A9E]/30' : 'border-amber-500/30'
   const gradientClass = isOn
-    ? 'from-indigo-500/10 to-transparent'
+    ? 'from-[#1A8A9E]/8 to-transparent'
     : 'from-amber-500/10 to-transparent'
 
   return (
-    <div className={`bg-slate-800 border rounded-2xl overflow-hidden ${borderClass}`}>
+    <div className={`bg-white border rounded-2xl overflow-hidden ${borderClass}`}>
       {/* Card header */}
-      <div className={`px-5 py-4 border-b border-slate-700 bg-gradient-to-r ${gradientClass}`}>
+      <div className={`px-5 py-4 border-b border-[#E8E5E0] bg-gradient-to-r ${gradientClass}`}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h3 className="text-lg font-bold text-white leading-tight truncate">{cycle.name}</h3>
+            <h3 className="text-lg font-bold text-[#1A1915] leading-tight truncate">{cycle.name}</h3>
             {cycle.peptide_names.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mt-2">
                 {cycle.peptide_names.map((p) => (
@@ -170,15 +170,15 @@ function ActiveCycleCard({
       {/* Progress section */}
       <div className="px-5 py-4 space-y-3">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-slate-400">
+          <span className="text-[#B0AAA0]">
             Day {phase.daysElapsedInPhase + 1} of {phase.totalPhaseDays}
           </span>
-          <span className={`font-semibold ${isOn ? 'text-indigo-300' : 'text-amber-300'}`}>
+          <span className={`font-semibold ${isOn ? 'text-[#1A8A9E]' : 'text-amber-300'}`}>
             {phase.daysRemaining} day{phase.daysRemaining !== 1 ? 's' : ''} remaining
           </span>
         </div>
         <PhaseBar pct={phase.progressPct} phase={phase.phase} />
-        <div className="flex items-center gap-4 text-xs text-slate-500">
+        <div className="flex items-center gap-4 text-xs text-[#B0AAA0]">
           <span className="flex items-center gap-1">
             <Clock className="w-3 h-3" />
             ON: {cycle.on_weeks}w &nbsp;·&nbsp; OFF: {cycle.off_weeks}w
@@ -193,7 +193,7 @@ function ActiveCycleCard({
       {/* Notes */}
       {cycle.notes && (
         <div className="px-5 pb-3">
-          <p className="text-xs text-slate-500 leading-relaxed">{cycle.notes}</p>
+          <p className="text-xs text-[#B0AAA0] leading-relaxed">{cycle.notes}</p>
         </div>
       )}
 
@@ -202,7 +202,7 @@ function ActiveCycleCard({
         <button
           onClick={() => onComplete(cycle.id)}
           disabled={completing}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-slate-300 hover:text-white text-sm font-medium transition-colors border border-slate-600"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#F2F0ED] hover:bg-[#E8E5E0] disabled:opacity-50 disabled:cursor-not-allowed text-[#3A3730] hover:text-[#1A1915] text-sm font-medium transition-colors border border-[#D0CCC6]"
         >
           {completing ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -372,18 +372,18 @@ export default function CyclePage() {
       <div className="flex items-center gap-4">
         <button
           onClick={() => router.back()}
-          className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 text-slate-400 hover:text-white hover:border-slate-600 transition-colors shrink-0"
+          className="flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-[#E8E5E0] text-[#B0AAA0] hover:text-[#1A1915] hover:border-[#D0CCC6] transition-colors shrink-0"
           aria-label="Go back"
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center shrink-0">
-            <Layers className="w-5 h-5 text-indigo-400" />
+          <div className="w-10 h-10 rounded-xl bg-[#1A8A9E]/12 flex items-center justify-center shrink-0">
+            <Layers className="w-5 h-5 text-[#1A8A9E]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white leading-tight">Cycle Tracker</h1>
-            <p className="text-slate-400 text-sm">Track your ON / OFF peptide cycles</p>
+            <h1 className="text-2xl font-bold text-[#1A1915] leading-tight">Cycle Tracker</h1>
+            <p className="text-[#B0AAA0] text-sm">Track your ON / OFF peptide cycles</p>
           </div>
         </div>
 
@@ -393,7 +393,7 @@ export default function CyclePage() {
             setShowForm((v) => !v)
             if (!showForm) resetForm()
           }}
-          className="ml-auto flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold transition-colors shrink-0"
+          className="ml-auto flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1A8A9E] hover:bg-[#1A8A9E] text-[#1A1915] text-sm font-semibold transition-colors shrink-0"
         >
           {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
           {showForm ? 'Cancel' : 'New Cycle'}
@@ -409,16 +409,16 @@ export default function CyclePage() {
 
       {/* ── Add New Cycle Form ──────────────────────────────────────────────── */}
       {showForm && (
-        <section className="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
-          <div className="flex items-center gap-2 px-6 py-4 border-b border-slate-700 bg-gradient-to-r from-indigo-500/10 to-transparent">
-            <Plus className="w-4 h-4 text-indigo-400" />
-            <h2 className="text-base font-semibold text-white">Add New Cycle</h2>
+        <section className="bg-white border border-[#E8E5E0] rounded-2xl overflow-hidden">
+          <div className="flex items-center gap-2 px-6 py-4 border-b border-[#E8E5E0] bg-gradient-to-r from-[#1A8A9E]/8 to-transparent">
+            <Plus className="w-4 h-4 text-[#1A8A9E]" />
+            <h2 className="text-base font-semibold text-[#1A1915]">Add New Cycle</h2>
           </div>
 
           <form onSubmit={handleSaveCycle} className="p-6 space-y-5">
             {/* Name */}
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-[#B0AAA0] uppercase tracking-wider mb-2">
                 Cycle Name <span className="text-red-400">*</span>
               </label>
               <input
@@ -426,16 +426,16 @@ export default function CyclePage() {
                 value={formName}
                 onChange={(e) => setFormName(e.target.value)}
                 placeholder="e.g. BPC-157 Healing Protocol"
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors text-sm"
+                className="w-full bg-[#FAFAF8] border border-[#E8E5E0] rounded-lg px-4 py-2.5 text-[#1A1915] placeholder-[#B0AAA0] focus:outline-none focus:border-[#1A8A9E] focus:ring-1 focus:ring-[#1A8A9E] transition-colors text-sm"
               />
             </div>
 
             {/* Peptides multi-tag input */}
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-[#B0AAA0] uppercase tracking-wider mb-2">
                 Peptides
               </label>
-              <div className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 transition-colors min-h-[44px] flex flex-wrap gap-2 items-center">
+              <div className="bg-[#FAFAF8] border border-[#E8E5E0] rounded-lg px-3 py-2 focus-within:border-[#1A8A9E] focus-within:ring-1 focus-within:ring-[#1A8A9E] transition-colors min-h-[44px] flex flex-wrap gap-2 items-center">
                 {formPeptides.map((p) => (
                   <PeptideChip key={p} name={p} onRemove={() => removePeptide(p)} />
                 ))}
@@ -445,16 +445,16 @@ export default function CyclePage() {
                   onChange={(e) => setFormPeptideInput(e.target.value)}
                   onKeyDown={handlePeptideKeyDown}
                   placeholder={formPeptides.length === 0 ? 'Type name + Enter to add…' : ''}
-                  className="flex-1 min-w-[120px] bg-transparent text-sm text-white placeholder-slate-600 focus:outline-none"
+                  className="flex-1 min-w-[120px] bg-transparent text-sm text-[#1A1915] placeholder-[#B0AAA0] focus:outline-none"
                 />
               </div>
-              <p className="text-xs text-slate-600 mt-1">Press Enter or comma to add each peptide</p>
+              <p className="text-xs text-[#B0AAA0] mt-1">Press Enter or comma to add each peptide</p>
             </div>
 
             {/* Duration */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold text-[#B0AAA0] uppercase tracking-wider mb-2">
                   ON Duration (weeks)
                 </label>
                 <input
@@ -462,11 +462,11 @@ export default function CyclePage() {
                   min="1"
                   value={formOnWeeks}
                   onChange={(e) => setFormOnWeeks(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors text-sm"
+                  className="w-full bg-[#FAFAF8] border border-[#E8E5E0] rounded-lg px-4 py-2.5 text-[#1A1915] focus:outline-none focus:border-[#1A8A9E] focus:ring-1 focus:ring-[#1A8A9E] transition-colors text-sm"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold text-[#B0AAA0] uppercase tracking-wider mb-2">
                   OFF Duration (weeks)
                 </label>
                 <input
@@ -474,7 +474,7 @@ export default function CyclePage() {
                   min="1"
                   value={formOffWeeks}
                   onChange={(e) => setFormOffWeeks(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors text-sm"
+                  className="w-full bg-[#FAFAF8] border border-[#E8E5E0] rounded-lg px-4 py-2.5 text-[#1A1915] focus:outline-none focus:border-[#1A8A9E] focus:ring-1 focus:ring-[#1A8A9E] transition-colors text-sm"
                 />
               </div>
             </div>
@@ -482,28 +482,28 @@ export default function CyclePage() {
             {/* Start date + current status */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold text-[#B0AAA0] uppercase tracking-wider mb-2">
                   Start Date
                 </label>
                 <input
                   type="date"
                   value={formStartDate}
                   onChange={(e) => setFormStartDate(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors text-sm [color-scheme:dark]"
+                  className="w-full bg-[#FAFAF8] border border-[#E8E5E0] rounded-lg px-4 py-2.5 text-[#1A1915] focus:outline-none focus:border-[#1A8A9E] focus:ring-1 focus:ring-[#1A8A9E] transition-colors text-sm [color-scheme:dark]"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold text-[#B0AAA0] uppercase tracking-wider mb-2">
                   Currently
                 </label>
-                <div className="flex rounded-lg overflow-hidden border border-slate-700 h-[42px]">
+                <div className="flex rounded-lg overflow-hidden border border-[#E8E5E0] h-[42px]">
                   <button
                     type="button"
                     onClick={() => setFormStatus('on')}
                     className={`flex-1 text-sm font-semibold transition-colors ${
                       formStatus === 'on'
-                        ? 'bg-green-600 text-white'
-                        : 'bg-slate-900 text-slate-400 hover:text-white'
+                        ? 'bg-green-600 text-[#1A1915]'
+                        : 'bg-[#FAFAF8] text-[#B0AAA0] hover:text-[#1A1915]'
                     }`}
                   >
                     ON
@@ -513,8 +513,8 @@ export default function CyclePage() {
                     onClick={() => setFormStatus('off')}
                     className={`flex-1 text-sm font-semibold transition-colors ${
                       formStatus === 'off'
-                        ? 'bg-amber-600 text-white'
-                        : 'bg-slate-900 text-slate-400 hover:text-white'
+                        ? 'bg-amber-600 text-[#1A1915]'
+                        : 'bg-[#FAFAF8] text-[#B0AAA0] hover:text-[#1A1915]'
                     }`}
                   >
                     OFF
@@ -525,7 +525,7 @@ export default function CyclePage() {
 
             {/* Notes */}
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-[#B0AAA0] uppercase tracking-wider mb-2">
                 Notes
               </label>
               <textarea
@@ -533,7 +533,7 @@ export default function CyclePage() {
                 onChange={(e) => setFormNotes(e.target.value)}
                 placeholder="Optional notes about this cycle…"
                 rows={3}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors text-sm resize-none"
+                className="w-full bg-[#FAFAF8] border border-[#E8E5E0] rounded-lg px-4 py-2.5 text-[#1A1915] placeholder-[#B0AAA0] focus:outline-none focus:border-[#1A8A9E] focus:ring-1 focus:ring-[#1A8A9E] transition-colors text-sm resize-none"
               />
             </div>
 
@@ -544,7 +544,7 @@ export default function CyclePage() {
             <button
               type="submit"
               disabled={saving}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold transition-colors"
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#1A8A9E] hover:bg-[#1A8A9E] disabled:opacity-50 disabled:cursor-not-allowed text-[#1A1915] font-semibold transition-colors"
             >
               {saving ? (
                 <>
@@ -565,25 +565,25 @@ export default function CyclePage() {
       {/* ── Active Cycles ─────────────────────────────────────────────────────── */}
       <section className="space-y-4">
         <div className="flex items-center gap-2">
-          <Layers className="w-4 h-4 text-indigo-400" />
-          <h2 className="text-base font-semibold text-white">Active Cycles</h2>
+          <Layers className="w-4 h-4 text-[#1A8A9E]" />
+          <h2 className="text-base font-semibold text-[#1A1915]">Active Cycles</h2>
           {activeCycles.length > 0 && (
-            <span className="ml-1 text-xs bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full font-medium">
+            <span className="ml-1 text-xs bg-[#1A8A9E]/12 text-[#1A8A9E] border border-[#1A8A9E]/30 px-2 py-0.5 rounded-full font-medium">
               {activeCycles.length}
             </span>
           )}
         </div>
 
         {loading ? (
-          <div className="bg-slate-800 border border-slate-700 rounded-2xl p-12 flex flex-col items-center gap-3">
-            <Loader2 className="w-6 h-6 text-indigo-400 animate-spin" />
-            <p className="text-slate-500 text-sm">Loading cycles…</p>
+          <div className="bg-white border border-[#E8E5E0] rounded-2xl p-12 flex flex-col items-center gap-3">
+            <Loader2 className="w-6 h-6 text-[#1A8A9E] animate-spin" />
+            <p className="text-[#B0AAA0] text-sm">Loading cycles…</p>
           </div>
         ) : activeCycles.length === 0 ? (
-          <div className="bg-slate-800 border border-dashed border-slate-700 rounded-2xl p-12 text-center">
-            <Layers className="w-10 h-10 text-slate-700 mx-auto mb-3" />
-            <p className="text-slate-400 text-sm font-medium">No active cycles</p>
-            <p className="text-slate-600 text-xs mt-1">Add a new cycle to start tracking</p>
+          <div className="bg-white border border-dashed border-[#E8E5E0] rounded-2xl p-12 text-center">
+            <Layers className="w-10 h-10 text-[#3A3730] mx-auto mb-3" />
+            <p className="text-[#B0AAA0] text-sm font-medium">No active cycles</p>
+            <p className="text-[#B0AAA0] text-xs mt-1">Add a new cycle to start tracking</p>
           </div>
         ) : (
           activeCycles.map((cycle) => (
@@ -599,46 +599,46 @@ export default function CyclePage() {
 
       {/* ── Completed Cycles ──────────────────────────────────────────────────── */}
       {completedCycles.length > 0 && (
-        <section className="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
+        <section className="bg-white border border-[#E8E5E0] rounded-2xl overflow-hidden">
           <button
             onClick={() => setShowCompleted((v) => !v)}
-            className="w-full flex items-center justify-between px-6 py-4 hover:bg-slate-700/40 transition-colors"
+            className="w-full flex items-center justify-between px-6 py-4 hover:bg-[#F2F0ED]/40 transition-colors"
           >
-            <span className="flex items-center gap-2 text-sm font-semibold text-slate-300">
-              <Check className="w-4 h-4 text-slate-500" />
+            <span className="flex items-center gap-2 text-sm font-semibold text-[#3A3730]">
+              <Check className="w-4 h-4 text-[#B0AAA0]" />
               Completed Cycles
-              <span className="text-xs bg-slate-700 text-slate-400 border border-slate-600 px-2 py-0.5 rounded-full font-medium">
+              <span className="text-xs bg-[#F2F0ED] text-[#B0AAA0] border border-[#D0CCC6] px-2 py-0.5 rounded-full font-medium">
                 {completedCycles.length}
               </span>
             </span>
             {showCompleted ? (
-              <ChevronUp className="w-4 h-4 text-slate-500" />
+              <ChevronUp className="w-4 h-4 text-[#B0AAA0]" />
             ) : (
-              <ChevronDown className="w-4 h-4 text-slate-500" />
+              <ChevronDown className="w-4 h-4 text-[#B0AAA0]" />
             )}
           </button>
 
           {showCompleted && (
-            <div className="border-t border-slate-700 divide-y divide-slate-700/60">
+            <div className="border-t border-[#E8E5E0] divide-y divide-slate-700/60">
               {completedCycles.map((cycle) => (
                 <div key={cycle.id} className="px-6 py-4 flex items-start justify-between gap-4">
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-slate-300 truncate">{cycle.name}</p>
+                    <p className="text-sm font-semibold text-[#3A3730] truncate">{cycle.name}</p>
                     <div className="flex flex-wrap gap-1.5 mt-1.5">
                       {cycle.peptide_names.map((p) => (
                         <PeptideChip key={p} name={p} />
                       ))}
                     </div>
-                    <p className="text-xs text-slate-600 mt-1.5 flex items-center gap-1">
+                    <p className="text-xs text-[#B0AAA0] mt-1.5 flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
                       Started {new Date(cycle.start_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                       &nbsp;·&nbsp; {cycle.on_weeks}w ON / {cycle.off_weeks}w OFF
                     </p>
                     {cycle.notes && (
-                      <p className="text-xs text-slate-600 mt-1 leading-relaxed">{cycle.notes}</p>
+                      <p className="text-xs text-[#B0AAA0] mt-1 leading-relaxed">{cycle.notes}</p>
                     )}
                   </div>
-                  <span className="shrink-0 text-xs bg-slate-700 text-slate-400 border border-slate-600 px-2.5 py-1 rounded-full font-medium">
+                  <span className="shrink-0 text-xs bg-[#F2F0ED] text-[#B0AAA0] border border-[#D0CCC6] px-2.5 py-1 rounded-full font-medium">
                     Completed
                   </span>
                 </div>

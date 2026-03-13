@@ -68,12 +68,12 @@ export default function PricingPage() {
   const savings = Math.round((1 - 79.99 / (9.99 * 12)) * 100)
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-[#FAFAF8]">
       <div className="max-w-4xl mx-auto px-4 py-10">
         {/* Back */}
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-2 text-slate-400 hover:text-white text-sm mb-8 transition-colors"
+          className="inline-flex items-center gap-2 text-[#B0AAA0] hover:text-[#1A1915] text-sm mb-8 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to app
@@ -81,14 +81,14 @@ export default function PricingPage() {
 
         {/* Header */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 px-4 py-1.5 rounded-full text-sm font-medium mb-4">
+          <div className="inline-flex items-center gap-2 bg-[#1A8A9E]/12 border border-[#1A8A9E]/30 text-[#1A8A9E] px-4 py-1.5 rounded-full text-sm font-medium mb-4">
             <Zap className="w-3.5 h-3.5" />
             Simple, transparent pricing
           </div>
-          <h1 className="text-4xl font-bold text-white mb-3">
-            Upgrade to <span className="text-indigo-400">Pro</span>
+          <h1 className="text-4xl font-bold text-[#1A1915] mb-3">
+            Upgrade to <span className="text-[#1A8A9E]">Pro</span>
           </h1>
-          <p className="text-slate-400 text-lg max-w-xl mx-auto">
+          <p className="text-[#B0AAA0] text-lg max-w-xl mx-auto">
             The most comprehensive peptide tracking platform. Used by serious biohackers and researchers.
           </p>
         </div>
@@ -98,7 +98,7 @@ export default function PricingPage() {
           <button
             onClick={() => setBilling('monthly')}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              billing === 'monthly' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'
+              billing === 'monthly' ? 'bg-[#F2F0ED] text-[#1A1915]' : 'text-[#B0AAA0] hover:text-[#1A1915]'
             }`}
           >
             Monthly
@@ -106,7 +106,7 @@ export default function PricingPage() {
           <button
             onClick={() => setBilling('yearly')}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              billing === 'yearly' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'
+              billing === 'yearly' ? 'bg-[#F2F0ED] text-[#1A1915]' : 'text-[#B0AAA0] hover:text-[#1A1915]'
             }`}
           >
             Yearly
@@ -119,18 +119,18 @@ export default function PricingPage() {
         {/* Pricing cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           {/* Free */}
-          <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6">
+          <div className="bg-white border border-[#E8E5E0] rounded-2xl p-6">
             <div className="mb-5">
-              <h2 className="text-xl font-bold text-white mb-1">Free</h2>
-              <p className="text-slate-400 text-sm">Perfect for getting started</p>
+              <h2 className="text-xl font-bold text-[#1A1915] mb-1">Free</h2>
+              <p className="text-[#B0AAA0] text-sm">Perfect for getting started</p>
               <div className="mt-3">
-                <span className="text-4xl font-bold text-white">$0</span>
-                <span className="text-slate-400 text-sm ml-1">forever</span>
+                <span className="text-4xl font-bold text-[#1A1915]">$0</span>
+                <span className="text-[#B0AAA0] text-sm ml-1">forever</span>
               </div>
             </div>
             <Link
               href="/dashboard"
-              className="block w-full text-center bg-slate-700 hover:bg-slate-600 text-white py-2.5 rounded-xl text-sm font-medium transition-colors mb-5"
+              className="block w-full text-center bg-[#F2F0ED] hover:bg-[#E8E5E0] text-[#1A1915] py-2.5 rounded-xl text-sm font-medium transition-colors mb-5"
             >
               Current plan
             </Link>
@@ -139,9 +139,9 @@ export default function PricingPage() {
                 <li key={f.label} className="flex items-center gap-2.5">
                   {f.included
                     ? <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                    : <XCircle className="w-4 h-4 text-slate-600 shrink-0" />
+                    : <XCircle className="w-4 h-4 text-[#B0AAA0] shrink-0" />
                   }
-                  <span className={`text-sm ${f.included ? 'text-slate-300' : 'text-slate-500'}`}>
+                  <span className={`text-sm ${f.included ? 'text-[#3A3730]' : 'text-[#B0AAA0]'}`}>
                     {f.label}
                   </span>
                 </li>
@@ -150,22 +150,22 @@ export default function PricingPage() {
           </div>
 
           {/* Pro */}
-          <div className="bg-gradient-to-b from-indigo-900/50 to-slate-800 border-2 border-indigo-500/50 rounded-2xl p-6 relative">
+          <div className="bg-gradient-to-b from-indigo-900/50 to-slate-800 border-2 border-[#1A8A9E]/50 rounded-2xl p-6 relative">
             <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-              <span className="bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+              <span className="bg-[#1A8A9E] text-[#1A1915] text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
                 <Star className="w-3 h-3" /> MOST POPULAR
               </span>
             </div>
             <div className="mb-5">
-              <h2 className="text-xl font-bold text-white mb-1">Pro</h2>
-              <p className="text-slate-400 text-sm">For serious peptide users</p>
+              <h2 className="text-xl font-bold text-[#1A1915] mb-1">Pro</h2>
+              <p className="text-[#B0AAA0] text-sm">For serious peptide users</p>
               <div className="mt-3 flex items-end gap-1">
-                <span className="text-4xl font-bold text-white">
+                <span className="text-4xl font-bold text-[#1A1915]">
                   ${monthlyPrice.toFixed(2)}
                 </span>
-                <span className="text-slate-400 text-sm mb-1">/mo</span>
+                <span className="text-[#B0AAA0] text-sm mb-1">/mo</span>
                 {billing === 'yearly' && (
-                  <span className="text-slate-500 text-xs mb-1 ml-1">
+                  <span className="text-[#B0AAA0] text-xs mb-1 ml-1">
                     (${yearlyTotal}/yr)
                   </span>
                 )}
@@ -174,7 +174,7 @@ export default function PricingPage() {
             <button
               onClick={handleUpgrade}
               disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-70 text-white py-2.5 rounded-xl text-sm font-semibold transition-colors mb-5 flex items-center justify-center gap-2"
+              className="w-full bg-[#1A8A9E] hover:bg-[#1A8A9E] disabled:opacity-70 text-[#1A1915] py-2.5 rounded-xl text-sm font-semibold transition-colors mb-5 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
@@ -185,8 +185,8 @@ export default function PricingPage() {
             <ul className="space-y-2.5">
               {PRO_FEATURES.map((f) => (
                 <li key={f.label} className="flex items-center gap-2.5">
-                  <CheckCircle2 className={`w-4 h-4 shrink-0 ${f.highlight ? 'text-indigo-400' : 'text-emerald-400'}`} />
-                  <span className={`text-sm ${f.highlight ? 'text-indigo-300 font-medium' : 'text-slate-300'}`}>
+                  <CheckCircle2 className={`w-4 h-4 shrink-0 ${f.highlight ? 'text-[#1A8A9E]' : 'text-emerald-400'}`} />
+                  <span className={`text-sm ${f.highlight ? 'text-[#1A8A9E] font-medium' : 'text-[#3A3730]'}`}>
                     {f.label}
                   </span>
                 </li>
@@ -198,7 +198,7 @@ export default function PricingPage() {
         {/* Feature highlights */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           {[
-            { icon: <Bot className="w-5 h-5 text-indigo-400" />, title: 'PeptideAI', desc: 'Unlimited AI chat with full protocol knowledge' },
+            { icon: <Bot className="w-5 h-5 text-[#1A8A9E]" />, title: 'PeptideAI', desc: 'Unlimited AI chat with full protocol knowledge' },
             { icon: <Shield className="w-5 h-5 text-emerald-400" />, title: 'Interaction Checker', desc: 'Unlimited safety checks, powered by Claude AI' },
             { icon: <Library className="w-5 h-5 text-blue-400" />, title: 'Peptide Bible', desc: '58 peptides with CV ratings and drug interactions' },
             { icon: <Bell className="w-5 h-5 text-yellow-400" />, title: 'Smart Reminders', desc: 'Unlimited reminders for every compound in your stack' },
@@ -207,17 +207,17 @@ export default function PricingPage() {
             { icon: <Package className="w-5 h-5 text-pink-400" />, title: 'Fridge Inventory', desc: 'Know exactly what you have and when it expires' },
             { icon: <Star className="w-5 h-5 text-yellow-400" />, title: 'Always improving', desc: 'New features ship to Pro users first' },
           ].map((item) => (
-            <div key={item.title} className="bg-slate-800/60 border border-slate-700 rounded-xl p-4">
+            <div key={item.title} className="bg-[#F2F0ED] border border-[#E8E5E0] rounded-xl p-4">
               <div className="mb-2">{item.icon}</div>
-              <p className="text-white text-sm font-semibold mb-1">{item.title}</p>
-              <p className="text-slate-400 text-xs">{item.desc}</p>
+              <p className="text-[#1A1915] text-sm font-semibold mb-1">{item.title}</p>
+              <p className="text-[#B0AAA0] text-xs">{item.desc}</p>
             </div>
           ))}
         </div>
 
         {/* FAQ */}
-        <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6 mb-8">
-          <h3 className="text-white font-bold text-lg mb-4">Frequently asked questions</h3>
+        <div className="bg-white border border-[#E8E5E0] rounded-2xl p-6 mb-8">
+          <h3 className="text-[#1A1915] font-bold text-lg mb-4">Frequently asked questions</h3>
           <div className="space-y-4">
             {[
               { q: 'Can I cancel anytime?', a: 'Yes. Cancel from your account settings and you keep Pro access until the end of your billing period. No questions asked.' },
@@ -226,18 +226,18 @@ export default function PricingPage() {
               { q: 'Is there a student or discount option?', a: 'Reach out at support@peptidetracker.app for special cases. We want to support the research community.' },
             ].map((item) => (
               <div key={item.q}>
-                <p className="text-white font-medium text-sm mb-1">{item.q}</p>
-                <p className="text-slate-400 text-sm">{item.a}</p>
+                <p className="text-[#1A1915] font-medium text-sm mb-1">{item.q}</p>
+                <p className="text-[#B0AAA0] text-sm">{item.a}</p>
               </div>
             ))}
           </div>
         </div>
 
-        <p className="text-center text-slate-500 text-xs">
+        <p className="text-center text-[#B0AAA0] text-xs">
           By upgrading, you agree to our{' '}
-          <Link href="/terms" className="text-indigo-400 hover:underline">Terms of Service</Link>
+          <Link href="/terms" className="text-[#1A8A9E] hover:underline">Terms of Service</Link>
           {' '}and{' '}
-          <Link href="/privacy" className="text-indigo-400 hover:underline">Privacy Policy</Link>.
+          <Link href="/privacy" className="text-[#1A8A9E] hover:underline">Privacy Policy</Link>.
           Payments processed securely by Stripe.
         </p>
       </div>

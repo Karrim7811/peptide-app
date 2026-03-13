@@ -69,20 +69,20 @@ export default function SignupPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center px-4">
         <div className="w-full max-w-md text-center">
-          <div className="bg-slate-800 border border-slate-700 rounded-2xl p-8">
+          <div className="bg-white border border-[#E8E5E0] rounded-2xl p-8">
             <div className="flex justify-center mb-4">
               <CheckCircle className="w-16 h-16 text-green-400" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-3">Check your email</h2>
-            <p className="text-slate-400 mb-6">
-              We sent a confirmation link to <span className="text-indigo-400">{email}</span>.
+            <h2 className="text-2xl font-bold text-[#1A1915] mb-3">Check your email</h2>
+            <p className="text-[#B0AAA0] mb-6">
+              We sent a confirmation link to <span className="text-[#1A8A9E]">{email}</span>.
               Click the link to activate your account.
             </p>
             <Link
               href="/login"
-              className="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+              className="inline-block bg-[#1A8A9E] hover:bg-[#1A8A9E] text-[#1A1915] font-semibold px-6 py-3 rounded-lg transition-colors"
             >
               Back to Sign In
             </Link>
@@ -93,21 +93,21 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center bg-indigo-500/20 p-3 rounded-2xl mb-4">
-            <FlaskConical className="w-8 h-8 text-indigo-400" />
+          <div className="inline-flex items-center justify-center bg-[#1A8A9E]/12 p-3 rounded-2xl mb-4">
+            <FlaskConical className="w-8 h-8 text-[#1A8A9E]" />
           </div>
-          <h1 className="text-3xl font-bold text-white">
-            Peptide<span className="text-indigo-400">Tracker</span>
+          <h1 className="text-3xl font-bold text-[#1A1915]">
+            Peptide<span className="text-[#1A8A9E]">Tracker</span>
           </h1>
-          <p className="text-slate-400 mt-2">Create your account</p>
+          <p className="text-[#B0AAA0] mt-2">Create your account</p>
         </div>
 
         {/* Card */}
-        <div className="bg-slate-800 border border-slate-700 rounded-2xl p-8">
+        <div className="bg-white border border-[#E8E5E0] rounded-2xl p-8">
           <form onSubmit={handleSignup} className="space-y-5">
             {error && (
               <div className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg px-4 py-3 text-sm">
@@ -116,7 +116,7 @@ export default function SignupPage() {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-[#3A3730] mb-2">
                 Email
               </label>
               <input
@@ -130,7 +130,7 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-[#3A3730] mb-2">
                 Password
               </label>
               <div className="relative">
@@ -146,7 +146,7 @@ export default function SignupPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#B0AAA0] hover:text-[#3A3730]"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -154,7 +154,7 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-[#3A3730] mb-2">
                 Confirm Password
               </label>
               <div className="relative">
@@ -170,7 +170,7 @@ export default function SignupPage() {
                 <button
                   type="button"
                   onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#B0AAA0] hover:text-[#3A3730]"
                 >
                   {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -180,7 +180,7 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+              className="w-full bg-[#1A8A9E] hover:bg-[#1A8A9E] disabled:opacity-50 disabled:cursor-not-allowed text-[#1A1915] font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -193,13 +193,13 @@ export default function SignupPage() {
             </button>
           </form>
 
-          <p className="mt-4 text-xs text-slate-500 text-center">
+          <p className="mt-4 text-xs text-[#B0AAA0] text-center">
             Limited to 20 users during beta.
           </p>
 
-          <div className="mt-5 text-center text-sm text-slate-400">
+          <div className="mt-5 text-center text-sm text-[#B0AAA0]">
             Already have an account?{' '}
-            <Link href="/login" className="text-indigo-400 hover:text-indigo-300 font-medium">
+            <Link href="/login" className="text-[#1A8A9E] hover:text-[#1A8A9E] font-medium">
               Sign in
             </Link>
           </div>

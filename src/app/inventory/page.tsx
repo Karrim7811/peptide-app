@@ -46,7 +46,7 @@ const EMPTY_FORM = {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function getExpiryColor(expiryDate: string | null): string {
-  if (!expiryDate) return 'text-slate-500'
+  if (!expiryDate) return 'text-[#B0AAA0]'
   const now = Date.now()
   const exp = new Date(expiryDate).getTime()
   const diffDays = (exp - now) / 86_400_000
@@ -290,17 +290,17 @@ export default function InventoryPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.back()}
-            className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
+            className="p-1.5 text-[#B0AAA0] hover:text-[#1A1915] hover:bg-[#F2F0ED] rounded-lg transition-colors"
             title="Go back"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-              <Refrigerator className="w-6 h-6 text-indigo-400" />
+            <h1 className="text-2xl font-bold text-[#1A1915] flex items-center gap-2">
+              <Refrigerator className="w-6 h-6 text-[#1A8A9E]" />
               Fridge Inventory
             </h1>
-            <p className="text-slate-400 mt-1">Track your peptide vials and stock levels.</p>
+            <p className="text-[#B0AAA0] mt-1">Track your peptide vials and stock levels.</p>
           </div>
         </div>
 
@@ -309,7 +309,7 @@ export default function InventoryPage() {
             setShowAddForm(!showAddForm)
             setFormError('')
           }}
-          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg transition-colors text-sm"
+          className="flex items-center gap-2 bg-[#1A8A9E] hover:bg-[#1A8A9E] text-[#1A1915] font-semibold px-4 py-2 rounded-lg transition-colors text-sm"
         >
           {showAddForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
           {showAddForm ? 'Cancel' : 'Add Vial'}
@@ -319,29 +319,29 @@ export default function InventoryPage() {
       {/* ── Summary Banner ── */}
       {!loading && (
         <div className="grid grid-cols-3 gap-3">
-          <div className="bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-center">
-            <p className="text-2xl font-bold text-white">{items.length}</p>
-            <p className="text-xs text-slate-400 mt-0.5">vials in fridge</p>
+          <div className="bg-white border border-[#E8E5E0] rounded-xl px-4 py-3 text-center">
+            <p className="text-2xl font-bold text-[#1A1915]">{items.length}</p>
+            <p className="text-xs text-[#B0AAA0] mt-0.5">vials in fridge</p>
           </div>
-          <div className="bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-center">
-            <p className={`text-2xl font-bold ${expiringSoonCount > 0 ? 'text-amber-400' : 'text-white'}`}>
+          <div className="bg-white border border-[#E8E5E0] rounded-xl px-4 py-3 text-center">
+            <p className={`text-2xl font-bold ${expiringSoonCount > 0 ? 'text-amber-400' : 'text-[#1A1915]'}`}>
               {expiringSoonCount}
             </p>
-            <p className="text-xs text-slate-400 mt-0.5">expiring soon</p>
+            <p className="text-xs text-[#B0AAA0] mt-0.5">expiring soon</p>
           </div>
-          <div className="bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-center">
-            <p className={`text-2xl font-bold ${lowStockCount > 0 ? 'text-red-400' : 'text-white'}`}>
+          <div className="bg-white border border-[#E8E5E0] rounded-xl px-4 py-3 text-center">
+            <p className={`text-2xl font-bold ${lowStockCount > 0 ? 'text-red-400' : 'text-[#1A1915]'}`}>
               {lowStockCount}
             </p>
-            <p className="text-xs text-slate-400 mt-0.5">low stock</p>
+            <p className="text-xs text-[#B0AAA0] mt-0.5">low stock</p>
           </div>
         </div>
       )}
 
       {/* ── Add Vial Form ── */}
       {showAddForm && (
-        <div className="bg-slate-800 border border-indigo-500/30 rounded-xl p-6">
-          <h2 className="text-base font-semibold text-white mb-5">Add New Vial</h2>
+        <div className="bg-white border border-[#1A8A9E]/30 rounded-xl p-6">
+          <h2 className="text-base font-semibold text-[#1A1915] mb-5">Add New Vial</h2>
           <form onSubmit={handleAdd} className="space-y-4">
             {formError && (
               <div className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg px-4 py-3 text-sm">
@@ -352,7 +352,7 @@ export default function InventoryPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Name with autocomplete */}
               <div ref={nameRef} className="relative">
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-[#3A3730] mb-2">
                   Name <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -367,15 +367,15 @@ export default function InventoryPage() {
                   placeholder="e.g. BPC-157"
                   autoComplete="off"
                   required
-                  className="w-full bg-slate-900 border border-slate-600 text-white rounded-lg px-3 py-2.5 text-sm placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full bg-[#FAFAF8] border border-[#D0CCC6] text-[#1A1915] rounded-lg px-3 py-2.5 text-sm placeholder-[#B0AAA0] focus:outline-none focus:ring-1 focus:ring-[#1A8A9E] focus:border-[#1A8A9E]"
                 />
                 {showSuggestions && (
-                  <ul className="absolute z-50 mt-1 w-full bg-slate-800 border border-slate-600 rounded-lg shadow-xl max-h-52 overflow-y-auto">
+                  <ul className="absolute z-50 mt-1 w-full bg-white border border-[#D0CCC6] rounded-lg shadow-xl max-h-52 overflow-y-auto">
                     {suggestions.map((s) => (
                       <li
                         key={s}
                         onMouseDown={() => selectSuggestion(s)}
-                        className="px-4 py-2.5 text-sm text-slate-200 hover:bg-indigo-600/40 cursor-pointer transition-colors"
+                        className="px-4 py-2.5 text-sm text-[#3A3730] hover:bg-[#1A8A9E]/40 cursor-pointer transition-colors"
                       >
                         {s}
                       </li>
@@ -386,23 +386,23 @@ export default function InventoryPage() {
 
               {/* Unit */}
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Unit</label>
+                <label className="block text-sm font-medium text-[#3A3730] mb-2">Unit</label>
                 <div className="relative">
                   <select
                     value={form.unit}
                     onChange={(e) => setForm((f) => ({ ...f, unit: e.target.value }))}
-                    className="w-full appearance-none bg-slate-900 border border-slate-600 text-white rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 pr-8"
+                    className="w-full appearance-none bg-[#FAFAF8] border border-[#D0CCC6] text-[#1A1915] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#1A8A9E] focus:border-[#1A8A9E] pr-8"
                   >
                     <option value="mg">mg</option>
                     <option value="mcg">mcg</option>
                   </select>
-                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B0AAA0] pointer-events-none" />
                 </div>
               </div>
 
               {/* Vial size */}
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-[#3A3730] mb-2">
                   Vial Size ({form.unit}) <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -413,15 +413,15 @@ export default function InventoryPage() {
                   onChange={(e) => setForm((f) => ({ ...f, vial_size_mg: e.target.value }))}
                   placeholder="e.g. 5"
                   required
-                  className="w-full bg-slate-900 border border-slate-600 text-white rounded-lg px-3 py-2.5 text-sm placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full bg-[#FAFAF8] border border-[#D0CCC6] text-[#1A1915] rounded-lg px-3 py-2.5 text-sm placeholder-[#B0AAA0] focus:outline-none focus:ring-1 focus:ring-[#1A8A9E] focus:border-[#1A8A9E]"
                 />
               </div>
 
               {/* Quantity remaining */}
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-[#3A3730] mb-2">
                   Quantity Remaining ({form.unit}){' '}
-                  <span className="text-slate-500">(defaults to vial size)</span>
+                  <span className="text-[#B0AAA0]">(defaults to vial size)</span>
                 </label>
                 <input
                   type="number"
@@ -432,33 +432,33 @@ export default function InventoryPage() {
                     setForm((f) => ({ ...f, quantity_remaining: e.target.value }))
                   }
                   placeholder={form.vial_size_mg || 'same as vial size'}
-                  className="w-full bg-slate-900 border border-slate-600 text-white rounded-lg px-3 py-2.5 text-sm placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full bg-[#FAFAF8] border border-[#D0CCC6] text-[#1A1915] rounded-lg px-3 py-2.5 text-sm placeholder-[#B0AAA0] focus:outline-none focus:ring-1 focus:ring-[#1A8A9E] focus:border-[#1A8A9E]"
                 />
               </div>
 
               {/* Expiry date */}
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-[#3A3730] mb-2">
                   Expiry Date
                 </label>
                 <input
                   type="date"
                   value={form.expiry_date}
                   onChange={(e) => setForm((f) => ({ ...f, expiry_date: e.target.value }))}
-                  className="w-full bg-slate-900 border border-slate-600 text-white rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full bg-[#FAFAF8] border border-[#D0CCC6] text-[#1A1915] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#1A8A9E] focus:border-[#1A8A9E]"
                 />
               </div>
             </div>
 
             {/* Notes */}
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Notes</label>
+              <label className="block text-sm font-medium text-[#3A3730] mb-2">Notes</label>
               <textarea
                 value={form.notes}
                 onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
                 placeholder="Batch number, storage notes…"
                 rows={2}
-                className="w-full bg-slate-900 border border-slate-600 text-white rounded-lg px-3 py-2.5 text-sm placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
+                className="w-full bg-[#FAFAF8] border border-[#D0CCC6] text-[#1A1915] rounded-lg px-3 py-2.5 text-sm placeholder-[#B0AAA0] focus:outline-none focus:ring-1 focus:ring-[#1A8A9E] focus:border-[#1A8A9E] resize-none"
               />
             </div>
 
@@ -466,7 +466,7 @@ export default function InventoryPage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors text-sm"
+                className="flex items-center gap-2 bg-[#1A8A9E] hover:bg-[#1A8A9E] disabled:opacity-50 text-[#1A1915] font-semibold px-5 py-2.5 rounded-lg transition-colors text-sm"
               >
                 {saving ? (
                   <>
@@ -487,7 +487,7 @@ export default function InventoryPage() {
                   setForm(EMPTY_FORM)
                   setFormError('')
                 }}
-                className="text-slate-400 hover:text-white px-4 py-2.5 rounded-lg hover:bg-slate-700 transition-colors text-sm"
+                className="text-[#B0AAA0] hover:text-[#1A1915] px-4 py-2.5 rounded-lg hover:bg-[#F2F0ED] transition-colors text-sm"
               >
                 Cancel
               </button>
@@ -499,13 +499,13 @@ export default function InventoryPage() {
       {/* ── Inventory Cards ── */}
       {loading ? (
         <div className="flex items-center justify-center py-16">
-          <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
+          <Loader2 className="w-8 h-8 text-[#1A8A9E] animate-spin" />
         </div>
       ) : items.length === 0 ? (
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-12 text-center">
-          <Refrigerator className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-          <p className="text-slate-400 mb-2">Your fridge is empty</p>
-          <p className="text-slate-500 text-sm">Add your first vial using the button above.</p>
+        <div className="bg-white border border-[#E8E5E0] rounded-xl p-12 text-center">
+          <Refrigerator className="w-12 h-12 text-[#B0AAA0] mx-auto mb-3" />
+          <p className="text-[#B0AAA0] mb-2">Your fridge is empty</p>
+          <p className="text-[#B0AAA0] text-sm">Add your first vial using the button above.</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -521,19 +521,19 @@ export default function InventoryPage() {
             return (
               <div
                 key={item.id}
-                className={`bg-slate-800 border rounded-xl p-5 transition-all ${
-                  low ? 'border-red-500/40' : 'border-slate-700'
+                className={`bg-white border rounded-xl p-5 transition-all ${
+                  low ? 'border-red-500/40' : 'border-[#E8E5E0]'
                 }`}
               >
                 {/* Card top row */}
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="bg-slate-900/60 p-2 rounded-lg shrink-0">
-                      <Package className="w-5 h-5 text-indigo-400" />
+                    <div className="bg-[#FAFAF8]/60 p-2 rounded-lg shrink-0">
+                      <Package className="w-5 h-5 text-[#1A8A9E]" />
                     </div>
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-white font-semibold text-base leading-tight">
+                        <span className="text-[#1A1915] font-semibold text-base leading-tight">
                           {item.name}
                         </span>
                         {low && (
@@ -543,7 +543,7 @@ export default function InventoryPage() {
                           </span>
                         )}
                       </div>
-                      <p className="text-sm text-slate-400 mt-0.5">
+                      <p className="text-sm text-[#B0AAA0] mt-0.5">
                         {item.quantity_remaining.toFixed(1)} {item.unit} remaining of{' '}
                         {item.vial_size_mg} {item.unit} vial
                       </p>
@@ -554,7 +554,7 @@ export default function InventoryPage() {
                   <div className="flex items-center gap-2 shrink-0">
                     <button
                       onClick={() => (isDoseOpen ? closeDoseForm() : openDoseForm(item.id))}
-                      className="text-xs font-medium bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-500/30 text-indigo-300 px-3 py-1.5 rounded-lg transition-colors"
+                      className="text-xs font-medium bg-[#1A8A9E]/12 hover:bg-[#1A8A9E]/40 border border-[#1A8A9E]/30 text-[#1A8A9E] px-3 py-1.5 rounded-lg transition-colors"
                     >
                       Use Dose
                     </button>
@@ -563,7 +563,7 @@ export default function InventoryPage() {
                         <button
                           onClick={() => handleDelete(item.id)}
                           disabled={deletingId === item.id}
-                          className="text-xs font-medium bg-red-600 hover:bg-red-500 text-white px-2.5 py-1.5 rounded-lg transition-colors"
+                          className="text-xs font-medium bg-red-600 hover:bg-red-500 text-[#1A1915] px-2.5 py-1.5 rounded-lg transition-colors"
                         >
                           {deletingId === item.id ? (
                             <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -573,7 +573,7 @@ export default function InventoryPage() {
                         </button>
                         <button
                           onClick={() => setConfirmDeleteId(null)}
-                          className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
+                          className="p-1.5 text-[#B0AAA0] hover:text-[#1A1915] hover:bg-[#F2F0ED] rounded-lg transition-colors"
                         >
                           <X className="w-3.5 h-3.5" />
                         </button>
@@ -581,7 +581,7 @@ export default function InventoryPage() {
                     ) : (
                       <button
                         onClick={() => setConfirmDeleteId(item.id)}
-                        className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
+                        className="p-1.5 text-[#B0AAA0] hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
                         title="Delete vial"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -592,7 +592,7 @@ export default function InventoryPage() {
 
                 {/* Progress bar */}
                 <div className="mb-3">
-                  <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                  <div className="h-2 bg-[#F2F0ED] rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all ${
                         pct < 20
@@ -604,7 +604,7 @@ export default function InventoryPage() {
                       style={{ width: `${pct}%` }}
                     />
                   </div>
-                  <p className="text-xs text-slate-500 mt-1 text-right">
+                  <p className="text-xs text-[#B0AAA0] mt-1 text-right">
                     {pct.toFixed(0)}% remaining
                   </p>
                 </div>
@@ -613,14 +613,14 @@ export default function InventoryPage() {
                 <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
                   <span className={expiryColor}>{getExpiryLabel(item.expiry_date)}</span>
                   {item.notes && (
-                    <span className="text-slate-500 truncate max-w-xs">{item.notes}</span>
+                    <span className="text-[#B0AAA0] truncate max-w-xs">{item.notes}</span>
                   )}
                 </div>
 
                 {/* Use Dose inline form */}
                 {isDoseOpen && (
-                  <div className="mt-4 pt-4 border-t border-slate-700">
-                    <p className="text-sm font-medium text-white mb-3">
+                  <div className="mt-4 pt-4 border-t border-[#E8E5E0]">
+                    <p className="text-sm font-medium text-[#1A1915] mb-3">
                       Use Dose — {item.name}
                     </p>
                     {doseError && (
@@ -635,16 +635,16 @@ export default function InventoryPage() {
                           value={doseAmount}
                           onChange={(e) => setDoseAmount(e.target.value)}
                           placeholder="Amount"
-                          className="w-full bg-slate-900 border border-slate-600 text-white rounded-lg px-3 py-2 text-sm placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 pr-10"
+                          className="w-full bg-[#FAFAF8] border border-[#D0CCC6] text-[#1A1915] rounded-lg px-3 py-2 text-sm placeholder-[#B0AAA0] focus:outline-none focus:ring-1 focus:ring-[#1A8A9E] focus:border-[#1A8A9E] pr-10"
                         />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 pointer-events-none">
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#B0AAA0] pointer-events-none">
                           {item.unit}
                         </span>
                       </div>
                       <button
                         onClick={() => handleUseDose(item)}
                         disabled={doseSaving}
-                        className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-semibold px-4 py-2 rounded-lg transition-colors text-sm"
+                        className="flex items-center gap-1.5 bg-[#1A8A9E] hover:bg-[#1A8A9E] disabled:opacity-50 text-[#1A1915] font-semibold px-4 py-2 rounded-lg transition-colors text-sm"
                       >
                         {doseSaving ? (
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -655,12 +655,12 @@ export default function InventoryPage() {
                       </button>
                       <button
                         onClick={closeDoseForm}
-                        className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
+                        className="p-2 text-[#B0AAA0] hover:text-[#1A1915] hover:bg-[#F2F0ED] rounded-lg transition-colors"
                       >
                         <X className="w-4 h-4" />
                       </button>
                     </div>
-                    <p className="text-xs text-slate-500 mt-2">
+                    <p className="text-xs text-[#B0AAA0] mt-2">
                       Max: {item.quantity_remaining.toFixed(2)} {item.unit} remaining
                     </p>
                   </div>

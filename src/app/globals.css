@@ -1,93 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Jost:wght@200;300;400;500&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Brand Tokens ──────────────────────────────────────────────────────────── */
 :root {
-  --bg: #0f172a;
-  --card: #1e293b;
-  --border: #334155;
-  --accent: #6366f1;
+  --cx-parchment: #FAFAF8;
+  --cx-off:       #F2F0ED;
+  --cx-light:     #E8E5E0;
+  --cx-stone:     #B0AAA0;
+  --cx-dark:      #3A3730;
+  --cx-black:     #1A1915;
+  --cx-teal:      #1A8A9E;
+  --cx-teal-dim:  rgba(26,138,158,0.12);
+  --cx-sidebar:   #1A1915;
+}
+
+/* ─── Base ──────────────────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  background-color: #0f172a;
-  color: white;
+  background-color: var(--cx-parchment);
+  color: var(--cx-black);
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
   min-height: 100vh;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
+/* ─── Scrollbar ──────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--cx-off); }
+::-webkit-scrollbar-thumb { background: var(--cx-light); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--cx-stone); }
 
-::-webkit-scrollbar-track {
-  background: #1e293b;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #6366f1;
-}
-
-/* Form input base styles */
+/* ─── Form inputs ────────────────────────────────────────────────────────────── */
 input[type='text'],
 input[type='email'],
 input[type='password'],
+input[type='number'],
 input[type='time'],
 input[type='datetime-local'],
 select,
 textarea {
-  background-color: #0f172a;
-  border: 1px solid #334155;
-  color: white;
+  background-color: #fff;
+  border: 1px solid var(--cx-light);
+  color: var(--cx-black);
   border-radius: 0.5rem;
   padding: 0.5rem 0.75rem;
   width: 100%;
   outline: none;
   transition: border-color 0.15s ease;
+  font-family: 'Jost', sans-serif;
 }
 
-input[type='text']:focus,
-input[type='email']:focus,
-input[type='password']:focus,
-input[type='time']:focus,
-input[type='datetime-local']:focus,
+input:focus,
 select:focus,
 textarea:focus {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  border-color: var(--cx-teal);
+  box-shadow: 0 0 0 2px rgba(26,138,158,0.12);
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: #64748b;
+  color: var(--cx-stone);
 }
 
 select option {
-  background-color: #1e293b;
-  color: white;
+  background-color: #fff;
+  color: var(--cx-black);
 }
 
-/* iPhone safe area (notch/home bar) */
+/* ─── Safe area ───────────────────────────────────────────────────────────────── */
 .safe-area-pb {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* Prevent iOS double-tap zoom on buttons */
 button, a {
   touch-action: manipulation;
 }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-  -webkit-tap-highlight-color: transparent;
+/* ─── Neural grid helper ───────────────────────────────────────────────────────── */
+.cx-grid-bg {
+  background-image:
+    linear-gradient(rgba(26,138,158,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26,138,158,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* ─── Cormorant display class ─────────────────────────────────────────────────── */
+.font-display {
+  font-family: 'Cormorant Garamond', Georgia, serif;
 }

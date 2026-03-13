@@ -428,13 +428,13 @@ function FieldRow({
   return (
     <div className="flex gap-3">
       <div className="flex-shrink-0 mt-0.5">
-        <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center">
-          <Icon className="w-4 h-4 text-indigo-400" />
+        <div className="w-8 h-8 rounded-lg bg-[#1A8A9E]/12 flex items-center justify-center">
+          <Icon className="w-4 h-4 text-[#1A8A9E]" />
         </div>
       </div>
       <div className="min-w-0">
-        <p className="text-xs text-slate-500 uppercase tracking-wider font-medium mb-0.5">{label}</p>
-        <p className="text-slate-200 text-sm leading-relaxed">{value}</p>
+        <p className="text-xs text-[#B0AAA0] uppercase tracking-wider font-medium mb-0.5">{label}</p>
+        <p className="text-[#3A3730] text-sm leading-relaxed">{value}</p>
       </div>
     </div>
   )
@@ -442,7 +442,7 @@ function FieldRow({
 
 function GoalBadge({ label }: { label: string }) {
   return (
-    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-[#1A8A9E]/12 text-[#1A8A9E] border border-[#1A8A9E]/30">
       {label}
     </span>
   )
@@ -502,21 +502,21 @@ export default function DosingPage() {
       {/* Header */}
       <div>
         <div className="flex items-center gap-3 mb-1">
-          <div className="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center">
-            <Calculator className="w-5 h-5 text-indigo-400" />
+          <div className="w-10 h-10 rounded-xl bg-[#1A8A9E]/12 flex items-center justify-center">
+            <Calculator className="w-5 h-5 text-[#1A8A9E]" />
           </div>
-          <h1 className="text-2xl font-bold text-white">Dosage Calculator</h1>
+          <h1 className="text-2xl font-bold text-[#1A1915]">Dosage Calculator</h1>
         </div>
-        <p className="text-slate-400 text-sm ml-13">
+        <p className="text-[#B0AAA0] text-sm ml-13">
           Select a peptide to view recommended dosing protocols and reference information.
         </p>
       </div>
 
       {/* Search Dropdown */}
       <div className="relative" ref={dropdownRef}>
-        <label className="block text-sm font-medium text-slate-300 mb-2">Search Peptide</label>
+        <label className="block text-sm font-medium text-[#3A3730] mb-2">Search Peptide</label>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B0AAA0] pointer-events-none" />
           <input
             type="text"
             value={query}
@@ -527,24 +527,24 @@ export default function DosingPage() {
             }}
             onFocus={() => setDropdownOpen(true)}
             placeholder="Type to search peptides..."
-            className="w-full pl-10 pr-10 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors text-sm"
+            className="w-full pl-10 pr-10 py-3 bg-white border border-[#E8E5E0] rounded-xl text-[#1A1915] placeholder-[#B0AAA0] focus:outline-none focus:border-[#1A8A9E] focus:ring-1 focus:ring-[#1A8A9E] transition-colors text-sm"
           />
           <ChevronDown
-            className={`absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}
+            className={`absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B0AAA0] pointer-events-none transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}
           />
         </div>
 
         {dropdownOpen && (
-          <div className="absolute z-50 w-full mt-1 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl max-h-64 overflow-y-auto">
+          <div className="absolute z-50 w-full mt-1 bg-white border border-[#E8E5E0] rounded-xl shadow-2xl max-h-64 overflow-y-auto">
             {filtered.length === 0 ? (
-              <div className="px-4 py-3 text-slate-500 text-sm">No peptides found</div>
+              <div className="px-4 py-3 text-[#B0AAA0] text-sm">No peptides found</div>
             ) : (
               filtered.map((name) => (
                 <button
                   key={name}
                   onMouseDown={() => selectPeptide(name)}
-                  className={`w-full text-left px-4 py-2.5 text-sm transition-colors hover:bg-slate-700 ${
-                    selected === name ? 'text-indigo-400 bg-indigo-500/10' : 'text-slate-300'
+                  className={`w-full text-left px-4 py-2.5 text-sm transition-colors hover:bg-[#F2F0ED] ${
+                    selected === name ? 'text-[#1A8A9E] bg-[#1A8A9E]/8' : 'text-[#3A3730]'
                   }`}
                 >
                   {name}
@@ -557,10 +557,10 @@ export default function DosingPage() {
 
       {/* Peptide Info Card */}
       {peptide && (
-        <div className="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
+        <div className="bg-white border border-[#E8E5E0] rounded-2xl overflow-hidden">
           {/* Card header */}
-          <div className="px-6 py-4 border-b border-slate-700 bg-gradient-to-r from-indigo-500/10 to-transparent">
-            <h2 className="text-xl font-bold text-white">{peptide.name}</h2>
+          <div className="px-6 py-4 border-b border-[#E8E5E0] bg-gradient-to-r from-[#1A8A9E]/8 to-transparent">
+            <h2 className="text-xl font-bold text-[#1A1915]">{peptide.name}</h2>
             <div className="flex flex-wrap gap-2 mt-2">
               {peptide.goals.map((g) => (
                 <GoalBadge key={g} label={g} />
@@ -584,7 +584,7 @@ export default function DosingPage() {
               <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-xs text-amber-400 font-semibold uppercase tracking-wider mb-1">Important Notes</p>
-                <p className="text-slate-300 text-sm leading-relaxed">{peptide.notes}</p>
+                <p className="text-[#3A3730] text-sm leading-relaxed">{peptide.notes}</p>
               </div>
             </div>
           </div>
@@ -593,15 +593,15 @@ export default function DosingPage() {
 
       {/* Dosage Calculator Tab */}
       {peptide && (
-        <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6">
+        <div className="bg-white border border-[#E8E5E0] rounded-2xl p-6">
           <div className="flex items-center gap-2 mb-4">
-            <Scale className="w-5 h-5 text-indigo-400" />
-            <h3 className="text-lg font-semibold text-white">Dosage Calculator</h3>
+            <Scale className="w-5 h-5 text-[#1A8A9E]" />
+            <h3 className="text-lg font-semibold text-[#1A1915]">Dosage Calculator</h3>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 mb-4">
             <div className="flex-1">
-              <label className="block text-xs text-slate-400 mb-1.5 font-medium uppercase tracking-wider">
+              <label className="block text-xs text-[#B0AAA0] mb-1.5 font-medium uppercase tracking-wider">
                 Body Weight
               </label>
               <input
@@ -611,20 +611,20 @@ export default function DosingPage() {
                 value={weightInput}
                 onChange={(e) => setWeightInput(e.target.value)}
                 placeholder="Enter weight..."
-                className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors text-sm"
+                className="w-full px-4 py-2.5 bg-[#FAFAF8] border border-[#E8E5E0] rounded-xl text-[#1A1915] placeholder-[#B0AAA0] focus:outline-none focus:border-[#1A8A9E] focus:ring-1 focus:ring-[#1A8A9E] transition-colors text-sm"
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1.5 font-medium uppercase tracking-wider">
+              <label className="block text-xs text-[#B0AAA0] mb-1.5 font-medium uppercase tracking-wider">
                 Unit
               </label>
-              <div className="flex rounded-xl overflow-hidden border border-slate-700">
+              <div className="flex rounded-xl overflow-hidden border border-[#E8E5E0]">
                 <button
                   onClick={() => setWeightUnit('kg')}
                   className={`px-4 py-2.5 text-sm font-medium transition-colors ${
                     weightUnit === 'kg'
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-slate-900 text-slate-400 hover:text-white'
+                      ? 'bg-[#1A8A9E] text-[#1A1915]'
+                      : 'bg-[#FAFAF8] text-[#B0AAA0] hover:text-[#1A1915]'
                   }`}
                 >
                   kg
@@ -633,8 +633,8 @@ export default function DosingPage() {
                   onClick={() => setWeightUnit('lbs')}
                   className={`px-4 py-2.5 text-sm font-medium transition-colors ${
                     weightUnit === 'lbs'
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-slate-900 text-slate-400 hover:text-white'
+                      ? 'bg-[#1A8A9E] text-[#1A1915]'
+                      : 'bg-[#FAFAF8] text-[#B0AAA0] hover:text-[#1A1915]'
                   }`}
                 >
                   lbs
@@ -644,23 +644,23 @@ export default function DosingPage() {
           </div>
 
           {/* Result */}
-          <div className="bg-slate-900 border border-slate-700 rounded-xl p-4">
+          <div className="bg-[#FAFAF8] border border-[#E8E5E0] rounded-xl p-4">
             {calculatedDose ? (
               <div>
-                <p className="text-xs text-slate-500 uppercase tracking-wider font-medium mb-1">
+                <p className="text-xs text-[#B0AAA0] uppercase tracking-wider font-medium mb-1">
                   Calculated Dose for {weightInput} {weightUnit}
                 </p>
-                <p className="text-2xl font-bold text-indigo-400">{calculatedDose}</p>
+                <p className="text-2xl font-bold text-[#1A8A9E]">{calculatedDose}</p>
               </div>
             ) : (
               <div className="flex gap-3">
-                <Info className="w-5 h-5 text-indigo-400 flex-shrink-0 mt-0.5" />
+                <Info className="w-5 h-5 text-[#1A8A9E] flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-xs text-slate-500 uppercase tracking-wider font-medium mb-1">
+                  <p className="text-xs text-[#B0AAA0] uppercase tracking-wider font-medium mb-1">
                     Standard Dose Range
                   </p>
-                  <p className="text-lg font-bold text-indigo-400">{peptide.doseRange}</p>
-                  <p className="text-slate-400 text-xs mt-1">
+                  <p className="text-lg font-bold text-[#1A8A9E]">{peptide.doseRange}</p>
+                  <p className="text-[#B0AAA0] text-xs mt-1">
                     {peptide.name} uses a fixed dosing protocol not based on body weight.
                     {weightInput
                       ? ' The standard range above applies regardless of body weight.'
@@ -675,17 +675,17 @@ export default function DosingPage() {
 
       {/* Empty state */}
       {!peptide && (
-        <div className="bg-slate-800 border border-dashed border-slate-700 rounded-2xl p-12 text-center">
-          <Calculator className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-          <p className="text-slate-400 text-sm">Select a peptide above to view dosing information</p>
+        <div className="bg-white border border-dashed border-[#E8E5E0] rounded-2xl p-12 text-center">
+          <Calculator className="w-12 h-12 text-[#B0AAA0] mx-auto mb-3" />
+          <p className="text-[#B0AAA0] text-sm">Select a peptide above to view dosing information</p>
         </div>
       )}
 
       {/* Disclaimer */}
-      <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 flex gap-3">
-        <AlertTriangle className="w-4 h-4 text-slate-500 flex-shrink-0 mt-0.5" />
-        <p className="text-slate-500 text-xs leading-relaxed">
-          <span className="font-semibold text-slate-400">Disclaimer:</span> For informational purposes only. Always
+      <div className="bg-white/50 border border-[#E8E5E0] rounded-xl p-4 flex gap-3">
+        <AlertTriangle className="w-4 h-4 text-[#B0AAA0] flex-shrink-0 mt-0.5" />
+        <p className="text-[#B0AAA0] text-xs leading-relaxed">
+          <span className="font-semibold text-[#B0AAA0]">Disclaimer:</span> For informational purposes only. Always
           consult a qualified healthcare provider before using peptides. Peptides may be regulated or prohibited in your
           jurisdiction. This tool does not constitute medical advice.
         </p>
