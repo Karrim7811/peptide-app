@@ -11,29 +11,7 @@ import {
   History,
   X,
 } from 'lucide-react'
-
-const COMMON_PEPTIDES = [
-  'BPC-157',
-  'TB-500',
-  'GHK-Cu',
-  'Ipamorelin',
-  'CJC-1295',
-  'Semaglutide',
-  'Tirzepatide',
-  'Sermorelin',
-  'Hexarelin',
-  'GHRP-2',
-  'GHRP-6',
-  'IGF-1 LR3',
-  'Melanotan II',
-  'PT-141',
-  'Epithalon',
-  'Thymosin Alpha-1',
-  'AOD-9604',
-  'NAD+',
-  'Selank',
-  'Semax',
-]
+import { ALL_PEPTIDES as COMMON_PEPTIDES } from '@/lib/peptides'
 
 interface InteractionResult {
   level: 'safe' | 'caution' | 'danger' | 'unknown'
