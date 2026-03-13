@@ -3,18 +3,18 @@
 // Then:  npx cap add ios && npx cap add android && npx cap sync
 
 export default {
-  appId: 'app.peptidetracker',
-  appName: 'PeptideTracker',
-  // Points the native WebView at your deployed Vercel URL — no local build needed
+  appId: 'ai.peptidecortex.app',
+  appName: 'Peptide Cortex',
+  // Points the native WebView at the live domain — no local build needed
   server: {
-    url: 'https://peptide-app.vercel.app', // UPDATE to your Vercel URL
+    url: 'https://peptidecortex.ai',
     cleartext: false,
   },
   webDir: 'out',
   plugins: {
     SplashScreen: {
       launchShowDuration: 2000,
-      backgroundColor: '#0f172a',
+      backgroundColor: '#E8E5E0',
       showSpinner: false,
       splashFullScreen: true,
       splashImmersive: true,
@@ -23,16 +23,17 @@ export default {
       presentationOptions: ['badge', 'sound', 'alert'],
     },
     StatusBar: {
-      style: 'Dark',
-      backgroundColor: '#0f172a',
+      style: 'Light',
+      backgroundColor: '#E8E5E0',
     },
   },
   ios: {
     contentInset: 'automatic',
-    backgroundColor: '#0f172a',
+    backgroundColor: '#FAFAF8',
+    preferredContentMode: 'mobile',
   },
   android: {
-    backgroundColor: '#0f172a',
+    backgroundColor: '#FAFAF8',
     allowMixedContent: false,
   },
 }
