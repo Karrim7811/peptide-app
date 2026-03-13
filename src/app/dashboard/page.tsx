@@ -70,7 +70,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* CORTEX Hero Banner */}
-      <div className="rounded-2xl overflow-hidden" style={{ background: '#1A1915' }}>
+      <div className="rounded-2xl overflow-hidden" style={{ background: '#E8E5E0' }}>
         <div className="px-8 pt-8 pb-6">
           <p style={{
             fontFamily: '"Cormorant Garamond", Georgia, serif',
@@ -84,7 +84,7 @@ export default async function DashboardPage() {
           }}>
             Every letter carries intelligence.
           </p>
-          <div className="grid grid-cols-6" style={{ borderTop: '1px solid #2A2720' }}>
+          <div className="grid grid-cols-6" style={{ borderTop: '1px solid #D0CCC6' }}>
             {([
               { letter: 'C', label: 'COGNITIVE\nCORE' },
               { letter: 'O', label: 'OPTIMIZATION\nENGINE' },
@@ -96,13 +96,13 @@ export default async function DashboardPage() {
               <div
                 key={letter}
                 className="flex flex-col items-center py-5"
-                style={{ borderRight: i < 5 ? '1px solid #2A2720' : 'none' }}
+                style={{ borderRight: i < 5 ? '1px solid #D0CCC6' : 'none' }}
               >
                 <span style={{
                   fontFamily: '"Cormorant Garamond", Georgia, serif',
                   fontWeight: 300,
                   fontSize: 'clamp(24px, 3.5vw, 48px)',
-                  color: teal ? '#1A8A9E' : '#FAFAF8',
+                  color: teal ? '#1A8A9E' : '#1A1915',
                   lineHeight: 1,
                 }}>
                   {letter}
@@ -112,7 +112,7 @@ export default async function DashboardPage() {
                   fontSize: 8,
                   fontWeight: 400,
                   letterSpacing: '0.15em',
-                  color: '#555',
+                  color: '#8A8378',
                   textAlign: 'center',
                   marginTop: 10,
                   lineHeight: 1.6,
