@@ -1,7 +1,12 @@
+export type SubscriptionTier = 'free' | 'pro' | 'lifetime'
+
 export interface Profile {
   id: string
   email: string
   created_at: string
+  subscription_tier: SubscriptionTier
+  subscription_expires_at: string | null
+  stripe_customer_id: string | null
 }
 
 export interface StackItem {

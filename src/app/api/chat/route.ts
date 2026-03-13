@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { PEPTIDE_KNOWLEDGE } from '@/lib/peptide-knowledge'
+import { createClient } from '@/lib/supabase/server'
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
@@ -15,6 +16,32 @@ function buildKnowledgeContext(): string {
 
 export async function POST(request: NextRequest) {
   try {
+    // Auth + subscription check
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Please sign in to use PeptideAI.', code: 'AUTH_REQUIRED' }, { status: 401 })
+    }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('subscription_tier, subscription_expires_at')
+      .eq('id', user.id)
+      .single()
+
+    const tier = profile?.subscription_tier ?? 'free'
+    const isExpired = tier === 'pro' && profile?.subscription_expires_at
+      ? new Date(profile.subscription_expires_at) < new Date()
+      : false
+    const isPro = (tier === 'pro' && !isExpired) || tier === 'lifetime'
+
+    if (!isPro) {
+      return NextResponse.json({
+        error: 'PeptideAI is a Pro feature. Upgrade to unlock unlimited AI chat.',
+        code: 'UPGRADE_REQUIRED',
+      }, { status: 403 })
+    }
+
     const body = await request.json()
     const { messages, stackContext } = body
     // messages: array of { role: 'user'|'assistant', content: string }

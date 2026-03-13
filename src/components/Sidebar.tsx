@@ -22,6 +22,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Library,
+  Zap,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -112,8 +113,26 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Sign Out */}
-      <div className="px-2 pb-4 border-t border-slate-700 pt-3 shrink-0">
+      {/* Upgrade CTA + Sign Out */}
+      <div className="px-2 pb-4 border-t border-slate-700 pt-3 shrink-0 space-y-1">
+        {!collapsed && (
+          <a
+            href="/pricing"
+            className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 transition-colors mb-2"
+          >
+            <Zap className="w-4 h-4 shrink-0" />
+            <span className="font-medium">Upgrade to Pro</span>
+          </a>
+        )}
+        {collapsed && (
+          <a
+            href="/pricing"
+            title="Upgrade to Pro"
+            className="flex items-center justify-center w-full p-2 rounded-lg text-indigo-400 hover:bg-indigo-600/20 transition-colors mb-1"
+          >
+            <Zap className="w-4 h-4" />
+          </a>
+        )}
         <button
           onClick={handleSignOut}
           disabled={signingOut}
