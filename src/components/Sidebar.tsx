@@ -30,6 +30,7 @@ const navLinks = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/stack', label: 'My Stack', icon: Layers },
   { href: '/checker', label: 'Interaction Checker', icon: Shield },
+  { href: '/stack-finder', label: 'Stack Finder', icon: Layers },
   { href: '/ai-chat', label: 'Peptide AI', icon: MessageSquare },
   { href: '/dosing', label: 'Dosage Calculator', icon: Calculator },
   { href: '/reconstitution', label: 'Reconstitution', icon: FlaskRound },

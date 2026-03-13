@@ -4,13 +4,14 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Shield, Layers, Bell, BookOpen, Calculator,
-  FlaskRound, MapPin, Package, FileText, AlertCircle, MessageSquare, RotateCcw, Library,
+  FlaskRound, MapPin, Package, FileText, AlertCircle, MessageSquare, RotateCcw, Library, Sparkles,
 } from 'lucide-react'
 
 const navLinks = [
   { href: '/dashboard', label: 'Home', icon: LayoutDashboard },
   { href: '/stack', label: 'My Stack', icon: Layers },
   { href: '/checker', label: 'Checker', icon: Shield },
+  { href: '/stack-finder', label: 'Stacks', icon: Sparkles },
   { href: '/ai-chat', label: 'AI Chat', icon: MessageSquare },
   { href: '/dosing', label: 'Dosing', icon: Calculator },
   { href: '/reconstitution', label: 'Recon', icon: FlaskRound },

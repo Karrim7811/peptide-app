@@ -72,7 +72,7 @@ function PeptideCard({ peptide }: { peptide: PeptideKnowledge }) {
                 {CATEGORY_ICONS[peptide.goalCategory]}
                 {peptide.goalCategory}
               </span>
-              {peptide.categories.filter(c => c !== peptide.goalCategory).slice(0, 2).map(c => (
+              {peptide.goalCategories.filter(c => c !== peptide.goalCategory).slice(0, 2).map(c => (
                 <span key={c} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border ${CATEGORY_COLORS[c] || 'bg-slate-500/15 text-slate-300 border-slate-500/30'}`}>
                   {CATEGORY_ICONS[c]}
                   {c}
@@ -114,7 +114,7 @@ function PeptideCard({ peptide }: { peptide: PeptideKnowledge }) {
             {/* Common Uses */}
             <div>
               <h4 className="text-slate-400 text-[11px] font-semibold uppercase tracking-wide mb-1.5">Common Uses</h4>
-              <p className="text-slate-300 text-xs">{peptide.commonUses}</p>
+              <p className="text-slate-300 text-xs">{peptide.commonUseExamples}</p>
             </div>
 
             {/* Dosage */}
@@ -184,7 +184,7 @@ export default function ReferencePage() {
   const filtered = useMemo(() => {
     let results = query ? searchPeptides(query) : PEPTIDE_KNOWLEDGE
     if (activeCategory) {
-      results = results.filter(p => p.goalCategory === activeCategory || p.categories.includes(activeCategory))
+      results = results.filter(p => p.goalCategory === activeCategory || p.goalCategories.includes(activeCategory))
     }
     return results
   }, [query, activeCategory])
