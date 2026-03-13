@@ -23,6 +23,8 @@ import {
   ChevronRight,
   Library,
   Zap,
+  Scale,
+  Store,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -43,6 +45,8 @@ const navLinks = [
   { href: '/reminders', label: 'Reminders', icon: Bell },
   { href: '/log', label: 'Dose Log', icon: BookOpen },
   { href: '/reference', label: 'Peptide Bible', icon: Library },
+  { href: '/regulatory', label: 'Legal & Regulatory', icon: Scale },
+  { href: '/vendors', label: 'Top Vendors', icon: Store },
 ]
 
 export default function Sidebar() {

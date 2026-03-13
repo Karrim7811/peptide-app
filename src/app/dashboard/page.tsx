@@ -12,6 +12,7 @@ import {
   FlaskConical,
 } from 'lucide-react'
 import type { StackItem, Reminder, DoseLog } from '@/types'
+import MarketPulse from './MarketPulse'
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
@@ -289,6 +290,9 @@ export default async function DashboardPage() {
           </Link>
         </div>
       </div>
+
+      {/* Market Pulse */}
+      <MarketPulse />
     </div>
   )
 }

@@ -8,12 +8,18 @@ import {
   Calculator,
   Info,
   Droplets,
+  Sparkles,
+  ChevronDown,
+  Loader2,
 } from 'lucide-react'
+import { PEPTIDE_KNOWLEDGE } from '@/lib/peptide-knowledge'
 
 // ─── Quick Reference Data ──────────────────────────────────────────────────────
 
 const VIAL_SIZES = [2, 5, 10] // mg
 const WATER_AMOUNTS = [1, 2, 5] // mL
+
+const PEPTIDE_NAMES = PEPTIDE_KNOWLEDGE.map((p) => p.name).sort((a, b) => a.localeCompare(b))
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 
@@ -68,10 +74,35 @@ function ResultBox({
   )
 }
 
+interface AiResult {
+  recommendedBacWaterMl: number
+  concentrationMgPerMl: number
+  concentrationMcgPerMl: number
+  reasoning: string
+  tipicalDoseRange: string
+  storageNote: string
+}
+
+const SENTIMENT_COLORS: Record<string, string> = {
+  positive: 'text-emerald-400',
+  neutral: 'text-slate-300',
+  negative: 'text-red-400',
+  warning: 'text-amber-400',
+}
+
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function ReconstitutionPage() {
   const router = useRouter()
+
+  // AI peptide selector state
+  const [selectedPeptide, setSelectedPeptide] = useState('')
+  const [aiMg, setAiMg] = useState('')
+  const [aiResult, setAiResult] = useState<AiResult | null>(null)
+  const [aiLoading, setAiLoading] = useState(false)
+  const [aiError, setAiError] = useState('')
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [peptideSearch, setPeptideSearch] = useState('')
 
   // Reconstitution inputs
   const [vialSize, setVialSize] = useState('')
@@ -80,6 +111,35 @@ export default function ReconstitutionPage() {
   // Dose calculator inputs
   const [desiredDose, setDesiredDose] = useState('')
   const [doseUnit, setDoseUnit] = useState<'mcg' | 'mg'>('mcg')
+
+  const filteredPeptides = useMemo(() => {
+    if (!peptideSearch) return PEPTIDE_NAMES
+    return PEPTIDE_NAMES.filter((p) => p.toLowerCase().includes(peptideSearch.toLowerCase()))
+  }, [peptideSearch])
+
+  async function handleAiCalculate() {
+    if (!selectedPeptide || !aiMg) return
+    setAiLoading(true)
+    setAiError('')
+    setAiResult(null)
+    try {
+      const res = await fetch('/api/reconstitution-ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ peptideName: selectedPeptide, amountMg: parseFloat(aiMg) }),
+      })
+      if (!res.ok) throw new Error('Request failed')
+      const data = await res.json()
+      setAiResult(data)
+      // Auto-fill the manual calculator with AI recommendation
+      setVialSize(aiMg)
+      setBacWater(String(data.recommendedBacWaterMl))
+    } catch {
+      setAiError('Failed to get AI recommendation. Try again.')
+    } finally {
+      setAiLoading(false)
+    }
+  }
 
   // ── Concentration ──────────────────────────────────────────────────────────
   const concentration = useMemo(() => {
@@ -132,16 +192,172 @@ export default function ReconstitutionPage() {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-white leading-tight">Reconstitution Calculator</h1>
-            <p className="text-slate-400 text-sm">Calculate concentration and injection volume</p>
+            <p className="text-slate-400 text-sm">AI-powered BAC water recommendations + manual calculator</p>
           </div>
         </div>
       </div>
+
+      {/* ── Section 0: AI Peptide Assistant ───────────────────────────────────── */}
+      <section className="bg-slate-800 border border-indigo-500/30 rounded-2xl overflow-hidden">
+        <div className="flex items-center gap-2 px-6 py-4 border-b border-slate-700 bg-gradient-to-r from-indigo-500/15 to-transparent">
+          <Sparkles className="w-4 h-4 text-indigo-400" />
+          <h2 className="text-base font-semibold text-white">AI Reconstitution Advisor</h2>
+          <span className="text-xs text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full ml-auto">AI</span>
+        </div>
+
+        <div className="p-6 space-y-4">
+          <p className="text-sm text-slate-400">
+            Select your peptide and enter the vial amount — AI will recommend how much BAC water to add and auto-fill the calculator below.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Peptide Selector */}
+            <div className="relative">
+              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                Peptide
+              </label>
+              <button
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="w-full flex items-center justify-between bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-left focus:outline-none focus:border-indigo-500 transition-colors"
+              >
+                <span className={selectedPeptide ? 'text-white' : 'text-slate-600'}>
+                  {selectedPeptide || 'Select peptide...'}
+                </span>
+                <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {dropdownOpen && (
+                <div className="absolute top-full mt-1 w-full z-50 bg-slate-900 border border-slate-700 rounded-xl shadow-xl overflow-hidden">
+                  <div className="p-2 border-b border-slate-700">
+                    <input
+                      type="text"
+                      placeholder="Search peptides..."
+                      value={peptideSearch}
+                      onChange={(e) => setPeptideSearch(e.target.value)}
+                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+                      autoFocus
+                    />
+                  </div>
+                  <div className="max-h-52 overflow-y-auto">
+                    {filteredPeptides.length === 0 ? (
+                      <p className="text-center text-slate-500 text-sm py-4">No peptides found</p>
+                    ) : (
+                      filteredPeptides.map((name) => (
+                        <button
+                          key={name}
+                          onClick={() => {
+                            setSelectedPeptide(name)
+                            setDropdownOpen(false)
+                            setPeptideSearch('')
+                          }}
+                          className={`w-full text-left px-4 py-2.5 text-sm hover:bg-slate-800 transition-colors ${
+                            selectedPeptide === name ? 'text-indigo-400 bg-indigo-500/10' : 'text-slate-300'
+                          }`}
+                        >
+                          {name}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Amount input */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                Vial Amount
+              </label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="number"
+                  min="0"
+                  step="any"
+                  value={aiMg}
+                  onChange={(e) => setAiMg(e.target.value)}
+                  placeholder="e.g. 5"
+                  className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors text-sm"
+                />
+                <span className="text-slate-400 text-sm font-medium w-10 text-right shrink-0">mg</span>
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={handleAiCalculate}
+            disabled={!selectedPeptide || !aiMg || aiLoading}
+            className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-xl px-6 py-3 transition-colors"
+          >
+            {aiLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Calculating...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4" />
+                Get AI Recommendation
+              </>
+            )}
+          </button>
+
+          {aiError && (
+            <p className="text-red-400 text-sm text-center">{aiError}</p>
+          )}
+
+          {/* AI Result */}
+          {aiResult && (
+            <div className="bg-slate-900 border border-indigo-500/30 rounded-xl p-5 space-y-4">
+              <div className="flex items-center gap-2 mb-1">
+                <Sparkles className="w-4 h-4 text-indigo-400" />
+                <p className="text-sm font-semibold text-indigo-400">AI Recommendation for {selectedPeptide}</p>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div className="bg-slate-800 rounded-lg p-3 text-center">
+                  <p className="text-xs text-slate-500 mb-1">BAC Water</p>
+                  <p className="text-xl font-bold text-indigo-400">{aiResult.recommendedBacWaterMl} mL</p>
+                </div>
+                <div className="bg-slate-800 rounded-lg p-3 text-center">
+                  <p className="text-xs text-slate-500 mb-1">Concentration</p>
+                  <p className="text-lg font-bold text-white">{aiResult.concentrationMgPerMl} mg/mL</p>
+                </div>
+                <div className="bg-slate-800 rounded-lg p-3 text-center">
+                  <p className="text-xs text-slate-500 mb-1">= mcg/mL</p>
+                  <p className="text-lg font-bold text-white">{aiResult.concentrationMcgPerMl?.toLocaleString()}</p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="bg-slate-800/60 rounded-lg px-4 py-3">
+                  <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Reasoning</p>
+                  <p className="text-sm text-slate-300">{aiResult.reasoning}</p>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-slate-800/60 rounded-lg px-3 py-2">
+                    <p className="text-xs text-slate-500 mb-0.5">Typical Dose Range</p>
+                    <p className="text-sm text-emerald-400 font-medium">{aiResult.tipicalDoseRange}</p>
+                  </div>
+                  <div className="bg-slate-800/60 rounded-lg px-3 py-2">
+                    <p className="text-xs text-slate-500 mb-0.5">Storage</p>
+                    <p className="text-sm text-amber-400 font-medium">{aiResult.storageNote}</p>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-600 text-center">
+                ✓ Values auto-filled in the manual calculator below
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* ── Section 1: Reconstitution ─────────────────────────────────────────── */}
       <section className="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
         <div className="flex items-center gap-2 px-6 py-4 border-b border-slate-700 bg-gradient-to-r from-indigo-500/10 to-transparent">
           <FlaskConical className="w-4 h-4 text-indigo-400" />
-          <h2 className="text-base font-semibold text-white">Reconstitution</h2>
+          <h2 className="text-base font-semibold text-white">Manual Reconstitution</h2>
         </div>
 
         <div className="p-6 space-y-4">
