@@ -85,9 +85,20 @@ create policy "Users manage own logs"
 -- ============================================================
 create or replace function public.handle_new_user()
 returns trigger as $$
+declare
+  v_tier text;
 begin
-  insert into public.profiles (id, email)
-  values (new.id, new.email);
+  select tier into v_tier
+  from public.pro_whitelist
+  where lower(email) = lower(new.email)
+  limit 1;
+
+  if v_tier is null then
+    v_tier := 'free';
+  end if;
+
+  insert into public.profiles (id, email, subscription_tier)
+  values (new.id, new.email, v_tier);
   return new;
 end;
 $$ language plpgsql security definer;
