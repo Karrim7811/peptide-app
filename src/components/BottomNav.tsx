@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Shield, Layers, Bell, BookOpen, Calculator,
-  FlaskRound, MapPin, Package, FileText, AlertCircle, MessageSquare, RotateCcw,
+  FlaskRound, MapPin, Package, FileText, AlertCircle, MessageSquare, RotateCcw, Library,
 } from 'lucide-react'
 
 const navLinks = [
@@ -22,6 +22,7 @@ const navLinks = [
   { href: '/side-effects', label: 'Side FX', icon: AlertCircle },
   { href: '/reminders', label: 'Reminders', icon: Bell },
   { href: '/log', label: 'Log', icon: BookOpen },
+  { href: '/reference', label: 'Bible', icon: Library },
 ]
 
 export default function BottomNav() {

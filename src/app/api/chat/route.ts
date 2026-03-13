@@ -1,7 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
+import { PEPTIDE_KNOWLEDGE } from '@/lib/peptide-knowledge'
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+
+// Build a compact knowledge summary for the system prompt
+function buildKnowledgeContext(): string {
+  return PEPTIDE_KNOWLEDGE.map(p =>
+    `${p.name} [${p.goalCategory}]: ${p.whatItDoes}. Dosage: ${p.dosageRange || 'varies'}. ` +
+    `Key effects: ${p.keyEffects}. Cautions: ${p.riskCautions}. ` +
+    `Drug interactions: ${p.drugInteractions || 'none noted'}. Evidence: ${p.evidenceLevel}.`
+  ).join('\n')
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,6 +20,8 @@ export async function POST(request: NextRequest) {
     // messages: array of { role: 'user'|'assistant', content: string }
     // stackContext: string describing user's current stack (optional)
 
+    const knowledgeBase = buildKnowledgeContext()
+
     const systemPrompt = `You are PeptideAI, an expert assistant specializing in peptides, research chemicals, and biohacking protocols. You have deep knowledge of:
 - Peptide mechanisms of action, half-lives, and optimal dosing
 - Injection protocols, reconstitution, and storage
@@ -17,6 +29,9 @@ export async function POST(request: NextRequest) {
 - Side effect profiles and mitigation
 - Cycling protocols (on/off periods)
 - Interaction with supplements and medications
+
+## Peptide Knowledge Base (58 peptides):
+${knowledgeBase}
 
 ${stackContext ? `The user's current stack:\n${stackContext}\n` : ''}
 

@@ -21,6 +21,7 @@ import {
   RotateCcw,
   ChevronLeft,
   ChevronRight,
+  Library,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -39,6 +40,7 @@ const navLinks = [
   { href: '/side-effects', label: 'Side Effect Log', icon: AlertCircle },
   { href: '/reminders', label: 'Reminders', icon: Bell },
   { href: '/log', label: 'Dose Log', icon: BookOpen },
+  { href: '/reference', label: 'Peptide Bible', icon: Library },
 ]
 
 export default function Sidebar() {
