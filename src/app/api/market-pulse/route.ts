@@ -11,7 +11,7 @@ export async function GET() {
   }
   try {
     const message = await anthropic.messages.create({
-      model: 'claude-opus-4-6',
+      model: 'claude-opus-4-5',
       max_tokens: 1024,
       system: `You are a peptide industry analyst with knowledge up to early 2026.
 Provide a concise market pulse update covering recent developments in the peptide research space.

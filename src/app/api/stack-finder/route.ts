@@ -76,7 +76,7 @@ ${peptideInfo}
 Give me the best stacking recommendations with clear reasoning.`
 
     const response = await client.messages.create({
-      model: 'claude-opus-4-6',
+      model: 'claude-opus-4-5',
       max_tokens: 1200,
       system: systemPrompt,
       messages: [{ role: 'user', content: userMessage }],

@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     }
 
     const message = await anthropic.messages.create({
-      model: 'claude-opus-4-6',
+      model: 'claude-opus-4-5',
       max_tokens: 512,
       system: `You are a peptide reconstitution expert. When given a peptide name and the amount in mg,
 you recommend how much bacteriostatic (BAC) water to add and why. Be concise and practical.
