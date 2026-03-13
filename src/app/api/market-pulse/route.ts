@@ -6,6 +6,9 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return NextResponse.json({ error: 'ANTHROPIC_API_KEY not configured' }, { status: 500 })
+  }
   try {
     const message = await anthropic.messages.create({
       model: 'claude-opus-4-6',

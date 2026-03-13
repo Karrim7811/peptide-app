@@ -61,12 +61,12 @@ export default function MarketPulse() {
     setError('')
     try {
       const res = await fetch('/api/market-pulse')
-      if (!res.ok) throw new Error('Failed to fetch')
       const json = await res.json()
+      if (!res.ok || json.error) throw new Error(json.error || 'Failed to fetch')
       setData(json)
       setLastFetched(new Date())
-    } catch {
-      setError('Could not load market pulse. Try refreshing.')
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not load market pulse. Try refreshing.')
     } finally {
       setLoading(false)
     }

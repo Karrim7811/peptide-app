@@ -104,8 +104,8 @@ export default function Sidebar() {
       className="hidden md:flex flex-col fixed left-0 top-0 h-screen z-50 transition-all duration-300"
       style={{
         width: collapsed ? 60 : 240,
-        background: '#1A1915',
-        borderRight: '1px solid #2A2720',
+        background: '#E8E5E0',
+        borderRight: '1px solid #D0CCC6',
       }}
     >
       {/* Logo */}
@@ -114,7 +114,7 @@ export default function Sidebar() {
         style={{
           justifyContent: collapsed ? 'center' : 'space-between',
           padding: collapsed ? '18px 0' : '18px 20px',
-          borderBottom: '1px solid #2A2720',
+          borderBottom: '1px solid #D0CCC6',
           minHeight: 64,
         }}
       >
@@ -126,7 +126,7 @@ export default function Sidebar() {
               fontWeight: 300,
               letterSpacing: '0.45em',
               textTransform: 'uppercase',
-              color: '#555',
+              color: '#8A8378',
               marginBottom: 3,
             }}>
               Peptide
@@ -136,7 +136,7 @@ export default function Sidebar() {
               fontWeight: 300,
               fontSize: 22,
               letterSpacing: '0.12em',
-              color: '#FAFAF8',
+              color: '#1A1915',
               lineHeight: 1,
             }}>
               CORTE<span style={{ color: '#1A8A9E' }}>X</span>
@@ -150,7 +150,7 @@ export default function Sidebar() {
               fontWeight: 300,
               fontSize: 20,
               letterSpacing: '0.08em',
-              color: '#FAFAF8',
+              color: '#1A1915',
             }}>
               C<span style={{ color: '#1A8A9E' }}>X</span>
             </div>
@@ -159,9 +159,9 @@ export default function Sidebar() {
         <button
           onClick={() => setCollapsed(!collapsed)}
           className="p-1 rounded transition-colors"
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#555' }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = '#B0AAA0')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = '#555')}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#8A8378' }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#1A1915')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = '#8A8378')}
         >
           {collapsed
             ? <ChevronRight className="w-3.5 h-3.5" />
@@ -194,7 +194,7 @@ export default function Sidebar() {
                       fontWeight: 400,
                       letterSpacing: '0.3em',
                       textTransform: 'uppercase',
-                      color: '#555',
+                      color: '#8A8378',
                     }}>
                       {group.label}
                     </span>
@@ -202,7 +202,7 @@ export default function Sidebar() {
                   <ChevronDown
                     className="w-3 h-3"
                     style={{
-                      color: '#555',
+                      color: '#8A8378',
                       transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
                       transition: 'transform 0.2s',
                     }}
@@ -232,14 +232,14 @@ export default function Sidebar() {
                       >
                         <Icon
                           className="w-4 h-4 shrink-0"
-                          style={{ color: active ? '#1A8A9E' : '#666' }}
+                          style={{ color: active ? '#1A8A9E' : '#8A8378' }}
                         />
                         {!collapsed && (
                           <span style={{
                             fontFamily: 'Jost, sans-serif',
                             fontSize: 13,
                             fontWeight: active ? 400 : 300,
-                            color: active ? '#FAFAF8' : '#7A7068',
+                            color: active ? '#1A1915' : '#5A534A',
                             letterSpacing: '0.01em',
                           }}>
                             {label}
@@ -259,7 +259,7 @@ export default function Sidebar() {
       <div
         className="shrink-0 flex flex-col gap-1"
         style={{
-          borderTop: '1px solid #2A2720',
+          borderTop: '1px solid #D0CCC6',
           padding: collapsed ? '12px 0' : '12px 8px',
         }}
       >
@@ -305,13 +305,13 @@ export default function Sidebar() {
             cursor: 'pointer',
           }}
         >
-          <LogOut className="w-4 h-4 shrink-0" style={{ color: '#555' }} />
+          <LogOut className="w-4 h-4 shrink-0" style={{ color: '#8A8378' }} />
           {!collapsed && (
             <span style={{
               fontFamily: 'Jost, sans-serif',
               fontSize: 13,
               fontWeight: 300,
-              color: '#555',
+              color: '#8A8378',
             }}>
               {signingOut ? 'Signing out…' : 'Sign Out'}
             </span>

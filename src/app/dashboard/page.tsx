@@ -69,6 +69,63 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
+      {/* CORTEX Hero Banner */}
+      <div className="rounded-2xl overflow-hidden" style={{ background: '#1A1915' }}>
+        <div className="px-8 pt-8 pb-6">
+          <p style={{
+            fontFamily: '"Cormorant Garamond", Georgia, serif',
+            fontStyle: 'italic',
+            fontWeight: 300,
+            fontSize: 'clamp(18px, 2.5vw, 26px)',
+            color: '#1A8A9E',
+            letterSpacing: '0.01em',
+            marginBottom: 28,
+            whiteSpace: 'nowrap',
+          }}>
+            Every letter carries intelligence.
+          </p>
+          <div className="grid grid-cols-6" style={{ borderTop: '1px solid #2A2720' }}>
+            {([
+              { letter: 'C', label: 'COGNITIVE\nCORE' },
+              { letter: 'O', label: 'OPTIMIZATION\nENGINE' },
+              { letter: 'R', label: 'REASONING\nLAYER' },
+              { letter: 'T', label: 'TRACKING\nINTELLIGENCE' },
+              { letter: 'E', label: 'EVIDENCE-\nBASED' },
+              { letter: 'X', label: 'EXECUTION\nENGINE', teal: true },
+            ] as { letter: string; label: string; teal?: boolean }[]).map(({ letter, label, teal }, i) => (
+              <div
+                key={letter}
+                className="flex flex-col items-center py-5"
+                style={{ borderRight: i < 5 ? '1px solid #2A2720' : 'none' }}
+              >
+                <span style={{
+                  fontFamily: '"Cormorant Garamond", Georgia, serif',
+                  fontWeight: 300,
+                  fontSize: 'clamp(24px, 3.5vw, 48px)',
+                  color: teal ? '#1A8A9E' : '#FAFAF8',
+                  lineHeight: 1,
+                }}>
+                  {letter}
+                </span>
+                <span style={{
+                  fontFamily: 'Jost, sans-serif',
+                  fontSize: 8,
+                  fontWeight: 400,
+                  letterSpacing: '0.15em',
+                  color: '#555',
+                  textAlign: 'center',
+                  marginTop: 10,
+                  lineHeight: 1.6,
+                  whiteSpace: 'pre-line',
+                }}>
+                  {label}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-[#1A1915]">Dashboard</h1>
