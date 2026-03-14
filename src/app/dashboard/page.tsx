@@ -69,10 +69,10 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* CORTEX Hero Banner */}
-      <div className="rounded-2xl overflow-hidden">
+      {/* CORTEX Hero Banner — all smoke, seamless */}
+      <div className="rounded-2xl overflow-hidden" style={{ background: '#E8E5E0' }}>
         {/* Subtitle */}
-        <div style={{ background: '#E8E5E0', padding: '22px 32px 18px', textAlign: 'center' }}>
+        <div style={{ padding: '20px 32px 14px', textAlign: 'center' }}>
           <p style={{
             fontFamily: 'Jost, sans-serif',
             fontSize: 10,
@@ -85,7 +85,7 @@ export default async function DashboardPage() {
           </p>
         </div>
         {/* Letter Grid */}
-        <div className="grid grid-cols-6">
+        <div className="grid grid-cols-6" style={{ borderTop: '1px solid #D0CCC6' }}>
           {([
             { letter: 'C', label: 'COGNITIVE\nCORE' },
             { letter: 'O', label: 'OPTIMIZATION\nENGINE' },
@@ -98,15 +98,14 @@ export default async function DashboardPage() {
               key={letter}
               className="flex flex-col items-center py-5"
               style={{
-                background: teal ? '#1A8A9E' : '#E8E5E0',
-                borderRight: !teal && i < 4 ? '1px solid #D0CCC6' : 'none',
+                borderRight: i < 5 ? '1px solid #D0CCC6' : 'none',
               }}
             >
               <span style={{
                 fontFamily: '"Cormorant Garamond", Georgia, serif',
                 fontWeight: 300,
                 fontSize: 'clamp(24px, 3.5vw, 48px)',
-                color: teal ? '#FAFAF8' : '#1A8A9E',
+                color: teal ? '#1A8A9E' : '#C4B8A8',
                 lineHeight: 1,
               }}>
                 {letter}
@@ -116,7 +115,7 @@ export default async function DashboardPage() {
                 fontSize: 8,
                 fontWeight: 400,
                 letterSpacing: '0.15em',
-                color: teal ? 'rgba(250,250,248,0.65)' : '#8A8378',
+                color: '#A09488',
                 textAlign: 'center',
                 marginTop: 10,
                 lineHeight: 1.6,
