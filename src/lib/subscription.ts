@@ -5,7 +5,7 @@ export const FREE_LIMITS = {
   stackItems: 5,
   interactionChecksPerDay: 3,
   reminderCount: 3,
-  aiChatEnabled: false,
+  aiChatEnabled: true,
 } as const
 
 export async function getUserSubscription(): Promise<SubscriptionTier> {
