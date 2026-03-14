@@ -70,7 +70,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* CORTEX Hero Banner — all smoke, seamless */}
-      <div className="rounded-2xl overflow-hidden" style={{ background: '#E8E5E0' }}>
+      <div className="rounded-2xl overflow-hidden" style={{ background: '#B0AAA0' }}>
         {/* Subtitle */}
         <div style={{ padding: '20px 32px 14px', textAlign: 'center' }}>
           <p style={{
@@ -79,13 +79,13 @@ export default async function DashboardPage() {
             fontWeight: 400,
             letterSpacing: '0.35em',
             textTransform: 'uppercase',
-            color: '#8A8378',
+            color: 'rgba(250,250,248,0.6)',
           }}>
             AI-Powered Peptide Intelligence Engine
           </p>
         </div>
         {/* Letter Grid */}
-        <div className="grid grid-cols-6" style={{ borderTop: '1px solid #D0CCC6' }}>
+        <div className="grid grid-cols-6" style={{ borderTop: '1px solid #9A9490' }}>
           {([
             { letter: 'C', label: 'COGNITIVE\nCORE' },
             { letter: 'O', label: 'OPTIMIZATION\nENGINE' },
@@ -98,14 +98,14 @@ export default async function DashboardPage() {
               key={letter}
               className="flex flex-col items-center py-5"
               style={{
-                borderRight: i < 5 ? '1px solid #D0CCC6' : 'none',
+                borderRight: i < 5 ? '1px solid #9A9490' : 'none',
               }}
             >
               <span style={{
                 fontFamily: '"Cormorant Garamond", Georgia, serif',
                 fontWeight: 300,
                 fontSize: 'clamp(24px, 3.5vw, 48px)',
-                color: teal ? '#1A8A9E' : '#C4B8A8',
+                color: teal ? '#1A8A9E' : '#FAFAF8',
                 lineHeight: 1,
               }}>
                 {letter}
@@ -115,7 +115,7 @@ export default async function DashboardPage() {
                 fontSize: 8,
                 fontWeight: 400,
                 letterSpacing: '0.15em',
-                color: '#A09488',
+                color: 'rgba(250,250,248,0.55)',
                 textAlign: 'center',
                 marginTop: 10,
                 lineHeight: 1.6,

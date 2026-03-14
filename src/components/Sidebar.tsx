@@ -104,8 +104,8 @@ export default function Sidebar() {
       className="hidden md:flex flex-col fixed left-0 top-0 h-screen z-50 transition-all duration-300"
       style={{
         width: collapsed ? 60 : 240,
-        background: '#E8E5E0',
-        borderRight: '1px solid #D0CCC6',
+        background: '#B0AAA0',
+        borderRight: '1px solid #9A9490',
       }}
     >
       {/* Logo */}
@@ -114,7 +114,7 @@ export default function Sidebar() {
         style={{
           justifyContent: collapsed ? 'center' : 'space-between',
           padding: collapsed ? '18px 0' : '18px 20px',
-          borderBottom: '1px solid #D0CCC6',
+          borderBottom: '1px solid #9A9490',
           minHeight: 64,
         }}
       >
@@ -259,7 +259,7 @@ export default function Sidebar() {
       <div
         className="shrink-0 flex flex-col gap-1"
         style={{
-          borderTop: '1px solid #D0CCC6',
+          borderTop: '1px solid #9A9490',
           padding: collapsed ? '12px 0' : '12px 8px',
         }}
       >
