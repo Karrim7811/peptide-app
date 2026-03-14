@@ -1,9 +1,8 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import Link from 'next/link'
 import {
-  Search, ChevronDown, ChevronUp, ArrowLeft, Library,
+  Search, ChevronDown, ChevronUp, Library,
   AlertTriangle, Pill, Zap, Heart, Brain, Shield, Dna,
   Star, Info, BookOpen,
 } from 'lucide-react'
@@ -198,70 +197,60 @@ export default function ReferencePage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8]">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-[#FAFAF8]/95 backdrop-blur border-b border-slate-800">
-        <div className="max-w-5xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-3 mb-4">
-            <Link href="/dashboard" className="p-1.5 rounded-lg text-[#B0AAA0] hover:text-[#1A1915] hover:bg-white transition-colors">
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-            <div className="flex items-center gap-2.5">
-              <div className="bg-[#1A8A9E]/12 p-2 rounded-lg">
-                <Library className="w-5 h-5 text-[#1A8A9E]" />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-[#1A1915]">Peptide Bible</h1>
-                <p className="text-[#B0AAA0] text-xs">{PEPTIDE_KNOWLEDGE.length} peptides · complete reference guide</p>
-              </div>
-            </div>
+    <div>
+      {/* Search + filters bar */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-xl font-semibold text-[#1A1915]" style={{ fontFamily: "'Gill Sans','Gill Sans MT',Calibri,sans-serif" }}>Peptide Bible</h1>
+            <p className="text-[#B0AAA0] text-xs mt-0.5">{PEPTIDE_KNOWLEDGE.length} peptides · complete reference guide</p>
           </div>
+        </div>
 
-          {/* Search */}
-          <div className="relative mb-3">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B0AAA0]" />
-            <input
-              type="text"
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-              placeholder="Search peptides, effects, goals..."
-              className="w-full bg-white border border-[#E8E5E0] rounded-lg pl-9 pr-4 py-2.5 text-sm text-[#1A1915] placeholder-[#B0AAA0] focus:outline-none focus:border-[#1A8A9E] transition-colors"
-            />
-          </div>
+        {/* Search */}
+        <div className="relative mb-3">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B0AAA0]" />
+          <input
+            type="text"
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            placeholder="Search peptides, effects, goals..."
+            className="w-full bg-white border border-[#E8E5E0] rounded-lg pl-9 pr-4 py-2.5 text-sm text-[#1A1915] placeholder-[#B0AAA0] focus:outline-none focus:border-[#1A8A9E] transition-colors"
+          />
+        </div>
 
-          {/* Category filters */}
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+        {/* Category filters */}
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          <button
+            onClick={() => setActiveCategory(null)}
+            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+              activeCategory === null
+                ? 'bg-[#1A8A9E] text-white border-[#1A8A9E]'
+                : 'bg-white text-[#B0AAA0] border-[#E8E5E0] hover:border-[#B0AAA0]'
+            }`}
+          >
+            All ({PEPTIDE_KNOWLEDGE.length})
+          </button>
+          {GOAL_CATEGORIES.map(cat => (
             <button
-              onClick={() => setActiveCategory(null)}
-              className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                activeCategory === null
-                  ? 'bg-[#1A8A9E] text-[#1A1915] border-indigo-600'
+              key={cat}
+              onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
+              className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                activeCategory === cat
+                  ? `${CATEGORY_COLORS[cat]} border-current`
                   : 'bg-white text-[#B0AAA0] border-[#E8E5E0] hover:border-[#B0AAA0]'
               }`}
             >
-              All ({PEPTIDE_KNOWLEDGE.length})
+              {CATEGORY_ICONS[cat]}
+              {cat}
+              <span className="text-[10px] opacity-70">({categoryCounts[cat]})</span>
             </button>
-            {GOAL_CATEGORIES.map(cat => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
-                className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                  activeCategory === cat
-                    ? `${CATEGORY_COLORS[cat]} border-current`
-                    : 'bg-white text-[#B0AAA0] border-[#E8E5E0] hover:border-[#B0AAA0]'
-                }`}
-              >
-                {CATEGORY_ICONS[cat]}
-                {cat}
-                <span className="text-[10px] opacity-70">({categoryCounts[cat]})</span>
-              </button>
-            ))}
-          </div>
+          ))}
         </div>
       </div>
 
       {/* Results */}
-      <div className="max-w-5xl mx-auto px-4 py-6">
+      <div>
         <div className="flex items-center justify-between mb-4">
           <p className="text-[#B0AAA0] text-sm">
             {filtered.length === PEPTIDE_KNOWLEDGE.length
