@@ -131,7 +131,7 @@ export default async function DashboardPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-[#1A1915]">Dashboard</h1>
-        <p className="text-[#B0AAA0] mt-1">
+        <p className="text-[#FAFAF8]/70 mt-1">
           {format(new Date(), 'EEEE, MMMM d, yyyy')}
         </p>
       </div>
@@ -167,7 +167,7 @@ export default async function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Today's Reminders */}
-        <div className="lg:col-span-1 bg-white border border-[#E8E5E0] rounded-xl p-6">
+        <div className="lg:col-span-1 bg-[#FAFAF8] border border-[#9A9490]/40 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-semibold text-[#1A1915] flex items-center gap-2">
               <Bell className="w-4 h-4 text-[#1A8A9E]" />
@@ -181,7 +181,7 @@ export default async function DashboardPage() {
           {todayReminders.length === 0 ? (
             <div className="text-center py-8">
               <Clock className="w-8 h-8 text-[#B0AAA0] mx-auto mb-2" />
-              <p className="text-[#B0AAA0] text-sm">No reminders for today</p>
+              <p className="text-[#8A8378] text-sm">No reminders for today</p>
               <Link href="/reminders" className="text-[#1A8A9E] text-xs hover:underline mt-1 inline-block">
                 Add a reminder
               </Link>
@@ -191,7 +191,7 @@ export default async function DashboardPage() {
               {todayReminders.map((reminder: Reminder) => (
                 <div
                   key={reminder.id}
-                  className="flex items-center justify-between bg-[#F2F0ED] rounded-lg px-3 py-2.5"
+                  className="flex items-center justify-between bg-[#E8E5E0] rounded-lg px-3 py-2.5"
                 >
                   <div>
                     <p className="text-sm font-medium text-[#1A1915]">
@@ -214,7 +214,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Active Stack */}
-        <div className="lg:col-span-1 bg-white border border-[#E8E5E0] rounded-xl p-6">
+        <div className="lg:col-span-1 bg-[#FAFAF8] border border-[#9A9490]/40 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-semibold text-[#1A1915] flex items-center gap-2">
               <Layers className="w-4 h-4 text-[#1A8A9E]" />
@@ -231,7 +231,7 @@ export default async function DashboardPage() {
           {activeStack.length === 0 ? (
             <div className="text-center py-8">
               <FlaskConical className="w-8 h-8 text-[#B0AAA0] mx-auto mb-2" />
-              <p className="text-[#B0AAA0] text-sm">No items in your stack</p>
+              <p className="text-[#8A8378] text-sm">No items in your stack</p>
               <Link href="/stack" className="text-[#1A8A9E] text-xs hover:underline mt-1 inline-block">
                 Add your first item
               </Link>
@@ -241,7 +241,7 @@ export default async function DashboardPage() {
               {activeStack.slice(0, 5).map((item: StackItem) => (
                 <div
                   key={item.id}
-                  className="flex items-center justify-between bg-[#F2F0ED] rounded-lg px-3 py-2.5"
+                  className="flex items-center justify-between bg-[#E8E5E0] rounded-lg px-3 py-2.5"
                 >
                   <div>
                     <p className="text-sm font-medium text-[#1A1915]">{item.name}</p>
@@ -271,7 +271,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Recent Logs */}
-        <div className="lg:col-span-1 bg-white border border-[#E8E5E0] rounded-xl p-6">
+        <div className="lg:col-span-1 bg-[#FAFAF8] border border-[#9A9490]/40 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-semibold text-[#1A1915] flex items-center gap-2">
               <BookOpen className="w-4 h-4 text-[#1A8A9E]" />
@@ -285,7 +285,7 @@ export default async function DashboardPage() {
           {logs.length === 0 ? (
             <div className="text-center py-8">
               <BookOpen className="w-8 h-8 text-[#B0AAA0] mx-auto mb-2" />
-              <p className="text-[#B0AAA0] text-sm">No doses logged yet</p>
+              <p className="text-[#8A8378] text-sm">No doses logged yet</p>
               <Link href="/log" className="text-[#1A8A9E] text-xs hover:underline mt-1 inline-block">
                 Log your first dose
               </Link>
@@ -295,7 +295,7 @@ export default async function DashboardPage() {
               {logs.slice(0, 5).map((log: DoseLog) => (
                 <div
                   key={log.id}
-                  className="bg-[#F2F0ED] rounded-lg px-3 py-2.5"
+                  className="bg-[#E8E5E0] rounded-lg px-3 py-2.5"
                 >
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium text-[#1A1915]">
@@ -316,7 +316,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white border border-[#E8E5E0] rounded-xl p-6">
+      <div className="bg-[#FAFAF8] border border-[#9A9490]/40 rounded-xl p-6">
         <h2 className="font-semibold text-[#1A1915] mb-4">Quick Actions</h2>
         <div className="flex flex-wrap gap-3">
           <Link
@@ -328,21 +328,21 @@ export default async function DashboardPage() {
           </Link>
           <Link
             href="/log"
-            className="flex items-center gap-2 bg-[#F2F0ED] hover:bg-[#E8E5E0] text-[#3A3730] px-4 py-2 rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 bg-[#E8E5E0] hover:bg-[#D0CCC6] text-[#1A1915] px-4 py-2 rounded-lg text-sm transition-colors"
           >
             <BookOpen className="w-4 h-4" />
             Log a Dose
           </Link>
           <Link
             href="/stack"
-            className="flex items-center gap-2 bg-[#F2F0ED] hover:bg-[#E8E5E0] text-[#3A3730] px-4 py-2 rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 bg-[#E8E5E0] hover:bg-[#D0CCC6] text-[#1A1915] px-4 py-2 rounded-lg text-sm transition-colors"
           >
             <Layers className="w-4 h-4" />
             Update Stack
           </Link>
           <Link
             href="/reminders"
-            className="flex items-center gap-2 bg-[#F2F0ED] hover:bg-[#E8E5E0] text-[#3A3730] px-4 py-2 rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 bg-[#E8E5E0] hover:bg-[#D0CCC6] text-[#1A1915] px-4 py-2 rounded-lg text-sm transition-colors"
           >
             <Bell className="w-4 h-4" />
             Add Reminder
@@ -372,16 +372,16 @@ function StatCard({
   return (
     <Link
       href={href}
-      className="bg-white border border-[#E8E5E0] rounded-xl p-5 hover:border-[#1A8A9E]/50 transition-colors group"
+      className="bg-[#FAFAF8] border border-[#9A9490]/40 rounded-xl p-5 hover:border-[#1A8A9E]/50 transition-colors group"
     >
       <div className="flex items-center justify-between mb-3">
         {icon}
-        <ChevronRight className="w-4 h-4 text-[#B0AAA0] group-hover:text-[#1A8A9E] transition-colors" />
+        <ChevronRight className="w-4 h-4 text-[#8A8378] group-hover:text-[#1A8A9E] transition-colors" />
       </div>
       <p className={`font-bold ${isLink ? 'text-lg text-[#1A8A9E]' : 'text-2xl text-[#1A1915]'}`}>
         {value}
       </p>
-      <p className="text-xs text-[#B0AAA0] mt-1">{label}</p>
+      <p className="text-xs text-[#8A8378] mt-1">{label}</p>
     </Link>
   )
 }

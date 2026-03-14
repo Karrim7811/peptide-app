@@ -24,8 +24,8 @@ html {
 }
 
 body {
-  background-color: var(--cx-parchment);
-  color: var(--cx-black);
+  background-color: var(--cx-stone);
+  color: var(--cx-parchment);
   font-family: 'Jost', sans-serif;
   font-weight: 300;
   min-height: 100vh;
