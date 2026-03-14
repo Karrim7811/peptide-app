@@ -18,28 +18,28 @@ export default function CortexStrip() {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            padding: '10px 8px',
+            padding: '16px 8px',
             borderRight: i < 5 ? '0.5px solid rgba(176,170,160,0.12)' : 'none',
           }}
         >
           <span style={{
-            fontSize: 28,
+            fontSize: 72,
             fontWeight: 300,
-            fontFamily: "'Gill Sans', 'Gill Sans MT', Calibri, sans-serif",
-            color: teal ? '#1A8A9E' : 'rgba(255,255,255,0.55)',
+            fontFamily: "'Cormorant Garamond', Georgia, serif",
+            color: teal ? '#1A8A9E' : 'rgba(250,250,248,0.55)',
             lineHeight: 1,
-            letterSpacing: '-0.02em',
+            letterSpacing: '-0.01em',
           }}>{letter}</span>
           <span style={{
-            fontSize: 6.5,
+            fontSize: 7,
             fontWeight: 400,
             fontFamily: "'Gill Sans', 'Gill Sans MT', Calibri, sans-serif",
-            letterSpacing: '0.13em',
+            letterSpacing: '0.18em',
             textTransform: 'uppercase' as const,
-            color: 'rgba(255,255,255,0.20)',
-            marginTop: 4,
+            color: teal ? '#1A8A9E' : 'rgba(26,138,158,0.7)',
+            marginTop: 6,
             textAlign: 'center' as const,
-            lineHeight: 1.3,
+            lineHeight: 1.4,
             whiteSpace: 'pre-line' as const,
           }}>{label}</span>
         </div>
