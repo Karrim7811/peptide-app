@@ -10,7 +10,6 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
-  DollarSign,
   Shield,
   ChevronDown,
   ChevronUp,
@@ -338,14 +337,7 @@ const PRICE_COLORS: Record<string, string> = {
 export default function VendorsPage() {
   const router = useRouter()
   const [expanded, setExpanded] = useState<number | null>(null)
-  const [affiliateOnly, setAffiliateOnly] = useState(false)
-
-  const filteredVendors = affiliateOnly
-    ? VENDORS.filter((v) => v.affiliate.hasProgram && (v.status === 'operational'))
-    : VENDORS
-
   const operationalCount = VENDORS.filter((v) => v.status === 'operational').length
-  const affiliateCount = VENDORS.filter((v) => v.affiliate.hasProgram).length
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -397,14 +389,10 @@ export default function VendorsPage() {
       </div>
 
       {/* Stats bar */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         <div className="bg-white border border-[#E8E5E0] rounded-xl p-4 text-center">
           <p className="text-2xl font-bold text-emerald-400">{operationalCount}</p>
           <p className="text-xs text-[#B0AAA0] mt-1">Operational</p>
-        </div>
-        <div className="bg-white border border-[#E8E5E0] rounded-xl p-4 text-center">
-          <p className="text-2xl font-bold text-[#1A8A9E]">{affiliateCount}</p>
-          <p className="text-xs text-[#B0AAA0] mt-1">Affiliate Programs</p>
         </div>
         <div className="bg-white border border-[#E8E5E0] rounded-xl p-4 text-center">
           <p className="text-2xl font-bold text-red-400">{CLOSED_VENDORS.length}</p>
@@ -412,27 +400,9 @@ export default function VendorsPage() {
         </div>
       </div>
 
-      {/* Filter */}
-      <div className="flex items-center gap-3">
-        <button
-          onClick={() => setAffiliateOnly(!affiliateOnly)}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
-            affiliateOnly
-              ? 'bg-[#1A8A9E]/12 border-[#1A8A9E]/40 text-[#1A8A9E]'
-              : 'bg-white border-[#E8E5E0] text-[#B0AAA0] hover:text-[#1A1915]'
-          }`}
-        >
-          <DollarSign className="w-4 h-4" />
-          Affiliate Programs Only
-        </button>
-        <span className="text-xs text-[#B0AAA0]">
-          {filteredVendors.length} vendors shown
-        </span>
-      </div>
-
       {/* Vendor Cards */}
       <div className="space-y-4">
-        {filteredVendors.map((vendor) => {
+        {VENDORS.map((vendor) => {
           const isExpanded = expanded === vendor.rank
           const statusCfg = STATUS_BADGE[vendor.status]
           return (
@@ -459,12 +429,6 @@ export default function VendorsPage() {
                         {statusCfg.icon}
                         {statusCfg.label}
                       </span>
-                      {vendor.affiliate.hasProgram && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-[#1A8A9E]/12 text-[#1A8A9E] border border-[#1A8A9E]/30">
-                          <DollarSign className="w-3 h-3" />
-                          Affiliate
-                        </span>
-                      )}
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3 mb-3">
@@ -550,47 +514,6 @@ export default function VendorsPage() {
                         ))}
                       </ul>
                     </div>
-                  </div>
-
-                  {/* Affiliate program details */}
-                  <div className={`rounded-xl p-4 border ${vendor.affiliate.hasProgram ? 'bg-[#1A8A9E]/8 border-[#1A8A9E]/20' : 'bg-white border-[#E8E5E0]'}`}>
-                    <p className="text-xs font-semibold uppercase tracking-wide mb-2 flex items-center gap-2">
-                      <DollarSign className="w-3.5 h-3.5" />
-                      <span className={vendor.affiliate.hasProgram ? 'text-[#1A8A9E]' : 'text-[#B0AAA0]'}>
-                        Affiliate Program
-                      </span>
-                    </p>
-                    {vendor.affiliate.hasProgram ? (
-                      <div className="space-y-2">
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <p className="text-xs text-[#B0AAA0]">Commission</p>
-                            <p className="text-sm font-bold text-[#1A8A9E]">{vendor.affiliate.commission}</p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-[#B0AAA0]">Cookie Duration</p>
-                            <p className="text-sm font-bold text-[#1A1915]">{vendor.affiliate.cookieDuration}</p>
-                          </div>
-                        </div>
-                        <div>
-                          <p className="text-xs text-[#B0AAA0]">Notes</p>
-                          <p className="text-sm text-[#3A3730]">{vendor.affiliate.notes}</p>
-                        </div>
-                        {vendor.affiliate.signupUrl && (
-                          <a
-                            href={`https://${vendor.affiliate.signupUrl}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 text-xs text-[#1A8A9E] hover:text-[#1A8A9E] transition-colors"
-                          >
-                            <ExternalLink className="w-3 h-3" />
-                            Apply at {vendor.affiliate.signupUrl}
-                          </a>
-                        )}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-[#B0AAA0]">{vendor.affiliate.notes}</p>
-                    )}
                   </div>
 
                   <p className="text-xs text-[#B0AAA0] flex items-center gap-1">
