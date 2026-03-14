@@ -23,11 +23,12 @@ export default function CortexStrip() {
           }}
         >
           <span style={{
-            fontSize: 18,
+            fontSize: 28,
             fontWeight: 300,
             fontFamily: "'Gill Sans', 'Gill Sans MT', Calibri, sans-serif",
             color: teal ? '#1A8A9E' : 'rgba(255,255,255,0.55)',
             lineHeight: 1,
+            letterSpacing: '-0.02em',
           }}>{letter}</span>
           <span style={{
             fontSize: 6.5,

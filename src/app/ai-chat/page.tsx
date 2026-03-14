@@ -208,7 +208,7 @@ export default function AiChatPage() {
         <div className="flex items-start gap-2.5 bg-[#1A8A9E]/8 border border-[#1A8A9E]/25 rounded-xl px-4 py-3 mb-4 shrink-0">
           <FlaskConical className="w-4 h-4 text-[#1A8A9E] shrink-0 mt-0.5" />
           <p className="text-sm text-[#1A8A9E]">
-            <span className="font-medium text-indigo-200">Your active stack detected:</span>{' '}
+            <span className="font-medium text-[#1A1915]">Your active stack detected:</span>{' '}
             <span className="text-[#1A8A9E]/80">{stackNames.join(', ')}</span>
           </p>
         </div>
@@ -225,7 +225,7 @@ export default function AiChatPage() {
                 <div className="shrink-0 w-8 h-8 rounded-full bg-[#1A8A9E]/12 border border-[#1A8A9E]/30 flex items-center justify-center mt-0.5">
                   <Bot className="w-4 h-4 text-[#1A8A9E]" />
                 </div>
-                <div className="bg-white text-slate-100 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[80%] border border-[#E8E5E0]">
+                <div className="bg-white text-[#1A8A9E] rounded-2xl rounded-tl-sm px-4 py-3 max-w-[80%] border border-[#E8E5E0]">
                   <p className="text-sm whitespace-pre-wrap leading-relaxed">
                     {renderContent(WELCOME_MESSAGE)}
                   </p>
@@ -282,7 +282,7 @@ export default function AiChatPage() {
                     className={`px-4 py-3 max-w-[80%] text-sm leading-relaxed whitespace-pre-wrap ${
                       msg.role === 'user'
                         ? 'bg-[#1A8A9E] text-[#1A1915] rounded-2xl rounded-tr-sm'
-                        : 'bg-white text-slate-100 rounded-2xl rounded-tl-sm border border-[#E8E5E0]'
+                        : 'bg-white text-[#1A8A9E] rounded-2xl rounded-tl-sm border border-[#E8E5E0]'
                     }`}
                   >
                     {msg.role === 'assistant' ? renderContent(msg.content) : msg.content}
