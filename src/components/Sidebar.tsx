@@ -4,72 +4,64 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
-  LayoutDashboard,
-  Shield,
-  Layers,
-  Bell,
-  BookOpen,
-  LogOut,
-  Calculator,
-  FlaskRound,
-  MapPin,
-  Package,
-  FileText,
-  AlertCircle,
-  MessageSquare,
-  RotateCcw,
-  ChevronLeft,
-  ChevronRight,
-  ChevronDown,
-  Library,
-  Zap,
-  Scale,
-  Store,
-  Sparkles,
+  LayoutDashboard, MessageSquare, Shield, Sparkles,
+  Layers, FlaskRound, Calculator, RotateCcw, MapPin,
+  BookOpen, Bell, Package, AlertCircle, FileText,
+  Library, Scale, Store, LogOut, Zap,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
-const NAV_GROUPS = [
+const FONT = "'Gill Sans', 'Gill Sans MT', Calibri, sans-serif"
+
+const ICON_RAIL = [
+  { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+  { href: '/ai-chat', icon: MessageSquare, label: 'Peptide AI' },
+  { href: '/checker', icon: Shield, label: 'Interaction Checker' },
+  { href: '/stack-finder', icon: Sparkles, label: 'Stack Finder' },
+  null,
+  { href: '/stack', icon: Layers, label: 'My Stack' },
+  { href: '/dosing', icon: Calculator, label: 'Dosage Calculator' },
+  { href: '/cycle', icon: RotateCcw, label: 'Cycle Tracker' },
+  { href: '/sites', icon: MapPin, label: 'Injection Sites' },
+] as const
+
+const NAV_SECTIONS = [
   {
     label: 'Intelligence',
-    color: '#1A8A9E',
     links: [
-      { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-      { href: '/ai-chat', label: 'Peptide AI', icon: MessageSquare },
-      { href: '/checker', label: 'Interaction Checker', icon: Shield },
-      { href: '/stack-finder', label: 'Stack Finder', icon: Sparkles },
+      { href: '/dashboard', label: 'Dashboard' },
+      { href: '/ai-chat', label: 'Peptide AI' },
+      { href: '/checker', label: 'Interaction Checker' },
+      { href: '/stack-finder', label: 'Stack Finder' },
     ],
   },
   {
     label: 'My Protocol',
-    color: '#B0AAA0',
     links: [
-      { href: '/stack', label: 'My Stack', icon: Layers },
-      { href: '/reconstitution', label: 'Reconstitution', icon: FlaskRound },
-      { href: '/dosing', label: 'Dosage Calculator', icon: Calculator },
-      { href: '/cycle', label: 'Cycle Tracker', icon: RotateCcw },
-      { href: '/sites', label: 'Injection Sites', icon: MapPin },
+      { href: '/stack', label: 'My Stack' },
+      { href: '/reconstitution', label: 'Reconstitution' },
+      { href: '/dosing', label: 'Dosage Calculator' },
+      { href: '/cycle', label: 'Cycle Tracker' },
+      { href: '/sites', label: 'Injection Sites' },
     ],
   },
   {
     label: 'Tracking',
-    color: '#B0AAA0',
     links: [
-      { href: '/log', label: 'Dose Log', icon: BookOpen },
-      { href: '/reminders', label: 'Reminders', icon: Bell },
-      { href: '/inventory', label: 'Fridge Inventory', icon: Package },
-      { href: '/side-effects', label: 'Side Effect Log', icon: AlertCircle },
-      { href: '/notes', label: 'Research Notes', icon: FileText },
+      { href: '/log', label: 'Dose Log' },
+      { href: '/reminders', label: 'Reminders' },
+      { href: '/inventory', label: 'Fridge Inventory' },
+      { href: '/side-effects', label: 'Side Effect Log' },
+      { href: '/notes', label: 'Research Notes' },
     ],
   },
   {
     label: 'Reference',
-    color: '#B0AAA0',
     links: [
-      { href: '/reference', label: 'Peptide Bible', icon: Library },
-      { href: '/stacks', label: 'Popular Stacks', icon: Layers },
-      { href: '/regulatory', label: 'Legal & Regulatory', icon: Scale },
-      { href: '/vendors', label: 'Top Vendors', icon: Store },
+      { href: '/reference', label: 'Peptide Bible' },
+      { href: '/stacks', label: 'Popular Stacks' },
+      { href: '/regulatory', label: 'Legal & Regulatory' },
+      { href: '/vendors', label: 'Top Vendors' },
     ],
   },
 ]
@@ -77,19 +69,7 @@ const NAV_GROUPS = [
 export default function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
-  const [collapsed, setCollapsed] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
-    Intelligence: true,
-    'My Protocol': true,
-    Tracking: false,
-    Reference: false,
-  })
-
-  function toggleGroup(label: string) {
-    if (collapsed) return
-    setOpenGroups((prev) => ({ ...prev, [label]: !prev[label] }))
-  }
 
   async function handleSignOut() {
     setSigningOut(true)
@@ -100,224 +80,76 @@ export default function Sidebar() {
   }
 
   return (
-    <aside
-      className="hidden md:flex flex-col fixed left-0 top-0 h-screen z-50 transition-all duration-300"
-      style={{
-        width: collapsed ? 60 : 240,
-        background: '#B0AAA0',
-        borderRight: '1px solid #9A9490',
-      }}
-    >
-      {/* Logo */}
-      <div
-        className="flex items-center shrink-0"
-        style={{
-          justifyContent: collapsed ? 'center' : 'space-between',
-          padding: collapsed ? '18px 0' : '18px 20px',
-          borderBottom: '1px solid #9A9490',
-          minHeight: 64,
-        }}
-      >
-        {!collapsed && (
-          <Link href="/dashboard" style={{ textDecoration: 'none', lineHeight: 1 }}>
-            <div style={{
-              fontFamily: 'Jost, sans-serif',
-              fontSize: 9,
-              fontWeight: 300,
-              letterSpacing: '0.45em',
-              textTransform: 'uppercase',
-              color: 'rgba(250,250,248,0.55)',
-              marginBottom: 3,
-            }}>
-              Peptide
-            </div>
-            <div style={{
-              fontFamily: '"Cormorant Garamond", Georgia, serif',
-              fontWeight: 300,
-              fontSize: 28,
-              letterSpacing: '0.12em',
-              color: '#FAFAF8',
-              lineHeight: 1,
-            }}>
-              CORTE<span style={{ color: '#1A8A9E' }}>X</span>
-            </div>
-          </Link>
-        )}
-        {collapsed && (
-          <Link href="/dashboard" style={{ textDecoration: 'none' }}>
-            <div style={{
-              fontFamily: '"Cormorant Garamond", Georgia, serif',
-              fontWeight: 300,
-              fontSize: 22,
-              letterSpacing: '0.08em',
-              color: '#FAFAF8',
-            }}>
-              C<span style={{ color: '#1A8A9E' }}>X</span>
-            </div>
-          </Link>
-        )}
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="p-1 rounded transition-colors"
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#FAFAF8' }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = '#1A8A9E')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = '#FAFAF8')}
-        >
-          {collapsed
-            ? <ChevronRight className="w-3.5 h-3.5" />
-            : <ChevronLeft className="w-3.5 h-3.5" />}
-        </button>
+    <div className="hidden md:flex fixed left-0 top-0 h-screen z-50">
+      {/* ICON RAIL — 56px, cortex-black */}
+      <div style={{ width: 56, background: '#1A1915', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 0', flexShrink: 0 }}>
+        <Link href="/dashboard" style={{ textDecoration: 'none', marginBottom: 6 }}>
+          <div style={{ width: 32, height: 32, border: '1px solid #1A8A9E', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1A8A9E', fontFamily: FONT, fontSize: 12, fontWeight: 500, letterSpacing: '0.03em' }}>
+            Cx
+          </div>
+        </Link>
+        <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#1A8A9E', marginBottom: 18 }} />
+
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, width: '100%', paddingLeft: 10, paddingRight: 10 }}>
+          {ICON_RAIL.map((item, i) => {
+            if (!item) return <div key={`div-${i}`} style={{ width: 24, height: 1, background: 'rgba(176,170,160,0.2)', margin: '4px auto' }} />
+            const active = pathname === item.href || pathname.startsWith(item.href + '/')
+            const Icon = item.icon
+            return (
+              <Link key={item.href} href={item.href} title={item.label} style={{ width: 36, height: 36, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', background: active ? 'rgba(26,138,158,0.15)' : 'none', textDecoration: 'none', transition: 'background 0.15s' }}>
+                <Icon style={{ width: 15, height: 15, color: active ? '#1A8A9E' : 'rgba(176,170,160,0.5)' }} />
+              </Link>
+            )
+          })}
+        </div>
+
+        <div style={{ width: 30, height: 30, borderRadius: '50%', border: '1px solid #1A8A9E', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1A8A9E', fontFamily: FONT, fontSize: 10, fontWeight: 500, marginTop: 12 }}>
+          KR
+        </div>
       </div>
 
-      {/* Nav */}
-      <nav className="flex-1 overflow-y-auto py-3">
-        {NAV_GROUPS.map((group) => {
-          const isOpen = openGroups[group.label] !== false
-          return (
-            <div key={group.label} className="mb-1">
-              {!collapsed && (
-                <button
-                  onClick={() => toggleGroup(group.label)}
-                  className="flex items-center justify-between w-full"
-                  style={{
-                    padding: '5px 20px',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <div className="flex items-center gap-2">
-                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: group.color, flexShrink: 0 }} />
-                    <span style={{
-                      fontFamily: 'Jost, sans-serif',
-                      fontSize: 9,
-                      fontWeight: 400,
-                      letterSpacing: '0.3em',
-                      textTransform: 'uppercase',
-                      color: 'rgba(250,250,248,0.6)',
-                    }}>
-                      {group.label}
-                    </span>
-                  </div>
-                  <ChevronDown
-                    className="w-3 h-3"
-                    style={{
-                      color: 'rgba(250,250,248,0.6)',
-                      transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                      transition: 'transform 0.2s',
-                    }}
-                  />
-                </button>
-              )}
+      {/* NAV PANEL — 200px, sidebar-bg */}
+      <div style={{ width: 200, background: '#E8E2DA', borderRight: '0.5px solid rgba(176,170,160,0.30)', display: 'flex', flexDirection: 'column', overflowY: 'auto', flexShrink: 0 }}>
+        {/* Brand block */}
+        <div style={{ padding: '16px 16px 12px', borderBottom: '0.5px solid rgba(176,170,160,0.30)', flexShrink: 0 }}>
+          <div style={{ fontFamily: FONT, fontSize: 8, fontWeight: 500, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#B0AAA0', marginBottom: 2 }}>Peptide</div>
+          <div style={{ fontFamily: FONT, fontSize: 20, fontWeight: 300, letterSpacing: '0.12em', color: '#1A1915', lineHeight: 1, marginBottom: 3 }}>
+            CORTE<span style={{ color: '#1A8A9E' }}>X</span>
+          </div>
+          <div style={{ fontFamily: FONT, fontSize: 8, fontWeight: 500, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#B0AAA0' }}>Intelligence Engine</div>
+        </div>
 
-              {(isOpen || collapsed) && (
-                <div className="pb-1">
-                  {group.links.map(({ href, label, icon: Icon }) => {
-                    const active = pathname === href || pathname.startsWith(href + '/')
-                    return (
-                      <Link
-                        key={href}
-                        href={href}
-                        title={collapsed ? label : undefined}
-                        className="flex items-center mx-2 rounded-lg transition-colors"
-                        style={{
-                          gap: collapsed ? 0 : 10,
-                          justifyContent: collapsed ? 'center' : 'flex-start',
-                          padding: collapsed ? '9px 0' : '7px 12px',
-                          marginBottom: 1,
-                          background: active ? 'rgba(26,138,158,0.12)' : 'none',
-                          borderLeft: active && !collapsed ? '2px solid #1A8A9E' : '2px solid transparent',
-                          textDecoration: 'none',
-                        }}
-                      >
-                        <Icon
-                          className="w-4 h-4 shrink-0"
-                          style={{ color: active ? '#1A8A9E' : 'rgba(250,250,248,0.7)' }}
-                        />
-                        {!collapsed && (
-                          <span style={{
-                            fontFamily: 'Jost, sans-serif',
-                            fontSize: 13,
-                            fontWeight: active ? 400 : 300,
-                            color: active ? '#FAFAF8' : 'rgba(250,250,248,0.65)',
-                            letterSpacing: '0.01em',
-                          }}>
-                            {label}
-                          </span>
-                        )}
-                      </Link>
-                    )
-                  })}
-                </div>
-              )}
+        {/* Nav sections */}
+        <nav style={{ flex: 1, padding: '10px 8px', overflowY: 'auto' }}>
+          {NAV_SECTIONS.map((section) => (
+            <div key={section.label} style={{ marginBottom: 14 }}>
+              <div style={{ fontFamily: FONT, fontSize: 8, fontWeight: 500, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#B0AAA0', padding: '0 10px', marginBottom: 3 }}>
+                {section.label}
+              </div>
+              {section.links.map(({ href, label }) => {
+                const active = pathname === href || pathname.startsWith(href + '/')
+                return (
+                  <Link key={href} href={href} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '7px 10px', borderRadius: 7, textDecoration: 'none', fontSize: 12, fontFamily: FONT, fontWeight: active ? 500 : 400, color: active ? '#1A1915' : '#3A3730', background: active ? 'rgba(26,138,158,0.11)' : 'none', marginBottom: 1, transition: 'background 0.15s' }}>
+                    <div style={{ width: 4, height: 4, borderRadius: '50%', background: active ? '#1A8A9E' : 'transparent', flexShrink: 0 }} />
+                    {label}
+                  </Link>
+                )
+              })}
             </div>
-          )
-        })}
-      </nav>
+          ))}
+        </nav>
 
-      {/* Bottom */}
-      <div
-        className="shrink-0 flex flex-col gap-1"
-        style={{
-          borderTop: '1px solid #9A9490',
-          padding: collapsed ? '12px 0' : '12px 8px',
-        }}
-      >
-        {!collapsed ? (
-          <a
-            href="/pricing"
-            className="flex items-center gap-2 rounded-lg mb-1 transition-colors"
-            style={{
-              padding: '8px 12px',
-              background: 'rgba(26,138,158,0.1)',
-              border: '1px solid rgba(26,138,158,0.25)',
-              textDecoration: 'none',
-            }}
-          >
-            <Zap className="w-3.5 h-3.5 shrink-0" style={{ color: '#1A8A9E' }} />
-            <span style={{
-              fontFamily: 'Jost, sans-serif',
-              fontSize: 12,
-              fontWeight: 400,
-              color: '#1A8A9E',
-              letterSpacing: '0.05em',
-            }}>
-              Upgrade to Pro
-            </span>
+        {/* Bottom */}
+        <div style={{ padding: '10px 8px', borderTop: '0.5px solid rgba(176,170,160,0.30)', flexShrink: 0 }}>
+          <a href="/pricing" style={{ display: 'block', width: '100%', padding: '9px', borderRadius: 7, background: '#1A8A9E', color: '#FAFAF8', fontFamily: FONT, fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textAlign: 'center', textDecoration: 'none', marginBottom: 6 }}>
+            Upgrade to Pro
           </a>
-        ) : (
-          <a href="/pricing" title="Upgrade to Pro" className="flex justify-center py-2 mb-1">
-            <Zap className="w-4 h-4" style={{ color: '#1A8A9E' }} />
-          </a>
-        )}
-
-        <button
-          onClick={handleSignOut}
-          disabled={signingOut}
-          title={collapsed ? 'Sign Out' : undefined}
-          className="flex items-center rounded-lg transition-colors w-full"
-          style={{
-            gap: 8,
-            justifyContent: collapsed ? 'center' : 'flex-start',
-            padding: collapsed ? '9px 0' : '8px 12px',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-          }}
-        >
-          <LogOut className="w-4 h-4 shrink-0" style={{ color: 'rgba(250,250,248,0.6)' }} />
-          {!collapsed && (
-            <span style={{
-              fontFamily: 'Jost, sans-serif',
-              fontSize: 13,
-              fontWeight: 300,
-              color: 'rgba(250,250,248,0.6)',
-            }}>
-              {signingOut ? 'Signing out…' : 'Sign Out'}
-            </span>
-          )}
-        </button>
+          <button onClick={handleSignOut} disabled={signingOut} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '7px 10px', background: 'none', border: 'none', cursor: 'pointer', borderRadius: 7, fontFamily: FONT, fontSize: 12, color: '#B0AAA0' }}>
+            <LogOut style={{ width: 13, height: 13 }} />
+            {signingOut ? 'Signing out…' : 'Sign Out'}
+          </button>
+        </div>
       </div>
-    </aside>
+    </div>
   )
 }

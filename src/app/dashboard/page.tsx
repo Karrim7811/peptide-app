@@ -2,312 +2,173 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { format } from 'date-fns'
-import {
-  Layers,
-  Bell,
-  BookOpen,
-  Shield,
-  ChevronRight,
-  Clock,
-  FlaskConical,
-} from 'lucide-react'
+import { Layers, Bell, BookOpen, Shield, ChevronRight, Clock, FlaskConical } from 'lucide-react'
 import type { StackItem, Reminder, DoseLog } from '@/types'
 import MarketPulse from './MarketPulse'
 
+const FONT = "'Gill Sans', 'Gill Sans MT', Calibri, sans-serif"
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-
-const TYPE_COLORS: Record<string, string> = {
-  peptide: 'bg-[#1A8A9E]/12 text-[#1A8A9E]',
-  medication: 'bg-blue-500/20 text-blue-300',
-  supplement: 'bg-emerald-500/20 text-emerald-300',
-}
 
 export default async function DashboardPage() {
   const supabase = createClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
+  const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  // Today's day of week (0=Sun)
   const todayDow = new Date().getDay()
 
-  // Fetch active stack items
   const { data: stackItems } = await supabase
-    .from('stack_items')
-    .select('*')
-    .eq('user_id', user.id)
-    .eq('active', true)
-    .order('created_at', { ascending: false })
+    .from('stack_items').select('*').eq('user_id', user.id).eq('active', true).order('created_at', { ascending: false })
 
-  // Fetch all reminders and filter by today
   const { data: allReminders } = await supabase
-    .from('reminders')
-    .select('*, stack_item:stack_items(*)')
-    .eq('user_id', user.id)
-    .eq('active', true)
+    .from('reminders').select('*, stack_item:stack_items(*)').eq('user_id', user.id).eq('active', true)
 
-  const todayReminders = (allReminders ?? []).filter((r: Reminder) =>
-    r.days_of_week.includes(todayDow)
-  )
-
-  // Sort by time
-  todayReminders.sort((a: Reminder, b: Reminder) => a.time.localeCompare(b.time))
-
-  // Fetch recent dose logs
   const { data: recentLogs } = await supabase
-    .from('dose_logs')
-    .select('*, stack_item:stack_items(*)')
-    .eq('user_id', user.id)
-    .order('taken_at', { ascending: false })
-    .limit(7)
+    .from('dose_logs').select('*, stack_item:stack_items(*)').eq('user_id', user.id).order('taken_at', { ascending: false }).limit(7)
 
   const activeStack: StackItem[] = stackItems ?? []
+  const todayReminders = ((allReminders ?? []) as Reminder[]).filter(r => r.days_of_week.includes(todayDow))
   const logs: DoseLog[] = recentLogs ?? []
 
+  const card = {
+    background: '#F2F0ED',
+    border: '0.5px solid rgba(176,170,160,0.30)',
+    borderRadius: 10,
+  }
+
+  const cardHeader = {
+    fontFamily: FONT,
+    fontSize: 11,
+    fontWeight: 500,
+    letterSpacing: '0.11em',
+    textTransform: 'uppercase' as const,
+    color: '#3A3730',
+  }
+
   return (
-    <div className="space-y-6">
-      {/* CORTEX Hero Banner — all smoke, seamless */}
-      <div className="rounded-2xl overflow-hidden" style={{ background: '#B0AAA0' }}>
-        {/* Subtitle */}
-        <div style={{ padding: '20px 32px 14px', textAlign: 'center' }}>
-          <p style={{
-            fontFamily: 'Jost, sans-serif',
-            fontSize: 10,
-            fontWeight: 400,
-            letterSpacing: '0.35em',
-            textTransform: 'uppercase',
-            color: 'rgba(250,250,248,0.6)',
-          }}>
-            AI-Powered Peptide Intelligence Engine
-          </p>
-        </div>
-        {/* Letter Grid */}
-        <div className="grid grid-cols-6" style={{ borderTop: '1px solid #9A9490' }}>
-          {([
-            { letter: 'C', label: 'COGNITIVE\nCORE' },
-            { letter: 'O', label: 'OPTIMIZATION\nENGINE' },
-            { letter: 'R', label: 'REASONING\nLAYER' },
-            { letter: 'T', label: 'TRACKING\nINTELLIGENCE' },
-            { letter: 'E', label: 'EVIDENCE-\nBASED' },
-            { letter: 'X', label: 'EXECUTION\nENGINE', teal: true },
-          ] as { letter: string; label: string; teal?: boolean }[]).map(({ letter, label, teal }, i) => (
-            <div
-              key={letter}
-              className="flex flex-col items-center py-5"
-              style={{
-                borderRight: i < 5 ? '1px solid #9A9490' : 'none',
-              }}
-            >
-              <span style={{
-                fontFamily: '"Cormorant Garamond", Georgia, serif',
-                fontWeight: 300,
-                fontSize: 'clamp(24px, 3.5vw, 48px)',
-                color: teal ? '#1A8A9E' : '#FAFAF8',
-                lineHeight: 1,
-              }}>
-                {letter}
-              </span>
-              <span style={{
-                fontFamily: 'Jost, sans-serif',
-                fontSize: 8,
-                fontWeight: 400,
-                letterSpacing: '0.15em',
-                color: 'rgba(250,250,248,0.55)',
-                textAlign: 'center',
-                marginTop: 10,
-                lineHeight: 1.6,
-                whiteSpace: 'pre-line',
-              }}>
-                {label}
-              </span>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+
+      {/* STAT CARDS ROW */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+        {/* Active Stack */}
+        <Link href="/stack" style={{ ...card, borderTop: '2px solid #1A8A9E', padding: '18px 20px', textDecoration: 'none', display: 'block', position: 'relative' }}>
+          <div style={{ fontFamily: FONT, fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#B0AAA0', fontWeight: 500, marginBottom: 6 }}>Active Stack</div>
+          <div style={{ fontFamily: FONT, fontSize: 28, fontWeight: 300, color: '#1A1915', lineHeight: 1, marginBottom: 4 }}>{activeStack.length}</div>
+          <div style={{ fontFamily: FONT, fontSize: 11, color: '#B0AAA0' }}>compounds tracked</div>
+          <ChevronRight style={{ position: 'absolute', top: 16, right: 14, width: 14, height: 14, color: '#B0AAA0' }} />
+        </Link>
+        {/* Reminders Today */}
+        <Link href="/reminders" style={{ ...card, padding: '18px 20px', textDecoration: 'none', display: 'block', position: 'relative' }}>
+          <div style={{ fontFamily: FONT, fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#B0AAA0', fontWeight: 500, marginBottom: 6 }}>Reminders Today</div>
+          <div style={{ fontFamily: FONT, fontSize: 28, fontWeight: 300, color: '#1A1915', lineHeight: 1, marginBottom: 4 }}>{todayReminders.length}</div>
+          <div style={{ fontFamily: FONT, fontSize: 11, color: '#B0AAA0' }}>{todayReminders.length === 0 ? 'no pending doses' : 'scheduled today'}</div>
+          <ChevronRight style={{ position: 'absolute', top: 16, right: 14, width: 14, height: 14, color: '#B0AAA0' }} />
+        </Link>
+        {/* Logs This Week */}
+        <Link href="/log" style={{ ...card, padding: '18px 20px', textDecoration: 'none', display: 'block', position: 'relative' }}>
+          <div style={{ fontFamily: FONT, fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#B0AAA0', fontWeight: 500, marginBottom: 6 }}>Logs This Week</div>
+          <div style={{ fontFamily: FONT, fontSize: 28, fontWeight: 300, color: '#1A1915', lineHeight: 1, marginBottom: 4 }}>{logs.length}</div>
+          <div style={{ fontFamily: FONT, fontSize: 11, color: '#B0AAA0' }}>{logs.length === 0 ? 'start logging today' : 'doses recorded'}</div>
+          <ChevronRight style={{ position: 'absolute', top: 16, right: 14, width: 14, height: 14, color: '#B0AAA0' }} />
+        </Link>
+        {/* AI Analysis */}
+        <Link href="/checker" style={{ ...card, borderTop: '2px solid #1A8A9E', padding: '18px 20px', textDecoration: 'none', display: 'block', position: 'relative' }}>
+          <div style={{ fontFamily: FONT, fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#B0AAA0', fontWeight: 500, marginBottom: 6 }}>AI Analysis</div>
+          <div style={{ fontFamily: FONT, fontSize: 28, fontWeight: 300, color: '#1A8A9E', lineHeight: 1, marginBottom: 4 }}>AI</div>
+          <div style={{ fontFamily: FONT, fontSize: 11, color: '#B0AAA0' }}>Check Interactions</div>
+          <div style={{ position: 'absolute', top: 14, right: 12, background: 'rgba(26,138,158,0.11)', border: '0.5px solid rgba(26,138,158,0.3)', borderRadius: 6, padding: '2px 7px', fontSize: 9, fontFamily: FONT, color: '#1A8A9E', fontWeight: 500, letterSpacing: '0.05em' }}>AI</div>
+        </Link>
+      </div>
+
+      {/* WIDGET ROW */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+        {/* Reminders widget */}
+        <div style={{ ...card, padding: '18px 20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#1A8A9E', flexShrink: 0 }} />
+              <span style={{ ...cardHeader }}>Reminders</span>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-[#1A1915]">Dashboard</h1>
-        <p className="text-[#FAFAF8]/70 mt-1">
-          {format(new Date(), 'EEEE, MMMM d, yyyy')}
-        </p>
-      </div>
-
-      {/* Stats Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          icon={<Layers className="w-5 h-5 text-[#1A8A9E]" />}
-          label="Active Items"
-          value={activeStack.length}
-          href="/stack"
-        />
-        <StatCard
-          icon={<Bell className="w-5 h-5 text-[#1A8A9E]" />}
-          label="Today's Reminders"
-          value={todayReminders.length}
-          href="/reminders"
-        />
-        <StatCard
-          icon={<BookOpen className="w-5 h-5 text-[#1A8A9E]" />}
-          label="Logs This Week"
-          value={logs.length}
-          href="/log"
-        />
-        <StatCard
-          icon={<Shield className="w-5 h-5 text-[#1A8A9E]" />}
-          label="Check Interactions"
-          value="AI"
-          href="/checker"
-          isLink
-        />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Today's Reminders */}
-        <div className="lg:col-span-1 bg-[#FAFAF8] border border-[#9A9490]/40 rounded-xl p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-[#1A1915] flex items-center gap-2">
-              <Bell className="w-4 h-4 text-[#1A8A9E]" />
-              Today&apos;s Reminders
-            </h2>
-            <Link href="/reminders" className="text-xs text-[#1A8A9E] hover:text-[#1A8A9E]">
-              View all
-            </Link>
+            <Link href="/reminders" style={{ fontFamily: FONT, fontSize: 11, color: '#1A8A9E', textDecoration: 'none' }}>View all</Link>
           </div>
-
           {todayReminders.length === 0 ? (
-            <div className="text-center py-8">
-              <Clock className="w-8 h-8 text-[#B0AAA0] mx-auto mb-2" />
-              <p className="text-[#8A8378] text-sm">No reminders for today</p>
-              <Link href="/reminders" className="text-[#1A8A9E] text-xs hover:underline mt-1 inline-block">
-                Add a reminder
-              </Link>
+            <div style={{ textAlign: 'center', padding: '20px 0' }}>
+              <Clock style={{ width: 24, height: 24, color: 'rgba(176,170,160,0.25)', margin: '0 auto 8px' }} />
+              <div style={{ fontFamily: FONT, fontSize: 12, color: '#B0AAA0', marginBottom: 6 }}>No reminders today</div>
+              <Link href="/reminders" style={{ fontFamily: FONT, fontSize: 11, color: '#1A8A9E', textDecoration: 'none' }}>Add a reminder</Link>
             </div>
           ) : (
-            <div className="space-y-3">
-              {todayReminders.map((reminder: Reminder) => (
-                <div
-                  key={reminder.id}
-                  className="flex items-center justify-between bg-[#E8E5E0] rounded-lg px-3 py-2.5"
-                >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {todayReminders.map((r: Reminder) => (
+                <div key={r.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderLeft: '3px solid #1A8A9E', paddingLeft: 10, paddingTop: 4, paddingBottom: 4 }}>
                   <div>
-                    <p className="text-sm font-medium text-[#1A1915]">
-                      {reminder.stack_item?.name ?? 'Unknown'}
-                    </p>
-                    <p className="text-xs text-[#B0AAA0]">
-                      {reminder.time} &bull; {reminder.dose || reminder.stack_item?.dose || 'No dose set'}
-                    </p>
+                    <div style={{ fontFamily: FONT, fontSize: 13, fontWeight: 500, color: '#1A1915' }}>{r.stack_item?.name ?? 'Unknown'}</div>
+                    <div style={{ fontFamily: FONT, fontSize: 11, color: '#B0AAA0' }}>{r.time}</div>
                   </div>
-                  <Link
-                    href="/log"
-                    className="text-xs bg-[#1A8A9E]/15 hover:bg-[#1A8A9E]/30 text-[#1A8A9E] px-2 py-1 rounded transition-colors"
-                  >
-                    Log
-                  </Link>
+                  <Link href="/log" style={{ fontFamily: FONT, fontSize: 10, color: '#1A8A9E', background: 'rgba(26,138,158,0.11)', padding: '3px 10px', borderRadius: 6, textDecoration: 'none' }}>Log</Link>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        {/* Active Stack */}
-        <div className="lg:col-span-1 bg-[#FAFAF8] border border-[#9A9490]/40 rounded-xl p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-[#1A1915] flex items-center gap-2">
-              <Layers className="w-4 h-4 text-[#1A8A9E]" />
-              My Active Stack
-              <span className="bg-[#F2F0ED] text-[#3A3730] text-xs px-2 py-0.5 rounded-full">
-                {activeStack.length}
-              </span>
-            </h2>
-            <Link href="/stack" className="text-xs text-[#1A8A9E] hover:text-[#1A8A9E]">
-              Manage
-            </Link>
+        {/* Active Stack widget */}
+        <div style={{ ...card, padding: '18px 20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#1A8A9E', flexShrink: 0 }} />
+              <span style={{ ...cardHeader }}>Active Stack</span>
+              <span style={{ background: '#1A8A9E', color: '#FAFAF8', fontSize: 9, fontFamily: FONT, fontWeight: 500, padding: '1px 7px', borderRadius: 10 }}>{activeStack.length}</span>
+            </div>
+            <Link href="/stack" style={{ fontFamily: FONT, fontSize: 11, color: '#1A8A9E', textDecoration: 'none' }}>Manage</Link>
           </div>
-
           {activeStack.length === 0 ? (
-            <div className="text-center py-8">
-              <FlaskConical className="w-8 h-8 text-[#B0AAA0] mx-auto mb-2" />
-              <p className="text-[#8A8378] text-sm">No items in your stack</p>
-              <Link href="/stack" className="text-[#1A8A9E] text-xs hover:underline mt-1 inline-block">
-                Add your first item
-              </Link>
+            <div style={{ textAlign: 'center', padding: '20px 0' }}>
+              <FlaskConical style={{ width: 24, height: 24, color: 'rgba(176,170,160,0.25)', margin: '0 auto 8px' }} />
+              <div style={{ fontFamily: FONT, fontSize: 12, color: '#B0AAA0', marginBottom: 6 }}>No items in your stack</div>
+              <Link href="/stack" style={{ fontFamily: FONT, fontSize: 11, color: '#1A8A9E', textDecoration: 'none' }}>Add your first item</Link>
             </div>
           ) : (
-            <div className="space-y-2">
-              {activeStack.slice(0, 5).map((item: StackItem) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between bg-[#E8E5E0] rounded-lg px-3 py-2.5"
-                >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {activeStack.slice(0, 4).map((item: StackItem) => (
+                <div key={item.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderLeft: '3px solid #1A8A9E', paddingLeft: 10, paddingTop: 4, paddingBottom: 4 }}>
                   <div>
-                    <p className="text-sm font-medium text-[#1A1915]">{item.name}</p>
-                    <p className="text-xs text-[#B0AAA0]">
-                      {item.dose} {item.unit}
-                    </p>
+                    <div style={{ fontFamily: FONT, fontSize: 13, fontWeight: 500, color: '#1A1915' }}>{item.name}</div>
+                    <div style={{ fontFamily: FONT, fontSize: 11, color: '#B0AAA0' }}>{item.dose} {item.unit} · active</div>
                   </div>
-                  <span
-                    className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                      TYPE_COLORS[item.type] ?? 'bg-[#F2F0ED] text-[#3A3730]'
-                    }`}
-                  >
-                    {item.type}
-                  </span>
+                  <span style={{ background: 'rgba(26,138,158,0.11)', color: '#1A8A9E', fontSize: 9, fontFamily: FONT, fontWeight: 500, padding: '2px 8px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>PEPTIDE</span>
                 </div>
               ))}
-              {activeStack.length > 5 && (
-                <Link
-                  href="/stack"
-                  className="flex items-center justify-center gap-1 text-xs text-[#B0AAA0] hover:text-[#1A8A9E] pt-1"
-                >
-                  +{activeStack.length - 5} more <ChevronRight className="w-3 h-3" />
-                </Link>
+              {activeStack.length > 4 && (
+                <Link href="/stack" style={{ fontFamily: FONT, fontSize: 11, color: '#B0AAA0', textDecoration: 'none', paddingLeft: 13, paddingTop: 2 }}>+{activeStack.length - 4} more</Link>
               )}
             </div>
           )}
         </div>
 
-        {/* Recent Logs */}
-        <div className="lg:col-span-1 bg-[#FAFAF8] border border-[#9A9490]/40 rounded-xl p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-[#1A1915] flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-[#1A8A9E]" />
-              Recent Logs
-            </h2>
-            <Link href="/log" className="text-xs text-[#1A8A9E] hover:text-[#1A8A9E]">
-              View all
-            </Link>
+        {/* Recent Logs widget */}
+        <div style={{ ...card, padding: '18px 20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#1A8A9E', flexShrink: 0 }} />
+              <span style={{ ...cardHeader }}>Recent Logs</span>
+            </div>
+            <Link href="/log" style={{ fontFamily: FONT, fontSize: 11, color: '#1A8A9E', textDecoration: 'none' }}>View all</Link>
           </div>
-
           {logs.length === 0 ? (
-            <div className="text-center py-8">
-              <BookOpen className="w-8 h-8 text-[#B0AAA0] mx-auto mb-2" />
-              <p className="text-[#8A8378] text-sm">No doses logged yet</p>
-              <Link href="/log" className="text-[#1A8A9E] text-xs hover:underline mt-1 inline-block">
-                Log your first dose
-              </Link>
+            <div style={{ textAlign: 'center', padding: '20px 0' }}>
+              <BookOpen style={{ width: 24, height: 24, color: 'rgba(176,170,160,0.25)', margin: '0 auto 8px' }} />
+              <div style={{ fontFamily: FONT, fontSize: 12, color: '#B0AAA0', marginBottom: 6 }}>No doses logged yet</div>
+              <Link href="/log" style={{ fontFamily: FONT, fontSize: 11, color: '#1A8A9E', textDecoration: 'none' }}>Log your first dose</Link>
             </div>
           ) : (
-            <div className="space-y-2">
-              {logs.slice(0, 5).map((log: DoseLog) => (
-                <div
-                  key={log.id}
-                  className="bg-[#E8E5E0] rounded-lg px-3 py-2.5"
-                >
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-[#1A1915]">
-                      {log.stack_item?.name ?? 'Unknown'}
-                    </p>
-                    <p className="text-xs text-[#B0AAA0]">
-                      {format(new Date(log.taken_at), 'MMM d')}
-                    </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {logs.slice(0, 4).map((log: DoseLog) => (
+                <div key={log.id} style={{ borderLeft: '3px solid #1A8A9E', paddingLeft: 10, paddingTop: 4, paddingBottom: 4 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ fontFamily: FONT, fontSize: 13, fontWeight: 500, color: '#1A1915' }}>{log.stack_item?.name ?? 'Unknown'}</div>
+                    <div style={{ fontFamily: FONT, fontSize: 11, color: '#B0AAA0' }}>{format(new Date(log.taken_at), 'MMM d')}</div>
                   </div>
-                  <p className="text-xs text-[#B0AAA0] mt-0.5">
-                    {log.dose || 'No dose recorded'} &bull; {format(new Date(log.taken_at), 'h:mm a')}
-                  </p>
+                  <div style={{ fontFamily: FONT, fontSize: 11, color: '#B0AAA0' }}>{log.dose || 'No dose'} · {format(new Date(log.taken_at), 'h:mm a')}</div>
                 </div>
               ))}
             </div>
@@ -315,73 +176,27 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="bg-[#FAFAF8] border border-[#9A9490]/40 rounded-xl p-6">
-        <h2 className="font-semibold text-[#1A1915] mb-4">Quick Actions</h2>
-        <div className="flex flex-wrap gap-3">
-          <Link
-            href="/checker"
-            className="flex items-center gap-2 bg-[#1A8A9E]/12 hover:bg-[#1A8A9E]/15 border border-[#1A8A9E]/30 text-[#1A8A9E] px-4 py-2 rounded-lg text-sm transition-colors"
-          >
-            <Shield className="w-4 h-4" />
-            Check Interaction
+      {/* QUICK ACTIONS */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+        {[
+          { href: '/checker', label: 'Check Interaction', sub: 'Run AI analysis', icon: Shield },
+          { href: '/log', label: 'Log a Dose', sub: 'Record administration', icon: BookOpen },
+          { href: '/stack', label: 'Update Stack', sub: 'Edit compounds', icon: Layers },
+        ].map(({ href, label, sub, icon: Icon }) => (
+          <Link key={href} href={href} style={{ ...card, padding: 16, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 12, transition: 'border-color 0.15s' }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(176,170,160,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Icon style={{ width: 15, height: 15, color: '#3A3730' }} />
+            </div>
+            <div>
+              <div style={{ fontFamily: FONT, fontSize: 12, fontWeight: 500, color: '#3A3730', marginBottom: 2 }}>{label}</div>
+              <div style={{ fontFamily: FONT, fontSize: 10, color: '#B0AAA0' }}>{sub}</div>
+            </div>
           </Link>
-          <Link
-            href="/log"
-            className="flex items-center gap-2 bg-[#E8E5E0] hover:bg-[#D0CCC6] text-[#1A1915] px-4 py-2 rounded-lg text-sm transition-colors"
-          >
-            <BookOpen className="w-4 h-4" />
-            Log a Dose
-          </Link>
-          <Link
-            href="/stack"
-            className="flex items-center gap-2 bg-[#E8E5E0] hover:bg-[#D0CCC6] text-[#1A1915] px-4 py-2 rounded-lg text-sm transition-colors"
-          >
-            <Layers className="w-4 h-4" />
-            Update Stack
-          </Link>
-          <Link
-            href="/reminders"
-            className="flex items-center gap-2 bg-[#E8E5E0] hover:bg-[#D0CCC6] text-[#1A1915] px-4 py-2 rounded-lg text-sm transition-colors"
-          >
-            <Bell className="w-4 h-4" />
-            Add Reminder
-          </Link>
-        </div>
+        ))}
       </div>
 
-      {/* Market Pulse */}
+      {/* MARKET PULSE */}
       <MarketPulse />
     </div>
-  )
-}
-
-function StatCard({
-  icon,
-  label,
-  value,
-  href,
-  isLink,
-}: {
-  icon: React.ReactNode
-  label: string
-  value: number | string
-  href: string
-  isLink?: boolean
-}) {
-  return (
-    <Link
-      href={href}
-      className="bg-[#FAFAF8] border border-[#9A9490]/40 rounded-xl p-5 hover:border-[#1A8A9E]/50 transition-colors group"
-    >
-      <div className="flex items-center justify-between mb-3">
-        {icon}
-        <ChevronRight className="w-4 h-4 text-[#8A8378] group-hover:text-[#1A8A9E] transition-colors" />
-      </div>
-      <p className={`font-bold ${isLink ? 'text-lg text-[#1A8A9E]' : 'text-2xl text-[#1A1915]'}`}>
-        {value}
-      </p>
-      <p className="text-xs text-[#8A8378] mt-1">{label}</p>
-    </Link>
   )
 }
