@@ -126,7 +126,7 @@ export default function Sidebar() {
               fontWeight: 300,
               letterSpacing: '0.45em',
               textTransform: 'uppercase',
-              color: '#A09488',
+              color: 'rgba(250,250,248,0.55)',
               marginBottom: 3,
             }}>
               Peptide
@@ -136,7 +136,7 @@ export default function Sidebar() {
               fontWeight: 300,
               fontSize: 28,
               letterSpacing: '0.12em',
-              color: '#C4B8A8',
+              color: '#FAFAF8',
               lineHeight: 1,
             }}>
               CORTE<span style={{ color: '#1A8A9E' }}>X</span>
@@ -150,7 +150,7 @@ export default function Sidebar() {
               fontWeight: 300,
               fontSize: 22,
               letterSpacing: '0.08em',
-              color: '#C4B8A8',
+              color: '#FAFAF8',
             }}>
               C<span style={{ color: '#1A8A9E' }}>X</span>
             </div>
@@ -159,9 +159,9 @@ export default function Sidebar() {
         <button
           onClick={() => setCollapsed(!collapsed)}
           className="p-1 rounded transition-colors"
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#A09488' }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = '#5A4E42')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = '#A09488')}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#FAFAF8' }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#1A8A9E')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = '#FAFAF8')}
         >
           {collapsed
             ? <ChevronRight className="w-3.5 h-3.5" />
@@ -194,7 +194,7 @@ export default function Sidebar() {
                       fontWeight: 400,
                       letterSpacing: '0.3em',
                       textTransform: 'uppercase',
-                      color: '#A09488',
+                      color: 'rgba(250,250,248,0.6)',
                     }}>
                       {group.label}
                     </span>
@@ -202,7 +202,7 @@ export default function Sidebar() {
                   <ChevronDown
                     className="w-3 h-3"
                     style={{
-                      color: '#A09488',
+                      color: 'rgba(250,250,248,0.6)',
                       transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
                       transition: 'transform 0.2s',
                     }}
@@ -232,14 +232,14 @@ export default function Sidebar() {
                       >
                         <Icon
                           className="w-4 h-4 shrink-0"
-                          style={{ color: active ? '#1A8A9E' : '#A09488' }}
+                          style={{ color: active ? '#1A8A9E' : 'rgba(250,250,248,0.7)' }}
                         />
                         {!collapsed && (
                           <span style={{
                             fontFamily: 'Jost, sans-serif',
                             fontSize: 13,
                             fontWeight: active ? 400 : 300,
-                            color: active ? '#5A4E42' : '#8A7E72',
+                            color: active ? '#FAFAF8' : 'rgba(250,250,248,0.65)',
                             letterSpacing: '0.01em',
                           }}>
                             {label}
@@ -305,13 +305,13 @@ export default function Sidebar() {
             cursor: 'pointer',
           }}
         >
-          <LogOut className="w-4 h-4 shrink-0" style={{ color: '#A09488' }} />
+          <LogOut className="w-4 h-4 shrink-0" style={{ color: 'rgba(250,250,248,0.6)' }} />
           {!collapsed && (
             <span style={{
               fontFamily: 'Jost, sans-serif',
               fontSize: 13,
               fontWeight: 300,
-              color: '#A09488',
+              color: 'rgba(250,250,248,0.6)',
             }}>
               {signingOut ? 'Signing out…' : 'Sign Out'}
             </span>
