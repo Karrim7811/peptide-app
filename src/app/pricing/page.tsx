@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import {
-  CheckCircle2, XCircle, Zap, Star, ArrowLeft, Loader2,
+  CheckCircle2, XCircle, Zap, Star, Loader2,
   Bot, Shield, Library, Bell, RotateCcw, Layers, Package
 } from 'lucide-react'
 
@@ -68,17 +68,7 @@ export default function PricingPage() {
   const savings = Math.round((1 - 79.99 / (9.99 * 12)) * 100)
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8]">
-      <div className="max-w-4xl mx-auto px-4 py-10">
-        {/* Back */}
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-2 text-[#B0AAA0] hover:text-[#1A1915] text-sm mb-8 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to app
-        </Link>
-
+    <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 bg-[#1A8A9E]/12 border border-[#1A8A9E]/30 text-[#1A8A9E] px-4 py-1.5 rounded-full text-sm font-medium mb-4">
@@ -110,7 +100,7 @@ export default function PricingPage() {
             }`}
           >
             Yearly
-            <span className="ml-2 bg-emerald-500/20 text-emerald-300 text-xs px-1.5 py-0.5 rounded-full">
+            <span className="ml-2 bg-emerald-500/15 text-emerald-600 text-xs px-1.5 py-0.5 rounded-full">
               Save {savings}%
             </span>
           </button>
@@ -150,17 +140,17 @@ export default function PricingPage() {
           </div>
 
           {/* Pro */}
-          <div className="bg-gradient-to-b from-indigo-900/50 to-slate-800 border-2 border-[#1A8A9E]/50 rounded-2xl p-6 relative">
+          <div className="bg-[#1A1915] border-2 border-[#1A8A9E]/60 rounded-2xl p-6 relative">
             <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-              <span className="bg-[#1A8A9E] text-[#1A1915] text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+              <span className="bg-[#1A8A9E] text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
                 <Star className="w-3 h-3" /> MOST POPULAR
               </span>
             </div>
             <div className="mb-5">
-              <h2 className="text-xl font-bold text-[#1A1915] mb-1">Pro</h2>
+              <h2 className="text-xl font-bold text-white mb-1">Pro</h2>
               <p className="text-[#B0AAA0] text-sm">For serious peptide users</p>
               <div className="mt-3 flex items-end gap-1">
-                <span className="text-4xl font-bold text-[#1A1915]">
+                <span className="text-4xl font-bold text-white">
                   ${monthlyPrice.toFixed(2)}
                 </span>
                 <span className="text-[#B0AAA0] text-sm mb-1">/mo</span>
@@ -186,7 +176,7 @@ export default function PricingPage() {
               {PRO_FEATURES.map((f) => (
                 <li key={f.label} className="flex items-center gap-2.5">
                   <CheckCircle2 className={`w-4 h-4 shrink-0 ${f.highlight ? 'text-[#1A8A9E]' : 'text-emerald-400'}`} />
-                  <span className={`text-sm ${f.highlight ? 'text-[#1A8A9E] font-medium' : 'text-[#3A3730]'}`}>
+                  <span className={`text-sm ${f.highlight ? 'text-[#1A8A9E] font-medium' : 'text-[#B0AAA0]'}`}>
                     {f.label}
                   </span>
                 </li>
@@ -240,7 +230,6 @@ export default function PricingPage() {
           <Link href="/privacy" className="text-[#1A8A9E] hover:underline">Privacy Policy</Link>.
           Payments processed securely by Stripe.
         </p>
-      </div>
     </div>
   )
 }
