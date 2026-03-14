@@ -70,59 +70,62 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* CORTEX Hero Banner */}
-      <div className="rounded-2xl overflow-hidden" style={{ background: '#E8E5E0' }}>
-        <div className="px-8 pt-8 pb-6">
+      <div className="rounded-2xl overflow-hidden">
+        {/* Subtitle */}
+        <div style={{ background: '#E8E5E0', padding: '22px 32px 18px', textAlign: 'center' }}>
           <p style={{
-            fontFamily: '"Cormorant Garamond", Georgia, serif',
-            fontStyle: 'italic',
-            fontWeight: 300,
-            fontSize: 'clamp(18px, 2.5vw, 26px)',
-            color: '#1A8A9E',
-            letterSpacing: '0.01em',
-            marginBottom: 28,
-            whiteSpace: 'nowrap',
+            fontFamily: 'Jost, sans-serif',
+            fontSize: 10,
+            fontWeight: 400,
+            letterSpacing: '0.35em',
+            textTransform: 'uppercase',
+            color: '#8A8378',
           }}>
-            Every letter carries intelligence.
+            AI-Powered Peptide Intelligence Engine
           </p>
-          <div className="grid grid-cols-6" style={{ borderTop: '1px solid #D0CCC6' }}>
-            {([
-              { letter: 'C', label: 'COGNITIVE\nCORE' },
-              { letter: 'O', label: 'OPTIMIZATION\nENGINE' },
-              { letter: 'R', label: 'REASONING\nLAYER' },
-              { letter: 'T', label: 'TRACKING\nINTELLIGENCE' },
-              { letter: 'E', label: 'EVIDENCE-\nBASED' },
-              { letter: 'X', label: 'EXECUTION\nENGINE', teal: true },
-            ] as { letter: string; label: string; teal?: boolean }[]).map(({ letter, label, teal }, i) => (
-              <div
-                key={letter}
-                className="flex flex-col items-center py-5"
-                style={{ borderRight: i < 5 ? '1px solid #D0CCC6' : 'none' }}
-              >
-                <span style={{
-                  fontFamily: '"Cormorant Garamond", Georgia, serif',
-                  fontWeight: 300,
-                  fontSize: 'clamp(24px, 3.5vw, 48px)',
-                  color: teal ? '#1A8A9E' : '#1A1915',
-                  lineHeight: 1,
-                }}>
-                  {letter}
-                </span>
-                <span style={{
-                  fontFamily: 'Jost, sans-serif',
-                  fontSize: 8,
-                  fontWeight: 400,
-                  letterSpacing: '0.15em',
-                  color: '#8A8378',
-                  textAlign: 'center',
-                  marginTop: 10,
-                  lineHeight: 1.6,
-                  whiteSpace: 'pre-line',
-                }}>
-                  {label}
-                </span>
-              </div>
-            ))}
-          </div>
+        </div>
+        {/* Letter Grid */}
+        <div className="grid grid-cols-6">
+          {([
+            { letter: 'C', label: 'COGNITIVE\nCORE' },
+            { letter: 'O', label: 'OPTIMIZATION\nENGINE' },
+            { letter: 'R', label: 'REASONING\nLAYER' },
+            { letter: 'T', label: 'TRACKING\nINTELLIGENCE' },
+            { letter: 'E', label: 'EVIDENCE-\nBASED' },
+            { letter: 'X', label: 'EXECUTION\nENGINE', teal: true },
+          ] as { letter: string; label: string; teal?: boolean }[]).map(({ letter, label, teal }, i) => (
+            <div
+              key={letter}
+              className="flex flex-col items-center py-5"
+              style={{
+                background: teal ? '#1A8A9E' : '#E8E5E0',
+                borderRight: !teal && i < 4 ? '1px solid #D0CCC6' : 'none',
+              }}
+            >
+              <span style={{
+                fontFamily: '"Cormorant Garamond", Georgia, serif',
+                fontWeight: 300,
+                fontSize: 'clamp(24px, 3.5vw, 48px)',
+                color: teal ? '#FAFAF8' : '#1A8A9E',
+                lineHeight: 1,
+              }}>
+                {letter}
+              </span>
+              <span style={{
+                fontFamily: 'Jost, sans-serif',
+                fontSize: 8,
+                fontWeight: 400,
+                letterSpacing: '0.15em',
+                color: teal ? 'rgba(250,250,248,0.65)' : '#8A8378',
+                textAlign: 'center',
+                marginTop: 10,
+                lineHeight: 1.6,
+                whiteSpace: 'pre-line',
+              }}>
+                {label}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
 

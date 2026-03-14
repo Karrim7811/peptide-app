@@ -126,7 +126,7 @@ export default function Sidebar() {
               fontWeight: 300,
               letterSpacing: '0.45em',
               textTransform: 'uppercase',
-              color: '#8A8378',
+              color: '#A09488',
               marginBottom: 3,
             }}>
               Peptide
@@ -134,9 +134,9 @@ export default function Sidebar() {
             <div style={{
               fontFamily: '"Cormorant Garamond", Georgia, serif',
               fontWeight: 300,
-              fontSize: 22,
+              fontSize: 28,
               letterSpacing: '0.12em',
-              color: '#1A1915',
+              color: '#C4B8A8',
               lineHeight: 1,
             }}>
               CORTE<span style={{ color: '#1A8A9E' }}>X</span>
@@ -148,9 +148,9 @@ export default function Sidebar() {
             <div style={{
               fontFamily: '"Cormorant Garamond", Georgia, serif',
               fontWeight: 300,
-              fontSize: 20,
+              fontSize: 22,
               letterSpacing: '0.08em',
-              color: '#1A1915',
+              color: '#C4B8A8',
             }}>
               C<span style={{ color: '#1A8A9E' }}>X</span>
             </div>
@@ -159,9 +159,9 @@ export default function Sidebar() {
         <button
           onClick={() => setCollapsed(!collapsed)}
           className="p-1 rounded transition-colors"
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#8A8378' }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = '#1A1915')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = '#8A8378')}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#A09488' }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#5A4E42')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = '#A09488')}
         >
           {collapsed
             ? <ChevronRight className="w-3.5 h-3.5" />
@@ -194,7 +194,7 @@ export default function Sidebar() {
                       fontWeight: 400,
                       letterSpacing: '0.3em',
                       textTransform: 'uppercase',
-                      color: '#8A8378',
+                      color: '#A09488',
                     }}>
                       {group.label}
                     </span>
@@ -202,7 +202,7 @@ export default function Sidebar() {
                   <ChevronDown
                     className="w-3 h-3"
                     style={{
-                      color: '#8A8378',
+                      color: '#A09488',
                       transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
                       transition: 'transform 0.2s',
                     }}
@@ -232,14 +232,14 @@ export default function Sidebar() {
                       >
                         <Icon
                           className="w-4 h-4 shrink-0"
-                          style={{ color: active ? '#1A8A9E' : '#8A8378' }}
+                          style={{ color: active ? '#1A8A9E' : '#A09488' }}
                         />
                         {!collapsed && (
                           <span style={{
                             fontFamily: 'Jost, sans-serif',
                             fontSize: 13,
                             fontWeight: active ? 400 : 300,
-                            color: active ? '#1A1915' : '#5A534A',
+                            color: active ? '#5A4E42' : '#8A7E72',
                             letterSpacing: '0.01em',
                           }}>
                             {label}
@@ -305,13 +305,13 @@ export default function Sidebar() {
             cursor: 'pointer',
           }}
         >
-          <LogOut className="w-4 h-4 shrink-0" style={{ color: '#8A8378' }} />
+          <LogOut className="w-4 h-4 shrink-0" style={{ color: '#A09488' }} />
           {!collapsed && (
             <span style={{
               fontFamily: 'Jost, sans-serif',
               fontSize: 13,
               fontWeight: 300,
-              color: '#8A8378',
+              color: '#A09488',
             }}>
               {signingOut ? 'Signing out…' : 'Sign Out'}
             </span>
