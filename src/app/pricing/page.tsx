@@ -213,7 +213,7 @@ export default function PricingPage() {
               { q: 'Can I cancel anytime?', a: 'Yes. Cancel from your account settings and you keep Pro access until the end of your billing period. No questions asked.' },
               { q: 'Is my data private?', a: 'All data is encrypted and stored securely. We never sell your stack data or health information to third parties.' },
               { q: 'What payment methods are accepted?', a: 'All major credit/debit cards via Stripe. Apple Pay and Google Pay supported on compatible devices.' },
-              { q: 'Is there a student or discount option?', a: 'Reach out at support@peptidetracker.app for special cases. We want to support the research community.' },
+              { q: 'Is there a student or discount option?', a: 'Reach out at support@peptidecortex.com for special cases. We want to support the research community.' },
             ].map((item) => (
               <div key={item.q}>
                 <p className="text-[#1A1915] font-medium text-sm mb-1">{item.q}</p>
