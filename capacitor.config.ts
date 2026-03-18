@@ -6,16 +6,15 @@ export default {
   appId: 'ai.peptidecortex.app',
   appName: 'Peptide Cortex',
   server: {
+    url: 'https://peptidecortex.ai',
     allowNavigation: ['peptidecortex.ai', '*.peptidecortex.ai'],
   },
   webDir: 'out',
   plugins: {
     SplashScreen: {
-      launchShowDuration: 2000,
-      backgroundColor: '#E8E5E0',
-      showSpinner: false,
-      splashFullScreen: true,
-      splashImmersive: true,
+      launchShowDuration: 0,
+      launchAutoHide: true,
+      autoHide: true,
     },
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert'],
