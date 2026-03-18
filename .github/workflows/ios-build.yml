@@ -29,6 +29,24 @@ jobs:
             npx cap add ios
           fi
 
+      - name: Create web assets for Capacitor
+        run: |
+          mkdir -p out
+          cat > out/index.html << 'HTMLEOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+            <title>Peptide Cortex</title>
+            <style>body{margin:0;background:#FAFAF8;}</style>
+          </head>
+          <body>
+            <script>window.location.href='https://peptidecortex.ai';</script>
+          </body>
+          </html>
+          HTMLEOF
+
       - name: Sync Capacitor
         run: npx cap sync ios
 

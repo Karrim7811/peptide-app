@@ -5,10 +5,7 @@
 export default {
   appId: 'ai.peptidecortex.app',
   appName: 'Peptide Cortex',
-  // Points the native WebView at the live domain — no local build needed
   server: {
-    url: 'https://peptidecortex.ai',
-    cleartext: false,
     allowNavigation: ['peptidecortex.ai', '*.peptidecortex.ai'],
   },
   webDir: 'out',
