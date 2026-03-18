@@ -156,12 +156,27 @@ jobs:
           mkdir -p ~/private_keys
           cp $RUNNER_TEMP/AuthKey.p8 ~/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8
 
+          # List IPA contents for debug
+          echo "IPA file:"
+          ls -la $RUNNER_TEMP/ipa/
+
+          # Upload using xcrun altool with verbose output
           xcrun altool --upload-app \
             --type ios \
             --file "$RUNNER_TEMP/ipa/App.ipa" \
             --apiKey "$APP_STORE_CONNECT_API_KEY_ID" \
             --apiIssuer "$APP_STORE_CONNECT_API_ISSUER_ID" \
-            --apiKeyPath ~/private_keys
+            --apiKeyPath ~/private_keys \
+            --verbose
+
+          # Also try validate
+          xcrun altool --validate-app \
+            --type ios \
+            --file "$RUNNER_TEMP/ipa/App.ipa" \
+            --apiKey "$APP_STORE_CONNECT_API_KEY_ID" \
+            --apiIssuer "$APP_STORE_CONNECT_API_ISSUER_ID" \
+            --apiKeyPath ~/private_keys \
+            --verbose || true
 
       - name: Cleanup keychain
         if: always()
