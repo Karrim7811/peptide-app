@@ -92,6 +92,11 @@ jobs:
           RUBY
           echo "Signing configured for App target with profile $PROFILE_UUID"
 
+      - name: Set build number
+        run: |
+          cd ios/App
+          agvtool new-version -all ${{ github.run_number }}
+
       - name: Build iOS Archive
         run: |
           cd ios/App
