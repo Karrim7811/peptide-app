@@ -9,6 +9,7 @@ export default {
   server: {
     url: 'https://peptidecortex.ai',
     cleartext: false,
+    allowNavigation: ['peptidecortex.ai', '*.peptidecortex.ai'],
   },
   webDir: 'out',
   plugins: {
