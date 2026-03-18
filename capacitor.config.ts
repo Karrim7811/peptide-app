@@ -6,7 +6,7 @@ export default {
   appId: 'ai.peptidecortex.app',
   appName: 'Peptide Cortex',
   server: {
-    url: 'https://peptide-app-nine.vercel.app',
+    url: 'https://peptide-app-nine.vercel.app/login',
     allowNavigation: ['peptide-app-nine.vercel.app', '*.vercel.app', 'peptidecortex.com', '*.peptidecortex.com'],
   },
   webDir: 'out',
