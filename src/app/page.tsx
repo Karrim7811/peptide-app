@@ -39,7 +39,6 @@ export default function LandingPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap');
         :root{--white:#FAFAF8;--off:#F2F0ED;--light:#E8E5E0;--mid:#B0AAA0;--dark:#3A3730;--black:#1A1915;--accent:#1A8A9E;--accent2:#127080;--serif:'Cormorant Garamond',Georgia,serif;--sans:'Jost',sans-serif;}
         *{margin:0;padding:0;box-sizing:border-box;}
         html{scroll-behavior:smooth;}
