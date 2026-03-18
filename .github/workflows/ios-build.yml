@@ -143,14 +143,18 @@ jobs:
           APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
         run: |
-          echo -n "$APP_STORE_CONNECT_API_KEY_CONTENT" | base64 --decode > $RUNNER_TEMP/AuthKey.p8
+          # Decode the base64-encoded .p8 key
+          printf '%s' "$APP_STORE_CONNECT_API_KEY_CONTENT" | base64 --decode > $RUNNER_TEMP/AuthKey.p8
+
+          # Create the API key directory that xcrun expects
+          mkdir -p ~/private_keys
+          cp $RUNNER_TEMP/AuthKey.p8 ~/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8
 
           xcrun altool --upload-app \
             --type ios \
             --file "$RUNNER_TEMP/ipa/App.ipa" \
             --apiKey "$APP_STORE_CONNECT_API_KEY_ID" \
-            --apiIssuer "$APP_STORE_CONNECT_API_ISSUER_ID" \
-            --apiKeyPath "$RUNNER_TEMP/AuthKey.p8"
+            --apiIssuer "$APP_STORE_CONNECT_API_ISSUER_ID"
 
       - name: Cleanup keychain
         if: always()
