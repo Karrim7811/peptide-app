@@ -146,6 +146,12 @@ jobs:
           # Decode the base64-encoded .p8 key
           echo "$APP_STORE_CONNECT_API_KEY_CONTENT" | base64 --decode -o $RUNNER_TEMP/AuthKey.p8
 
+          # Debug: verify key file exists and looks correct
+          echo "Key ID: $APP_STORE_CONNECT_API_KEY_ID"
+          echo "Issuer ID: $APP_STORE_CONNECT_API_ISSUER_ID"
+          echo "Key file size: $(wc -c < $RUNNER_TEMP/AuthKey.p8) bytes"
+          head -1 $RUNNER_TEMP/AuthKey.p8
+
           # Create the API key directory that xcrun expects
           mkdir -p ~/private_keys
           cp $RUNNER_TEMP/AuthKey.p8 ~/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8
@@ -154,7 +160,8 @@ jobs:
             --type ios \
             --file "$RUNNER_TEMP/ipa/App.ipa" \
             --apiKey "$APP_STORE_CONNECT_API_KEY_ID" \
-            --apiIssuer "$APP_STORE_CONNECT_API_ISSUER_ID"
+            --apiIssuer "$APP_STORE_CONNECT_API_ISSUER_ID" \
+            --apiKeyPath ~/private_keys
 
       - name: Cleanup keychain
         if: always()
