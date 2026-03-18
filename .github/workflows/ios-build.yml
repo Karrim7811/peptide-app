@@ -70,13 +70,12 @@ jobs:
           UUID=$(security cms -D -i "$PP_PATH" | plutil -extract UUID raw -)
           echo "PROFILE_UUID=$UUID" >> $GITHUB_ENV
 
-      - name: Set signing for App target only
+      - name: Disable signing on Pods
         run: |
           cd ios/App
-          # Set provisioning profile UUID only on App target (not Pods)
-          sed -i '' "s/PROVISIONING_PROFILE_SPECIFIER = .*/PROVISIONING_PROFILE_SPECIFIER = $PROFILE_UUID;/" App.xcodeproj/project.pbxproj
-          sed -i '' "s/CODE_SIGN_STYLE = Automatic/CODE_SIGN_STYLE = Manual/" App.xcodeproj/project.pbxproj
-          sed -i '' "s/DEVELOPMENT_TEAM = .*/DEVELOPMENT_TEAM = ${{ secrets.APPLE_TEAM_ID }};/" App.xcodeproj/project.pbxproj
+          # Prevent Pods from trying to use provisioning profiles
+          sed -i '' 's/CODE_SIGNING_REQUIRED = YES/CODE_SIGNING_REQUIRED = NO/g' Pods/Pods.xcodeproj/project.pbxproj
+          sed -i '' 's/CODE_SIGNING_ALLOWED = YES/CODE_SIGNING_ALLOWED = NO/g' Pods/Pods.xcodeproj/project.pbxproj
 
       - name: Build iOS Archive
         run: |
@@ -90,7 +89,8 @@ jobs:
             archive \
             CODE_SIGN_STYLE=Manual \
             "DEVELOPMENT_TEAM=${{ secrets.APPLE_TEAM_ID }}" \
-            "CODE_SIGN_IDENTITY=iPhone Distribution"
+            "CODE_SIGN_IDENTITY=iPhone Distribution" \
+            "PROVISIONING_PROFILE_SPECIFIER=$PROFILE_UUID"
 
       - name: Export IPA
         run: |
