@@ -140,6 +140,9 @@ struct DashboardView: View {
                         .foregroundColor(.cxStone)
 
                     VStack(spacing: 8) {
+                        QuickActionRow(icon: "shippingbox.fill", label: "Fridge Inventory", color: .cxTeal) {
+                            selectedTab = .inventory
+                        }
                         QuickActionRow(icon: "plus.circle.fill", label: "Log a Dose", color: .cxTeal) {
                             selectedTab = .log
                         }
@@ -152,7 +155,7 @@ struct DashboardView: View {
                         QuickActionRow(icon: "shield.fill", label: "Check Interaction", color: .orange) {
                             selectedTab = .checker
                         }
-                        QuickActionRow(icon: "flask.fill", label: "Reconstitution Calc", color: .green) {
+                        QuickActionRow(icon: "flask.fill", label: "Reconstitution Calculator", color: .green) {
                             selectedTab = .reconstitution
                         }
                         QuickActionRow(icon: "books.vertical.fill", label: "Browse Peptide Bible", color: .purple) {

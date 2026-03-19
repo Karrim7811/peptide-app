@@ -69,6 +69,7 @@ class APIService {
 
         var request = URLRequest(url: url)
         request.httpMethod = method
+        request.timeoutInterval = 60
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
         // Add auth token if available
