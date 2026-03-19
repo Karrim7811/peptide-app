@@ -1,4 +1,5 @@
 import SwiftUI
+import AuthenticationServices
 
 struct LoginView: View {
     @EnvironmentObject var appState: AppState
@@ -11,7 +12,7 @@ struct LoginView: View {
 
                 ScrollView {
                     VStack(spacing: 0) {
-                        Spacer().frame(height: 80)
+                        Spacer().frame(height: 60)
 
                         // Brand
                         VStack(spacing: 4) {
@@ -34,13 +35,57 @@ struct LoginView: View {
                                 .tracking(3)
                                 .foregroundColor(.cxStone)
                         }
-                        .padding(.bottom, 48)
+                        .padding(.bottom, 36)
 
                         // Login Card
-                        VStack(spacing: 20) {
+                        VStack(spacing: 18) {
                             Text("Sign in to your account")
                                 .font(.system(size: 15, weight: .regular))
                                 .foregroundColor(.cxSmoke)
+
+                            // Social Sign In
+                            VStack(spacing: 10) {
+                                // Apple Sign In
+                                SignInWithAppleButton(.signIn) { request in
+                                    request.requestedScopes = [.email, .fullName]
+                                } onCompletion: { result in
+                                    Task { await vm.handleAppleSignIn(result: result, appState: appState) }
+                                }
+                                .signInWithAppleButtonStyle(.black)
+                                .frame(height: 50)
+                                .cornerRadius(12)
+
+                                // Google Sign In
+                                Button {
+                                    Task { await vm.signInWithGoogle(appState: appState) }
+                                } label: {
+                                    HStack(spacing: 8) {
+                                        Image(systemName: "g.circle.fill")
+                                            .font(.system(size: 20))
+                                        Text("Sign in with Google")
+                                            .font(.system(size: 16, weight: .medium))
+                                    }
+                                    .foregroundColor(.cxBlack)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 13)
+                                    .background(Color.white)
+                                    .cornerRadius(12)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .stroke(Color.cxBorder, lineWidth: 1)
+                                    )
+                                }
+                            }
+
+                            // Divider
+                            HStack {
+                                Rectangle().fill(Color.cxBorder).frame(height: 1)
+                                Text("or")
+                                    .font(.system(size: 13))
+                                    .foregroundColor(.cxStone)
+                                    .padding(.horizontal, 12)
+                                Rectangle().fill(Color.cxBorder).frame(height: 1)
+                            }
 
                             VStack(spacing: 14) {
                                 // Email
@@ -50,6 +95,7 @@ struct LoginView: View {
                                         .foregroundColor(.cxBlack)
                                     TextField("Enter your email", text: $vm.email)
                                         .textFieldStyle(.plain)
+                                        .foregroundColor(.black)
                                         .keyboardType(.emailAddress)
                                         .textContentType(.emailAddress)
                                         .autocapitalization(.none)
@@ -70,6 +116,7 @@ struct LoginView: View {
                                         .foregroundColor(.cxBlack)
                                     SecureField("Enter your password", text: $vm.password)
                                         .textFieldStyle(.plain)
+                                        .foregroundColor(.black)
                                         .textContentType(.password)
                                         .padding(14)
                                         .background(Color.white)
