@@ -7,6 +7,8 @@ class DashboardViewModel: ObservableObject {
     @Published var logsThisWeek = 0
     @Published var activeCycles = 0
     @Published var isLoading = false
+    @Published var marketPulse: MarketPulseResponse?
+    @Published var newsLoading = false
 
     func load() async {
         isLoading = true
@@ -36,5 +38,18 @@ class DashboardViewModel: ObservableObject {
             print("Dashboard load error: \(error)")
         }
         isLoading = false
+
+        // Load news in background
+        await loadNews()
+    }
+
+    func loadNews() async {
+        newsLoading = true
+        do {
+            marketPulse = try await APIService.shared.getMarketPulse()
+        } catch {
+            print("Market pulse error: \(error)")
+        }
+        newsLoading = false
     }
 }
