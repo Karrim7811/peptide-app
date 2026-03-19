@@ -42,9 +42,16 @@ struct MainView: View {
 
                     Spacer()
 
-                    Text(selectedTab.label)
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundColor(.cxBlack)
+                    VStack(spacing: 1) {
+                        Text(selectedTab.label)
+                            .font(.system(size: 17, weight: .semibold))
+                            .foregroundColor(.cxBlack)
+                        if selectedTab != .dashboard {
+                            Text(selectedTab.subtitle)
+                                .font(.system(size: 10))
+                                .foregroundColor(.cxStone)
+                        }
+                    }
 
                     Spacer()
 

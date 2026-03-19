@@ -31,6 +31,30 @@ enum NavDestination: String, CaseIterable {
         }
     }
 
+    var subtitle: String {
+        switch self {
+        case .dashboard: return "Overview of your protocol"
+        case .aiChat: return "Ask anything about peptides"
+        case .checker: return "Check if two compounds are safe together"
+        case .stackFinder: return "Find peptides that complement your stack"
+        case .stack: return "Add your peptides, meds & supplements"
+        case .reconstitution: return "Calculate BAC water for your vials"
+        case .dosing: return "Look up dosage info for any peptide"
+        case .cycle: return "Track your on/off cycling schedule"
+        case .sites: return "Rotate injection sites to avoid irritation"
+        case .log: return "Log each dose — tracks when to reorder"
+        case .reminders: return "Set alerts so you never miss a dose"
+        case .inventory: return "Track what's in your fridge & expiry dates"
+        case .sideEffects: return "Record side effects by peptide & severity"
+        case .notes: return "Save research notes & links by peptide"
+        case .reference: return "Browse 58+ peptides with full details"
+        case .popularStacks: return "Curated stacks for common goals"
+        case .regulatory: return "FDA status & legal info by country"
+        case .vendors: return "Trusted sources for peptides"
+        case .pricing: return "Unlock unlimited features"
+        }
+    }
+
     var icon: String {
         switch self {
         case .dashboard: return "square.grid.2x2"
@@ -198,16 +222,22 @@ struct DrawerRow: View {
                     .font(.system(size: 16))
                     .foregroundColor(isActive ? .cxTeal : .cxStone)
                     .frame(width: 24)
-                Text(item.label)
-                    .font(.system(size: 15, weight: isActive ? .semibold : .regular))
-                    .foregroundColor(isActive ? .cxTeal : .cxBlack)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(item.label)
+                        .font(.system(size: 15, weight: isActive ? .semibold : .regular))
+                        .foregroundColor(isActive ? .cxTeal : .cxBlack)
+                    Text(item.subtitle)
+                        .font(.system(size: 10))
+                        .foregroundColor(.cxStone)
+                        .lineLimit(1)
+                }
                 Spacer()
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12))
                     .foregroundColor(.cxStone.opacity(0.5))
             }
             .padding(.horizontal, 14)
-            .padding(.vertical, 13)
+            .padding(.vertical, 11)
             .background(isActive ? Color.cxTeal.opacity(0.08) : Color.clear)
         }
     }
