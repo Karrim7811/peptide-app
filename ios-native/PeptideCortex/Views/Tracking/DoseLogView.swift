@@ -7,6 +7,24 @@ struct DoseLogView: View {
         ZStack(alignment: .bottomTrailing) {
             ScrollView {
                 LazyVStack(spacing: 12) {
+                    // Low stock warning
+                    if let alert = vm.lowStockAlert {
+                        HStack(spacing: 10) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundColor(.orange)
+                            Text(alert)
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundColor(.cxBlack)
+                        }
+                        .padding(14)
+                        .background(Color.orange.opacity(0.1))
+                        .cornerRadius(12)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.orange.opacity(0.3), lineWidth: 1)
+                        )
+                    }
+
                     if vm.isLoading {
                         LoadingView()
                             .frame(height: 200)

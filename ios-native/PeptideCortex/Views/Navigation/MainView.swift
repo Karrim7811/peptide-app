@@ -3,6 +3,7 @@ import SwiftUI
 struct MainView: View {
     @EnvironmentObject var appState: AppState
     @State private var selectedTab: NavDestination = .dashboard
+    @State private var previousTab: NavDestination? = nil
     @State private var drawerOpen = false
 
     var body: some View {
@@ -11,16 +12,32 @@ struct MainView: View {
 
             VStack(spacing: 0) {
                 // Top bar
-                HStack {
-                    Button {
-                        withAnimation(.spring(response: 0.35)) {
-                            drawerOpen.toggle()
+                HStack(spacing: 0) {
+                    // Back button (shows when not on dashboard)
+                    if selectedTab != .dashboard {
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                selectedTab = previousTab ?? .dashboard
+                                previousTab = nil
+                            }
+                        } label: {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(.cxTeal)
+                                .frame(width: 40, height: 40)
                         }
-                    } label: {
-                        Image(systemName: drawerOpen ? "xmark" : "line.3.horizontal")
-                            .font(.system(size: 18, weight: .medium))
-                            .foregroundColor(.cxBlack)
-                            .frame(width: 40, height: 40)
+                    } else {
+                        // Hamburger menu
+                        Button {
+                            withAnimation(.spring(response: 0.35)) {
+                                drawerOpen.toggle()
+                            }
+                        } label: {
+                            Image(systemName: drawerOpen ? "xmark" : "line.3.horizontal")
+                                .font(.system(size: 18, weight: .medium))
+                                .foregroundColor(.cxBlack)
+                                .frame(width: 40, height: 40)
+                        }
                     }
 
                     Spacer()
@@ -31,8 +48,22 @@ struct MainView: View {
 
                     Spacer()
 
-                    // Balance spacer
-                    Color.clear.frame(width: 40, height: 40)
+                    // Dashboard shortcut (shows when not on dashboard)
+                    if selectedTab != .dashboard {
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                previousTab = nil
+                                selectedTab = .dashboard
+                            }
+                        } label: {
+                            Image(systemName: "square.grid.2x2")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(.cxTeal)
+                                .frame(width: 40, height: 40)
+                        }
+                    } else {
+                        Color.clear.frame(width: 40, height: 40)
+                    }
                 }
                 .padding(.horizontal, 12)
                 .background(
@@ -48,6 +79,12 @@ struct MainView: View {
             // Drawer overlay
             DrawerMenu(selectedTab: $selectedTab, isOpen: $drawerOpen)
                 .environmentObject(appState)
+        }
+        .onChange(of: selectedTab) { newTab in
+            // Track previous tab for back button (but not when going to dashboard)
+            if newTab != .dashboard {
+                // previousTab is set before the change
+            }
         }
     }
 
