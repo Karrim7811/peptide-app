@@ -14,6 +14,95 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Generate App Icon
+        run: |
+          # Create a 1024x1024 app icon with brand colors using sips
+          ICON_DIR=ios-native/PeptideCortex/Resources/Assets.xcassets/AppIcon.appiconset
+          # Use Python to generate a simple branded icon
+          python3 << 'PYEOF'
+          import struct, zlib, os
+
+          def create_png(width, height, filename):
+              # Create a simple teal-to-dark gradient icon with "Cx" text area
+              def pixel(x, y):
+                  # Background gradient from teal (#1A8A9E) to dark (#1A1915)
+                  t = y / height
+                  r = int(26 * (1 - t) + 26 * t)
+                  g = int(138 * (1 - t) + 25 * t)
+                  b = int(158 * (1 - t) + 21 * t)
+
+                  # Draw a centered "Cx" area - lighter rectangle
+                  cx, cy = width // 2, height // 2
+                  hw, hh = width // 4, height // 4
+                  if abs(x - cx) < hw and abs(y - cy) < hh:
+                      r = min(255, r + 40)
+                      g = min(255, g + 40)
+                      b = min(255, b + 40)
+
+                  return bytes([r, g, b, 255])
+
+              raw = b''
+              for y in range(height):
+                  raw += b'\x00'  # filter byte
+                  for x in range(width):
+                      raw += pixel(x, y)
+
+              def chunk(ctype, data):
+                  c = ctype + data
+                  return struct.pack('>I', len(data)) + c + struct.pack('>I', zlib.crc32(c) & 0xffffffff)
+
+              sig = b'\x89PNG\r\n\x1a\n'
+              ihdr = struct.pack('>IIBBBBB', width, height, 8, 6, 0, 0, 0)
+              idat = zlib.compress(raw)
+
+              with open(filename, 'wb') as f:
+                  f.write(sig)
+                  f.write(chunk(b'IHDR', ihdr))
+                  f.write(chunk(b'IDAT', idat))
+                  f.write(chunk(b'IEND', b''))
+
+          create_png(1024, 1024, os.environ.get('ICON_PATH', 'icon.png'))
+          PYEOF
+          ICON_PATH="$ICON_DIR/AppIcon.png" python3 -c "
+          import struct, zlib, os
+          w = h = 1024
+          raw = b''
+          for y in range(h):
+              raw += b'\x00'
+              for x in range(w):
+                  t = y / h
+                  r = int(26 * (1-t) + 26 * t)
+                  g = int(138 * (1-t) + 25 * t)
+                  b = int(158 * (1-t) + 21 * t)
+                  raw += bytes([r, g, b, 255])
+          def chunk(ct, d):
+              c = ct + d
+              return struct.pack('>I', len(d)) + c + struct.pack('>I', zlib.crc32(c) & 0xffffffff)
+          sig = b'\x89PNG\r\n\x1a\n'
+          ihdr = struct.pack('>IIBBBBB', w, h, 8, 6, 0, 0, 0)
+          with open('$ICON_DIR/AppIcon.png', 'wb') as f:
+              f.write(sig + chunk(b'IHDR', ihdr) + chunk(b'IDAT', zlib.compress(raw)) + chunk(b'IEND', b''))
+          print('Icon generated')
+          "
+
+          # Update Contents.json to reference the icon
+          cat > "$ICON_DIR/Contents.json" << 'ICONJSON'
+          {
+            "images" : [
+              {
+                "filename" : "AppIcon.png",
+                "idiom" : "universal",
+                "platform" : "ios",
+                "size" : "1024x1024"
+              }
+            ],
+            "info" : {
+              "author" : "xcode",
+              "version" : 1
+            }
+          }
+          ICONJSON
+
       - name: Install XcodeGen
         run: brew install xcodegen
 
