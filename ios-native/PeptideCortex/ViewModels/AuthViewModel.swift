@@ -1,6 +1,7 @@
 import SwiftUI
 import AuthenticationServices
 import Supabase
+import Auth
 
 @MainActor
 class AuthViewModel: ObservableObject {
@@ -73,8 +74,9 @@ class AuthViewModel: ObservableObject {
             }
 
             do {
+                // Use the nonce if available, pass token to Supabase
                 try await SupabaseService.shared.client.auth.signInWithIdToken(
-                    credentials: .init(
+                    credentials: OpenIDConnectCredentials(
                         provider: .apple,
                         idToken: tokenString
                     )
@@ -82,6 +84,7 @@ class AuthViewModel: ObservableObject {
                 await appState.checkSession()
             } catch {
                 errorMessage = "Apple sign in failed: \(error.localizedDescription)"
+                print("Apple sign in error: \(error)")
             }
 
         case .failure(let error):
@@ -100,10 +103,16 @@ class AuthViewModel: ObservableObject {
         errorMessage = nil
 
         do {
-            let url = try await SupabaseService.shared.client.auth.getOAuthSignInURL(
-                provider: .google,
-                redirectTo: URL(string: "peptidecortex://auth-callback")
-            )
+            // Get the OAuth URL from Supabase and open in Safari
+            let baseURL = AppConstants.supabaseURL
+            let redirectTo = "peptidecortex://auth-callback"
+            let urlString = "\(baseURL)/auth/v1/authorize?provider=google&redirect_to=\(redirectTo)"
+
+            guard let url = URL(string: urlString) else {
+                errorMessage = "Invalid URL"
+                isLoading = false
+                return
+            }
             await UIApplication.shared.open(url)
         } catch {
             errorMessage = "Google sign in failed: \(error.localizedDescription)"
