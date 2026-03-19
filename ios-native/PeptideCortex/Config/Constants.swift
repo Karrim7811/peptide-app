@@ -3,8 +3,8 @@ import SwiftUI
 enum AppConstants {
     // MARK: - API
     static let apiBaseURL = "https://peptide-app-nine.vercel.app"
-    static let supabaseURL = "https://qdrtfokifarxhsgxwlnx.supabase.co"
-    static let supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFkcnRmb2tpZmFyeGhzZ3h3bG54Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyNTI3NDAsImV4cCI6MjA2NDgyODc0MH0.3ihJFacMwBDFQcnLFElp_Yrm3QdF3wMSiYjNqBDxIh4"
+    static let supabaseURL = "https://uvpmrjsgaekejjofgtup.supabase.co"
+    static let supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV2cG1yanNnYWVrZWpqb2ZndHVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMjQ0MzksImV4cCI6MjA4ODkwMDQzOX0.Sh75NdFtEAX6OaUbL6EIEeYYARwJ0mcG2yHCCfsJvz4"
 
     // MARK: - Free Tier Limits
     static let freeStackItems = 5
