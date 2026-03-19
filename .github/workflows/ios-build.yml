@@ -74,9 +74,31 @@ jobs:
             -project PeptideCortex.xcodeproj \
             -scheme PeptideCortex
 
-      - name: Build iOS Archive
+      - name: Configure app target signing
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          cd ios-native
+          # Use ruby/xcodeproj to set signing only on the app target, not SPM deps
+          gem install xcodeproj
+          ruby <<'RUBY'
+          require 'xcodeproj'
+          project = Xcodeproj::Project.open('PeptideCortex.xcodeproj')
+          project.targets.each do |target|
+            if target.name == 'PeptideCortex'
+              target.build_configurations.each do |config|
+                config.build_settings['CODE_SIGN_STYLE'] = 'Manual'
+                config.build_settings['DEVELOPMENT_TEAM'] = ENV['APPLE_TEAM_ID']
+                config.build_settings['CODE_SIGN_IDENTITY'] = 'iPhone Distribution'
+                config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = ENV['PROFILE_UUID']
+              end
+            end
+          end
+          project.save
+          RUBY
+          echo "Signing configured for PeptideCortex target only"
+
+      - name: Build iOS Archive
         run: |
           cd ios-native
           xcodebuild \
@@ -86,10 +108,6 @@ jobs:
             -destination 'generic/platform=iOS' \
             -archivePath $RUNNER_TEMP/PeptideCortex.xcarchive \
             CURRENT_PROJECT_VERSION=${{ github.run_number }} \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGN_IDENTITY="iPhone Distribution" \
-            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
-            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID" \
             archive
 
       - name: Export IPA
