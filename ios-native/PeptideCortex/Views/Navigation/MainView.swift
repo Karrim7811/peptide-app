@@ -55,7 +55,7 @@ struct MainView: View {
     var contentView: some View {
         switch selectedTab {
         case .dashboard:
-            DashboardView()
+            DashboardView(selectedTab: $selectedTab)
         case .aiChat:
             ChatView()
         case .checker:

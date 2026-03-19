@@ -16,76 +16,56 @@ jobs:
 
       - name: Generate App Icon
         run: |
-          # Create a 1024x1024 app icon with brand colors using sips
           ICON_DIR=ios-native/PeptideCortex/Resources/Assets.xcassets/AppIcon.appiconset
-          # Use Python to generate a simple branded icon
           python3 << 'PYEOF'
-          import struct, zlib, os
+          import struct, zlib, math
 
-          def create_png(width, height, filename):
-              # Create a simple teal-to-dark gradient icon with "Cx" text area
-              def pixel(x, y):
-                  # Background gradient from teal (#1A8A9E) to dark (#1A1915)
-                  t = y / height
-                  r = int(26 * (1 - t) + 26 * t)
-                  g = int(138 * (1 - t) + 25 * t)
-                  b = int(158 * (1 - t) + 21 * t)
+          W = H = 1024
 
-                  # Draw a centered "Cx" area - lighter rectangle
-                  cx, cy = width // 2, height // 2
-                  hw, hh = width // 4, height // 4
-                  if abs(x - cx) < hw and abs(y - cy) < hh:
-                      r = min(255, r + 40)
-                      g = min(255, g + 40)
-                      b = min(255, b + 40)
+          def lerp(a, b, t):
+              return int(a + (b - a) * t)
 
-                  return bytes([r, g, b, 255])
-
-              raw = b''
-              for y in range(height):
-                  raw += b'\x00'  # filter byte
-                  for x in range(width):
-                      raw += pixel(x, y)
-
-              def chunk(ctype, data):
-                  c = ctype + data
-                  return struct.pack('>I', len(data)) + c + struct.pack('>I', zlib.crc32(c) & 0xffffffff)
-
-              sig = b'\x89PNG\r\n\x1a\n'
-              ihdr = struct.pack('>IIBBBBB', width, height, 8, 6, 0, 0, 0)
-              idat = zlib.compress(raw)
-
-              with open(filename, 'wb') as f:
-                  f.write(sig)
-                  f.write(chunk(b'IHDR', ihdr))
-                  f.write(chunk(b'IDAT', idat))
-                  f.write(chunk(b'IEND', b''))
-
-          create_png(1024, 1024, os.environ.get('ICON_PATH', 'icon.png'))
-          PYEOF
-          ICON_PATH="$ICON_DIR/AppIcon.png" python3 -c "
-          import struct, zlib, os
-          w = h = 1024
           raw = b''
-          for y in range(h):
+          for y in range(H):
               raw += b'\x00'
-              for x in range(w):
-                  t = y / h
-                  r = int(26 * (1-t) + 26 * t)
-                  g = int(138 * (1-t) + 25 * t)
-                  b = int(158 * (1-t) + 21 * t)
-                  raw += bytes([r, g, b, 255])
+              for x in range(W):
+                  # Radial gradient: dark (#1A1915) at edges, teal (#1A8A9E) center
+                  cx, cy = W / 2, H / 2
+                  dx, dy = (x - cx) / cx, (y - cy) / cy
+                  dist = min(1.0, math.sqrt(dx*dx + dy*dy))
+                  t = dist * dist  # ease out
+
+                  r = lerp(26, 20, t)
+                  g = lerp(138, 22, t)
+                  b_val = lerp(158, 18, t)
+
+                  # Draw "Cx" letterforms
+                  # C shape - arc on the left-center
+                  lx, ly = x - 360, y - 512
+                  lr = math.sqrt(lx*lx + ly*ly)
+                  if 130 < lr < 200 and lx < 60:
+                      r, g, b_val = 250, 248, 245
+
+                  # x shape - two diagonal strokes on the right
+                  rx, ry = x - 620, y - 512
+                  if abs(rx - ry) < 28 and -160 < rx < 160 and -160 < ry < 160:
+                      r, g, b_val = 250, 248, 245
+                  if abs(rx + ry) < 28 and -160 < rx < 160 and -160 < ry < 160:
+                      r, g, b_val = 250, 248, 245
+
+                  raw += bytes([max(0,min(255,r)), max(0,min(255,g)), max(0,min(255,b_val)), 255])
+
           def chunk(ct, d):
               c = ct + d
               return struct.pack('>I', len(d)) + c + struct.pack('>I', zlib.crc32(c) & 0xffffffff)
-          sig = b'\x89PNG\r\n\x1a\n'
-          ihdr = struct.pack('>IIBBBBB', w, h, 8, 6, 0, 0, 0)
-          with open('$ICON_DIR/AppIcon.png', 'wb') as f:
-              f.write(sig + chunk(b'IHDR', ihdr) + chunk(b'IDAT', zlib.compress(raw)) + chunk(b'IEND', b''))
-          print('Icon generated')
-          "
 
-          # Update Contents.json to reference the icon
+          sig = b'\x89PNG\r\n\x1a\n'
+          ihdr = struct.pack('>IIBBBBB', W, H, 8, 6, 0, 0, 0)
+          with open('ios-native/PeptideCortex/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png', 'wb') as f:
+              f.write(sig + chunk(b'IHDR', ihdr) + chunk(b'IDAT', zlib.compress(raw, 9)) + chunk(b'IEND', b''))
+          print('App icon generated: 1024x1024 with Cx branding')
+          PYEOF
+
           cat > "$ICON_DIR/Contents.json" << 'ICONJSON'
           {
             "images" : [
