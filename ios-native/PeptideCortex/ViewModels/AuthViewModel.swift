@@ -1,5 +1,6 @@
 import SwiftUI
 import AuthenticationServices
+import Supabase
 
 @MainActor
 class AuthViewModel: ObservableObject {
@@ -84,29 +85,26 @@ class AuthViewModel: ObservableObject {
             }
 
         case .failure(let error):
-            if (error as NSError).code != ASAuthorizationError.canceled.rawValue {
-                errorMessage = "Apple sign in cancelled"
+            let nsError = error as NSError
+            if nsError.code != ASAuthorizationError.canceled.rawValue {
+                errorMessage = "Apple sign in failed"
             }
         }
         isLoading = false
     }
 
-    // MARK: - Google Sign In (via Supabase OAuth)
+    // MARK: - Google Sign In (via Supabase OAuth in Safari)
 
     func signInWithGoogle(appState: AppState) async {
         isLoading = true
         errorMessage = nil
 
         do {
-            try await SupabaseService.shared.client.auth.signInWithOAuth(
-                provider: .google
-            ) { url in
-                // Open in Safari
-                await UIApplication.shared.open(url)
-            }
-            // Note: User will be redirected back to the app after Google auth
-            // The deep link handler in the app will complete the flow
-            await appState.checkSession()
+            let url = try await SupabaseService.shared.client.auth.getOAuthSignInURL(
+                provider: .google,
+                redirectTo: URL(string: "peptidecortex://auth-callback")
+            )
+            await UIApplication.shared.open(url)
         } catch {
             errorMessage = "Google sign in failed: \(error.localizedDescription)"
         }
