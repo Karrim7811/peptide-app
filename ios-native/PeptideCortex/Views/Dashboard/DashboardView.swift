@@ -38,6 +38,100 @@ struct DashboardView: View {
                     }
                 }
 
+                // Active Stack with Reconstitution
+                if !vm.activeStackItems.isEmpty {
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("MY ACTIVE STACK")
+                                .font(.system(size: 11, weight: .semibold))
+                                .tracking(2)
+                                .foregroundColor(.cxStone)
+                            Spacer()
+                            Button {
+                                selectedTab = .stack
+                            } label: {
+                                Text("Edit")
+                                    .font(.system(size: 13))
+                                    .foregroundColor(.cxTeal)
+                            }
+                        }
+
+                        VStack(spacing: 0) {
+                            ForEach(Array(vm.activeStackItems.enumerated()), id: \.element.id) { index, item in
+                                VStack(alignment: .leading, spacing: 6) {
+                                    HStack {
+                                        // Type badge
+                                        Text(item.type.uppercased())
+                                            .font(.system(size: 8, weight: .bold))
+                                            .tracking(1)
+                                            .foregroundColor(.white)
+                                            .padding(.horizontal, 6)
+                                            .padding(.vertical, 2)
+                                            .background(typeBadgeColor(item.type))
+                                            .cornerRadius(4)
+
+                                        Text(item.name)
+                                            .font(.system(size: 15, weight: .semibold))
+                                            .foregroundColor(.cxBlack)
+
+                                        Spacer()
+
+                                        if !item.dose.isEmpty {
+                                            Text("\(item.dose)\(item.unit.isEmpty ? "" : " \(item.unit)")")
+                                                .font(.system(size: 14, weight: .medium))
+                                                .foregroundColor(.cxTeal)
+                                        }
+                                    }
+
+                                    // Auto reconstitution for peptides
+                                    if let recon = vm.reconResults[item.id] {
+                                        HStack(spacing: 16) {
+                                            HStack(spacing: 4) {
+                                                Image(systemName: "drop.fill")
+                                                    .font(.system(size: 10))
+                                                    .foregroundColor(.blue)
+                                                Text("BAC Water: \(String(format: "%.1f", recon.recommendedBacWaterMl)) mL")
+                                                    .font(.system(size: 12))
+                                                    .foregroundColor(.cxSmoke)
+                                            }
+                                            HStack(spacing: 4) {
+                                                Image(systemName: "eyedropper")
+                                                    .font(.system(size: 10))
+                                                    .foregroundColor(.green)
+                                                Text("\(String(format: "%.0f", recon.concentrationMcgPerMl)) mcg/mL")
+                                                    .font(.system(size: 12))
+                                                    .foregroundColor(.cxSmoke)
+                                            }
+                                        }
+                                        .padding(.top, 2)
+
+                                        if !recon.tipicalDoseRange.isEmpty {
+                                            Text("Typical dose: \(recon.tipicalDoseRange)")
+                                                .font(.system(size: 11))
+                                                .foregroundColor(.cxStone)
+                                        }
+                                    }
+
+                                    if !item.notes.isEmpty {
+                                        Text(item.notes)
+                                            .font(.system(size: 12))
+                                            .foregroundColor(.cxStone)
+                                            .lineLimit(1)
+                                    }
+                                }
+                                .padding(.vertical, 12)
+                                .padding(.horizontal, 14)
+                                if index < vm.activeStackItems.count - 1 {
+                                    Divider().padding(.horizontal, 14)
+                                }
+                            }
+                        }
+                        .background(Color.white)
+                        .cornerRadius(12)
+                        .shadow(color: .black.opacity(0.03), radius: 4, y: 1)
+                    }
+                }
+
                 // Quick actions
                 VStack(alignment: .leading, spacing: 12) {
                     Text("QUICK ACTIONS")
@@ -49,11 +143,17 @@ struct DashboardView: View {
                         QuickActionRow(icon: "plus.circle.fill", label: "Log a Dose", color: .cxTeal) {
                             selectedTab = .log
                         }
+                        QuickActionRow(icon: "square.stack.3d.up.fill", label: "Manage Stack", color: .cxTeal) {
+                            selectedTab = .stack
+                        }
                         QuickActionRow(icon: "message.fill", label: "Ask Peptide AI", color: .blue) {
                             selectedTab = .aiChat
                         }
                         QuickActionRow(icon: "shield.fill", label: "Check Interaction", color: .orange) {
                             selectedTab = .checker
+                        }
+                        QuickActionRow(icon: "flask.fill", label: "Reconstitution Calc", color: .green) {
+                            selectedTab = .reconstitution
                         }
                         QuickActionRow(icon: "books.vertical.fill", label: "Browse Peptide Bible", color: .purple) {
                             selectedTab = .reference
@@ -71,6 +171,31 @@ struct DashboardView: View {
                         Spacer()
                         if vm.newsLoading {
                             ProgressView().scaleEffect(0.7)
+                        }
+                    }
+
+                    if let error = vm.newsError {
+                        HStack(spacing: 8) {
+                            Image(systemName: "exclamationmark.triangle")
+                                .foregroundColor(.orange)
+                            Text(error)
+                                .font(.system(size: 13))
+                                .foregroundColor(.cxStone)
+                        }
+                        .padding(14)
+                        .background(Color.white)
+                        .cornerRadius(12)
+
+                        Button {
+                            Task { await vm.loadNews() }
+                        } label: {
+                            Text("Retry")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.cxTeal)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 12)
+                                .background(Color.cxTeal.opacity(0.1))
+                                .cornerRadius(10)
                         }
                     }
 
@@ -155,12 +280,17 @@ struct DashboardView: View {
                             .cornerRadius(12)
                             .shadow(color: .black.opacity(0.03), radius: 4, y: 1)
                         }
-                    } else if !vm.newsLoading {
-                        Text("Pull to refresh for latest news")
-                            .font(.system(size: 13))
-                            .foregroundColor(.cxStone)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 20)
+                    } else if !vm.newsLoading && vm.newsError == nil {
+                        VStack(spacing: 8) {
+                            Image(systemName: "newspaper")
+                                .font(.system(size: 24))
+                                .foregroundColor(.cxStone)
+                            Text("Loading peptide news...")
+                                .font(.system(size: 13))
+                                .foregroundColor(.cxStone)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 20)
                     }
                 }
             }
@@ -169,6 +299,15 @@ struct DashboardView: View {
         .background(Color.cxParchment)
         .task { await vm.load() }
         .refreshable { await vm.load() }
+    }
+
+    func typeBadgeColor(_ type: String) -> Color {
+        switch type {
+        case "peptide": return .cxTeal
+        case "medication": return .blue
+        case "supplement": return .green
+        default: return .cxStone
+        }
     }
 
     func sentimentColor(_ sentiment: String) -> Color {

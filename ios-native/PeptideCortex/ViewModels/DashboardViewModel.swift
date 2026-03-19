@@ -9,12 +9,16 @@ class DashboardViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var marketPulse: MarketPulseResponse?
     @Published var newsLoading = false
+    @Published var newsError: String?
+    @Published var activeStackItems: [StackItem] = []
+    @Published var reconResults: [UUID: ReconstitutionResult] = [:]
 
     func load() async {
         isLoading = true
         do {
             let items = try await SupabaseService.shared.getStackItems()
-            stackCount = items.filter(\.active).count
+            activeStackItems = items.filter(\.active)
+            stackCount = activeStackItems.count
 
             let reminders = try await SupabaseService.shared.getReminders()
             let todayWeekday = Calendar.current.component(.weekday, from: Date()) - 1
@@ -38,14 +42,36 @@ class DashboardViewModel: ObservableObject {
             print("Dashboard load error: \(error)")
         }
         isLoading = false
+
+        // Load reconstitution for peptide items that have a dose in mg
+        await loadReconstitution()
+
+        // Load news
         await loadNews()
+    }
+
+    func loadReconstitution() async {
+        for item in activeStackItems where item.type == "peptide" {
+            // Parse mg amount from dose string
+            let doseStr = item.dose.lowercased().replacingOccurrences(of: "mg", with: "").trimmingCharacters(in: .whitespaces)
+            guard let mg = Double(doseStr), mg > 0 else { continue }
+
+            do {
+                let result = try await APIService.shared.getReconstitution(peptideName: item.name, amountMg: mg)
+                reconResults[item.id] = result
+            } catch {
+                print("Recon error for \(item.name): \(error)")
+            }
+        }
     }
 
     func loadNews() async {
         newsLoading = true
+        newsError = nil
         do {
             marketPulse = try await APIService.shared.getMarketPulse()
         } catch {
+            newsError = "Could not load news. Pull to refresh."
             print("Market pulse error: \(error)")
         }
         newsLoading = false
