@@ -1,0 +1,42 @@
+import Foundation
+
+struct DisplayMessage: Identifiable {
+    let id = UUID()
+    let role: String
+    let content: String
+}
+
+@MainActor
+class ChatViewModel: ObservableObject {
+    @Published var messages: [DisplayMessage] = []
+    @Published var inputText = ""
+    @Published var isLoading = false
+
+    private var chatHistory: [ChatMessage] = []
+
+    init() {
+        messages.append(DisplayMessage(
+            role: "assistant",
+            content: "Hello! I'm your Peptide AI assistant. Ask me anything about peptides, dosing protocols, stacking, reconstitution, or research."
+        ))
+    }
+
+    func send() async {
+        let text = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty else { return }
+
+        inputText = ""
+        messages.append(DisplayMessage(role: "user", content: text))
+        chatHistory.append(ChatMessage(role: "user", content: text))
+
+        isLoading = true
+        do {
+            let reply = try await APIService.shared.sendChatMessage(messages: chatHistory)
+            chatHistory.append(ChatMessage(role: "assistant", content: reply))
+            messages.append(DisplayMessage(role: "assistant", content: reply))
+        } catch {
+            messages.append(DisplayMessage(role: "assistant", content: "Sorry, I encountered an error. Please try again."))
+        }
+        isLoading = false
+    }
+}

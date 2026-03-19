@@ -14,46 +14,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
+      - name: Install XcodeGen
+        run: brew install xcodegen
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Add iOS platform (if not exists)
+      - name: Generate Xcode project
+        env:
+          DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
         run: |
-          if [ ! -d "ios" ]; then
-            npx cap add ios
-          fi
-
-      - name: Create web assets for Capacitor
-        run: |
-          mkdir -p out
-          cat > out/index.html << 'HTMLEOF'
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-            <title>Peptide Cortex</title>
-            <style>body{margin:0;background:#FAFAF8;}</style>
-          </head>
-          <body>
-            <script>window.location.href='https://peptidecortex.ai';</script>
-          </body>
-          </html>
-          HTMLEOF
-
-      - name: Sync Capacitor
-        run: npx cap sync ios
-
-      - name: Install CocoaPods
-        run: |
-          cd ios/App
-          pod install
+          cd ios-native
+          # Set provisioning profile name (will be overridden by signing step)
+          export PROVISIONING_PROFILE_NAME="temp"
+          xcodegen generate
+          echo "Xcode project generated successfully"
 
       - name: Import Distribution Certificate
         env:
@@ -80,50 +53,37 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           UUID=$(security cms -D -i "$PP_PATH" | plutil -extract UUID raw -)
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/$UUID.mobileprovision
-
-      - name: Get Provisioning Profile UUID
-        run: |
-          PP_PATH=$RUNNER_TEMP/PeptideCortex.mobileprovision
-          UUID=$(security cms -D -i "$PP_PATH" | plutil -extract UUID raw -)
           echo "PROFILE_UUID=$UUID" >> $GITHUB_ENV
 
-      - name: Configure signing for App target only
+      - name: Configure signing
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          cd ios/App
-          gem install xcodeproj
-          ruby <<'RUBY'
-          require 'xcodeproj'
-          project = Xcodeproj::Project.open('App.xcodeproj')
-          project.targets.each do |target|
-            if target.name == 'App'
-              target.build_configurations.each do |config|
-                config.build_settings['CODE_SIGN_STYLE'] = 'Manual'
-                config.build_settings['DEVELOPMENT_TEAM'] = ENV['APPLE_TEAM_ID']
-                config.build_settings['CODE_SIGN_IDENTITY'] = 'iPhone Distribution'
-                config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = ENV['PROFILE_UUID']
-              end
-            end
-          end
-          project.save
-          RUBY
-          echo "Signing configured for App target with profile $PROFILE_UUID"
+          cd ios-native
+          # Re-generate with correct provisioning profile
+          export DEVELOPMENT_TEAM=$APPLE_TEAM_ID
+          export PROVISIONING_PROFILE_NAME=$PROFILE_UUID
+          export GITHUB_RUN_NUMBER=${{ github.run_number }}
+          xcodegen generate
+          echo "Project regenerated with signing: Team=$APPLE_TEAM_ID Profile=$PROFILE_UUID"
 
-      - name: Set build number
+      - name: Resolve Swift packages
         run: |
-          cd ios/App
-          agvtool new-version -all ${{ github.run_number }}
+          cd ios-native
+          xcodebuild -resolvePackageDependencies \
+            -project PeptideCortex.xcodeproj \
+            -scheme PeptideCortex
 
       - name: Build iOS Archive
         run: |
-          cd ios/App
+          cd ios-native
           xcodebuild \
-            -workspace App.xcworkspace \
-            -scheme App \
+            -project PeptideCortex.xcodeproj \
+            -scheme PeptideCortex \
             -configuration Release \
             -destination 'generic/platform=iOS' \
             -archivePath $RUNNER_TEMP/PeptideCortex.xcarchive \
+            CURRENT_PROJECT_VERSION=${{ github.run_number }} \
             archive
 
       - name: Export IPA
@@ -166,40 +126,21 @@ jobs:
           APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
         run: |
-          # Decode the base64-encoded .p8 key
           echo "$APP_STORE_CONNECT_API_KEY_CONTENT" | base64 --decode -o $RUNNER_TEMP/AuthKey.p8
 
-          # Debug: verify key file exists and looks correct
-          echo "Key ID: $APP_STORE_CONNECT_API_KEY_ID"
-          echo "Issuer ID: $APP_STORE_CONNECT_API_ISSUER_ID"
-          echo "Key file size: $(wc -c < $RUNNER_TEMP/AuthKey.p8) bytes"
-          head -1 $RUNNER_TEMP/AuthKey.p8
-
-          # Create the API key directory that xcrun expects
           mkdir -p ~/private_keys
           cp $RUNNER_TEMP/AuthKey.p8 ~/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8
 
-          # List IPA contents for debug
           echo "IPA file:"
           ls -la $RUNNER_TEMP/ipa/
 
-          # Upload using xcrun altool with verbose output
           xcrun altool --upload-app \
             --type ios \
-            --file "$RUNNER_TEMP/ipa/App.ipa" \
+            --file "$RUNNER_TEMP/ipa/PeptideCortex.ipa" \
             --apiKey "$APP_STORE_CONNECT_API_KEY_ID" \
             --apiIssuer "$APP_STORE_CONNECT_API_ISSUER_ID" \
             --apiKeyPath ~/private_keys \
             --verbose
-
-          # Also try validate
-          xcrun altool --validate-app \
-            --type ios \
-            --file "$RUNNER_TEMP/ipa/App.ipa" \
-            --apiKey "$APP_STORE_CONNECT_API_KEY_ID" \
-            --apiIssuer "$APP_STORE_CONNECT_API_ISSUER_ID" \
-            --apiKeyPath ~/private_keys \
-            --verbose || true
 
       - name: Cleanup keychain
         if: always()
