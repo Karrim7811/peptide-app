@@ -129,6 +129,61 @@ class BloodworkViewModel: ObservableObject {
         isLoading = false
     }
 
+    @Published var isScanning = false
+    @Published var scanMessage: String?
+
+    func processImage(imageData: Data, mimeType: String) async {
+        isScanning = true
+        scanMessage = "AI is reading your bloodwork..."
+        errorMessage = nil
+
+        do {
+            let base64 = imageData.base64EncodedString()
+            let markers = try await APIService.shared.ocrBloodwork(imageBase64: base64, mimeType: mimeType)
+            applyMarkers(markers)
+            scanMessage = "Found \(markers.count) markers! Review and tap Analyze."
+        } catch {
+            errorMessage = "Could not read bloodwork: \(error.localizedDescription)"
+            scanMessage = nil
+        }
+
+        isScanning = false
+    }
+
+    private func applyMarkers(_ markers: [String: Double]) {
+        for (key, value) in markers {
+            let str = value.truncatingRemainder(dividingBy: 1) == 0 ? String(format: "%.0f", value) : String(format: "%.2f", value)
+            switch key {
+            case "testosterone": testosterone = str
+            case "freeTestosterone": freeTestosterone = str
+            case "igf1": igf1 = str
+            case "estradiol": estradiol = str
+            case "tsh": tsh = str
+            case "t3Free": t3Free = str
+            case "t4Free": t4Free = str
+            case "fastingGlucose": fastingGlucose = str
+            case "hba1c": hba1c = str
+            case "totalCholesterol": totalCholesterol = str
+            case "ldl": ldl = str
+            case "hdl": hdl = str
+            case "triglycerides": triglycerides = str
+            case "alt": alt = str
+            case "ast": ast = str
+            case "gfr": gfr = str
+            case "creatinine": creatinine = str
+            case "crp": crp = str
+            case "vitaminD": vitaminD = str
+            case "b12": b12 = str
+            case "ironFerritin": ironFerritin = str
+            case "wbc": wbc = str
+            case "rbc": rbc = str
+            case "hemoglobin": hemoglobin = str
+            case "hematocrit": hematocrit = str
+            default: break
+            }
+        }
+    }
+
     func reset() {
         testosterone = ""
         freeTestosterone = ""

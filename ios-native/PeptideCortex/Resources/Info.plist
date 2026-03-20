@@ -48,6 +48,10 @@
 	<string>AppIcon</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+	<string>Peptide Cortex needs camera access to scan your bloodwork reports.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Peptide Cortex needs photo library access to import your bloodwork reports.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>

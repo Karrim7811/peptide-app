@@ -1,7 +1,13 @@
 import SwiftUI
+import PhotosUI
+import UniformTypeIdentifiers
 
 struct BloodworkView: View {
     @StateObject private var vm = BloodworkViewModel()
+    @State private var showCamera = false
+    @State private var showPhotoPicker = false
+    @State private var showFilePicker = false
+    @State private var selectedPhoto: PhotosPickerItem?
 
     var body: some View {
         ScrollView {
@@ -14,7 +20,7 @@ struct BloodworkView: View {
                     Text("Bloodwork Analyzer")
                         .font(.system(size: 18, weight: .semibold))
                         .foregroundColor(.cxBlack)
-                    Text("Enter your lab results and get AI-powered peptide recommendations.")
+                    Text("Enter your lab results manually, or scan/import your bloodwork report.")
                         .font(.system(size: 13))
                         .foregroundColor(.cxStone)
                         .multilineTextAlignment(.center)
@@ -23,6 +29,78 @@ struct BloodworkView: View {
                 .frame(maxWidth: .infinity)
                 .background(Color.white)
                 .cornerRadius(12)
+
+                // Scan / Import buttons
+                HStack(spacing: 10) {
+                    Button {
+                        showCamera = true
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "camera.fill")
+                            Text("Take Photo")
+                                .font(.system(size: 14, weight: .semibold))
+                        }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(Color.cxTeal)
+                        .cornerRadius(10)
+                    }
+
+                    PhotosPicker(selection: $selectedPhoto, matching: .images) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "photo.fill")
+                            Text("Photo Library")
+                                .font(.system(size: 14, weight: .semibold))
+                        }
+                        .foregroundColor(.cxTeal)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(Color.cxTeal.opacity(0.1))
+                        .cornerRadius(10)
+                    }
+
+                    Button {
+                        showFilePicker = true
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "doc.fill")
+                            Text("Import")
+                                .font(.system(size: 14, weight: .semibold))
+                        }
+                        .foregroundColor(.cxTeal)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(Color.cxTeal.opacity(0.1))
+                        .cornerRadius(10)
+                    }
+                }
+
+                // Scan status
+                if vm.isScanning {
+                    HStack(spacing: 8) {
+                        ProgressView().scaleEffect(0.8)
+                        Text(vm.scanMessage ?? "Processing...")
+                            .font(.system(size: 13))
+                            .foregroundColor(.cxTeal)
+                    }
+                    .padding(12)
+                    .frame(maxWidth: .infinity)
+                    .background(Color.cxTeal.opacity(0.08))
+                    .cornerRadius(10)
+                } else if let msg = vm.scanMessage {
+                    HStack(spacing: 8) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                        Text(msg)
+                            .font(.system(size: 13))
+                            .foregroundColor(.green)
+                    }
+                    .padding(12)
+                    .frame(maxWidth: .infinity)
+                    .background(Color.green.opacity(0.08))
+                    .cornerRadius(10)
+                }
 
                 // Hormones
                 SectionHeader(title: "HORMONES")
@@ -195,6 +273,68 @@ struct BloodworkView: View {
             .padding()
         }
         .background(Color.cxParchment)
+        .fullScreenCover(isPresented: $showCamera) {
+            CameraView { imageData in
+                showCamera = false
+                if let data = imageData {
+                    Task { await vm.processImage(imageData: data, mimeType: "image/jpeg") }
+                }
+            }
+        }
+        .onChange(of: selectedPhoto) { newItem in
+            guard let item = newItem else { return }
+            Task {
+                if let data = try? await item.loadTransferable(type: Data.self) {
+                    await vm.processImage(imageData: data, mimeType: "image/jpeg")
+                }
+            }
+        }
+        .fileImporter(isPresented: $showFilePicker, allowedContentTypes: [.image, .pdf]) { result in
+            switch result {
+            case .success(let url):
+                guard url.startAccessingSecurityScopedResource() else { return }
+                defer { url.stopAccessingSecurityScopedResource() }
+                if let data = try? Data(contentsOf: url) {
+                    let mime = url.pathExtension.lowercased() == "pdf" ? "application/pdf" : "image/jpeg"
+                    Task { await vm.processImage(imageData: data, mimeType: mime) }
+                }
+            case .failure:
+                vm.errorMessage = "Failed to import file."
+            }
+        }
+    }
+}
+
+// MARK: - Camera View
+struct CameraView: UIViewControllerRepresentable {
+    let completion: (Data?) -> Void
+
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.sourceType = .camera
+        picker.delegate = context.coordinator
+        return picker
+    }
+
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+
+    func makeCoordinator() -> Coordinator { Coordinator(completion: completion) }
+
+    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+        let completion: (Data?) -> Void
+        init(completion: @escaping (Data?) -> Void) { self.completion = completion }
+
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+            if let image = info[.originalImage] as? UIImage {
+                completion(image.jpegData(compressionQuality: 0.8))
+            } else {
+                completion(nil)
+            }
+        }
+
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            completion(nil)
+        }
     }
 }
 

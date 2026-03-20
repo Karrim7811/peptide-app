@@ -169,6 +169,32 @@ class APIService {
         ])
     }
 
+    // MARK: - Bloodwork OCR
+
+    struct BloodworkOCRResponse: Codable {
+        let markers: [String: Double?]?
+        let error: String?
+    }
+
+    func ocrBloodwork(imageBase64: String, mimeType: String) async throws -> [String: Double] {
+        let response: BloodworkOCRResponse = try await makeRequest(
+            path: "/api/bloodwork-ocr",
+            body: ["image": imageBase64, "mimeType": mimeType]
+        )
+        if let error = response.error {
+            throw NSError(domain: "API", code: 422, userInfo: [NSLocalizedDescriptionKey: error])
+        }
+        var result: [String: Double] = [:]
+        if let markers = response.markers {
+            for (key, value) in markers {
+                if let v = value {
+                    result[key] = v
+                }
+            }
+        }
+        return result
+    }
+
     // MARK: - Stripe
 
     func createCheckout(plan: String) async throws -> String {
