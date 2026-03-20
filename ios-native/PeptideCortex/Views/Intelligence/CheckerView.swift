@@ -15,28 +15,18 @@ struct CheckerView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
                 // Compound A
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Compound A")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundColor(.cxStone)
-                    TextField("e.g. BPC-157", text: $vm.itemA)
-                        .font(.system(size: 15))
-                        .padding(12)
-                        .background(Color.white)
-                        .cornerRadius(10)
-                }
+                PeptideAutocompleteField(
+                    label: "Compound A",
+                    placeholder: "e.g. BPC-157",
+                    text: $vm.itemA
+                )
 
                 // Compound B
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Compound B")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundColor(.cxStone)
-                    TextField("e.g. TB-500", text: $vm.itemB)
-                        .font(.system(size: 15))
-                        .padding(12)
-                        .background(Color.white)
-                        .cornerRadius(10)
-                }
+                PeptideAutocompleteField(
+                    label: "Compound B",
+                    placeholder: "e.g. TB-500",
+                    text: $vm.itemB
+                )
 
                 // Check button
                 Button {

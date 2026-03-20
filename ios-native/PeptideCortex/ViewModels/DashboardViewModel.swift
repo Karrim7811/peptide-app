@@ -70,8 +70,12 @@ class DashboardViewModel: ObservableObject {
         newsError = nil
         do {
             marketPulse = try await APIService.shared.getMarketPulse()
+        } catch let urlError as URLError where urlError.code == .timedOut {
+            newsError = "News request timed out. The server may be waking up -- pull to refresh."
+        } catch let urlError as URLError where urlError.code == .notConnectedToInternet {
+            newsError = "No internet connection. Please check your network."
         } catch {
-            newsError = "Could not load news. Pull to refresh."
+            newsError = "Could not load news: \(error.localizedDescription). Pull to refresh."
             print("Market pulse error: \(error)")
         }
         newsLoading = false

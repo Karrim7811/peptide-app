@@ -46,7 +46,7 @@ struct ReconstitutionView: View {
                         .tracking(2)
                         .foregroundColor(.cxStone)
 
-                    FormField(label: "Peptide Name", text: $vm.peptideName, keyboard: .default)
+                    PeptideAutocompleteField(label: "Peptide Name", placeholder: "e.g. BPC-157", text: $vm.peptideName)
 
                     Button {
                         Task { await vm.getAIRecommendation() }
@@ -117,6 +117,7 @@ struct FormField: View {
                 .foregroundColor(.cxStone)
             TextField(label, text: $text)
                 .font(.system(size: 15))
+                .foregroundColor(.black)
                 .keyboardType(keyboard)
                 .padding(12)
                 .background(Color.cxParchment.opacity(0.5))

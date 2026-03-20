@@ -34,8 +34,14 @@ class ChatViewModel: ObservableObject {
             let reply = try await APIService.shared.sendChatMessage(messages: chatHistory)
             chatHistory.append(ChatMessage(role: "assistant", content: reply))
             messages.append(DisplayMessage(role: "assistant", content: reply))
+        } catch let urlError as URLError where urlError.code == .timedOut {
+            messages.append(DisplayMessage(role: "assistant", content: "The request timed out. The server may be busy -- please try again in a moment."))
+        } catch let urlError as URLError where urlError.code == .notConnectedToInternet {
+            messages.append(DisplayMessage(role: "assistant", content: "No internet connection. Please check your network and try again."))
+        } catch let nsError as NSError where nsError.domain == "API" {
+            messages.append(DisplayMessage(role: "assistant", content: "Server error (status \(nsError.code)). Please try again later."))
         } catch {
-            messages.append(DisplayMessage(role: "assistant", content: "Sorry, I encountered an error. Please try again."))
+            messages.append(DisplayMessage(role: "assistant", content: "Something went wrong: \(error.localizedDescription). Please try again."))
         }
         isLoading = false
     }

@@ -175,18 +175,52 @@ struct SideEffectCard: View {
 struct AddSideEffectSheet: View {
     @ObservedObject var vm: SideEffectsViewModel
     @Environment(\.dismiss) var dismiss
+    @State private var showSuggestions = false
+
+    private var suggestions: [String] {
+        guard !vm.newPeptideName.isEmpty else { return [] }
+        let q = vm.newPeptideName.lowercased()
+        return PeptideDataStore.shared.allNames.filter { $0.lowercased().contains(q) }
+    }
 
     var body: some View {
         NavigationView {
             Form {
                 Section("Details") {
-                    TextField("Peptide Name", text: $vm.newPeptideName)
+                    VStack(alignment: .leading, spacing: 4) {
+                        TextField("Peptide Name", text: $vm.newPeptideName)
+                            .foregroundColor(.black)
+                            .onChange(of: vm.newPeptideName) { _ in showSuggestions = !vm.newPeptideName.isEmpty }
+                        if showSuggestions && !suggestions.isEmpty {
+                            ScrollView {
+                                VStack(alignment: .leading, spacing: 0) {
+                                    ForEach(suggestions.prefix(6), id: \.self) { name in
+                                        Button {
+                                            vm.newPeptideName = name
+                                            showSuggestions = false
+                                        } label: {
+                                            Text(name)
+                                                .font(.system(size: 14))
+                                                .foregroundColor(.cxBlack)
+                                                .frame(maxWidth: .infinity, alignment: .leading)
+                                                .padding(.vertical, 8)
+                                                .padding(.horizontal, 4)
+                                        }
+                                        Divider()
+                                    }
+                                }
+                            }
+                            .frame(maxHeight: 180)
+                        }
+                    }
                     TextField("Side Effect", text: $vm.newEffect)
+                        .foregroundColor(.black)
                     Stepper("Severity: \(vm.newSeverity)/5", value: $vm.newSeverity, in: 1...5)
                     DatePicker("Occurred At", selection: $vm.newDate)
                 }
                 Section("Notes") {
                     TextField("Optional notes", text: $vm.newNotes, axis: .vertical)
+                        .foregroundColor(.black)
                         .lineLimit(3...6)
                 }
             }

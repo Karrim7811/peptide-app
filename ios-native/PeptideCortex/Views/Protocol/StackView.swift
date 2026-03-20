@@ -116,17 +116,50 @@ struct StackItemCard: View {
 struct AddStackItemSheet: View {
     @ObservedObject var vm: StackViewModel
     @Environment(\.dismiss) var dismiss
+    @State private var showSuggestions = false
+
+    private var suggestions: [String] {
+        guard !vm.newName.isEmpty else { return [] }
+        let q = vm.newName.lowercased()
+        return PeptideDataStore.shared.allNames.filter { $0.lowercased().contains(q) }
+    }
 
     var body: some View {
         NavigationView {
             Form {
                 Section("Details") {
-                    TextField("Name", text: $vm.newName)
+                    VStack(alignment: .leading, spacing: 4) {
+                        TextField("Name", text: $vm.newName)
+                            .foregroundColor(.black)
+                            .onChange(of: vm.newName) { _ in showSuggestions = !vm.newName.isEmpty }
+                        if showSuggestions && !suggestions.isEmpty {
+                            ScrollView {
+                                VStack(alignment: .leading, spacing: 0) {
+                                    ForEach(suggestions.prefix(6), id: \.self) { name in
+                                        Button {
+                                            vm.newName = name
+                                            showSuggestions = false
+                                        } label: {
+                                            Text(name)
+                                                .font(.system(size: 14))
+                                                .foregroundColor(.cxBlack)
+                                                .frame(maxWidth: .infinity, alignment: .leading)
+                                                .padding(.vertical, 8)
+                                                .padding(.horizontal, 4)
+                                        }
+                                        Divider()
+                                    }
+                                }
+                            }
+                            .frame(maxHeight: 180)
+                        }
+                    }
                     Picker("Type", selection: $vm.newType) {
                         ForEach(vm.typeOptions, id: \.self) { Text($0.capitalized) }
                     }
                     HStack {
                         TextField("Dose", text: $vm.newDose)
+                            .foregroundColor(.black)
                             .keyboardType(.decimalPad)
                         Picker("Unit", selection: $vm.newUnit) {
                             ForEach(vm.unitOptions, id: \.self) { Text($0) }
@@ -136,6 +169,7 @@ struct AddStackItemSheet: View {
                 }
                 Section("Notes") {
                     TextField("Optional notes", text: $vm.newNotes, axis: .vertical)
+                        .foregroundColor(.black)
                         .lineLimit(3...6)
                 }
             }

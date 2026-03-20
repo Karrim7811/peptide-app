@@ -14,16 +14,11 @@ struct StackFinderView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
                 // Peptide name
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Peptide")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundColor(.cxStone)
-                    TextField("e.g. BPC-157", text: $vm.peptideName)
-                        .font(.system(size: 15))
-                        .padding(12)
-                        .background(Color.white)
-                        .cornerRadius(10)
-                }
+                PeptideAutocompleteField(
+                    label: "Peptide",
+                    placeholder: "e.g. BPC-157",
+                    text: $vm.peptideName
+                )
 
                 // Goal picker
                 VStack(alignment: .leading, spacing: 6) {

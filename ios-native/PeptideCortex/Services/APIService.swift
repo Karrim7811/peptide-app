@@ -86,12 +86,20 @@ class APIService {
         guard let httpResponse = response as? HTTPURLResponse,
               (200...299).contains(httpResponse.statusCode) else {
             let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+            let bodyText = String(data: data, encoding: .utf8) ?? "No response body"
             throw NSError(domain: "API", code: statusCode, userInfo: [
-                NSLocalizedDescriptionKey: "Request failed with status \(statusCode)"
+                NSLocalizedDescriptionKey: "Request to \(path) failed with status \(statusCode): \(bodyText.prefix(200))"
             ])
         }
 
-        return try JSONDecoder().decode(T.self, from: data)
+        do {
+            return try JSONDecoder().decode(T.self, from: data)
+        } catch {
+            let bodyText = String(data: data, encoding: .utf8) ?? "Unable to read response"
+            throw NSError(domain: "API", code: -1, userInfo: [
+                NSLocalizedDescriptionKey: "Failed to decode response from \(path). Body: \(bodyText.prefix(300))"
+            ])
+        }
     }
 
     // MARK: - AI Chat

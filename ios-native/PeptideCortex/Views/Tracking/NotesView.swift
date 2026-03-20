@@ -139,17 +139,51 @@ struct NoteCard: View {
 struct AddNoteSheet: View {
     @ObservedObject var vm: NotesViewModel
     @Environment(\.dismiss) var dismiss
+    @State private var showSuggestions = false
+
+    private var suggestions: [String] {
+        guard !vm.newPeptideName.isEmpty else { return [] }
+        let q = vm.newPeptideName.lowercased()
+        return PeptideDataStore.shared.allNames.filter { $0.lowercased().contains(q) }
+    }
 
     var body: some View {
         NavigationView {
             Form {
                 Section("Note") {
-                    TextField("Peptide Name", text: $vm.newPeptideName)
+                    VStack(alignment: .leading, spacing: 4) {
+                        TextField("Peptide Name", text: $vm.newPeptideName)
+                            .foregroundColor(.black)
+                            .onChange(of: vm.newPeptideName) { _ in showSuggestions = !vm.newPeptideName.isEmpty }
+                        if showSuggestions && !suggestions.isEmpty {
+                            ScrollView {
+                                VStack(alignment: .leading, spacing: 0) {
+                                    ForEach(suggestions.prefix(6), id: \.self) { name in
+                                        Button {
+                                            vm.newPeptideName = name
+                                            showSuggestions = false
+                                        } label: {
+                                            Text(name)
+                                                .font(.system(size: 14))
+                                                .foregroundColor(.cxBlack)
+                                                .frame(maxWidth: .infinity, alignment: .leading)
+                                                .padding(.vertical, 8)
+                                                .padding(.horizontal, 4)
+                                        }
+                                        Divider()
+                                    }
+                                }
+                            }
+                            .frame(maxHeight: 180)
+                        }
+                    }
                     TextField("Your note or observation", text: $vm.newNote, axis: .vertical)
+                        .foregroundColor(.black)
                         .lineLimit(4...10)
                 }
                 Section("Source (Optional)") {
                     TextField("URL link", text: $vm.newUrl)
+                        .foregroundColor(.black)
                         .keyboardType(.URL)
                         .autocapitalization(.none)
                 }

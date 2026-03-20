@@ -38,8 +38,14 @@ class ReconstitutionViewModel: ObservableObject {
         errorMessage = nil
         do {
             aiResult = try await APIService.shared.getReconstitution(peptideName: peptideName, amountMg: mg)
+        } catch let urlError as URLError where urlError.code == .timedOut {
+            errorMessage = "Request timed out. The server may be busy -- please try again."
+        } catch let urlError as URLError where urlError.code == .notConnectedToInternet {
+            errorMessage = "No internet connection. Please check your network."
+        } catch let nsError as NSError where nsError.domain == "API" {
+            errorMessage = "Server error (status \(nsError.code)). Please try again later."
         } catch {
-            errorMessage = "Failed to get AI recommendation. Try again."
+            errorMessage = "Failed to get AI recommendation: \(error.localizedDescription)"
         }
         isLoading = false
     }

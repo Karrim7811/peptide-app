@@ -144,10 +144,12 @@ struct AddDoseLogSheet: View {
                         }
                     }
                     TextField("Dose (e.g., 250mcg)", text: $vm.newDose)
+                        .foregroundColor(.black)
                     DatePicker("Taken At", selection: $vm.newDate)
                 }
                 Section("Notes") {
                     TextField("Optional notes", text: $vm.newNotes, axis: .vertical)
+                        .foregroundColor(.black)
                         .lineLimit(3...6)
                 }
             }
