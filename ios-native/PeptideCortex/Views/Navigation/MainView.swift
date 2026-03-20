@@ -136,6 +136,8 @@ struct MainView: View {
             VendorsView()
         case .pricing:
             PricingView()
+        case .about:
+            AboutView()
         }
     }
 }

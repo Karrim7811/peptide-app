@@ -5,7 +5,7 @@ enum NavDestination: String, CaseIterable {
     case stack, reconstitution, dosing, cycle, sites
     case log, reminders, inventory, sideEffects, notes
     case reference, popularStacks, regulatory, vendors
-    case pricing
+    case pricing, about
 
     var label: String {
         switch self {
@@ -28,6 +28,7 @@ enum NavDestination: String, CaseIterable {
         case .regulatory: return "Legal & Regulatory"
         case .vendors: return "Top Vendors"
         case .pricing: return "Upgrade to Pro"
+        case .about: return "About"
         }
     }
 
@@ -52,6 +53,7 @@ enum NavDestination: String, CaseIterable {
         case .regulatory: return "FDA status & legal info by country"
         case .vendors: return "Trusted sources for peptides"
         case .pricing: return "Unlock unlimited features"
+        case .about: return "Version, privacy policy & legal"
         }
     }
 
@@ -76,6 +78,7 @@ enum NavDestination: String, CaseIterable {
         case .regulatory: return "scale.3d"
         case .vendors: return "storefront"
         case .pricing: return "star.fill"
+        case .about: return "info.circle"
         }
     }
 
@@ -85,6 +88,7 @@ enum NavDestination: String, CaseIterable {
             ("My Protocol", [.stack, .reconstitution, .dosing, .cycle, .sites]),
             ("Tracking", [.log, .reminders, .inventory, .sideEffects, .notes]),
             ("Reference", [.reference, .popularStacks, .regulatory, .vendors]),
+            ("Settings", [.about]),
         ]
     }
 }
