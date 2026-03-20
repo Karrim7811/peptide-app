@@ -177,7 +177,15 @@ jobs:
             -destination 'generic/platform=iOS' \
             -archivePath $RUNNER_TEMP/PeptideCortex.xcarchive \
             CURRENT_PROJECT_VERSION=${{ github.run_number }} \
-            archive
+            archive 2>&1 | tee /tmp/build.log || true
+          echo "=== SWIFT ERRORS ==="
+          grep -i "error:" /tmp/build.log | head -20 || echo "No error lines found"
+          echo "=== END ERRORS ==="
+          # Fail if archive didn't succeed
+          if [ ! -d "$RUNNER_TEMP/PeptideCortex.xcarchive" ]; then
+            echo "Archive failed. See errors above."
+            exit 1
+          fi
 
       - name: Export IPA
         env:
