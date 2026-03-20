@@ -3,6 +3,7 @@ import PhotosUI
 import UniformTypeIdentifiers
 
 struct BloodworkView: View {
+    @EnvironmentObject var storeService: StoreService
     @StateObject private var vm = BloodworkViewModel()
     @State private var showCamera = false
     @State private var showPhotoPicker = false
@@ -10,6 +11,9 @@ struct BloodworkView: View {
     @State private var selectedPhoto: PhotosPickerItem?
 
     var body: some View {
+        if !storeService.isProUser {
+            ProGateView(featureName: "Bloodwork Analyzer")
+        } else {
         ScrollView {
             VStack(spacing: 16) {
                 // Header
@@ -302,6 +306,7 @@ struct BloodworkView: View {
                 vm.errorMessage = "Failed to import file."
             }
         }
+        } // else
     }
 }
 

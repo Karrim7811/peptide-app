@@ -1,9 +1,13 @@
 import SwiftUI
 
 struct StackFinderView: View {
+    @EnvironmentObject var storeService: StoreService
     @StateObject private var vm = StackFinderViewModel()
 
     var body: some View {
+        if !storeService.isProUser {
+            ProGateView(featureName: "Stack Finder")
+        } else {
         ScrollView {
             VStack(spacing: 20) {
                 VStack(alignment: .leading, spacing: 4) {
@@ -89,5 +93,6 @@ struct StackFinderView: View {
             .padding()
         }
         .background(Color.cxParchment)
+        } // else
     }
 }

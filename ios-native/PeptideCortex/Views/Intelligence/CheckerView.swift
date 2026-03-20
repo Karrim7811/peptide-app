@@ -1,9 +1,13 @@
 import SwiftUI
 
 struct CheckerView: View {
+    @EnvironmentObject var storeService: StoreService
     @StateObject private var vm = CheckerViewModel()
 
     var body: some View {
+        if !storeService.isProUser {
+            ProGateView(featureName: "Interaction Checker")
+        } else {
         ScrollView {
             VStack(spacing: 20) {
                 // Header
@@ -63,6 +67,7 @@ struct CheckerView: View {
             .padding()
         }
         .background(Color.cxParchment)
+        } // else
     }
 }
 

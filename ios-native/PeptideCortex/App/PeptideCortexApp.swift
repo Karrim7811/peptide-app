@@ -3,6 +3,7 @@ import SwiftUI
 @main
 struct PeptideCortexApp: App {
     @StateObject private var appState = AppState()
+    @StateObject private var storeService = StoreService()
 
     var body: some Scene {
         WindowGroup {
@@ -12,9 +13,11 @@ struct PeptideCortexApp: App {
                 } else if appState.isAuthenticated {
                     MainView()
                         .environmentObject(appState)
+                        .environmentObject(storeService)
                 } else {
                     LoginView()
                         .environmentObject(appState)
+                        .environmentObject(storeService)
                 }
             }
             .animation(.easeInOut(duration: 0.3), value: appState.isAuthenticated)

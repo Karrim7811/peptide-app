@@ -1,9 +1,13 @@
 import SwiftUI
 
 struct ChatView: View {
+    @EnvironmentObject var storeService: StoreService
     @StateObject private var vm = ChatViewModel()
 
     var body: some View {
+        if !storeService.isProUser {
+            ProGateView(featureName: "Cortex AI")
+        } else {
         VStack(spacing: 0) {
             // Messages
             ScrollViewReader { proxy in
@@ -62,6 +66,7 @@ struct ChatView: View {
             .background(Color.cxParchment)
         }
         .background(Color.cxParchment)
+        } // else
     }
 }
 

@@ -1,12 +1,10 @@
 import SwiftUI
+import StoreKit
 
 struct PricingView: View {
-    @EnvironmentObject var appState: AppState
-    @State private var isLoading = false
-
-    var isPro: Bool {
-        appState.profile?.isPro ?? false
-    }
+    @EnvironmentObject var storeService: StoreService
+    @State private var isPurchasing = false
+    @State private var errorMessage: String?
 
     var body: some View {
         ScrollView {
@@ -22,7 +20,7 @@ struct PricingView: View {
                 }
                 .padding(.top, 8)
 
-                if isPro {
+                if storeService.isProUser {
                     HStack(spacing: 8) {
                         Image(systemName: "checkmark.seal.fill")
                             .foregroundColor(.cxTeal)
@@ -36,85 +34,134 @@ struct PricingView: View {
                     .cornerRadius(12)
                 }
 
-                // Comparison
-                HStack(alignment: .top, spacing: 12) {
-                    // Free tier
-                    PricingTierCard(
-                        tier: "Free",
-                        price: "$0",
-                        period: "forever",
-                        features: [
-                            PricingFeature(name: "Stack items", value: "5", included: true),
-                            PricingFeature(name: "Interaction checks", value: "3/day", included: true),
-                            PricingFeature(name: "Reminders", value: "3", included: true),
-                            PricingFeature(name: "Dose logging", value: "Unlimited", included: true),
-                            PricingFeature(name: "Peptide Bible", value: "Full", included: true),
-                            PricingFeature(name: "AI Chat", value: "", included: false),
-                            PricingFeature(name: "Stack Finder", value: "", included: false),
-                            PricingFeature(name: "Reconstitution AI", value: "", included: false),
-                        ],
-                        isFeatured: false
-                    )
+                // Free features list
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("FREE")
+                        .font(.system(size: 11, weight: .semibold))
+                        .tracking(2)
+                        .foregroundColor(.cxStone)
 
-                    // Pro tier
-                    PricingTierCard(
-                        tier: "Pro",
-                        price: "$9.99",
-                        period: "/month",
-                        features: [
-                            PricingFeature(name: "Stack items", value: "Unlimited", included: true),
-                            PricingFeature(name: "Interaction checks", value: "Unlimited", included: true),
-                            PricingFeature(name: "Reminders", value: "Unlimited", included: true),
-                            PricingFeature(name: "Dose logging", value: "Unlimited", included: true),
-                            PricingFeature(name: "Peptide Bible", value: "Full", included: true),
-                            PricingFeature(name: "AI Chat", value: "Unlimited", included: true),
-                            PricingFeature(name: "Stack Finder", value: "Full", included: true),
-                            PricingFeature(name: "Reconstitution AI", value: "Full", included: true),
-                        ],
-                        isFeatured: true
-                    )
+                    let freeFeatures = [
+                        "Peptide Bible", "Dosing Calculator", "Reconstitution Calculator",
+                        "Injection Sites", "Popular Stacks", "Legal & Regulatory",
+                        "Top Vendors", "My Stack", "Dose Log", "Reminders",
+                        "Fridge Inventory", "Side Effects", "Research Notes", "Cycle Tracker"
+                    ]
+                    ForEach(freeFeatures, id: \.self) { feature in
+                        HStack(spacing: 8) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 14))
+                                .foregroundColor(.cxTeal)
+                            Text(feature)
+                                .font(.system(size: 14))
+                                .foregroundColor(.cxBlack)
+                        }
+                    }
                 }
+                .padding(16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.white)
+                .cornerRadius(14)
 
-                if !isPro {
-                    // Monthly button
-                    Button {
-                        Task { await subscribe(plan: "monthly") }
-                    } label: {
-                        HStack {
-                            if isLoading {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            }
-                            Text("Subscribe Monthly - $9.99/mo")
-                                .font(.system(size: 16, weight: .semibold))
-                        }
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(Color.cxTeal)
-                        .cornerRadius(14)
-                    }
-                    .disabled(isLoading)
-
-                    // Lifetime button
-                    Button {
-                        Task { await subscribe(plan: "lifetime") }
-                    } label: {
-                        HStack {
-                            Text("Lifetime Access - $79.99")
-                                .font(.system(size: 16, weight: .semibold))
-                        }
+                // Pro features list
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("PRO")
+                        .font(.system(size: 11, weight: .semibold))
+                        .tracking(2)
                         .foregroundColor(.cxTeal)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(Color.white)
-                        .cornerRadius(14)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 14)
-                                .stroke(Color.cxTeal, lineWidth: 2)
-                        )
+
+                    let proFeatures = [
+                        ("brain.head.profile", "Cortex AI Chat"),
+                        ("arrow.triangle.2.circlepath", "Interaction Checker"),
+                        ("square.stack.3d.up", "Stack Finder"),
+                        ("heart.text.square", "Bloodwork Analyzer")
+                    ]
+                    ForEach(proFeatures, id: \.1) { icon, feature in
+                        HStack(spacing: 8) {
+                            Image(systemName: icon)
+                                .font(.system(size: 14))
+                                .foregroundColor(.cxTeal)
+                                .frame(width: 20)
+                            Text(feature)
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.cxBlack)
+                        }
                     }
-                    .disabled(isLoading)
+                }
+                .padding(16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.cxTeal.opacity(0.06))
+                .cornerRadius(14)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14)
+                        .stroke(Color.cxTeal.opacity(0.3), lineWidth: 1)
+                )
+
+                if !storeService.isProUser {
+                    // Subscription product buttons
+                    if storeService.products.isEmpty {
+                        ProgressView("Loading plans...")
+                            .padding()
+                    } else {
+                        VStack(spacing: 12) {
+                            ForEach(storeService.products, id: \.id) { product in
+                                Button {
+                                    Task { await purchaseProduct(product) }
+                                } label: {
+                                    HStack {
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text(product.displayName)
+                                                .font(.system(size: 16, weight: .semibold))
+                                            Text(product.description)
+                                                .font(.system(size: 12))
+                                                .opacity(0.7)
+                                        }
+                                        Spacer()
+                                        if isPurchasing {
+                                            ProgressView()
+                                                .progressViewStyle(CircularProgressViewStyle(tint: product.id == "pro_yearly" ? .white : .cxTeal))
+                                        } else {
+                                            Text(product.displayPrice)
+                                                .font(.system(size: 16, weight: .bold))
+                                        }
+                                    }
+                                    .foregroundColor(product.id == "pro_yearly" ? .white : .cxTeal)
+                                    .padding(16)
+                                    .frame(maxWidth: .infinity)
+                                    .background(product.id == "pro_yearly" ? Color.cxTeal : Color.white)
+                                    .cornerRadius(14)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 14)
+                                            .stroke(Color.cxTeal, lineWidth: product.id == "pro_yearly" ? 0 : 2)
+                                    )
+                                }
+                                .disabled(isPurchasing)
+                            }
+                        }
+                    }
+
+                    // Error message
+                    if let errorMessage {
+                        Text(errorMessage)
+                            .font(.system(size: 13))
+                            .foregroundColor(.red)
+                            .padding(12)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color.red.opacity(0.08))
+                            .cornerRadius(10)
+                    }
+
+                    // Restore purchases
+                    Button {
+                        Task {
+                            await storeService.restorePurchases()
+                        }
+                    } label: {
+                        Text("Restore Purchases")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.cxStone)
+                    }
+                    .padding(.top, 4)
                 }
             }
             .padding()
@@ -122,19 +169,15 @@ struct PricingView: View {
         .background(Color.cxParchment)
     }
 
-    func subscribe(plan: String) async {
-        isLoading = true
+    private func purchaseProduct(_ product: Product) async {
+        isPurchasing = true
+        errorMessage = nil
         do {
-            let urlString = try await APIService.shared.createCheckout(plan: plan)
-            if let url = URL(string: urlString) {
-                await MainActor.run {
-                    UIApplication.shared.open(url)
-                }
-            }
+            try await storeService.purchase(product)
         } catch {
-            print("Checkout error: \(error)")
+            errorMessage = "Purchase failed: \(error.localizedDescription)"
         }
-        isLoading = false
+        isPurchasing = false
     }
 }
 
