@@ -10,7 +10,7 @@ enum NavDestination: String, CaseIterable {
     var label: String {
         switch self {
         case .dashboard: return "Dashboard"
-        case .aiChat: return "Peptide AI"
+        case .aiChat: return "Cortex AI"
         case .checker: return "Interaction Checker"
         case .stackFinder: return "Stack Finder"
         case .stack: return "My Stack"

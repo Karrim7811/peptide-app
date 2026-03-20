@@ -17,7 +17,7 @@ class ChatViewModel: ObservableObject {
     init() {
         messages.append(DisplayMessage(
             role: "assistant",
-            content: "Hello! I'm your Peptide AI assistant. Ask me anything about peptides, dosing protocols, stacking, reconstitution, or research."
+            content: "Hello! I'm Cortex AI, your peptide intelligence assistant. Ask me anything about peptides, dosing protocols, stacking, reconstitution, or research."
         ))
     }
 

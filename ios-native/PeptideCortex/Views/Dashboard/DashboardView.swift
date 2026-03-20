@@ -149,7 +149,7 @@ struct DashboardView: View {
                         QuickActionRow(icon: "square.stack.3d.up.fill", label: "Manage Stack", color: .cxTeal) {
                             selectedTab = .stack
                         }
-                        QuickActionRow(icon: "message.fill", label: "Ask Peptide AI", color: .blue) {
+                        QuickActionRow(icon: "message.fill", label: "Ask Cortex AI", color: .blue) {
                             selectedTab = .aiChat
                         }
                         QuickActionRow(icon: "shield.fill", label: "Check Interaction", color: .orange) {

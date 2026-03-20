@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { PEPTIDE_KNOWLEDGE } from '@/lib/peptide-knowledge'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthenticatedUser } from '@/lib/supabase/server'
 // Pro gating temporarily removed — all authenticated users have full access
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
@@ -17,11 +17,10 @@ function buildKnowledgeContext(): string {
 
 export async function POST(request: NextRequest) {
   try {
-    // Auth check
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    // Auth check (supports both cookie-based web and Bearer token mobile)
+    const user = await getAuthenticatedUser(request)
     if (!user) {
-      return NextResponse.json({ error: 'Please sign in to use PeptideAI.', code: 'AUTH_REQUIRED' }, { status: 401 })
+      return NextResponse.json({ error: 'Please sign in to use Cortex AI.', code: 'AUTH_REQUIRED' }, { status: 401 })
     }
 
     const body = await request.json()
