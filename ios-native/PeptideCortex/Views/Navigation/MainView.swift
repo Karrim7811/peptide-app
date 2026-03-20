@@ -106,6 +106,8 @@ struct MainView: View {
             CheckerView()
         case .stackFinder:
             StackFinderView()
+        case .bloodwork:
+            BloodworkView()
         case .stack:
             StackView()
         case .reconstitution:

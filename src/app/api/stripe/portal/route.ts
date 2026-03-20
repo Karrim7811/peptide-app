@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getAuthenticatedUser } from '@/lib/supabase/server'
 import { createClient } from '@/lib/supabase/server'
 import { createCustomerPortalSession } from '@/lib/stripe'
 
 export async function POST(request: NextRequest) {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getAuthenticatedUser(request)
 
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  const supabase = createClient()
   const { data: profile } = await supabase
     .from('profiles')
     .select('stripe_customer_id')

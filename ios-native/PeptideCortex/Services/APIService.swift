@@ -29,6 +29,18 @@ struct StackFinderResponse: Codable {
     let reply: String
 }
 
+struct BloodworkResponse: Codable {
+    let analysis: String
+    let recommendations: [BloodworkRecommendation]
+    let warnings: [String]
+}
+
+struct BloodworkRecommendation: Codable {
+    let peptide: String
+    let reason: String
+    let priority: String
+}
+
 struct MarketPulseResponse: Codable {
     let lastUpdated: String
     let headlines: [Headline]
@@ -145,6 +157,16 @@ class APIService {
 
     func getMarketPulse() async throws -> MarketPulseResponse {
         try await makeRequest(path: "/api/market-pulse", method: "GET")
+    }
+
+    // MARK: - Bloodwork Analyzer
+
+    func analyzeBloodwork(markers: [[String: Any]], currentStack: [String], goals: String) async throws -> BloodworkResponse {
+        try await makeRequest(path: "/api/bloodwork-analyze", body: [
+            "markers": markers,
+            "currentStack": currentStack,
+            "goals": goals
+        ])
     }
 
     // MARK: - Stripe

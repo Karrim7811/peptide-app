@@ -1,7 +1,7 @@
 import SwiftUI
 
 enum NavDestination: String, CaseIterable {
-    case dashboard, aiChat, checker, stackFinder
+    case dashboard, aiChat, checker, stackFinder, bloodwork
     case stack, reconstitution, dosing, cycle, sites
     case log, reminders, inventory, sideEffects, notes
     case reference, popularStacks, regulatory, vendors
@@ -13,6 +13,7 @@ enum NavDestination: String, CaseIterable {
         case .aiChat: return "Cortex AI"
         case .checker: return "Interaction Checker"
         case .stackFinder: return "Stack Finder"
+        case .bloodwork: return "Bloodwork Analyzer"
         case .stack: return "My Stack"
         case .reconstitution: return "Reconstitution"
         case .dosing: return "Dosage Calculator"
@@ -38,6 +39,7 @@ enum NavDestination: String, CaseIterable {
         case .aiChat: return "Ask anything about peptides"
         case .checker: return "Check if two compounds are safe together"
         case .stackFinder: return "Find peptides that complement your stack"
+        case .bloodwork: return "AI analysis of your lab results"
         case .stack: return "Add your peptides, meds & supplements"
         case .reconstitution: return "Calculate BAC water for your vials"
         case .dosing: return "Look up dosage info for any peptide"
@@ -63,6 +65,7 @@ enum NavDestination: String, CaseIterable {
         case .aiChat: return "message"
         case .checker: return "shield"
         case .stackFinder: return "sparkles"
+        case .bloodwork: return "heart.text.square"
         case .stack: return "square.stack.3d.up"
         case .reconstitution: return "flask"
         case .dosing: return "function"
@@ -84,7 +87,7 @@ enum NavDestination: String, CaseIterable {
 
     static var sections: [(label: String, items: [NavDestination])] {
         [
-            ("Intelligence", [.dashboard, .aiChat, .checker, .stackFinder]),
+            ("Intelligence", [.dashboard, .aiChat, .checker, .stackFinder, .bloodwork]),
             ("My Protocol", [.stack, .reconstitution, .dosing, .cycle, .sites]),
             ("Tracking", [.log, .reminders, .inventory, .sideEffects, .notes]),
             ("Reference", [.reference, .popularStacks, .regulatory, .vendors]),
