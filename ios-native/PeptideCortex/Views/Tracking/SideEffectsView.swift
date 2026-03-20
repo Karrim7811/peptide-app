@@ -189,7 +189,7 @@ struct AddSideEffectSheet: View {
                 Section("Details") {
                     VStack(alignment: .leading, spacing: 4) {
                         TextField("Peptide Name", text: $vm.newPeptideName)
-                            .foregroundColor(.black)
+                            .foregroundColor(.primary)
                             .onChange(of: vm.newPeptideName) { _ in showSuggestions = !vm.newPeptideName.isEmpty }
                         if showSuggestions && !suggestions.isEmpty {
                             ScrollView {
@@ -214,13 +214,13 @@ struct AddSideEffectSheet: View {
                         }
                     }
                     TextField("Side Effect", text: $vm.newEffect)
-                        .foregroundColor(.black)
+                        .foregroundColor(.primary)
                     Stepper("Severity: \(vm.newSeverity)/5", value: $vm.newSeverity, in: 1...5)
                     DatePicker("Occurred At", selection: $vm.newDate)
                 }
                 Section("Notes") {
                     TextField("Optional notes", text: $vm.newNotes, axis: .vertical)
-                        .foregroundColor(.black)
+                        .foregroundColor(.primary)
                         .lineLimit(3...6)
                 }
             }

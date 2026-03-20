@@ -129,7 +129,7 @@ struct AddReminderSheet: View {
                     }
                     DatePicker("Time", selection: $vm.newTime, displayedComponents: .hourAndMinute)
                     TextField("Dose (e.g., 250mcg)", text: $vm.newDose)
-                        .foregroundColor(.black)
+                        .foregroundColor(.primary)
                 }
 
                 Section("Days") {

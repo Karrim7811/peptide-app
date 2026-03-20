@@ -42,7 +42,7 @@ struct ChatView: View {
             HStack(spacing: 10) {
                 TextField("Ask about peptides...", text: $vm.inputText, axis: .vertical)
                     .font(.system(size: 15))
-                    .foregroundColor(.black)
+                    .foregroundColor(.primary)
                     .padding(12)
                     .background(Color.white)
                     .cornerRadius(12)

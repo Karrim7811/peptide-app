@@ -117,7 +117,7 @@ struct FormField: View {
                 .foregroundColor(.cxStone)
             TextField(label, text: $text)
                 .font(.system(size: 15))
-                .foregroundColor(.black)
+                .foregroundColor(.primary)
                 .keyboardType(keyboard)
                 .padding(12)
                 .background(Color.cxParchment.opacity(0.5))
