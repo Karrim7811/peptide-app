@@ -30,9 +30,9 @@ struct AboutView: View {
 
                     // Version Info
                     VStack(spacing: 8) {
-                        InfoRow(label: "Version", value: "1.0.0")
-                        InfoRow(label: "Build", value: Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "—")
-                        InfoRow(label: "Platform", value: "iOS \(UIDevice.current.systemVersion)")
+                        AboutInfoRow(label: "Version", value: "1.0.0")
+                        AboutInfoRow(label: "Build", value: Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "—")
+                        AboutInfoRow(label: "Platform", value: "iOS \(UIDevice.current.systemVersion)")
                     }
                 }
                 .padding(20)
@@ -141,7 +141,7 @@ struct AboutView: View {
     }
 }
 
-struct InfoRow: View {
+struct AboutInfoRow: View {
     let label: String
     let value: String
 
