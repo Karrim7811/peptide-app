@@ -165,6 +165,7 @@ struct BloodworkView: View {
 
     // MARK: - Marker Section Builder
 
+    @ViewBuilder
     func markerSection(title: String, markers: [(label: String, unit: String, binding: Binding<String>)]) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(title)
@@ -173,7 +174,7 @@ struct BloodworkView: View {
                 .foregroundColor(.cxStone)
 
             VStack(spacing: 6) {
-                ForEach(markers, id: \.label) { marker in
+                ForEach(Array(markers.enumerated()), id: \.offset) { _, marker in
                     HStack(spacing: 8) {
                         Text(marker.label)
                             .font(.system(size: 14))
