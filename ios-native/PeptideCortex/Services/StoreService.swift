@@ -10,6 +10,7 @@ class StoreService: ObservableObject {
 
     // Owner emails that always get Pro access
     private static let ownerEmails: Set<String> = [
+        "karimnp@gmail.com",
         "karim@tigristechlabs.com",
         "review@tigristechlabs.com"
     ]
