@@ -28,6 +28,7 @@ struct PeptideCortexApp: App {
             }
             .animation(.easeInOut(duration: 0.3), value: appState.isAuthenticated)
             .animation(.easeInOut(duration: 0.3), value: appState.isLoading)
+            .preferredColorScheme(.light)
         }
     }
 }
