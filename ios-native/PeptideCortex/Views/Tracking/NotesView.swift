@@ -153,7 +153,7 @@ struct AddNoteSheet: View {
                 Section("Note") {
                     VStack(alignment: .leading, spacing: 4) {
                         TextField("Peptide Name", text: $vm.newPeptideName)
-                            .foregroundColor(.primary)
+                            .foregroundColor(.black)
                             .onChange(of: vm.newPeptideName) { _ in showSuggestions = !vm.newPeptideName.isEmpty }
                         if showSuggestions && !suggestions.isEmpty {
                             ScrollView {
@@ -178,12 +178,12 @@ struct AddNoteSheet: View {
                         }
                     }
                     TextField("Your note or observation", text: $vm.newNote, axis: .vertical)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.black)
                         .lineLimit(4...10)
                 }
                 Section("Source (Optional)") {
                     TextField("URL link", text: $vm.newUrl)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.black)
                         .keyboardType(.URL)
                         .autocapitalization(.none)
                 }

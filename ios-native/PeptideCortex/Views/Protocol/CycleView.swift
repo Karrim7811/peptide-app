@@ -158,9 +158,9 @@ struct AddCycleSheet: View {
             Form {
                 Section("Cycle Info") {
                     TextField("Cycle Name", text: $vm.newName)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.black)
                     TextField("Peptides (comma-separated)", text: $vm.newPeptides)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.black)
                 }
                 Section("Schedule") {
                     Stepper("On Weeks: \(vm.newOnWeeks)", value: $vm.newOnWeeks, in: 1...52)
@@ -169,7 +169,7 @@ struct AddCycleSheet: View {
                 }
                 Section("Notes") {
                     TextField("Optional notes", text: $vm.newNotes, axis: .vertical)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.black)
                         .lineLimit(3...6)
                 }
             }

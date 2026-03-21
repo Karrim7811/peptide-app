@@ -11,7 +11,7 @@ struct SearchBar: View {
                 .foregroundColor(.cxStone)
             TextField(placeholder, text: $text)
                 .font(.system(size: 15))
-                .foregroundColor(.primary)
+                .foregroundColor(.black)
                 .autocorrectionDisabled()
             if !text.isEmpty {
                 Button {
@@ -52,7 +52,7 @@ struct PeptideAutocompleteField: View {
                 .foregroundColor(.cxStone)
             TextField(placeholder.isEmpty ? label : placeholder, text: $text)
                 .font(.system(size: 15))
-                .foregroundColor(.primary)
+                .foregroundColor(.black)
                 .padding(12)
                 .background(Color.white)
                 .cornerRadius(10)

@@ -21,7 +21,7 @@ struct PopularStacksView: View {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.cxStone)
                     TextField("Search stacks...", text: $searchText)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.black)
                 }
                 .padding(12)
                 .background(Color.white)

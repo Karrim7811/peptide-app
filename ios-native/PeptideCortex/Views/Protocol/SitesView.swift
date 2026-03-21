@@ -137,12 +137,12 @@ struct AddInjectionSheet: View {
                         }
                     }
                     TextField("Peptide Name", text: $vm.peptideName)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.black)
                     DatePicker("Date & Time", selection: $vm.newDate)
                 }
                 Section("Notes") {
                     TextField("Optional notes", text: $vm.newNotes, axis: .vertical)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.black)
                         .lineLimit(3...6)
                 }
             }

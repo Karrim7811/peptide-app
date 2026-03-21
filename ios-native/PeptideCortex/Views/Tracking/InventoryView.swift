@@ -138,7 +138,7 @@ struct AddInventorySheet: View {
                 Section("Item Info") {
                     VStack(alignment: .leading, spacing: 4) {
                         TextField("Name", text: $vm.newName)
-                            .foregroundColor(.primary)
+                            .foregroundColor(.black)
                             .onChange(of: vm.newName) { _ in showSuggestions = !vm.newName.isEmpty }
                         if showSuggestions && !suggestions.isEmpty {
                             ScrollView {
@@ -166,16 +166,16 @@ struct AddInventorySheet: View {
                         ForEach(vm.unitOptions, id: \.self) { Text($0) }
                     }
                     TextField("Vial Size", text: $vm.newVialSize)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.black)
                         .keyboardType(.decimalPad)
                     TextField("Quantity Remaining", text: $vm.newQuantity)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.black)
                         .keyboardType(.decimalPad)
                     DatePicker("Expiry Date", selection: $vm.newExpiry, displayedComponents: .date)
                 }
                 Section("Notes") {
                     TextField("Optional notes", text: $vm.newNotes, axis: .vertical)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.black)
                         .lineLimit(3...6)
                 }
             }

@@ -130,7 +130,7 @@ struct AddStackItemSheet: View {
                 Section("Details") {
                     VStack(alignment: .leading, spacing: 4) {
                         TextField("Name", text: $vm.newName)
-                            .foregroundColor(.primary)
+                            .foregroundColor(.black)
                             .onChange(of: vm.newName) { _ in showSuggestions = !vm.newName.isEmpty }
                         if showSuggestions && !suggestions.isEmpty {
                             ScrollView {
@@ -159,7 +159,7 @@ struct AddStackItemSheet: View {
                     }
                     HStack {
                         TextField("Dose", text: $vm.newDose)
-                            .foregroundColor(.primary)
+                            .foregroundColor(.black)
                             .keyboardType(.decimalPad)
                         Picker("Unit", selection: $vm.newUnit) {
                             ForEach(vm.unitOptions, id: \.self) { Text($0) }
@@ -169,7 +169,7 @@ struct AddStackItemSheet: View {
                 }
                 Section("Notes") {
                     TextField("Optional notes", text: $vm.newNotes, axis: .vertical)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.black)
                         .lineLimit(3...6)
                 }
             }
