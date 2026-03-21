@@ -17,24 +17,34 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No image provided' }, { status: 400 })
     }
 
-    const message = await client.messages.create({
-      model: 'claude-opus-4-5',
-      max_tokens: 2048,
-      messages: [
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'image',
-              source: {
-                type: 'base64',
-                media_type: mimeType || 'image/jpeg',
-                data: image,
-              },
-            },
-            {
-              type: 'text',
-              text: `Extract all bloodwork/lab values from this image. Return ONLY a JSON object with the following structure. For any marker not found in the image, omit it from the response. Use the exact keys shown:
+    const isPDF = mimeType === 'application/pdf'
+
+    // Build the message content based on file type
+    const userContent: any[] = []
+
+    if (isPDF) {
+      userContent.push({
+        type: 'document',
+        source: {
+          type: 'base64',
+          media_type: 'application/pdf',
+          data: image,
+        },
+      })
+    } else {
+      userContent.push({
+        type: 'image',
+        source: {
+          type: 'base64',
+          media_type: mimeType || 'image/jpeg',
+          data: image,
+        },
+      })
+    }
+
+    userContent.push({
+      type: 'text',
+      text: `Extract all bloodwork/lab values from this ${isPDF ? 'document' : 'image'}. Return ONLY a JSON object with the following structure. For any marker not found, omit it from the response. Use the exact keys shown:
 
 {
   "testosterone": number or null,
@@ -64,9 +74,16 @@ export async function POST(request: NextRequest) {
   "hematocrit": number or null
 }
 
-Only return the JSON object, nothing else. If the image is not a bloodwork report, return {"error": "Not a bloodwork report"}.`,
-            },
-          ],
+Only return the JSON object, nothing else. If this is not a bloodwork report, return {"error": "Not a bloodwork report"}.`,
+    })
+
+    const message = await client.messages.create({
+      model: 'claude-opus-4-5',
+      max_tokens: 2048,
+      messages: [
+        {
+          role: 'user',
+          content: userContent,
         },
       ],
     })
