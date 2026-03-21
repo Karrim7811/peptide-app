@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     }
 
     const message = await client.messages.create({
-      model: 'claude-sonnet-4-5-20250514',
+      model: 'claude-opus-4-5',
       max_tokens: 2048,
       messages: [
         {
@@ -86,10 +86,11 @@ Only return the JSON object, nothing else. If the image is not a bloodwork repor
     }
 
     return NextResponse.json({ markers })
-  } catch (error) {
-    console.error('Bloodwork OCR error:', error)
+  } catch (error: any) {
+    console.error('Bloodwork OCR error:', error?.message || error)
+    const message = error?.message || 'Unknown error'
     return NextResponse.json(
-      { error: 'Failed to process bloodwork image' },
+      { error: `Failed to process bloodwork image: ${message}` },
       { status: 500 }
     )
   }
