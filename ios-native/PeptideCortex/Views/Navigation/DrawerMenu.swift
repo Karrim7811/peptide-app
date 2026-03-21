@@ -37,7 +37,7 @@ enum NavDestination: String, CaseIterable {
         switch self {
         case .dashboard: return "Overview of your protocol"
         case .aiChat: return "Ask anything about peptides"
-        case .checker: return "Check if two compounds are safe together"
+        case .checker: return "Check peptide & medication interactions"
         case .stackFinder: return "Find peptides that complement your stack"
         case .bloodwork: return "AI analysis of your lab results"
         case .stack: return "Add your peptides, meds & supplements"

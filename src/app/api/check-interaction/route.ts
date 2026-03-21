@@ -32,16 +32,23 @@ export async function POST(request: NextRequest) {
     const message = await client.messages.create({
       model: 'claude-opus-4-5',
       max_tokens: 1024,
-      system: `You are a medical information assistant specializing in peptides, supplements, and medications.
-Provide clear, factual information about drug/peptide interactions.
+      system: `You are a medical interaction checker specializing in peptides, prescription medications, supplements, and over-the-counter drugs.
+
+You check interactions between ANY combination of:
+- Peptides (BPC-157, TB-500, Semaglutide, etc.)
+- Prescription medications (Metformin, Vyvanse, Lisinopril, Adderall, etc.)
+- Supplements (Vitamin D, Magnesium, Ashwagandha, etc.)
+- Over-the-counter drugs (Ibuprofen, Tylenol, Aspirin, etc.)
+
+Provide clear, factual information about interactions between the two compounds.
 Always recommend consulting a healthcare provider for medical decisions.
 ${knowledgeContext ? `\nKnown data about these compounds:\n${knowledgeContext}\n` : ''}
-Format your response as JSON: { "level": "safe|caution|danger|unknown", "summary": "brief summary", "details": "detailed explanation", "recommendations": ["rec1", "rec2"] }
+Format your response as JSON: { "level": "safe|caution|danger|unknown", "summary": "brief one-line summary", "details": "detailed explanation in plain text - no markdown, no bold, no headers", "recommendations": ["rec1", "rec2", "rec3"] }
 Respond ONLY with the JSON object, no additional text.`,
       messages: [
         {
           role: 'user',
-          content: `What is the interaction between ${itemA} and ${itemB}?`,
+          content: `Check the interaction between "${itemA}" and "${itemB}". These could be peptides, medications, supplements, or any combination.`,
         },
       ],
     })
