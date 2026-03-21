@@ -14,6 +14,12 @@ struct PeptideCortexApp: App {
                     MainView()
                         .environmentObject(appState)
                         .environmentObject(storeService)
+                        .onAppear {
+                            Task {
+                                let email = try? await SupabaseService.shared.client.auth.session.user.email
+                                storeService.checkOwnerAccess(email: email)
+                            }
+                        }
                 } else {
                     LoginView()
                         .environmentObject(appState)

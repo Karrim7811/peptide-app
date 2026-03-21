@@ -8,8 +8,22 @@ class StoreService: ObservableObject {
     @Published var products: [Product] = []
     @Published var purchasedProductIDs: Set<String> = []
 
+    // Owner emails that always get Pro access
+    private static let ownerEmails: Set<String> = [
+        "karim@tigristechlabs.com",
+        "review@tigristechlabs.com"
+    ]
+
+    @Published var ownerOverride = false
+
     var isProUser: Bool {
-        !purchasedProductIDs.isEmpty
+        ownerOverride || !purchasedProductIDs.isEmpty
+    }
+
+    func checkOwnerAccess(email: String?) {
+        if let email = email?.lowercased(), Self.ownerEmails.contains(email) {
+            ownerOverride = true
+        }
     }
 
     private var transactionListener: Task<Void, Error>?
