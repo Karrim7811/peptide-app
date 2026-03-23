@@ -1,5 +1,17 @@
 import Foundation
 
+struct TodayReminder: Identifiable {
+    let id: UUID
+    let reminder: Reminder
+    var taken: Bool
+}
+
+struct SupplyAlert: Identifiable {
+    let id = UUID()
+    let name: String
+    let dosesLeft: Int
+}
+
 @MainActor
 class DashboardViewModel: ObservableObject {
     @Published var stackCount = 0
@@ -12,6 +24,8 @@ class DashboardViewModel: ObservableObject {
     @Published var newsError: String?
     @Published var activeStackItems: [StackItem] = []
     @Published var reconResults: [UUID: ReconstitutionResult] = [:]
+    @Published var todayReminders: [TodayReminder] = []
+    @Published var supplyAlerts: [SupplyAlert] = []
 
     func load() async {
         isLoading = true
@@ -22,7 +36,8 @@ class DashboardViewModel: ObservableObject {
 
             let reminders = try await SupabaseService.shared.getReminders()
             let todayWeekday = Calendar.current.component(.weekday, from: Date()) - 1
-            remindersToday = reminders.filter { $0.active && $0.daysOfWeek.contains(todayWeekday) }.count
+            let todaysActiveReminders = reminders.filter { $0.active && $0.daysOfWeek.contains(todayWeekday) }
+            remindersToday = todaysActiveReminders.count
 
             let logs = try await SupabaseService.shared.getDoseLogs()
             let oneWeekAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
@@ -35,6 +50,38 @@ class DashboardViewModel: ObservableObject {
                 }
                 return false
             }.count
+
+            // Build today's reminders with taken status
+            let todayStart = Calendar.current.startOfDay(for: Date())
+            let todayEnd = Calendar.current.date(byAdding: .day, value: 1, to: todayStart) ?? Date()
+            let todayLogs = logs.filter { log in
+                if let date = formatter.date(from: log.takenAt) ?? fallback.date(from: log.takenAt) {
+                    return date >= todayStart && date < todayEnd
+                }
+                return false
+            }
+            todayReminders = todaysActiveReminders.map { reminder in
+                let taken = todayLogs.contains { $0.stackItemId == reminder.stackItemId }
+                return TodayReminder(id: reminder.id, reminder: reminder, taken: taken)
+            }
+
+            // Build supply alerts
+            let inventory = try await SupabaseService.shared.getInventory()
+            var alerts: [SupplyAlert] = []
+            for item in activeStackItems {
+                guard let invItem = inventory.first(where: { $0.name.lowercased() == item.name.lowercased() }) else { continue }
+                let doseStr = item.dose.lowercased()
+                    .replacingOccurrences(of: "mg", with: "")
+                    .replacingOccurrences(of: "mcg", with: "")
+                    .replacingOccurrences(of: "ml", with: "")
+                    .trimmingCharacters(in: .whitespaces)
+                guard let doseAmount = Double(doseStr), doseAmount > 0, invItem.quantityRemaining > 0 else { continue }
+                let dosesLeft = Int(invItem.quantityRemaining / doseAmount)
+                if dosesLeft <= 10 {
+                    alerts.append(SupplyAlert(name: item.name, dosesLeft: dosesLeft))
+                }
+            }
+            supplyAlerts = alerts
 
             let cycles = try await SupabaseService.shared.getCycles()
             activeCycles = cycles.filter { $0.currentlyOn && !$0.completed }.count
@@ -62,6 +109,28 @@ class DashboardViewModel: ObservableObject {
             } catch {
                 print("Recon error for \(item.name): \(error)")
             }
+        }
+    }
+
+    func quickLogDose(reminder: Reminder) async {
+        guard let userId = SupabaseService.shared.currentUserId else { return }
+        let formatter = ISO8601DateFormatter()
+        let log = DoseLog(
+            id: UUID(), userId: userId,
+            stackItemId: reminder.stackItemId,
+            takenAt: formatter.string(from: Date()),
+            dose: reminder.dose, notes: "Quick logged from dashboard",
+            createdAt: nil, stackItem: nil
+        )
+        do {
+            try await SupabaseService.shared.insertDoseLog(log)
+            // Mark as taken locally
+            if let index = todayReminders.firstIndex(where: { $0.id == reminder.id }) {
+                todayReminders[index].taken = true
+            }
+            logsThisWeek += 1
+        } catch {
+            print("Quick log error: \(error)")
         }
     }
 

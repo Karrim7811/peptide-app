@@ -100,6 +100,7 @@ struct DrawerMenu: View {
     @Binding var selectedTab: NavDestination
     @Binding var isOpen: Bool
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var storeService: StoreService
 
     var body: some View {
         ZStack(alignment: .leading) {
@@ -175,17 +176,19 @@ struct DrawerMenu: View {
 
                     // Bottom actions
                     VStack(spacing: 8) {
-                        Button {
-                            selectedTab = .pricing
-                            withAnimation(.spring(response: 0.35)) { isOpen = false }
-                        } label: {
-                            Text("Upgrade to Pro")
-                                .font(.system(size: 15, weight: .semibold))
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 14)
-                                .background(Color.cxTeal)
-                                .cornerRadius(12)
+                        if !storeService.isProUser {
+                            Button {
+                                selectedTab = .pricing
+                                withAnimation(.spring(response: 0.35)) { isOpen = false }
+                            } label: {
+                                Text("Upgrade to Pro")
+                                    .font(.system(size: 15, weight: .semibold))
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 14)
+                                    .background(Color.cxTeal)
+                                    .cornerRadius(12)
+                            }
                         }
 
                         Button {

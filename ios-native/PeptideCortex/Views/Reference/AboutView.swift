@@ -51,10 +51,27 @@ struct AboutView: View {
                         Text("Tigris Tech Labs")
                             .font(.system(size: 18, weight: .semibold))
                             .foregroundColor(.cxBlack)
+                        Text("Where Intelligence Begins")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.cxTeal)
                         Text("Building intelligent tools for the peptide research community.")
                             .font(.system(size: 14))
                             .foregroundColor(.cxStone)
                             .lineSpacing(3)
+                        Button {
+                            if let url = URL(string: "https://tigristechlabs.com") {
+                                UIApplication.shared.open(url)
+                            }
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: "globe")
+                                    .font(.system(size: 12))
+                                Text("tigristechlabs.com")
+                                    .font(.system(size: 14, weight: .medium))
+                            }
+                            .foregroundColor(.cxTeal)
+                        }
+                        .padding(.top, 2)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
