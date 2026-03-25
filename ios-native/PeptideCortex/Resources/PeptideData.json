@@ -1857,5 +1857,528 @@
       "Retatrutide (research)",
       "Leptin / Metreleptin"
     ]
+  },
+  {
+    "name": "AOD-9604 (research)",
+    "primaryPurpose": "Fat loss",
+    "whatItDoes": "Modified HGH fragment (amino acids 177-191) that stimulates lipolysis and inhibits lipogenesis without affecting blood sugar or IGF-1 levels",
+    "commonUseExamples": "Targeted fat loss; body recomposition without growth hormone side effects",
+    "dosageRange": "250–500 mcg/day subcutaneous injection, typically on empty stomach",
+    "riskCautions": "Not FDA-approved; injection site reactions; limited long-term safety data; source quality concerns with compounded products",
+    "bestFor": "Fat reduction without HGH-related metabolic side effects",
+    "keyEffects": "Stimulates fat breakdown; inhibits fat formation; no effect on blood sugar, IGF-1, or growth; does not cause insulin resistance",
+    "evidenceLevel": "Research/clinical trial (no established FDA indication)",
+    "bottomLine": "Promising fat-loss peptide fragment with a favorable side-effect profile vs full HGH, but lacks robust human outcome data.",
+    "avoidIf": "Pregnancy/breastfeeding; unverified peptide sources; avoid combining with other fat-loss agents without clinician oversight.",
+    "cvRating": 2,
+    "cvNotes": "No direct cardiovascular outcomes data; theoretical benefit from fat reduction but unproven in trials.",
+    "drugInteractions": "No well-established interaction profile; caution with insulin or other glucose-lowering agents; discuss with clinician.",
+    "goalCategory": "Metabolic/Weight",
+    "goalCategories": [
+      "Metabolic/Weight",
+      "Body Composition"
+    ],
+    "stacksWellWith": [
+      "BPC-157 (research)",
+      "CJC-1295 (research)",
+      "Ipamorelin (research)",
+      "Semaglutide (Wegovy/Ozempic)",
+      "Tesamorelin (Egrifta SV/WR)"
+    ]
+  },
+  {
+    "name": "IGF-1 LR3 (research)",
+    "primaryPurpose": "Muscle growth / Anabolic",
+    "whatItDoes": "Long-acting analog of insulin-like growth factor 1 with extended half-life; potently stimulates muscle protein synthesis, satellite cell proliferation, and nutrient uptake",
+    "commonUseExamples": "Muscle hypertrophy; recovery from muscle injury; bodybuilding",
+    "dosageRange": "20–50 mcg post-workout subcutaneous or intramuscular injection; cycles of 4–6 weeks",
+    "riskCautions": "Hypoglycemia risk; potential tumor promotion with chronic use; joint pain; gut growth at high doses; not FDA-approved",
+    "bestFor": "Anabolic muscle growth and recovery in advanced users",
+    "keyEffects": "Powerful anabolic drive; increases muscle protein synthesis; enhances nutrient partitioning; promotes satellite cell activation; longer half-life than native IGF-1",
+    "evidenceLevel": "Research (no established FDA indication)",
+    "bottomLine": "Potent anabolic peptide with significant risks; should only be considered under strict medical supervision.",
+    "avoidIf": "History of cancer or tumors; diabetes or hypoglycemia risk; pregnancy; avoid without clinician oversight.",
+    "cvRating": 1,
+    "cvNotes": "No cardiovascular outcomes data; potential for cardiac hypertrophy with chronic use is a concern.",
+    "drugInteractions": "Caution with insulin or sulfonylureas (severe hypoglycemia risk); may interact with growth hormone therapy; discuss all medications with clinician.",
+    "goalCategory": "Muscle/Recovery",
+    "goalCategories": [
+      "Muscle/Recovery",
+      "Body Composition"
+    ],
+    "stacksWellWith": [
+      "Somatropin (Human Growth Hormone)",
+      "BPC-157 (research)",
+      "TB-500 (Thymosin beta-4 fragment, research)",
+      "MGF (Mechano Growth Factor, research)",
+      "CJC-1295 (research)"
+    ]
+  },
+  {
+    "name": "Follistatin 344 (research)",
+    "primaryPurpose": "Muscle growth",
+    "whatItDoes": "Naturally occurring glycoprotein that binds and inhibits myostatin, the primary negative regulator of muscle growth, allowing enhanced muscle hypertrophy",
+    "commonUseExamples": "Muscle growth beyond natural limits; countering age-related muscle loss; bodybuilding",
+    "dosageRange": "100 mcg/day subcutaneous injection for 10–30 day cycles",
+    "riskCautions": "Not FDA-approved; limited human safety data; theoretical concerns about uncontrolled muscle growth, tendon strain, and reproductive effects",
+    "bestFor": "Overcoming muscle growth plateaus via myostatin inhibition",
+    "keyEffects": "Blocks myostatin signaling; promotes muscle fiber hypertrophy; may enhance fat loss indirectly through increased lean mass",
+    "evidenceLevel": "Research (no established FDA indication)",
+    "bottomLine": "Exciting myostatin-inhibition approach but human data is very limited; use only under medical supervision.",
+    "avoidIf": "Pregnancy; history of hormone-sensitive conditions; unverified sources; avoid without medical guidance.",
+    "cvRating": 1,
+    "cvNotes": "No cardiovascular outcomes data; theoretical benefit from increased lean mass but unproven.",
+    "drugInteractions": "No well-established interaction profile; caution with anabolic agents; discuss with clinician.",
+    "goalCategory": "Muscle/Recovery",
+    "goalCategories": [
+      "Muscle/Recovery",
+      "Body Composition"
+    ],
+    "stacksWellWith": [
+      "Somatropin (Human Growth Hormone)",
+      "IGF-1 LR3 (research)",
+      "BPC-157 (research)",
+      "TB-500 (Thymosin beta-4 fragment, research)",
+      "Ipamorelin (research)"
+    ]
+  },
+  {
+    "name": "Gonadorelin",
+    "primaryPurpose": "Hormonal / Fertility",
+    "whatItDoes": "Synthetic GnRH (gonadotropin-releasing hormone) analog that stimulates the pituitary to release LH and FSH, supporting endogenous testosterone production",
+    "commonUseExamples": "Maintaining fertility during TRT; testosterone support; diagnosing pituitary function; post-cycle therapy",
+    "dosageRange": "100–200 mcg subcutaneous injection 2x/week",
+    "riskCautions": "Headache; flushing; injection site reactions; may cause hormonal fluctuations; requires monitoring of hormone levels",
+    "bestFor": "Preserving testicular function and fertility while on testosterone replacement therapy",
+    "keyEffects": "Stimulates LH and FSH release; maintains endogenous testosterone production; preserves fertility and testicular size",
+    "evidenceLevel": "FDA-approved diagnostic agent; clinical use for fertility preservation",
+    "bottomLine": "Well-established GnRH analog commonly used to preserve fertility during TRT; requires clinician monitoring.",
+    "avoidIf": "Hormone-sensitive cancers; pregnancy; conditions worsened by gonadotropin stimulation.",
+    "cvRating": 2,
+    "cvNotes": "No direct CV outcomes data; indirect benefit through testosterone optimization is possible but unproven.",
+    "drugInteractions": "May interact with other hormonal therapies (TRT, hCG, clomiphene); monitor hormone levels closely when combining.",
+    "goalCategory": "Hormonal",
+    "goalCategories": [
+      "Hormonal",
+      "Fertility"
+    ],
+    "stacksWellWith": [
+      "hCG (not a peptide; glycoprotein hormone)",
+      "Kisspeptin (research/clinical research)",
+      "Somatropin (Human Growth Hormone)",
+      "Sermorelin (research/compounded)",
+      "CJC-1295 (research)"
+    ]
+  },
+  {
+    "name": "FOXO4-DRI (research)",
+    "primaryPurpose": "Anti-aging / Senolytic",
+    "whatItDoes": "Cell-penetrating peptide that disrupts the FOXO4-p53 interaction in senescent cells, forcing them into apoptosis while sparing healthy cells",
+    "commonUseExamples": "Clearing senescent (zombie) cells; anti-aging protocols; longevity research",
+    "dosageRange": "5–10 mg/day subcutaneous injection for short cycles (typically 3–5 days, repeated monthly)",
+    "riskCautions": "Very early research stage; no human clinical trials; unknown long-term safety; extremely expensive; source quality critical",
+    "bestFor": "Targeted removal of senescent cells for longevity and tissue rejuvenation",
+    "keyEffects": "Selectively induces apoptosis in senescent cells; may restore tissue function; reduces inflammatory SASP factors; shown to restore fitness and organ function in aged mice",
+    "evidenceLevel": "Early research (animal studies only; no human trials)",
+    "bottomLine": "Groundbreaking senolytic concept but human evidence is absent; experimental use only under research supervision.",
+    "avoidIf": "Immunocompromised states; active cancer treatment (unknown interactions); pregnancy; anyone not under direct research/medical supervision.",
+    "cvRating": 1,
+    "cvNotes": "No cardiovascular data; theoretical benefit from reducing vascular senescent cell burden but entirely unproven in humans.",
+    "drugInteractions": "No established interaction profile; avoid combining with other senolytics or immunosuppressants without guidance.",
+    "goalCategory": "Anti-aging",
+    "goalCategories": [
+      "Anti-aging",
+      "Longevity"
+    ],
+    "stacksWellWith": [
+      "Epitalon / Epithalon (research)",
+      "NAD+ (not a peptide, but commonly discussed)",
+      "MOTS-c (research)",
+      "Humanin (research)",
+      "GHK-Cu (Copper peptide)"
+    ]
+  },
+  {
+    "name": "SS-31 / Elamipretide (clinical trials)",
+    "primaryPurpose": "Mitochondrial / Cellular energy",
+    "whatItDoes": "Mitochondrial-targeted tetrapeptide that concentrates in the inner mitochondrial membrane, stabilizing cardiolipin and improving electron transport chain efficiency and ATP production",
+    "commonUseExamples": "Mitochondrial dysfunction; heart failure; Barth syndrome; age-related cellular energy decline",
+    "dosageRange": "40 mg/day subcutaneous injection (clinical trial dosing)",
+    "riskCautions": "Investigational drug; injection site reactions; not commercially available outside trials; limited long-term data",
+    "bestFor": "Restoring mitochondrial function in diseases of mitochondrial dysfunction",
+    "keyEffects": "Stabilizes cardiolipin in inner mitochondrial membrane; improves ATP production; reduces reactive oxygen species; protects mitochondrial structure",
+    "evidenceLevel": "Clinical trials (Phase 2/3 for Barth syndrome and heart failure)",
+    "bottomLine": "Leading mitochondrial therapeutic in clinical development; promising for mitochondrial diseases and potentially aging.",
+    "avoidIf": "Outside of clinical trial settings; pregnancy; unknown interactions with other mitochondrial-targeted agents.",
+    "cvRating": 3,
+    "cvNotes": "Active clinical trials in heart failure show potential; cardiolipin stabilization directly relevant to cardiac mitochondrial function.",
+    "drugInteractions": "Limited interaction data from trials; caution with other mitochondrial-targeted compounds; discuss with research clinician.",
+    "goalCategory": "Longevity",
+    "goalCategories": [
+      "Longevity",
+      "Mitochondrial Health",
+      "Cardiac"
+    ],
+    "stacksWellWith": [
+      "NAD+ (not a peptide, but commonly discussed)",
+      "MOTS-c (research)",
+      "Humanin (research)",
+      "Epitalon / Epithalon (research)",
+      "GHK-Cu (Copper peptide)"
+    ]
+  },
+  {
+    "name": "Pinealon (bioregulator)",
+    "primaryPurpose": "Neuroprotection / Sleep",
+    "whatItDoes": "Short bioregulator peptide (Glu-Asp-Arg) that targets pineal gland and brain tissue, supporting melatonin synthesis and neuroprotective gene expression",
+    "commonUseExamples": "Sleep improvement; neuroprotection; age-related cognitive decline; circadian rhythm support",
+    "dosageRange": "10 mg/day oral or sublingual; typically in 10–20 day cycles",
+    "riskCautions": "Limited human clinical data; bioregulator peptides are a niche category; source quality varies; not FDA-approved",
+    "bestFor": "Supporting sleep quality and neuroprotection through pineal gland bioregulation",
+    "keyEffects": "Supports melatonin production; neuroprotective effects on brain tissue; may improve sleep onset and quality; antioxidant properties in CNS",
+    "evidenceLevel": "Bioregulator research (Russian peptide bioregulator tradition; limited Western clinical data)",
+    "bottomLine": "Part of the Khavinson bioregulator peptide family; interesting but evidence is mostly from Russian literature and not widely replicated.",
+    "avoidIf": "Pregnancy; autoimmune CNS conditions; combining with sedatives without medical guidance.",
+    "cvRating": 1,
+    "cvNotes": "No cardiovascular outcomes data.",
+    "drugInteractions": "May potentiate sedatives or sleep medications; caution with melatonin supplements; discuss with clinician.",
+    "goalCategory": "Neuro/Cognitive",
+    "goalCategories": [
+      "Neuro/Cognitive",
+      "Sleep",
+      "Anti-aging"
+    ],
+    "stacksWellWith": [
+      "Epitalon / Epithalon (research)",
+      "Semax (research/region-specific)",
+      "Selank (research/region-specific)",
+      "DSIP (research)",
+      "Humanin (research)"
+    ]
+  },
+  {
+    "name": "5-Amino-1MQ (research)",
+    "primaryPurpose": "Metabolic / Fat loss",
+    "whatItDoes": "Small molecule NNMT (nicotinamide N-methyltransferase) inhibitor that increases NAD+ levels in fat cells, boosting cellular metabolism and promoting fat oxidation",
+    "commonUseExamples": "Fat loss; metabolic enhancement; NAD+ boosting; body recomposition",
+    "dosageRange": "50–100 mg oral daily; some protocols use up to 150 mg/day",
+    "riskCautions": "Not FDA-approved; limited human data; potential GI discomfort; long-term effects on NNMT inhibition unknown; technically a small molecule, not a peptide",
+    "bestFor": "Metabolic enhancement and fat loss through NAD+ pathway modulation",
+    "keyEffects": "Inhibits NNMT enzyme; increases intracellular NAD+; enhances fat cell metabolism; may reduce fat mass while preserving muscle; activates SAM-dependent pathways",
+    "evidenceLevel": "Research (preclinical/early human use; no FDA indication)",
+    "bottomLine": "Promising NNMT inhibitor for metabolic health, but human evidence is early-stage; oral bioavailability is an advantage.",
+    "avoidIf": "Liver or kidney disease; pregnancy; combining with other NAD+-modulating compounds without guidance.",
+    "cvRating": 2,
+    "cvNotes": "Theoretical metabolic benefit through NAD+ increase and fat reduction, but no direct CV outcomes data.",
+    "drugInteractions": "May interact with NAD+ precursors (NMN, NR); caution with other metabolic drugs; no established interaction profile.",
+    "goalCategory": "Metabolic/Weight",
+    "goalCategories": [
+      "Metabolic/Weight",
+      "Body Composition",
+      "Longevity"
+    ],
+    "stacksWellWith": [
+      "NAD+ (not a peptide, but commonly discussed)",
+      "AOD-9604 (research)",
+      "Semaglutide (Wegovy/Ozempic)",
+      "MOTS-c (research)",
+      "Tesamorelin (Egrifta SV/WR)"
+    ]
+  },
+  {
+    "name": "Mazdutide (research/clinical trials)",
+    "primaryPurpose": "Metabolic / Weight loss",
+    "whatItDoes": "Dual GLP-1/glucagon receptor agonist that combines appetite suppression with glucagon-mediated energy expenditure increase and fat oxidation",
+    "commonUseExamples": "Obesity treatment; Type 2 diabetes; NAFLD/NASH",
+    "dosageRange": "Titrated dosing similar to other incretin therapies; Phase 3 trials use weekly subcutaneous injection (doses up to 9 mg)",
+    "riskCautions": "GI side effects (nausea, vomiting, diarrhea); investigational drug; not yet approved; potential hepatotoxicity concerns",
+    "bestFor": "Weight loss with enhanced energy expenditure via glucagon component",
+    "keyEffects": "Reduces appetite via GLP-1 activity; increases energy expenditure and fat oxidation via glucagon activity; improves glycemic control; may reduce liver fat",
+    "evidenceLevel": "Clinical trials (Phase 3)",
+    "bottomLine": "Next-generation dual agonist with glucagon component for added metabolic benefit; advancing through late-stage trials.",
+    "avoidIf": "GI conditions; pancreatitis history; thyroid C-cell tumor history (MTC/MEN2); pregnancy.",
+    "cvRating": 3,
+    "cvNotes": "Potential CV benefit from weight loss and metabolic improvement; glucagon component may offer hepatic benefits; awaiting outcomes data.",
+    "drugInteractions": "Caution with insulin/sulfonylureas (hypoglycemia risk); may affect absorption of oral medications due to delayed gastric emptying.",
+    "goalCategory": "Metabolic/Weight",
+    "goalCategories": [
+      "Metabolic/Weight"
+    ],
+    "stacksWellWith": [
+      "Tesamorelin (Egrifta SV/WR)",
+      "AOD-9604 (research)",
+      "5-Amino-1MQ (research)",
+      "MOTS-c (research)",
+      "BPC-157 (research)"
+    ]
+  },
+  {
+    "name": "Survodutide (research/clinical trials)",
+    "primaryPurpose": "Metabolic / Weight loss",
+    "whatItDoes": "Dual GLP-1/glucagon receptor agonist in late-stage clinical development for obesity and NASH/MASH, combining appetite suppression with glucagon-driven energy expenditure",
+    "commonUseExamples": "Obesity; NASH/MASH (metabolic liver disease); Type 2 diabetes",
+    "dosageRange": "Weekly subcutaneous injection; Phase 3 trial doses titrated up to 4.8–6.0 mg",
+    "riskCautions": "GI side effects; nausea; investigational status; not commercially available; pancreatitis risk (class effect)",
+    "bestFor": "Weight loss and liver fat reduction through dual incretin/glucagon mechanism",
+    "keyEffects": "Appetite suppression via GLP-1; increased energy expenditure and hepatic fat oxidation via glucagon; significant weight loss in trials (~18-20%); liver fat reduction",
+    "evidenceLevel": "Clinical trials (Phase 3 for obesity and NASH)",
+    "bottomLine": "Strong Phase 3 data for both weight loss and liver disease; potential best-in-class for NASH if approved.",
+    "avoidIf": "Pancreatitis history; MTC/MEN2 history; GI conditions; pregnancy.",
+    "cvRating": 3,
+    "cvNotes": "Potential CV benefit through substantial weight loss and liver fat reduction; awaiting dedicated CV outcomes trials.",
+    "drugInteractions": "Caution with insulin/sulfonylureas; may delay absorption of oral medications; monitor hepatic function.",
+    "goalCategory": "Metabolic/Weight",
+    "goalCategories": [
+      "Metabolic/Weight",
+      "Liver Health"
+    ],
+    "stacksWellWith": [
+      "Tesamorelin (Egrifta SV/WR)",
+      "BPC-157 (research)",
+      "MOTS-c (research)",
+      "5-Amino-1MQ (research)",
+      "NAD+ (not a peptide, but commonly discussed)"
+    ]
+  },
+  {
+    "name": "Adipotide (research)",
+    "primaryPurpose": "Fat loss (experimental)",
+    "whatItDoes": "Peptidomimetic that targets PROHIBITIN on blood vessels supplying white adipose tissue, triggering apoptosis of the vascular endothelium feeding fat deposits",
+    "commonUseExamples": "Targeted fat tissue destruction (research/animal studies)",
+    "dosageRange": "No established human dose; animal studies used 0.5–1 mg/kg; not suitable for self-administration",
+    "riskCautions": "Significant renal toxicity observed in primate studies; dehydration; potential organ damage; NOT safe for human use outside controlled research",
+    "bestFor": "Experimental research only; demonstrates proof-of-concept for vascular-targeted fat reduction",
+    "keyEffects": "Destroys blood vessels feeding fat tissue; causes rapid fat cell death; significant weight loss in animal models; severe side effects including kidney damage",
+    "evidenceLevel": "Research only (animal studies; significant toxicity concerns)",
+    "bottomLine": "Interesting proof-of-concept but too toxic for human use in current form; renal toxicity is a serious limitation.",
+    "avoidIf": "ALL human use outside strict research settings; kidney disease; dehydration risk; any self-administration.",
+    "cvRating": 1,
+    "cvNotes": "No CV benefit data; significant renal and vascular toxicity concerns make this a poor candidate for clinical use.",
+    "drugInteractions": "No established profile; significant nephrotoxicity means extreme caution with any renal-affecting drugs.",
+    "goalCategory": "Metabolic/Weight",
+    "goalCategories": [
+      "Metabolic/Weight"
+    ],
+    "stacksWellWith": []
+  },
+  {
+    "name": "MGF (Mechano Growth Factor, research)",
+    "primaryPurpose": "Muscle repair / Recovery",
+    "whatItDoes": "Splice variant of IGF-1 produced locally in muscle tissue after mechanical stress; activates satellite cells for muscle repair and hypertrophy",
+    "commonUseExamples": "Post-workout muscle repair; injury recovery; bodybuilding",
+    "dosageRange": "200 mcg intramuscular injection post-workout into target muscle; short half-life (~minutes)",
+    "riskCautions": "Very short half-life limits practical use; not FDA-approved; injection site pain; limited human data; source quality concerns",
+    "bestFor": "Localized muscle repair and satellite cell activation post-exercise",
+    "keyEffects": "Activates muscle satellite cells; promotes local muscle repair; stimulates muscle stem cell proliferation; very short-acting",
+    "evidenceLevel": "Research (no established FDA indication)",
+    "bottomLine": "Physiologically interesting muscle repair peptide but impractical due to extremely short half-life; PEG-MGF may be more practical.",
+    "avoidIf": "Cancer history; pregnancy; avoid without medical supervision.",
+    "cvRating": 1,
+    "cvNotes": "No cardiovascular outcomes data.",
+    "drugInteractions": "Caution with insulin (hypoglycemia); no well-established interaction profile; discuss with clinician.",
+    "goalCategory": "Muscle/Recovery",
+    "goalCategories": [
+      "Muscle/Recovery"
+    ],
+    "stacksWellWith": [
+      "IGF-1 LR3 (research)",
+      "BPC-157 (research)",
+      "TB-500 (Thymosin beta-4 fragment, research)",
+      "PEG-MGF (research)",
+      "Ipamorelin (research)"
+    ]
+  },
+  {
+    "name": "PEG-MGF (research)",
+    "primaryPurpose": "Muscle repair / Recovery",
+    "whatItDoes": "PEGylated (polyethylene glycol-modified) version of Mechano Growth Factor with extended half-life, providing sustained satellite cell activation and muscle repair signaling",
+    "commonUseExamples": "Muscle recovery; hypertrophy; injury rehabilitation",
+    "dosageRange": "200 mcg subcutaneous or intramuscular injection 2–3x/week",
+    "riskCautions": "Not FDA-approved; limited human data; injection site reactions; potential for uncontrolled growth signaling",
+    "bestFor": "Sustained muscle repair and growth with practical dosing frequency",
+    "keyEffects": "Extended-release satellite cell activation; promotes muscle hypertrophy; systemic muscle repair signaling; longer half-life than native MGF",
+    "evidenceLevel": "Research (no established FDA indication)",
+    "bottomLine": "More practical than native MGF due to PEGylation extending half-life, but still lacks human clinical evidence.",
+    "avoidIf": "Cancer history; pregnancy; avoid without medical supervision.",
+    "cvRating": 1,
+    "cvNotes": "No cardiovascular outcomes data.",
+    "drugInteractions": "Caution with insulin (hypoglycemia); no well-established interaction profile; discuss with clinician.",
+    "goalCategory": "Muscle/Recovery",
+    "goalCategories": [
+      "Muscle/Recovery"
+    ],
+    "stacksWellWith": [
+      "IGF-1 LR3 (research)",
+      "BPC-157 (research)",
+      "TB-500 (Thymosin beta-4 fragment, research)",
+      "MGF (Mechano Growth Factor, research)",
+      "CJC-1295 (research)"
+    ]
+  },
+  {
+    "name": "Thymulin (research)",
+    "primaryPurpose": "Immune regulation",
+    "whatItDoes": "Thymic nonapeptide (requires zinc cofactor) that modulates T-cell differentiation, immune balance, and has anti-inflammatory properties; declines significantly with age",
+    "commonUseExamples": "Immune system rejuvenation; age-related immune decline (immunosenescence); autoimmune modulation research",
+    "dosageRange": "1–5 mg subcutaneous injection weekly; cycle protocols vary",
+    "riskCautions": "Not FDA-approved; limited human data outside of aging research; zinc status affects activity; source quality critical",
+    "bestFor": "Restoring thymic immune function in age-related immune decline",
+    "keyEffects": "Modulates T-cell maturation and differentiation; restores immune balance; anti-inflammatory properties; requires zinc for bioactivity",
+    "evidenceLevel": "Research (preclinical and limited human aging research)",
+    "bottomLine": "Interesting thymic peptide for immunosenescence research, but clinical evidence is limited.",
+    "avoidIf": "Active autoimmune flares; immunosuppressive therapy; pregnancy; zinc deficiency (reduces efficacy).",
+    "cvRating": 1,
+    "cvNotes": "No direct cardiovascular outcomes data; theoretical anti-inflammatory benefit but unproven.",
+    "drugInteractions": "May interact with immunosuppressants or immunomodulators; zinc supplementation may be needed for activity; discuss with clinician.",
+    "goalCategory": "Immune/Anti-inf",
+    "goalCategories": [
+      "Immune/Anti-inf",
+      "Anti-aging"
+    ],
+    "stacksWellWith": [
+      "Thymosin Alpha-1 (Thymalfasin)",
+      "Thymosin Beta-4 (Tβ4)",
+      "Epitalon / Epithalon (research)",
+      "BPC-157 (research)",
+      "GHK-Cu (Copper peptide)"
+    ]
+  },
+  {
+    "name": "Larazotide (clinical trials)",
+    "primaryPurpose": "Gut health / Intestinal permeability",
+    "whatItDoes": "Tight junction modulator that prevents zonulin-mediated opening of intestinal tight junctions, reducing intestinal permeability (leaky gut)",
+    "commonUseExamples": "Celiac disease (adjunct to gluten-free diet); intestinal permeability disorders; leaky gut research",
+    "dosageRange": "0.5–1 mg oral capsule, taken before meals (clinical trial dosing)",
+    "riskCautions": "Investigational (not yet FDA-approved); GI side effects possible; designed as adjunct to gluten-free diet, not a replacement",
+    "bestFor": "Reducing intestinal permeability in celiac disease and related conditions",
+    "keyEffects": "Blocks zonulin-mediated tight junction opening; reduces paracellular permeability; decreases gluten-related GI symptoms; acts locally in the gut lumen",
+    "evidenceLevel": "Clinical trials (Phase 3 for celiac disease)",
+    "bottomLine": "Most advanced tight junction modulator in development; oral and locally-acting with promising celiac disease data.",
+    "avoidIf": "Not a substitute for gluten-free diet in celiac disease; pregnancy; severe GI conditions without medical oversight.",
+    "cvRating": 1,
+    "cvNotes": "No direct CV relevance; gut barrier function may have indirect systemic inflammatory implications.",
+    "drugInteractions": "Oral administration means potential interaction with other oral medications; take separately from other gut-active drugs; discuss with GI specialist.",
+    "goalCategory": "Gut Health",
+    "goalCategories": [
+      "Gut Health",
+      "Immune/Anti-inf"
+    ],
+    "stacksWellWith": [
+      "BPC-157 (research)",
+      "KPV (research)",
+      "GLP-2 analog (Teduglutide)",
+      "VIP (Vasoactive Intestinal Peptide)",
+      "LL-37 (research)"
+    ]
+  },
+  {
+    "name": "P21 (research)",
+    "primaryPurpose": "Neuro / Neurogenesis",
+    "whatItDoes": "Synthetic peptide derived from CNTF (ciliary neurotrophic factor) that promotes neurogenesis in the hippocampus by inhibiting leukemia inhibitory factor signaling",
+    "commonUseExamples": "Cognitive enhancement; neurogenesis promotion; Alzheimer's disease research; memory improvement",
+    "dosageRange": "700 mcg/day subcutaneous injection; typical cycles of 2–4 weeks",
+    "riskCautions": "Not FDA-approved; very limited human data; injection site reactions; unknown long-term effects of exogenous neurogenesis stimulation",
+    "bestFor": "Promoting new neuron growth in the hippocampus for cognitive enhancement",
+    "keyEffects": "Stimulates hippocampal neurogenesis; enhances spatial memory and learning in animal models; increases BDNF expression; inhibits LIF signaling pathway",
+    "evidenceLevel": "Research (animal studies; no human clinical trials)",
+    "bottomLine": "Fascinating neurogenic peptide with strong animal data but no human trials; experimental use only.",
+    "avoidIf": "History of brain tumors; seizure disorders; pregnancy; any use without research/medical supervision.",
+    "cvRating": 1,
+    "cvNotes": "No cardiovascular data.",
+    "drugInteractions": "No established interaction profile; caution with other neurotropic agents; discuss with clinician.",
+    "goalCategory": "Neuro/Cognitive",
+    "goalCategories": [
+      "Neuro/Cognitive"
+    ],
+    "stacksWellWith": [
+      "Semax (research/region-specific)",
+      "Selank (research/region-specific)",
+      "Dihexa (research)",
+      "Cerebrolysin (region-specific)",
+      "BPC-157 (research)"
+    ]
+  },
+  {
+    "name": "PE-22-28 (research)",
+    "primaryPurpose": "Neuro / Cognitive enhancement",
+    "whatItDoes": "Synthetic peptide fragment derived from spadin that acts as a TREK-1 channel blocker, exhibiting antidepressant-like and cognitive-enhancing properties",
+    "commonUseExamples": "Cognitive enhancement; antidepressant research; memory and learning improvement",
+    "dosageRange": "Research dosing not well established for humans; animal studies use varying protocols",
+    "riskCautions": "Very early research; no human clinical data; unknown safety profile; not FDA-approved; source quality concerns",
+    "bestFor": "Cognitive enhancement and mood support through TREK-1 channel modulation",
+    "keyEffects": "Blocks TREK-1 potassium channels; increases BDNF and neurogenesis; antidepressant-like effects in animal models; enhances synaptic plasticity",
+    "evidenceLevel": "Research (early preclinical; no human data)",
+    "bottomLine": "Interesting TREK-1 channel mechanism for cognition and mood, but extremely early-stage with no human evidence.",
+    "avoidIf": "All self-administration; pregnancy; seizure disorders; combining with antidepressants without guidance.",
+    "cvRating": 1,
+    "cvNotes": "No cardiovascular data.",
+    "drugInteractions": "Theoretical interaction with antidepressants (SSRIs, SNRIs) via overlapping neurotropic mechanisms; avoid combining without medical guidance.",
+    "goalCategory": "Neuro/Cognitive",
+    "goalCategories": [
+      "Neuro/Cognitive",
+      "Mood"
+    ],
+    "stacksWellWith": [
+      "Semax (research/region-specific)",
+      "Selank (research/region-specific)",
+      "P21 (research)",
+      "Dihexa (research)",
+      "BPC-157 (research)"
+    ]
+  },
+  {
+    "name": "Cartalax (bioregulator)",
+    "primaryPurpose": "Joint / Cartilage health",
+    "whatItDoes": "Short bioregulator peptide (Ala-Glu-Asp) targeting cartilage tissue, supporting chondrocyte function and cartilage matrix maintenance",
+    "commonUseExamples": "Joint health; cartilage repair support; age-related joint degeneration; osteoarthritis research",
+    "dosageRange": "20 mg oral or sublingual per day in cycles of 10–30 days; repeat cycles as needed",
+    "riskCautions": "Limited clinical data outside Russian bioregulator research; not FDA-approved; source quality varies",
+    "bestFor": "Supporting cartilage health and joint function through bioregulatory peptide signaling",
+    "keyEffects": "Supports chondrocyte gene expression; promotes cartilage matrix maintenance; may reduce age-related cartilage degeneration; bioregulatory action on cartilage tissue",
+    "evidenceLevel": "Bioregulator research (Khavinson peptide bioregulator tradition; limited Western data)",
+    "bottomLine": "Part of the Khavinson bioregulator peptide family targeting cartilage; limited but interesting preliminary data.",
+    "avoidIf": "Pregnancy; autoimmune joint conditions without medical guidance; unverified sources.",
+    "cvRating": 1,
+    "cvNotes": "No cardiovascular relevance.",
+    "drugInteractions": "No well-established interactions; caution with other joint supplements or DMARDs; discuss with clinician.",
+    "goalCategory": "Joint/MSK",
+    "goalCategories": [
+      "Joint/MSK",
+      "Anti-aging"
+    ],
+    "stacksWellWith": [
+      "BPC-157 (research)",
+      "TB-500 (Thymosin beta-4 fragment, research)",
+      "GHK-Cu (Copper peptide)",
+      "Epitalon / Epithalon (research)",
+      "Pinealon (bioregulator)"
+    ]
+  },
+  {
+    "name": "SNAP-8 (Acetyl octapeptide-3)",
+    "primaryPurpose": "Cosmetic / Anti-wrinkle",
+    "whatItDoes": "Topical peptide that mimics the N-terminal end of SNAP-25, inhibiting SNARE complex formation to reduce neuromuscular signaling at the skin surface, decreasing expression lines",
+    "commonUseExamples": "Topical anti-wrinkle treatment; expression line reduction; Botox alternative for cosmetic use",
+    "dosageRange": "Topical application; typically 3–10% concentration in serums or creams; applied 1–2x daily to target areas",
+    "riskCautions": "Topical only (not injectable); effects are milder than Botox; individual results vary; allergic reactions possible; not FDA-approved as a drug",
+    "bestFor": "Non-invasive reduction of expression wrinkles as a topical Botox alternative",
+    "keyEffects": "Inhibits SNARE complex assembly; reduces neurotransmitter release at neuromuscular junction (topically); decreases muscle contraction intensity; smooths expression lines over time",
+    "evidenceLevel": "Cosmetic research (in vitro and small human cosmetic studies)",
+    "bottomLine": "Popular cosmetic peptide with a sound mechanism but much milder than injectable neuromodulators; good for those avoiding Botox.",
+    "avoidIf": "Known skin allergies to peptide ingredients; do not inject; not a replacement for medical-grade neuromodulators.",
+    "cvRating": 1,
+    "cvNotes": "No cardiovascular relevance; topical cosmetic use only.",
+    "drugInteractions": "No systemic interactions expected with topical use; avoid combining with other active topicals (retinoids, acids) on same area simultaneously.",
+    "goalCategory": "Skin/Cosmetic",
+    "goalCategories": [
+      "Skin/Cosmetic"
+    ],
+    "stacksWellWith": [
+      "GHK-Cu (Copper peptide)",
+      "Matrixyl (Palmitoyl pentapeptide)",
+      "Argireline (Acetyl hexapeptide-8)",
+      "Epitalon / Epithalon (research)",
+      "BPC-157 (research)"
+    ]
   }
 ]
