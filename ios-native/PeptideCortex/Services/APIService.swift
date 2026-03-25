@@ -41,6 +41,58 @@ struct BloodworkRecommendation: Codable {
     let priority: String
 }
 
+// MARK: - Protocol Planner
+
+struct ProtocolPlan: Codable {
+    let weeklySchedule: [ScheduleDay]
+    let interactions: [PlanInteraction]
+    let warnings: [String]
+    let reconstitution: [ReconInfo]
+    let summary: String
+    let suggestedReminders: [SuggestedReminder]
+
+    struct ScheduleDay: Codable, Identifiable {
+        var id: String { day }
+        let day: String
+        let doses: [ScheduleDose]
+    }
+
+    struct ScheduleDose: Codable, Identifiable {
+        var id: String { "\(peptide)-\(time)" }
+        let peptide: String
+        let dose: String
+        let time: String
+        let route: String
+        let site: String
+        let notes: String
+    }
+
+    struct PlanInteraction: Codable, Identifiable {
+        var id: String { "\(peptideA)-\(peptideB)" }
+        let peptideA: String
+        let peptideB: String
+        let level: String
+        let note: String
+    }
+
+    struct ReconInfo: Codable, Identifiable {
+        var id: String { peptide }
+        let peptide: String
+        let vialSize: String
+        let bacWater: String
+        let concentration: String
+        let typicalDose: String
+    }
+
+    struct SuggestedReminder: Codable, Identifiable {
+        var id: String { "\(peptide)-\(time)" }
+        let peptide: String
+        let time: String
+        let days: [Int]
+        let dose: String
+    }
+}
+
 struct MarketPulseResponse: Codable {
     let lastUpdated: String
     let headlines: [Headline]
@@ -195,6 +247,15 @@ class APIService {
         return result
     }
 
+    // MARK: - Protocol Planner
+
+    func generateProtocolPlan(peptides: [String], profile: [String: Any]) async throws -> ProtocolPlan {
+        try await makeRequest(path: "/api/protocol-plan", body: [
+            "peptides": peptides,
+            "profile": profile
+        ])
+    }
+
     // MARK: - Stripe
 
     func createCheckout(plan: String) async throws -> String {
@@ -212,5 +273,66 @@ class APIService {
             path: "/api/stripe/portal"
         )
         return response.url
+    }
+
+    // MARK: - Protocol Planner
+
+    func generateProtocolPlan(peptides: [String], profile: [String: Any]) async throws -> ProtocolPlan {
+        try await makeRequest(path: "/api/protocol-plan", body: [
+            "peptides": peptides,
+            "profile": profile
+        ])
+    }
+}
+
+// MARK: - Protocol Plan Models
+
+struct ProtocolPlan: Codable {
+    let weeklySchedule: [ScheduleDay]
+    let interactions: [PlanInteraction]
+    let warnings: [String]
+    let reconstitution: [ReconstitutionGuide]
+    let summary: String
+    let suggestedReminders: [SuggestedReminder]
+
+    struct ScheduleDay: Codable, Identifiable {
+        var id: String { day }
+        let day: String
+        let doses: [ScheduleDose]
+    }
+
+    struct ScheduleDose: Codable, Identifiable {
+        var id: String { "\(peptide)-\(time)-\(dose)" }
+        let peptide: String
+        let dose: String
+        let time: String
+        let route: String
+        let site: String
+        let notes: String
+    }
+
+    struct PlanInteraction: Codable, Identifiable {
+        var id: String { "\(peptideA)-\(peptideB)" }
+        let peptideA: String
+        let peptideB: String
+        let level: String  // "safe", "caution", "danger"
+        let note: String
+    }
+
+    struct ReconstitutionGuide: Codable, Identifiable {
+        var id: String { peptide }
+        let peptide: String
+        let vialSize: String
+        let bacWater: String
+        let concentration: String
+        let typicalDose: String
+    }
+
+    struct SuggestedReminder: Codable, Identifiable {
+        var id: String { "\(peptide)-\(time)" }
+        let peptide: String
+        let time: String
+        let days: [Int]
+        let dose: String
     }
 }

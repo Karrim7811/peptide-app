@@ -1,7 +1,7 @@
 import SwiftUI
 
 enum NavDestination: String, CaseIterable {
-    case dashboard, aiChat, checker, stackFinder, bloodwork
+    case dashboard, aiChat, checker, stackFinder, bloodwork, protocolPlanner
     case stack, reconstitution, dosing, cycle, sites
     case log, reminders, inventory, sideEffects, notes
     case reference, popularStacks, regulatory, vendors
@@ -14,6 +14,7 @@ enum NavDestination: String, CaseIterable {
         case .checker: return "Interaction Checker"
         case .stackFinder: return "Stack Finder"
         case .bloodwork: return "Bloodwork Analyzer"
+        case .protocolPlanner: return "Protocol Planner"
         case .stack: return "My Stack"
         case .reconstitution: return "Reconstitution"
         case .dosing: return "Dosage Calculator"
@@ -40,6 +41,7 @@ enum NavDestination: String, CaseIterable {
         case .checker: return "Check peptide & medication interactions"
         case .stackFinder: return "Find peptides that complement your stack"
         case .bloodwork: return "AI analysis of your lab results"
+        case .protocolPlanner: return "AI-powered personalized dosing plan"
         case .stack: return "Add your peptides, meds & supplements"
         case .reconstitution: return "Calculate BAC water for your vials"
         case .dosing: return "Look up dosage info for any peptide"
@@ -66,6 +68,7 @@ enum NavDestination: String, CaseIterable {
         case .checker: return "shield"
         case .stackFinder: return "sparkles"
         case .bloodwork: return "heart.text.square"
+        case .protocolPlanner: return "wand.and.stars"
         case .stack: return "square.stack.3d.up"
         case .reconstitution: return "flask"
         case .dosing: return "function"
@@ -87,7 +90,7 @@ enum NavDestination: String, CaseIterable {
 
     static var sections: [(label: String, items: [NavDestination])] {
         [
-            ("Intelligence", [.dashboard, .aiChat, .checker, .stackFinder, .bloodwork]),
+            ("Intelligence", [.dashboard, .aiChat, .checker, .stackFinder, .bloodwork, .protocolPlanner]),
             ("My Protocol", [.stack, .reconstitution, .dosing, .cycle, .sites]),
             ("Tracking", [.log, .reminders, .inventory, .sideEffects, .notes]),
             ("Reference", [.reference, .popularStacks, .regulatory, .vendors]),

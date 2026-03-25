@@ -18,6 +18,34 @@ struct DashboardView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
+                // Protocol Planner CTA
+                Button {
+                    selectedTab = .protocolPlanner
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: "wand.and.stars")
+                            .font(.system(size: 24))
+                            .foregroundColor(.white)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Plan My Protocol")
+                                .font(.system(size: 16, weight: .bold))
+                                .foregroundColor(.white)
+                            Text("Let Cortex AI build your personalized dosing plan")
+                                .font(.system(size: 12))
+                                .foregroundColor(.white.opacity(0.85))
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(.white.opacity(0.7))
+                    }
+                    .padding(16)
+                    .background(
+                        LinearGradient(colors: [Color.cxTeal, Color.cxTeal.opacity(0.8)], startPoint: .leading, endPoint: .trailing)
+                    )
+                    .cornerRadius(14)
+                }
+                .buttonStyle(.plain)
+
                 // Stat cards grid
                 if vm.isLoading {
                     LoadingView()
