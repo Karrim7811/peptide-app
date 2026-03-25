@@ -275,14 +275,4 @@ class APIService {
         return response.url
     }
 
-    // MARK: - Protocol Planner
-
-    func generateProtocolPlan(peptides: [String], profile: [String: Any]) async throws -> ProtocolPlan {
-        try await makeRequest(path: "/api/protocol-plan", body: [
-            "peptides": peptides,
-            "profile": profile
-        ])
-    }
 }
-
-// Duplicate ProtocolPlan removed - defined at top of file
