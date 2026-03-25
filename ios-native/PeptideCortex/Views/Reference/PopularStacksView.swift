@@ -177,6 +177,62 @@ private let popularStacks: [PopularStack] = [
         description: "Based on the Shoemaker protocol for CIRS (Chronic Inflammatory Response Syndrome). VIP is the final step in the protocol, regulating inflammation cascades. BPC-157 and KPV repair gut damage, TA-1 restores immune regulation.",
         notes: "VIP 50mcg intranasal 4x/day (per Shoemaker protocol), BPC-157 500mcg oral 2x/day, KPV 500mcg oral, TA-1 1.5mg 2x/week. Only after addressing mold exposure."
     ),
+    PopularStack(
+        name: "The GLOW Stack",
+        nickname: "GLOW",
+        goal: "Skin rejuvenation, tissue repair, aesthetics, anti-aging",
+        peptides: ["GHK-Cu", "BPC-157", "TB-500"],
+        description: "The GLOW Stack (also called Wolverine 2.0) combines three powerful repair peptides. GHK-Cu reverses age-related gene expression and boosts collagen/elastin, BPC-157 provides systemic tissue repair, and TB-500 enhances cell migration for full-body healing and radiant skin.",
+        notes: "GHK-Cu 1-2mg/day subQ or topical, BPC-157 250-500mcg/day subQ, TB-500 2-5mg twice weekly subQ. Run 8-12 weeks. Available as a pre-mixed 70mg blend."
+    ),
+    PopularStack(
+        name: "The KLOW Stack",
+        nickname: "KLOW",
+        goal: "Immune modulation, inflammation control, healing, skin",
+        peptides: ["KPV", "BPC-157", "TB-500", "GHK-Cu"],
+        description: "KLOW takes the GLOW Stack and adds KPV — a potent anti-inflammatory tripeptide derived from alpha-MSH. This shifts the focus from pure tissue repair to systemic immune modulation and deep inflammation control. Sometimes called Wolverine 3.0.",
+        notes: "KPV 250-500mcg/day, BPC-157 250mcg 1-2x/day, TB-500 2-2.5mg twice weekly, GHK-Cu 1-2mg/day. Run 8-12 weeks with 4-6 weeks off. Available as pre-mixed 80mg blend."
+    ),
+    PopularStack(
+        name: "The Tri-Heal Stack",
+        nickname: "Tri-Heal",
+        goal: "Triple-action healing, recovery, immune support",
+        peptides: ["TB-500", "BPC-157", "KPV"],
+        description: "Tri-Heal combines the healing powerhouse duo of TB-500 and BPC-157 with the anti-inflammatory KPV peptide. Designed for comprehensive tissue repair with strong immune and anti-inflammatory support.",
+        notes: "Available as pre-mixed 45mg blend (TB-500 25mg + BPC-157 10mg + KPV 10mg). Typical dose: 300-500mcg combined blend daily subQ. Run 6-8 weeks."
+    ),
+    PopularStack(
+        name: "The Triple GH Release Stack",
+        nickname: "Triple GH",
+        goal: "Maximum natural GH release, anti-aging",
+        peptides: ["Sermorelin", "CJC-1295", "Ipamorelin"],
+        description: "Three GH secretagogues working through complementary pathways. Sermorelin provides direct GHRH stimulation, CJC-1295 extends the GH release window, and Ipamorelin adds clean GH pulses without cortisol or prolactin spikes.",
+        notes: "100-300mcg each peptide, dosed together at night before bed. Run 12-16 weeks with breaks. Monitor IGF-1 levels."
+    ),
+    PopularStack(
+        name: "The Longevity Stack",
+        nickname: "Longevity",
+        goal: "Telomere support, cellular repair, healthy aging",
+        peptides: ["Epitalon", "CJC-1295", "Ipamorelin", "MOTS-C"],
+        description: "Epitalon activates telomerase to protect telomere length, CJC-1295 and Ipamorelin maintain youthful GH levels, and MOTS-C is a mitochondrial-derived peptide that improves metabolic function and insulin sensitivity — key markers of biological aging.",
+        notes: "Epitalon 5-10mg/day for 10-20 day cycles (2-3x/year), CJC/Ipamorelin 100-300mcg each at night ongoing, MOTS-C 5-10mg 3x/week."
+    ),
+    PopularStack(
+        name: "The Sexual Health Stack",
+        nickname: "Libido Stack",
+        goal: "Libido, sexual performance, tanning",
+        peptides: ["PT-141", "Melanotan II", "Kisspeptin"],
+        description: "PT-141 (Bremelanotide) works on the central nervous system to boost sexual desire in both men and women. Melanotan II provides tanning plus libido effects, and Kisspeptin stimulates GnRH for natural testosterone/hormone support.",
+        notes: "PT-141 1-2mg subQ 2-4 hours before activity (max 1x every 72h), MT-II 250-500mcg for tanning/libido, Kisspeptin 10-20mcg for hormonal support."
+    ),
+    PopularStack(
+        name: "The Advanced Body Recomp Stack",
+        nickname: "Advanced Recomp",
+        goal: "Simultaneous fat loss and muscle gain",
+        peptides: ["CJC-1295", "Ipamorelin", "Tesamorelin", "IGF-1 LR3"],
+        description: "The most advanced body recomposition stack. CJC-1295 and Ipamorelin for sustained GH release, Tesamorelin specifically targets visceral fat, and IGF-1 LR3 provides direct anabolic signaling for muscle growth — allowing simultaneous fat loss and lean mass gain.",
+        notes: "CJC/Ipamorelin 100-300mcg each at night, Tesamorelin 1-2mg in the morning, IGF-1 LR3 20-50mcg post-workout. Run 6-8 weeks max for IGF-1, 8-12 weeks for others."
+    ),
 ]
 
 struct PopularStackCard: View {
