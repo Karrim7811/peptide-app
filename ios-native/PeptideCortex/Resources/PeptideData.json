@@ -2380,5 +2380,117 @@
       "Epitalon / Epithalon (research)",
       "BPC-157 (research)"
     ]
+  },
+  {
+    "name": "KLOW Blend (KPV + BPC-157 + TB-500 + GHK-Cu)",
+    "primaryPurpose": "Immune / Recovery / Anti-Aging",
+    "whatItDoes": "Pre-mixed 80mg blend combining KPV, BPC-157, TB-500, and GHK-Cu for broad-spectrum immune modulation, inflammation control, accelerated healing, and skin rejuvenation",
+    "commonUseExamples": "Systemic inflammation control; post-injury or post-surgical recovery; autoimmune support; skin repair and anti-aging; gut healing",
+    "dosageRange": "0.3–0.5 mL daily subcutaneous injection; cycle 8–12 weeks on, then reassess",
+    "riskCautions": "Research-grade blend; not FDA-approved; injection site reactions possible; consult physician before use, especially if on immunosuppressants or anticoagulants",
+    "bestFor": "Wolverine 3.0 — comprehensive healing, immune modulation, and anti-aging in a single injection",
+    "keyEffects": "KPV reduces systemic inflammation via alpha-MSH pathway; BPC-157 accelerates tissue and gut healing; TB-500 promotes cell migration and tissue repair; GHK-Cu stimulates collagen synthesis and skin regeneration",
+    "evidenceLevel": "Research",
+    "bottomLine": "An all-in-one peptide blend targeting healing, immunity, and skin from multiple angles. Convenience of a single injection with synergistic mechanisms.",
+    "avoidIf": "Active cancer; pregnancy/nursing; known hypersensitivity to any component; concurrent immunosuppressive therapy without physician oversight",
+    "cvRating": 3,
+    "cvNotes": "BPC-157 and TB-500 show indirect cardiovascular benefits through tissue repair and angiogenesis in preclinical models; GHK-Cu supports vascular integrity; KPV reduces systemic inflammation.",
+    "drugInteractions": "Caution with anticoagulants (TB-500 may affect clotting); immunosuppressants may interact with KPV's immune-modulating effects; monitor if on corticosteroids.",
+    "goalCategory": "Recovery",
+    "goalCategories": [
+      "Recovery",
+      "Immune Support",
+      "Anti-Aging",
+      "Skin",
+      "Healing"
+    ],
+    "stacksWellWith": [
+      "Ipamorelin (research)",
+      "CJC-1295 (research)",
+      "Epitalon / Epithalon (research)"
+    ]
+  },
+  {
+    "name": "GLOW Blend (GHK-Cu + BPC-157 + TB-500)",
+    "primaryPurpose": "Recovery / Anti-Aging / Skin",
+    "whatItDoes": "Pre-mixed 70mg blend combining GHK-Cu, BPC-157, and TB-500 for tissue repair, skin rejuvenation, and anti-aging",
+    "commonUseExamples": "Skin rejuvenation; post-procedure recovery; anti-aging protocols; wound healing; collagen restoration",
+    "dosageRange": "0.3–0.5 mL daily subcutaneous injection; cycle 8–12 weeks on, then reassess",
+    "riskCautions": "Research-grade blend; not FDA-approved; injection site reactions possible; consult physician before use, especially if on anticoagulants",
+    "bestFor": "Wolverine 2.0 — tissue repair, skin rejuvenation, and anti-aging in a convenient single injection",
+    "keyEffects": "GHK-Cu stimulates collagen synthesis, elastin production, and skin regeneration; BPC-157 accelerates tissue and gut healing; TB-500 promotes cell migration, reduces inflammation, and supports tissue repair",
+    "evidenceLevel": "Research",
+    "bottomLine": "A powerful three-peptide blend focused on repair and rejuvenation. Ideal for those prioritizing skin health and recovery without the immune component of KLOW.",
+    "avoidIf": "Active cancer; pregnancy/nursing; known hypersensitivity to any component; concurrent anticoagulant therapy without physician oversight",
+    "cvRating": 3,
+    "cvNotes": "BPC-157 and TB-500 show indirect cardiovascular benefits through tissue repair and angiogenesis in preclinical models; GHK-Cu supports vascular integrity and has antioxidant properties.",
+    "drugInteractions": "Caution with anticoagulants (TB-500 may affect clotting); monitor wound healing if on corticosteroids or immunosuppressants.",
+    "goalCategory": "Recovery",
+    "goalCategories": [
+      "Recovery",
+      "Anti-Aging",
+      "Skin",
+      "Healing"
+    ],
+    "stacksWellWith": [
+      "Ipamorelin (research)",
+      "CJC-1295 (research)",
+      "KPV (research)",
+      "Epitalon / Epithalon (research)"
+    ]
+  },
+  {
+    "name": "Wolverine Stack (BPC-157 + TB-500)",
+    "primaryPurpose": "Recovery / Healing / Pain Relief",
+    "whatItDoes": "The most popular peptide combination for extreme healing — BPC-157 and TB-500 work synergistically to accelerate tissue repair, reduce inflammation, and promote recovery from injuries",
+    "commonUseExamples": "Tendon and ligament injuries; post-surgical recovery; muscle tears; joint pain; chronic injuries; acute sports injuries",
+    "dosageRange": "BPC-157: 250–500 mcg injected subcutaneously 2x/day; TB-500: 2.5 mg injected subcutaneously 2x/week. Cycle 4–8 weeks for acute injuries, 8–12 weeks for chronic conditions.",
+    "riskCautions": "Research-grade peptides; not FDA-approved; injection site reactions possible; consult physician before use, especially if on anticoagulants or with history of cancer",
+    "bestFor": "The gold-standard peptide stack for injury recovery and tissue healing",
+    "keyEffects": "BPC-157 accelerates tendon, ligament, muscle, and gut healing via growth factor modulation; TB-500 promotes cell migration, reduces inflammation, upregulates actin for tissue repair and flexibility",
+    "evidenceLevel": "Research",
+    "bottomLine": "The most widely used peptide stack in the biohacking and sports recovery space. Synergistic healing from two complementary mechanisms of action.",
+    "avoidIf": "Active cancer; pregnancy/nursing; known hypersensitivity to either component; concurrent anticoagulant therapy without physician oversight",
+    "cvRating": 3,
+    "cvNotes": "BPC-157 shows cardioprotective effects in preclinical models including protection against arrhythmias and promotion of angiogenesis; TB-500 supports vascular repair and reduces inflammation.",
+    "drugInteractions": "Caution with anticoagulants (TB-500 may affect clotting); NSAIDs may partially overlap anti-inflammatory effects; monitor if on corticosteroids.",
+    "goalCategory": "Recovery",
+    "goalCategories": [
+      "Recovery",
+      "Healing",
+      "Pain Relief"
+    ],
+    "stacksWellWith": [
+      "GHK-Cu (Copper peptide)",
+      "Ipamorelin (research)",
+      "KPV (research)"
+    ]
+  },
+  {
+    "name": "Tri-Heal Blend (TB-500 + BPC-157 + KPV)",
+    "primaryPurpose": "Recovery / Healing / Immune Support",
+    "whatItDoes": "Pre-mixed 45mg blend (TB-500 25mg + BPC-157 10mg + KPV 10mg) providing triple-action healing and immune modulation in a single injection",
+    "commonUseExamples": "Post-injury recovery with immune support; gut healing with inflammation control; chronic inflammatory conditions; autoimmune-related tissue damage",
+    "dosageRange": "300–500 mcg daily subcutaneous injection; cycle 6–8 weeks on, then reassess",
+    "riskCautions": "Research-grade blend; not FDA-approved; injection site reactions possible; consult physician before use, especially if on immunosuppressants or anticoagulants",
+    "bestFor": "Triple-action healing plus immune modulation — ideal for recovery protocols requiring inflammation control",
+    "keyEffects": "TB-500 promotes cell migration and tissue repair; BPC-157 accelerates tendon, muscle, and gut healing; KPV provides potent anti-inflammatory and immune-modulating effects via alpha-MSH pathway",
+    "evidenceLevel": "Research",
+    "bottomLine": "A streamlined healing blend that adds immune modulation to the classic Wolverine stack. The KPV component addresses the inflammatory root cause while BPC-157 and TB-500 handle repair.",
+    "avoidIf": "Active cancer; pregnancy/nursing; known hypersensitivity to any component; concurrent immunosuppressive therapy without physician oversight",
+    "cvRating": 3,
+    "cvNotes": "BPC-157 and TB-500 show indirect cardiovascular benefits through tissue repair and angiogenesis in preclinical models; KPV reduces systemic inflammation which may benefit cardiovascular health.",
+    "drugInteractions": "Caution with anticoagulants (TB-500 may affect clotting); immunosuppressants may interact with KPV's immune-modulating effects; monitor if on corticosteroids.",
+    "goalCategory": "Recovery",
+    "goalCategories": [
+      "Recovery",
+      "Healing",
+      "Immune Support"
+    ],
+    "stacksWellWith": [
+      "GHK-Cu (Copper peptide)",
+      "Ipamorelin (research)",
+      "Epitalon / Epithalon (research)"
+    ]
   }
 ]
