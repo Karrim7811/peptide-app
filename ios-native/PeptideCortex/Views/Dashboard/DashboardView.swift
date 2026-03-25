@@ -146,79 +146,13 @@ struct DashboardView: View {
                             }
                         }
 
-                        VStack(spacing: 0) {
-                            ForEach(Array(vm.activeStackItems.enumerated()), id: \.element.id) { index, item in
-                                VStack(alignment: .leading, spacing: 6) {
-                                    HStack {
-                                        // Type badge
-                                        Text(item.type.uppercased())
-                                            .font(.system(size: 8, weight: .bold))
-                                            .tracking(1)
-                                            .foregroundColor(.white)
-                                            .padding(.horizontal, 6)
-                                            .padding(.vertical, 2)
-                                            .background(typeBadgeColor(item.type))
-                                            .cornerRadius(4)
-
-                                        Text(item.name)
-                                            .font(.system(size: 15, weight: .semibold))
-                                            .foregroundColor(.cxBlack)
-
-                                        Spacer()
-
-                                        if !item.dose.isEmpty {
-                                            Text("\(item.dose)\(item.unit.isEmpty ? "" : " \(item.unit)")")
-                                                .font(.system(size: 14, weight: .medium))
-                                                .foregroundColor(.cxTeal)
-                                        }
-                                    }
-
-                                    // Auto reconstitution for peptides
-                                    if let recon = vm.reconResults[item.id] {
-                                        HStack(spacing: 16) {
-                                            HStack(spacing: 4) {
-                                                Image(systemName: "drop.fill")
-                                                    .font(.system(size: 10))
-                                                    .foregroundColor(.blue)
-                                                Text("BAC Water: \(String(format: "%.1f", recon.recommendedBacWaterMl)) mL")
-                                                    .font(.system(size: 12))
-                                                    .foregroundColor(.cxSmoke)
-                                            }
-                                            HStack(spacing: 4) {
-                                                Image(systemName: "eyedropper")
-                                                    .font(.system(size: 10))
-                                                    .foregroundColor(.green)
-                                                Text("\(String(format: "%.0f", recon.concentrationMcgPerMl)) mcg/mL")
-                                                    .font(.system(size: 12))
-                                                    .foregroundColor(.cxSmoke)
-                                            }
-                                        }
-                                        .padding(.top, 2)
-
-                                        if !recon.tipicalDoseRange.isEmpty {
-                                            Text("Typical dose: \(recon.tipicalDoseRange)")
-                                                .font(.system(size: 11))
-                                                .foregroundColor(.cxStone)
-                                        }
-                                    }
-
-                                    if !item.notes.isEmpty {
-                                        Text(item.notes)
-                                            .font(.system(size: 12))
-                                            .foregroundColor(.cxStone)
-                                            .lineLimit(1)
-                                    }
-                                }
-                                .padding(.vertical, 12)
-                                .padding(.horizontal, 14)
-                                if index < vm.activeStackItems.count - 1 {
-                                    Divider().padding(.horizontal, 14)
+                        VStack(spacing: 8) {
+                            ForEach(vm.activeStackItems) { item in
+                                StackItemRow(item: item, recon: vm.reconResults[item.id]) {
+                                    selectedTab = .stack
                                 }
                             }
                         }
-                        .background(Color.white)
-                        .cornerRadius(12)
-                        .shadow(color: .black.opacity(0.03), radius: 4, y: 1)
                     }
                 }
 
@@ -473,5 +407,71 @@ struct QuickActionRow: View {
             .shadow(color: Color.black.opacity(0.03), radius: 4, x: 0, y: 1)
         }
         .buttonStyle(.plain)
+    }
+}
+
+struct StackItemRow: View {
+    let item: StackItem
+    let recon: ReconstitutionResult?
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 12) {
+                Image(systemName: iconForType(item.type))
+                    .font(.system(size: 18))
+                    .foregroundColor(colorForType(item.type))
+                    .frame(width: 36, height: 36)
+                    .background(colorForType(item.type).opacity(0.1))
+                    .cornerRadius(10)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(item.name.capitalized)
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundColor(.cxBlack)
+
+                    if !item.dose.isEmpty {
+                        Text("\(item.dose)\(item.unit.isEmpty ? "" : " \(item.unit)")")
+                            .font(.system(size: 12))
+                            .foregroundColor(.cxTeal)
+                    }
+
+                    if let recon = recon {
+                        Text("BAC: \(String(format: "%.1f", recon.recommendedBacWaterMl)) mL · \(String(format: "%.0f", recon.concentrationMcgPerMl)) mcg/mL")
+                            .font(.system(size: 11))
+                            .foregroundColor(.cxStone)
+                    }
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12))
+                    .foregroundColor(.cxStone)
+            }
+            .padding(14)
+            .background(Color.white)
+            .cornerRadius(12)
+            .shadow(color: Color.black.opacity(0.03), radius: 4, x: 0, y: 1)
+        }
+        .buttonStyle(.plain)
+    }
+
+    func iconForType(_ type: String) -> String {
+        switch type {
+        case "peptide": return "syringe"
+        case "medication": return "pills"
+        case "supplement": return "leaf"
+        default: return "square.stack.3d.up"
+        }
+    }
+
+    func colorForType(_ type: String) -> Color {
+        switch type {
+        case "peptide": return .cxTeal
+        case "medication": return .blue
+        case "supplement": return .green
+        default: return .cxStone
+        }
     }
 }
