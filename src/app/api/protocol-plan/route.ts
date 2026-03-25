@@ -117,7 +117,7 @@ Always recommend consulting a healthcare provider.`
 
     const response = await client.messages.create({
       model: 'claude-opus-4-5',
-      max_tokens: 2048,
+      max_tokens: 4096,
       system: systemPrompt,
       messages: [
         {
@@ -132,13 +132,20 @@ Always recommend consulting a healthcare provider.`
       throw new Error('Unexpected response type from Claude')
     }
 
-    // Extract JSON from response (handle potential markdown code blocks)
+    // Extract JSON from response — handle markdown, extra text, etc.
     let jsonText = content.text.trim()
-    if (jsonText.startsWith('```')) {
-      jsonText = jsonText.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '')
+
+    // Remove markdown code blocks
+    jsonText = jsonText.replace(/```json\s*/g, '').replace(/```\s*/g, '')
+
+    // Find the JSON object in the response
+    const jsonMatch = jsonText.match(/\{[\s\S]*\}/)
+    if (!jsonMatch) {
+      console.error('No JSON found in response:', jsonText.substring(0, 500))
+      throw new SyntaxError('No JSON object found in AI response')
     }
 
-    const plan = JSON.parse(jsonText)
+    const plan = JSON.parse(jsonMatch[0])
 
     return NextResponse.json(plan)
   } catch (error) {
