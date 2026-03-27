@@ -107,7 +107,7 @@ class AuthViewModel: ObservableObject {
                 await appState.checkSession()
             } catch {
                 print("Apple sign in Supabase error: \(error)")
-                errorMessage = "Apple sign in failed. Please try email sign in."
+                errorMessage = "Supabase error: \(error.localizedDescription)"
             }
 
         case .failure(let error):
@@ -115,8 +115,8 @@ class AuthViewModel: ObservableObject {
             if nsError.code == ASAuthorizationError.canceled.rawValue {
                 // User cancelled — no error message needed
             } else {
-                print("Apple sign in failure: \(error)")
-                errorMessage = "Apple sign in failed. Please try again."
+                print("Apple sign in failure: domain=\(nsError.domain) code=\(nsError.code) desc=\(nsError.localizedDescription)")
+                errorMessage = "Apple sign in error (\(nsError.code)): \(nsError.localizedDescription)"
             }
         }
         isLoading = false
