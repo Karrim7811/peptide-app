@@ -47,7 +47,7 @@ struct LoginView: View {
                             VStack(spacing: 10) {
                                 // Apple Sign In
                                 SignInWithAppleButton(.signIn) { request in
-                                    request.requestedScopes = [.email, .fullName]
+                                    vm.configureAppleRequest(request)
                                 } onCompletion: { result in
                                     Task { await vm.handleAppleSignIn(result: result, appState: appState) }
                                 }

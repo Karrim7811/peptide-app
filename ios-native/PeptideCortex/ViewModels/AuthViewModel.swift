@@ -1,5 +1,6 @@
 import SwiftUI
 import AuthenticationServices
+import CryptoKit
 import Supabase
 import Auth
 
@@ -12,6 +13,9 @@ class AuthViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var showSignup = false
     @Published var signupSuccess = false
+
+    // Nonce for Apple Sign In
+    private var currentNonce: String?
 
     // MARK: - Email/Password Sign In
 
@@ -59,6 +63,19 @@ class AuthViewModel: ObservableObject {
 
     // MARK: - Apple Sign In
 
+    /// Generate a random nonce and return its SHA256 hash for Apple
+    func generateNonce() -> String {
+        let nonce = randomNonceString()
+        currentNonce = nonce
+        return sha256(nonce)
+    }
+
+    func configureAppleRequest(_ request: ASAuthorizationAppleIDRequest) {
+        let hashedNonce = generateNonce()
+        request.requestedScopes = [.email, .fullName]
+        request.nonce = hashedNonce
+    }
+
     func handleAppleSignIn(result: Result<ASAuthorization, Error>, appState: AppState) async {
         isLoading = true
         errorMessage = nil
@@ -73,58 +90,54 @@ class AuthViewModel: ObservableObject {
                 return
             }
 
+            guard let nonce = currentNonce else {
+                errorMessage = "Apple sign in failed — missing nonce. Please try again."
+                isLoading = false
+                return
+            }
+
             do {
                 try await SupabaseService.shared.client.auth.signInWithIdToken(
                     credentials: OpenIDConnectCredentials(
                         provider: .apple,
-                        idToken: tokenString
+                        idToken: tokenString,
+                        nonce: nonce
                     )
                 )
                 await appState.checkSession()
-            } catch let error as NSError {
-                print("Apple sign in error: \(error)")
-                print("Error domain: \(error.domain), code: \(error.code)")
-                print("Error description: \(error.localizedDescription)")
-                if let underlyingError = error.userInfo[NSUnderlyingErrorKey] as? Error {
-                    print("Underlying error: \(underlyingError)")
-                }
-                errorMessage = "Apple sign in failed. Please try email sign in or try again later."
             } catch {
-                print("Apple sign in error: \(error)")
-                errorMessage = "Apple sign in failed. Please try email sign in or try again later."
+                print("Apple sign in Supabase error: \(error)")
+                errorMessage = "Apple sign in failed. Please try email sign in."
             }
 
         case .failure(let error):
             let nsError = error as NSError
-            if nsError.code != ASAuthorizationError.canceled.rawValue {
-                errorMessage = "Apple sign in was cancelled or failed. Please try again."
+            if nsError.code == ASAuthorizationError.canceled.rawValue {
+                // User cancelled — no error message needed
+            } else {
                 print("Apple sign in failure: \(error)")
+                errorMessage = "Apple sign in failed. Please try again."
             }
         }
         isLoading = false
     }
 
-    // MARK: - Google Sign In (via Supabase OAuth in Safari)
+    // MARK: - Nonce Helpers
 
-    func signInWithGoogle(appState: AppState) async {
-        isLoading = true
-        errorMessage = nil
-
-        do {
-            // Get the OAuth URL from Supabase and open in Safari
-            let baseURL = AppConstants.supabaseURL
-            let redirectTo = "peptidecortex://auth-callback"
-            let urlString = "\(baseURL)/auth/v1/authorize?provider=google&redirect_to=\(redirectTo)"
-
-            guard let url = URL(string: urlString) else {
-                errorMessage = "Invalid URL"
-                isLoading = false
-                return
-            }
-            await UIApplication.shared.open(url)
-        } catch {
-            errorMessage = "Google sign in failed: \(error.localizedDescription)"
+    private func randomNonceString(length: Int = 32) -> String {
+        precondition(length > 0)
+        var randomBytes = [UInt8](repeating: 0, count: length)
+        let errorCode = SecRandomCopyBytes(kSecRandomDefault, randomBytes.count, &randomBytes)
+        if errorCode != errSecSuccess {
+            fatalError("Unable to generate nonce. SecRandomCopyBytes failed with OSStatus \(errorCode)")
         }
-        isLoading = false
+        let charset: [Character] = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+        return String(randomBytes.map { charset[Int($0) % charset.count] })
+    }
+
+    private func sha256(_ input: String) -> String {
+        let inputData = Data(input.utf8)
+        let hashedData = SHA256.hash(data: inputData)
+        return hashedData.compactMap { String(format: "%02x", $0) }.joined()
     }
 }
