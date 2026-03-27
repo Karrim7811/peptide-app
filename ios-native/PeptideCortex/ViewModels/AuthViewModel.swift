@@ -74,7 +74,6 @@ class AuthViewModel: ObservableObject {
             }
 
             do {
-                // Use the nonce if available, pass token to Supabase
                 try await SupabaseService.shared.client.auth.signInWithIdToken(
                     credentials: OpenIDConnectCredentials(
                         provider: .apple,
@@ -82,15 +81,24 @@ class AuthViewModel: ObservableObject {
                     )
                 )
                 await appState.checkSession()
-            } catch {
-                errorMessage = "Apple sign in failed: \(error.localizedDescription)"
+            } catch let error as NSError {
                 print("Apple sign in error: \(error)")
+                print("Error domain: \(error.domain), code: \(error.code)")
+                print("Error description: \(error.localizedDescription)")
+                if let underlyingError = error.userInfo[NSUnderlyingErrorKey] as? Error {
+                    print("Underlying error: \(underlyingError)")
+                }
+                errorMessage = "Apple sign in failed. Please try email sign in or try again later."
+            } catch {
+                print("Apple sign in error: \(error)")
+                errorMessage = "Apple sign in failed. Please try email sign in or try again later."
             }
 
         case .failure(let error):
             let nsError = error as NSError
             if nsError.code != ASAuthorizationError.canceled.rawValue {
-                errorMessage = "Apple sign in failed"
+                errorMessage = "Apple sign in was cancelled or failed. Please try again."
+                print("Apple sign in failure: \(error)")
             }
         }
         isLoading = false

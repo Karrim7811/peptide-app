@@ -52,6 +52,17 @@
 	<string>Peptide Cortex needs camera access to scan your bloodwork reports.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Peptide Cortex needs photo library access to import your bloodwork reports.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>ai.peptidecortex.app</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>peptidecortex</string>
+			</array>
+		</dict>
+	</array>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>

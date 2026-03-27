@@ -29,6 +29,13 @@ struct PeptideCortexApp: App {
             .animation(.easeInOut(duration: 0.3), value: appState.isAuthenticated)
             .animation(.easeInOut(duration: 0.3), value: appState.isLoading)
             .preferredColorScheme(.light)
+            .onOpenURL { url in
+                // Handle OAuth callbacks (e.g. peptidecortex://auth-callback)
+                Task {
+                    try? await SupabaseService.shared.client.auth.session(from: url)
+                    await appState.checkSession()
+                }
+            }
         }
     }
 }

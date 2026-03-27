@@ -55,26 +55,7 @@ struct LoginView: View {
                                 .frame(height: 50)
                                 .cornerRadius(12)
 
-                                // Google Sign In
-                                Button {
-                                    Task { await vm.signInWithGoogle(appState: appState) }
-                                } label: {
-                                    HStack(spacing: 8) {
-                                        Image(systemName: "g.circle.fill")
-                                            .font(.system(size: 20))
-                                        Text("Sign in with Google")
-                                            .font(.system(size: 16, weight: .medium))
-                                    }
-                                    .foregroundColor(.cxBlack)
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 13)
-                                    .background(Color.white)
-                                    .cornerRadius(12)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .stroke(Color.cxBorder, lineWidth: 1)
-                                    )
-                                }
+                                // Email sign-in is below
                             }
 
                             // Divider
