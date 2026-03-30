@@ -303,9 +303,7 @@ struct TappableVial: View {
     let usePhotoStyle: Bool
     let recon: ReconstitutionResult?
 
-    @State private var spinning = false
     @State private var showDetail = false
-    @State private var spinDegrees: Double = 0
 
     var body: some View {
         VStack(spacing: 6) {
@@ -316,13 +314,9 @@ struct TappableVial: View {
                     VectorVialView(name: name, dose: dose, unit: unit, fillPercent: fillPercent, isDueNow: isDueNow)
                 }
             }
-            .rotation3DEffect(.degrees(spinDegrees), axis: (x: 0, y: 1, z: 0))
+            .scaleEffect(showDetail ? 1.15 : 1.0)
             .onTapGesture {
-                // Spin then show detail
-                withAnimation(.easeInOut(duration: 0.6)) {
-                    spinDegrees += 360
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
                     showDetail = true
                 }
             }
@@ -360,7 +354,6 @@ struct VialDetailPopup: View {
     var capColor: Color { vialCapColor(for: "", name: name) }
 
     @State private var appeared = false
-    @State private var vialSpin: Double = 0
 
     var body: some View {
         ZStack {
@@ -369,10 +362,9 @@ struct VialDetailPopup: View {
                 .onTapGesture { dismiss() }
 
             VStack(spacing: 20) {
-                // Large spinning vial
+                // Large vial with bounce
                 VectorVialView(name: name, dose: dose, unit: unit, fillPercent: 0.7, isDueNow: false)
                     .scaleEffect(appeared ? 3.0 : 0.1)
-                    .rotation3DEffect(.degrees(vialSpin), axis: (x: 0, y: 1, z: 0))
                     .opacity(appeared ? 1 : 0)
                     .frame(height: 240)
 
@@ -465,9 +457,6 @@ struct VialDetailPopup: View {
         .onAppear {
             withAnimation(.spring(response: 0.6, dampingFraction: 0.7)) {
                 appeared = true
-            }
-            withAnimation(.easeInOut(duration: 0.8)) {
-                vialSpin = 720 // Two full spins on entry
             }
         }
     }
