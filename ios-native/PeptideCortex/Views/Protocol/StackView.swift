@@ -17,7 +17,7 @@ struct StackView: View {
                                 .foregroundColor(.cxStone)
 
                             ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 18) {
+                                HStack(spacing: 22) {
                                     ForEach(Array(vm.items.enumerated()), id: \.element.id) { index, item in
                                         TappableVial(
                                             name: item.name,
@@ -28,7 +28,7 @@ struct StackView: View {
                                             usePhotoStyle: true,
                                             recon: nil,
                                             showLabel: false,
-                                            size: 1.4
+                                            size: 1.6
                                         )
                                         .scaleEffect(vialsAppeared ? 1.0 : 0.3)
                                         .opacity(vialsAppeared ? 1 : 0)

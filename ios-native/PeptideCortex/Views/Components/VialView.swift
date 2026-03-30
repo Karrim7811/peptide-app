@@ -370,14 +370,11 @@ struct VialDetailPopup: View {
                 .onTapGesture { dismiss() }
 
             VStack(spacing: 20) {
-                // Large 3D vial
-                Vial3DView(
-                    name: name, dose: dose, unit: unit,
-                    fillPercent: 0.7, isDueNow: false, isRotating: true
-                )
-                .frame(width: 180, height: 260)
-                .scaleEffect(appeared ? 1.0 : 0.1)
-                .opacity(appeared ? 1 : 0)
+                // Large vial
+                VectorVialView(name: name, dose: dose, unit: unit, fillPercent: 0.7, isDueNow: false)
+                    .scaleEffect(appeared ? 3.5 : 0.1)
+                    .opacity(appeared ? 1 : 0)
+                    .frame(height: 280)
 
                 // Info card
                 VStack(spacing: 10) {
@@ -584,7 +581,7 @@ struct VialStackView: View {
             }
 
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 16) {
+                HStack(spacing: 20) {
                     ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                         TappableVial(
                             name: item.name,
@@ -595,7 +592,7 @@ struct VialStackView: View {
                             usePhotoStyle: true,
                             recon: reconResults[item.id],
                             showLabel: false,
-                            size: 1.3
+                            size: 1.6
                         )
                         .scaleEffect(appeared ? 1.0 : 0.3)
                         .opacity(appeared ? 1 : 0)
@@ -606,8 +603,8 @@ struct VialStackView: View {
                         )
                     }
                 }
-                .padding(.vertical, 10)
-                .padding(.horizontal, 4)
+                .padding(.vertical, 14)
+                .padding(.horizontal, 6)
             }
         }
         .onAppear {
