@@ -59,7 +59,7 @@ struct StackView: View {
                         )
                     } else {
                         ForEach(vm.items) { item in
-                            StackItemCard(item: item, vm: vm)
+                            StackVialRow(item: item, vm: vm)
                         }
                     }
                 }
@@ -89,61 +89,43 @@ struct StackView: View {
     }
 }
 
-struct StackItemCard: View {
+struct StackVialRow: View {
     let item: StackItem
     @ObservedObject var vm: StackViewModel
-
-    var typeColor: Color {
-        switch item.type {
-        case "peptide": return .cxTeal
-        case "medication": return .blue
-        case "supplement": return .green
-        default: return .gray
-        }
-    }
+    @State private var showDetail = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack(spacing: 8) {
-                        Text(item.name)
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.cxBlack)
-                        Text(item.type.uppercased())
-                            .font(.system(size: 10, weight: .semibold))
-                            .foregroundColor(typeColor)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 3)
-                            .background(typeColor.opacity(0.1))
-                            .cornerRadius(6)
-                    }
-                    Text("\(item.dose) \(item.unit)")
-                        .font(.system(size: 14))
-                        .foregroundColor(.cxStone)
-                }
-                Spacer()
-                Button {
-                    Task { await vm.toggleActive(item) }
-                } label: {
-                    Image(systemName: item.active ? "checkmark.circle.fill" : "circle")
-                        .font(.system(size: 22))
-                        .foregroundColor(item.active ? .cxTeal : .cxStone)
-                }
-            }
+        HStack(spacing: 16) {
+            // Vial
+            TappableVial(
+                name: item.name,
+                dose: item.dose,
+                unit: item.unit,
+                fillPercent: item.active ? 0.7 : 0.2,
+                isDueNow: false,
+                usePhotoStyle: true,
+                recon: nil,
+                showLabel: false,
+                size: 1.5
+            )
 
-            if !item.notes.isEmpty {
-                Text(item.notes)
-                    .font(.system(size: 13))
-                    .foregroundColor(.cxStone)
-                    .lineLimit(2)
+            Spacer()
+
+            // Active toggle
+            Button {
+                Task { await vm.toggleActive(item) }
+            } label: {
+                Image(systemName: item.active ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 24))
+                    .foregroundColor(item.active ? .cxTeal : .cxStone)
             }
         }
-        .padding(14)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
         .background(Color.white)
         .cornerRadius(14)
         .shadow(color: Color.black.opacity(0.03), radius: 4, x: 0, y: 1)
-        .opacity(item.active ? 1 : 0.6)
+        .opacity(item.active ? 1 : 0.5)
         .swipeActions(edge: .trailing) {
             Button(role: .destructive) {
                 Task { await vm.delete(item) }
@@ -151,6 +133,15 @@ struct StackItemCard: View {
                 Label("Delete", systemImage: "trash")
             }
         }
+    }
+}
+
+// Keep for backward compatibility
+struct StackItemCard: View {
+    let item: StackItem
+    @ObservedObject var vm: StackViewModel
+    var body: some View {
+        StackVialRow(item: item, vm: vm)
     }
 }
 
