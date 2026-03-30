@@ -1,5 +1,23 @@
 import SwiftUI
 
+// MARK: - Short Name Helper
+
+func vialShortName(_ name: String) -> String {
+    var cleaned = name
+        .replacingOccurrences(of: " (research)", with: "")
+        .replacingOccurrences(of: " (research/region-specific)", with: "")
+        .replacingOccurrences(of: " (research/compounded)", with: "")
+        .replacingOccurrences(of: " (research/clinical research)", with: "")
+        .replacingOccurrences(of: " (region-specific)", with: "")
+        .replacingOccurrences(of: " (not a peptide, but commonly discussed)", with: "")
+        .replacingOccurrences(of: "Vasoactive Intestinal Peptide", with: "VIP")
+        .replacingOccurrences(of: " (Thymosin beta-4 fragment, research)", with: "")
+        .replacingOccurrences(of: " (Wegovy/Ozempic)", with: "")
+        .replacingOccurrences(of: " (Zepbound/Mounjaro)", with: "")
+    if cleaned.count > 10 { cleaned = String(cleaned.prefix(10)) }
+    return cleaned
+}
+
 // MARK: - Cap Color by Category
 func vialCapColor(for type: String, name: String = "") -> Color {
     let n = name.lowercased()
@@ -80,16 +98,18 @@ struct VectorVialView: View {
                         .tracking(1)
                         .foregroundColor(.cxTeal)
 
-                    Text(shortName(name))
-                        .font(.system(size: 6, weight: .semibold))
+                    Text(vialShortName(name).uppercased())
+                        .font(.system(size: 5, weight: .bold))
                         .foregroundColor(.cxBlack)
-                        .lineLimit(2)
-                        .multilineTextAlignment(.center)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.5)
 
                     if !dose.isEmpty {
                         Text("\(dose)\(unit.isEmpty ? "" : " \(unit)")")
                             .font(.system(size: 5, weight: .medium))
                             .foregroundColor(.cxStone)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.5)
                     }
                 }
                 .frame(width: 38)
@@ -198,16 +218,18 @@ struct PhotoVialView: View {
                     .tracking(1)
                     .foregroundColor(.cxTeal)
 
-                Text(shortName(name))
-                    .font(.system(size: 6.5, weight: .semibold))
+                Text(vialShortName(name).uppercased())
+                    .font(.system(size: 5.5, weight: .bold))
                     .foregroundColor(.cxBlack)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.center)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
 
                 if !dose.isEmpty {
                     Text("\(dose)\(unit.isEmpty ? "" : " \(unit)")")
-                        .font(.system(size: 5.5, weight: .medium))
+                        .font(.system(size: 5, weight: .medium))
                         .foregroundColor(.cxStone)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.5)
                 }
             }
             .frame(width: 36)
@@ -328,7 +350,7 @@ struct TappableVial: View {
             }
 
             if showLabel {
-                Text(shortName(name).capitalized)
+                Text(vialShortName(name).capitalized)
                     .font(.system(size: 10 * size, weight: .medium))
                     .foregroundColor(.cxBlack)
                     .lineLimit(1)
