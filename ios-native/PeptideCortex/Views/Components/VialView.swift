@@ -364,12 +364,13 @@ struct VialDetailPopup: View {
 // MARK: - Today's Doses Vial Tray
 
 struct VialTrayView: View {
-    let reminders: [DashboardViewModel.TodayReminder]
+    let reminders: [TodayReminder]
     let reconResults: [UUID: ReconstitutionResult]
     let onTake: (Reminder) async -> Void
 
     @State private var appeared = false
-    @State private var selectedVial: DashboardViewModel.TodayReminder?
+    @State private var selectedIndex: Int?
+    @State private var showDetail = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -427,7 +428,8 @@ struct VialTrayView: View {
                         }
                         .onTapGesture {
                             if !item.taken {
-                                selectedVial = item
+                                selectedIndex = index
+                                showDetail = true
                             }
                         }
                     }
@@ -441,14 +443,17 @@ struct VialTrayView: View {
                 appeared = true
             }
         }
-        .fullScreenCover(item: $selectedVial) { item in
-            VialDetailPopup(
-                name: item.reminder.stackItem?.name ?? "Unknown",
-                dose: item.reminder.dose,
-                unit: "",
-                recon: item.reminder.stackItem.flatMap { reconResults[$0.id] }
-            ) {
-                selectedVial = nil
+        .sheet(isPresented: $showDetail) {
+            if let idx = selectedIndex, idx < reminders.count {
+                let item = reminders[idx]
+                VialDetailPopup(
+                    name: item.reminder.stackItem?.name ?? "Unknown",
+                    dose: item.reminder.dose,
+                    unit: "",
+                    recon: item.reminder.stackItem.flatMap { reconResults[$0.id] }
+                ) {
+                    showDetail = false
+                }
             }
         }
     }
@@ -462,7 +467,8 @@ struct VialStackView: View {
     let onTap: () -> Void
 
     @State private var appeared = false
-    @State private var selectedItem: StackItem?
+    @State private var selectedIndex: Int?
+    @State private var showDetail = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -504,7 +510,8 @@ struct VialStackView: View {
                                 .frame(width: 60)
                         }
                         .onTapGesture {
-                            selectedItem = item
+                            selectedIndex = index
+                            showDetail = true
                         }
                     }
                 }
@@ -517,14 +524,17 @@ struct VialStackView: View {
                 appeared = true
             }
         }
-        .fullScreenCover(item: $selectedItem) { item in
-            VialDetailPopup(
-                name: item.name,
-                dose: item.dose,
-                unit: item.unit,
-                recon: reconResults[item.id]
-            ) {
-                selectedItem = nil
+        .sheet(isPresented: $showDetail) {
+            if let idx = selectedIndex, idx < items.count {
+                let item = items[idx]
+                VialDetailPopup(
+                    name: item.name,
+                    dose: item.dose,
+                    unit: item.unit,
+                    recon: reconResults[item.id]
+                ) {
+                    showDetail = false
+                }
             }
         }
     }
