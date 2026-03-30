@@ -123,6 +123,7 @@ struct AddStackItemSheet: View {
     @ObservedObject var vm: StackViewModel
     @Environment(\.dismiss) var dismiss
     @State private var showSuggestions = false
+    @State private var showVialScanner = false
 
     private var suggestions: [String] {
         guard !vm.newName.isEmpty else { return [] }
@@ -133,6 +134,24 @@ struct AddStackItemSheet: View {
     var body: some View {
         NavigationView {
             Form {
+                Section {
+                    Button {
+                        showVialScanner = true
+                    } label: {
+                        HStack(spacing: 10) {
+                            Image(systemName: "camera.viewfinder")
+                                .font(.system(size: 18))
+                            Text("Scan Vials")
+                                .font(.system(size: 15, weight: .semibold))
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 13))
+                                .foregroundColor(.cxStone)
+                        }
+                        .foregroundColor(.cxTeal)
+                    }
+                }
+
                 Section("Details") {
                     VStack(alignment: .leading, spacing: 4) {
                         TextField("Name", text: $vm.newName)
@@ -188,6 +207,30 @@ struct AddStackItemSheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add") { Task { await vm.addItem(); dismiss() } }
                         .disabled(vm.newName.isEmpty)
+                }
+            }
+            .sheet(isPresented: $showVialScanner) {
+                VialScannerView { scannedVials in
+                    guard let first = scannedVials.first else { return }
+                    // Auto-fill with first scanned vial
+                    vm.newName = first.name
+                    vm.newType = first.type.isEmpty ? "peptide" : first.type
+                    vm.newNotes = first.notes
+                    // If there are multiple, add the rest directly
+                    if scannedVials.count > 1 {
+                        Task {
+                            for vial in scannedVials.dropFirst() {
+                                vm.newName = vial.name
+                                vm.newType = vial.type.isEmpty ? "peptide" : vial.type
+                                vm.newNotes = vial.notes
+                                await vm.addItem()
+                            }
+                            // Restore first item in form
+                            vm.newName = first.name
+                            vm.newType = first.type.isEmpty ? "peptide" : first.type
+                            vm.newNotes = first.notes
+                        }
+                    }
                 }
             }
         }

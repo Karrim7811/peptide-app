@@ -247,6 +247,38 @@ class APIService {
         return result
     }
 
+    // MARK: - Vial Scanner
+
+    struct VialScanResponse: Codable {
+        let vials: [VialScanItem]?
+        let error: String?
+
+        struct VialScanItem: Codable {
+            let name: String
+            let amount: String?
+            let type: String?
+            let notes: String?
+        }
+    }
+
+    func scanVials(imageBase64: String, mimeType: String) async throws -> [ScannedVial] {
+        let response: VialScanResponse = try await makeRequest(
+            path: "/api/scan-vials",
+            body: ["image": imageBase64, "mimeType": mimeType]
+        )
+        if let error = response.error {
+            throw NSError(domain: "API", code: 422, userInfo: [NSLocalizedDescriptionKey: error])
+        }
+        return (response.vials ?? []).map { item in
+            ScannedVial(
+                name: item.name,
+                amount: item.amount ?? "",
+                type: item.type ?? "peptide",
+                notes: item.notes ?? ""
+            )
+        }
+    }
+
     // MARK: - Protocol Planner
 
     func generateProtocolPlan(peptides: [String], profile: [String: Any]) async throws -> ProtocolPlan {

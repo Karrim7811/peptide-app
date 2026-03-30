@@ -4,6 +4,7 @@ struct ProtocolPlannerView: View {
     @EnvironmentObject var storeService: StoreService
     @StateObject private var vm = ProtocolPlannerViewModel()
     @Binding var selectedTab: NavDestination
+    @State private var showVialScanner = false
 
     var body: some View {
         if !storeService.isProUser {
@@ -77,6 +78,33 @@ struct ProtocolPlannerView: View {
     var peptideStep: some View {
         VStack(spacing: 16) {
             aiBubble("What peptides will you be using? Add all the peptides you plan to take.")
+
+            Button {
+                showVialScanner = true
+            } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: "camera.viewfinder")
+                        .font(.system(size: 18))
+                    Text("Scan Your Vials")
+                        .font(.system(size: 15, weight: .semibold))
+                }
+                .foregroundColor(.cxTeal)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(Color.cxTeal.opacity(0.1))
+                .cornerRadius(12)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.cxTeal.opacity(0.3), lineWidth: 1)
+                )
+            }
+            .sheet(isPresented: $showVialScanner) {
+                VialScannerView { scannedVials in
+                    for vial in scannedVials {
+                        vm.addPeptide(vial.name)
+                    }
+                }
+            }
 
             if !vm.selectedPeptides.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {

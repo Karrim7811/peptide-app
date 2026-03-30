@@ -164,6 +164,7 @@ struct AddInventorySheet: View {
     @ObservedObject var vm: InventoryViewModel
     @Environment(\.dismiss) var dismiss
     @State private var showSuggestions = false
+    @State private var showVialScanner = false
 
     private var suggestions: [String] {
         guard !vm.newName.isEmpty else { return [] }
@@ -174,6 +175,24 @@ struct AddInventorySheet: View {
     var body: some View {
         NavigationView {
             Form {
+                Section {
+                    Button {
+                        showVialScanner = true
+                    } label: {
+                        HStack(spacing: 10) {
+                            Image(systemName: "camera.viewfinder")
+                                .font(.system(size: 18))
+                            Text("Scan Vials")
+                                .font(.system(size: 15, weight: .semibold))
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 13))
+                                .foregroundColor(.cxStone)
+                        }
+                        .foregroundColor(.cxTeal)
+                    }
+                }
+
                 Section("Item Info") {
                     VStack(alignment: .leading, spacing: 4) {
                         TextField("Name", text: $vm.newName)
@@ -227,6 +246,43 @@ struct AddInventorySheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add") { Task { await vm.addItem(); dismiss() } }
                         .disabled(vm.newName.isEmpty || vm.newVialSize.isEmpty)
+                }
+            }
+            .sheet(isPresented: $showVialScanner) {
+                VialScannerView { scannedVials in
+                    guard let first = scannedVials.first else { return }
+                    // Auto-fill with first scanned vial
+                    vm.newName = first.name
+                    // Parse amount for vial size (e.g. "5mg" -> "5")
+                    let numericAmount = first.amount.filter { $0.isNumber || $0 == "." }
+                    if !numericAmount.isEmpty {
+                        vm.newVialSize = numericAmount
+                        vm.newQuantity = numericAmount
+                    }
+                    vm.newNotes = first.notes
+                    // If there are multiple, add the rest directly
+                    if scannedVials.count > 1 {
+                        Task {
+                            for vial in scannedVials.dropFirst() {
+                                vm.newName = vial.name
+                                let amt = vial.amount.filter { $0.isNumber || $0 == "." }
+                                if !amt.isEmpty {
+                                    vm.newVialSize = amt
+                                    vm.newQuantity = amt
+                                }
+                                vm.newNotes = vial.notes
+                                await vm.addItem()
+                            }
+                            // Restore first item in form
+                            vm.newName = first.name
+                            let amt = first.amount.filter { $0.isNumber || $0 == "." }
+                            if !amt.isEmpty {
+                                vm.newVialSize = amt
+                                vm.newQuantity = amt
+                            }
+                            vm.newNotes = first.notes
+                        }
+                    }
                 }
             }
         }

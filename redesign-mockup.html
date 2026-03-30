@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staq — Redesign Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #09090b;
+    --surface: #18181b;
+    --elevated: #27272a;
+    --border: #27272a;
+    --border-subtle: #1f1f23;
+    --accent: #06b6d4;
+    --accent-dim: rgba(6, 182, 212, 0.1);
+    --accent-mid: rgba(6, 182, 212, 0.2);
+    --emerald: #34d399;
+    --emerald-dim: rgba(52, 211, 153, 0.1);
+    --amber: #fbbf24;
+    --amber-dim: rgba(251, 191, 36, 0.1);
+    --red: #f87171;
+    --red-dim: rgba(248, 113, 113, 0.1);
+    --violet: #a78bfa;
+    --violet-dim: rgba(167, 139, 250, 0.1);
+    --text: #fafafa;
+    --text-secondary: #a1a1aa;
+    --text-muted: #52525b;
+    --font: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Layout ── */
+  .app { display: flex; min-height: 100vh; }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 260px;
+    background: var(--bg);
+    border-right: 1px solid var(--border-subtle);
+    padding: 28px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 40;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 12px;
+    margin-bottom: 20px;
+  }
+
+  .logo-icon {
+    width: 32px;
+    height: 32px;
+    background: var(--accent-mid);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo-icon svg { width: 18px; height: 18px; color: var(--accent); }
+
+  .logo-text {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--text) 0%, var(--text-secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .nav-section {
+    margin-top: 8px;
+  }
+
+  .nav-section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-muted);
+    padding: 8px 12px 6px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 450;
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+
+  .nav-item:hover {
+    background: var(--elevated);
+    color: var(--text);
+  }
+
+  .nav-item.active {
+    background: var(--accent-dim);
+    color: var(--accent);
+  }
+
+  .nav-item.active svg { color: var(--accent); }
+
+  .nav-item svg {
+    width: 18px;
+    height: 18px;
+    opacity: 0.7;
+    flex-shrink: 0;
+  }
+
+  .nav-item.active svg { opacity: 1; }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 12px;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .user-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .user-pill:hover { background: var(--elevated); }
+
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent-mid), var(--violet-dim));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .user-info { flex: 1; }
+  .user-name { font-size: 13px; font-weight: 500; color: var(--text); }
+  .user-plan { font-size: 11px; color: var(--text-muted); }
+
+  /* ── Main Content ── */
+  .main {
+    margin-left: 260px;
+    flex: 1;
+    padding: 36px 40px;
+    max-width: 1100px;
+  }
+
+  /* ── Command Bar hint ── */
+  .cmd-bar-hint {
+    position: fixed;
+    top: 20px;
+    right: 28px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    z-index: 30;
+  }
+
+  .cmd-bar-hint:hover {
+    border-color: var(--accent);
+    color: var(--text-secondary);
+  }
+
+  .cmd-bar-hint kbd {
+    background: var(--elevated);
+    padding: 2px 6px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-family: var(--font);
+    color: var(--text-secondary);
+  }
+
+  .cmd-bar-hint svg { width: 15px; height: 15px; }
+
+  /* ── Page Header ── */
+  .page-header { margin-bottom: 32px; }
+
+  .greeting {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+
+  .greeting-accent { color: var(--accent); }
+
+  .page-subtitle {
+    font-size: 15px;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  /* ── Inline Stats ── */
+  .stats-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .stat-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--surface);
+    border-radius: 12px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .stat-value {
+    font-weight: 700;
+    font-size: 17px;
+    color: var(--text);
+  }
+
+  .stat-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  /* ── Today's Protocol (main card) ── */
+  .protocol-card {
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 28px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .protocol-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent-mid), transparent);
+  }
+
+  .protocol-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .protocol-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .protocol-title svg { width: 18px; height: 18px; color: var(--accent); }
+
+  .protocol-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .progress-ring {
+    width: 36px;
+    height: 36px;
+    position: relative;
+  }
+
+  .progress-ring svg { transform: rotate(-90deg); }
+
+  .progress-ring-bg { stroke: var(--elevated); }
+  .progress-ring-fill { stroke: var(--accent); transition: stroke-dashoffset 1s ease; }
+
+  .progress-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* ── Timeline ── */
+  .timeline { display: flex; flex-direction: column; gap: 4px; }
+
+  .timeline-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+
+  .timeline-item:hover { background: var(--bg); }
+
+  .timeline-time {
+    width: 60px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .timeline-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .timeline-dot.done {
+    background: var(--emerald);
+    box-shadow: 0 0 8px rgba(52, 211, 153, 0.3);
+  }
+
+  .timeline-dot.done::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 7px;
+    color: var(--bg);
+    font-weight: 700;
+  }
+
+  .timeline-dot.upcoming {
+    background: transparent;
+    border: 2px solid var(--text-muted);
+  }
+
+  .timeline-dot.next {
+    background: var(--accent);
+    box-shadow: 0 0 12px rgba(6, 182, 212, 0.4);
+    animation: pulse-dot 2s infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 8px rgba(6, 182, 212, 0.3); }
+    50% { box-shadow: 0 0 16px rgba(6, 182, 212, 0.5); }
+  }
+
+  .timeline-content { flex: 1; }
+
+  .timeline-name {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+
+  .timeline-name.done { color: var(--text-muted); text-decoration: line-through; text-decoration-color: var(--text-muted); }
+
+  .timeline-detail {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .timeline-badge {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-weight: 500;
+  }
+
+  .badge-peptide { background: var(--accent-dim); color: var(--accent); }
+  .badge-supplement { background: var(--emerald-dim); color: var(--emerald); }
+  .badge-medication { background: var(--violet-dim); color: var(--violet); }
+
+  .timeline-action {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: var(--font);
+  }
+
+  .btn-log {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  .btn-log:hover { background: #22d3ee; }
+
+  .btn-done {
+    background: var(--emerald-dim);
+    color: var(--emerald);
+  }
+
+  /* ── Grid Cards ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .card {
+    background: var(--surface);
+    border-radius: 18px;
+    padding: 24px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .card-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card-icon svg { width: 19px; height: 19px; }
+
+  .card-arrow {
+    color: var(--text-muted);
+    transition: all 0.2s;
+  }
+
+  .card:hover .card-arrow {
+    color: var(--text-secondary);
+    transform: translateX(3px);
+  }
+
+  .card-arrow svg { width: 16px; height: 16px; }
+
+  .card-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .card-value {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .card-value strong {
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  /* ── Activity Feed ── */
+  .activity-card {
+    background: var(--surface);
+    border-radius: 18px;
+    padding: 24px;
+  }
+
+  .activity-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .activity-title {
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .activity-title svg { width: 16px; height: 16px; color: var(--text-muted); }
+
+  .view-all {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.15s;
+    cursor: pointer;
+  }
+
+  .view-all:hover { color: var(--accent); }
+
+  .activity-list { display: flex; flex-direction: column; }
+
+  .activity-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .activity-item:last-child { border-bottom: none; }
+
+  .activity-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .activity-text {
+    flex: 1;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .activity-text strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .activity-time {
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  /* ── AI Quick Ask ── */
+  .ai-bar {
+    margin-top: 24px;
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--border-subtle);
+    transition: border-color 0.2s;
+  }
+
+  .ai-bar:focus-within { border-color: var(--accent); }
+
+  .ai-bar-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--accent-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-left: 4px;
+  }
+
+  .ai-bar-icon svg { width: 18px; height: 18px; color: var(--accent); }
+
+  .ai-bar input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--font);
+    font-size: 14px;
+    color: var(--text);
+    padding: 12px 4px;
+  }
+
+  .ai-bar input::placeholder { color: var(--text-muted); }
+
+  .ai-bar button {
+    padding: 8px 16px;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 4px;
+    transition: background 0.15s;
+  }
+
+  .ai-bar button:hover { background: #22d3ee; }
+
+  /* ── Page tabs (for switching views) ── */
+  .page-tabs {
+    display: none; /* Hidden in this mockup, shown for reference */
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-in {
+    animation: fadeUp 0.4s ease forwards;
+    opacity: 0;
+  }
+
+  .delay-1 { animation-delay: 0.05s; }
+  .delay-2 { animation-delay: 0.1s; }
+  .delay-3 { animation-delay: 0.15s; }
+  .delay-4 { animation-delay: 0.2s; }
+  .delay-5 { animation-delay: 0.25s; }
+  .delay-6 { animation-delay: 0.3s; }
+  .delay-7 { animation-delay: 0.35s; }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 20px 16px 100px; }
+    .cards-grid { grid-template-columns: 1fr; }
+    .cmd-bar-hint { display: none; }
+    .greeting { font-size: 22px; }
+    .stats-row { gap: 8px; }
+    .stat-chip { padding: 6px 12px; font-size: 12px; }
+
+    /* Mobile bottom nav */
+    .mobile-nav {
+      display: flex !important;
+    }
+  }
+
+  /* ── Mobile Nav ── */
+  .mobile-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(9, 9, 11, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border-subtle);
+    padding: 8px 12px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+    z-index: 50;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  .mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border-radius: 10px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 10px;
+    font-weight: 500;
+    transition: color 0.15s;
+    cursor: pointer;
+  }
+
+  .mobile-nav-item.active { color: var(--accent); }
+  .mobile-nav-item svg { width: 22px; height: 22px; }
+
+  /* ── Streak Badge ── */
+  .streak-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    background: var(--amber-dim);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--amber);
+    margin-left: 12px;
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--elevated); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16.5h10"/></svg>
+      </div>
+      <span class="logo-text">Staq</span>
+    </div>
+
+    <a class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </a>
+
+    <div class="nav-section">
+      <div class="nav-section-label">My Protocol</div>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.84z"/><path d="m22 12.5-8.58 3.91a2 2 0 0 1-1.66 0L2 12.5"/><path d="m22 17.5-8.58 3.91a2 2 0 0 1-1.66 0L2 17.5"/></svg>
+        My Stack
+      </a>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Cycle Tracker
+      </a>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        Reminders
+      </a>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Dose Log
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Tools</div>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19.5" y1="4.5" x2="4.5" y2="19.5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg>
+        Dosing Calc
+      </a>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
+        Interactions
+      </a>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
+        AI Chat
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">Reference</div>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+        Peptide Bible
+      </a>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        Stack Finder
+      </a>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-pill">
+        <div class="user-avatar">K</div>
+        <div class="user-info">
+          <div class="user-name">Karim</div>
+          <div class="user-plan">Pro plan</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <main class="main">
+
+    <!-- Command bar hint -->
+    <div class="cmd-bar-hint">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      Search anything
+      <kbd>Ctrl K</kbd>
+    </div>
+
+    <!-- Page Header -->
+    <div class="page-header animate-in delay-1">
+      <div class="greeting">
+        Good evening, <span class="greeting-accent">Karim</span>
+        <span class="streak-badge">7 days</span>
+      </div>
+      <div class="page-subtitle">Thursday, March 13 — 3 of 5 doses completed today</div>
+    </div>
+
+    <!-- Inline Stats -->
+    <div class="stats-row animate-in delay-2">
+      <div class="stat-chip">
+        <div class="stat-dot" style="background: var(--accent)"></div>
+        <span>Active stack</span>
+        <span class="stat-value">4</span>
+      </div>
+      <div class="stat-chip">
+        <div class="stat-dot" style="background: var(--emerald)"></div>
+        <span>Logged this week</span>
+        <span class="stat-value">18</span>
+      </div>
+      <div class="stat-chip">
+        <div class="stat-dot" style="background: var(--amber)"></div>
+        <span>Reminders today</span>
+        <span class="stat-value">2</span>
+      </div>
+      <div class="stat-chip">
+        <div class="stat-dot" style="background: var(--violet)"></div>
+        <span>Inventory items</span>
+        <span class="stat-value">6</span>
+      </div>
+    </div>
+
+    <!-- Today's Protocol -->
+    <div class="protocol-card animate-in delay-3">
+      <div class="protocol-header">
+        <div class="protocol-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          Today's Protocol
+        </div>
+        <div class="protocol-progress">
+          <div class="progress-ring">
+            <svg width="36" height="36" viewBox="0 0 36 36">
+              <circle class="progress-ring-bg" cx="18" cy="18" r="15" fill="none" stroke-width="3"/>
+              <circle class="progress-ring-fill" cx="18" cy="18" r="15" fill="none" stroke-width="3"
+                stroke-dasharray="94.25" stroke-dashoffset="37.7" stroke-linecap="round"/>
+            </svg>
+            <span class="progress-text">3/5</span>
+          </div>
+          60% complete
+        </div>
+      </div>
+
+      <div class="timeline">
+        <div class="timeline-item">
+          <span class="timeline-time">7:00 AM</span>
+          <div class="timeline-dot done"></div>
+          <div class="timeline-content">
+            <div class="timeline-name done">BPC-157</div>
+            <div class="timeline-detail">250mcg · Subcutaneous · Abdomen</div>
+          </div>
+          <span class="timeline-badge badge-peptide">Peptide</span>
+          <button class="timeline-action btn-done">Logged</button>
+        </div>
+
+        <div class="timeline-item">
+          <span class="timeline-time">7:00 AM</span>
+          <div class="timeline-dot done"></div>
+          <div class="timeline-content">
+            <div class="timeline-name done">TB-500</div>
+            <div class="timeline-detail">750mcg · Subcutaneous · Abdomen</div>
+          </div>
+          <span class="timeline-badge badge-peptide">Peptide</span>
+          <button class="timeline-action btn-done">Logged</button>
+        </div>
+
+        <div class="timeline-item">
+          <span class="timeline-time">12:00 PM</span>
+          <div class="timeline-dot done"></div>
+          <div class="timeline-content">
+            <div class="timeline-name done">Vitamin D3</div>
+            <div class="timeline-detail">5000 IU · Oral</div>
+          </div>
+          <span class="timeline-badge badge-supplement">Supplement</span>
+          <button class="timeline-action btn-done">Logged</button>
+        </div>
+
+        <div class="timeline-item" style="background: rgba(6,182,212,0.04); border-radius: 14px;">
+          <span class="timeline-time" style="color: var(--accent); font-weight: 600;">6:30 PM</span>
+          <div class="timeline-dot next"></div>
+          <div class="timeline-content">
+            <div class="timeline-name" style="color: var(--accent);">GHK-Cu</div>
+            <div class="timeline-detail">200mcg · Subcutaneous · Thigh</div>
+          </div>
+          <span class="timeline-badge badge-peptide">Peptide</span>
+          <button class="timeline-action btn-log">Log dose</button>
+        </div>
+
+        <div class="timeline-item">
+          <span class="timeline-time">9:00 PM</span>
+          <div class="timeline-dot upcoming"></div>
+          <div class="timeline-content">
+            <div class="timeline-name">Magnesium Glycinate</div>
+            <div class="timeline-detail">400mg · Oral</div>
+          </div>
+          <span class="timeline-badge badge-supplement">Supplement</span>
+          <button class="timeline-action btn-log" style="opacity: 0.4;">Later</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cards Grid -->
+    <div class="cards-grid animate-in delay-5">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background: var(--accent-dim);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
+          </div>
+          <div class="card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></div>
+        </div>
+        <div class="card-title">Interaction Check</div>
+        <div class="card-value">No conflicts detected in your current stack. Last checked <strong>2h ago</strong>.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background: var(--emerald-dim);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></div>
+        </div>
+        <div class="card-title">Injection Sites</div>
+        <div class="card-value">Rotate to <strong>left deltoid</strong> next. Last used <strong>3 days ago</strong>.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background: var(--amber-dim);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+          </div>
+          <div class="card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></div>
+        </div>
+        <div class="card-title">Research Notes</div>
+        <div class="card-value"><strong>12 notes</strong> saved. Last added: "GHK-Cu dosing comparison."</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon" style="background: var(--violet-dim);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--violet)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          </div>
+          <div class="card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></div>
+        </div>
+        <div class="card-title">Fridge Inventory</div>
+        <div class="card-value"><strong>2 vials</strong> running low. BPC-157 restock needed in <strong>~4 days</strong>.</div>
+      </div>
+    </div>
+
+    <!-- Activity Feed -->
+    <div class="activity-card animate-in delay-6">
+      <div class="activity-header">
+        <div class="activity-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Recent Activity
+        </div>
+        <a class="view-all">View all</a>
+      </div>
+      <div class="activity-list">
+        <div class="activity-item">
+          <div class="activity-dot" style="background: var(--emerald);"></div>
+          <div class="activity-text">Logged <strong>BPC-157</strong> — 250mcg subcutaneous</div>
+          <span class="activity-time">7:02 AM</span>
+        </div>
+        <div class="activity-item">
+          <div class="activity-dot" style="background: var(--emerald);"></div>
+          <div class="activity-text">Logged <strong>TB-500</strong> — 750mcg subcutaneous</div>
+          <span class="activity-time">7:04 AM</span>
+        </div>
+        <div class="activity-item">
+          <div class="activity-dot" style="background: var(--accent);"></div>
+          <div class="activity-text">Interaction check: <strong>BPC-157 + TB-500</strong> — Safe</div>
+          <span class="activity-time">Yesterday</span>
+        </div>
+        <div class="activity-item">
+          <div class="activity-dot" style="background: var(--amber);"></div>
+          <div class="activity-text">Added note: <strong>"GHK-Cu dosing comparison"</strong></div>
+          <span class="activity-time">Yesterday</span>
+        </div>
+        <div class="activity-item">
+          <div class="activity-dot" style="background: var(--violet);"></div>
+          <div class="activity-text">Updated inventory — <strong>GHK-Cu</strong> vial opened</div>
+          <span class="activity-time">Mar 11</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Quick Ask -->
+    <div class="ai-bar animate-in delay-7">
+      <div class="ai-bar-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
+      </div>
+      <input type="text" placeholder="Ask AI about your stack, dosing, interactions..." />
+      <button>Ask</button>
+    </div>
+
+  </main>
+
+  <!-- ── Mobile Bottom Nav ── -->
+  <nav class="mobile-nav">
+    <a class="mobile-nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Home
+    </a>
+    <a class="mobile-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.84z"/><path d="m22 12.5-8.58 3.91a2 2 0 0 1-1.66 0L2 12.5"/></svg>
+      Stack
+    </a>
+    <a class="mobile-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19.5" y1="4.5" x2="4.5" y2="19.5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg>
+      Tools
+    </a>
+    <a class="mobile-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
+      AI
+    </a>
+    <a class="mobile-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      More
+    </a>
+  </nav>
+
+</div>
+
+</body>
+</html>

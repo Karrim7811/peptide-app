@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python generate_knowledge.py)",
+      "Bash(npx tsc:*)",
+      "Bash(ls \"c:/Users/karim/peptide-app/\"*.csv \"c:/Users/karim/peptide-app/\"*.xlsx)",
+      "Bash(python -c \":*)",
+      "Bash(wc -l /c/Users/karim/peptide-app/src/**/*.tsx /c/Users/karim/peptide-app/src/**/*.ts)",
+      "Bash(find c:/Users/karim/peptide-app -name *.plist -o -name capacitor.config* -o -name Info.plist)",
+      "Bash(node -e \":*)",
+      "Bash(for dir:*)",
+      "Bash(do)",
+      "Bash(file=\"c:/Users/karim/peptide-app/src/app/$dir/page.tsx\")",
+      "Bash(if grep:*)",
+      "Bash(then)",
+      "Bash(echo \"$dir: HAS OWN WRAPPER\")",
+      "Bash(fi)",
+      "WebFetch(domain:peptidedosages.com)",
+      "Bash(python -c \"import json; json.load\\(open\\(''c:/Users/karim/peptide-app/ios-native/PeptideCortex/Resources/PeptideData.json''\\)\\); print\\(''Valid JSON''\\)\")",
+      "Bash(python3 -c \"import json; json.load\\(open\\(''c:/Users/karim/peptide-app/ios-native/PeptideCortex/Resources/PeptideData.json''\\)\\); print\\(''Valid JSON''\\)\")",
+      "Bash(python3 -c \"import json; data=json.load\\(open\\(''c:/Users/karim/peptide-app/ios-native/PeptideCortex/Resources/PeptideData.json''\\)\\); print\\(f''Total entries: {len\\(data\\)}''\\); [print\\(f''  - {e[\"\"name\"\"]}''\\) for e in data[-4:]]\")",
+      "Bash(find /c/Users/karim/peptide-app/ios-native -name *.pbxproj -o -name project.pbxproj)",
+      "Bash(grep -r \"GoogleSignIn\\\\|Firebase\\\\|google\" /c/Users/karim/peptide-app/ios-native/ --include=*.swift --include=*.yml --include=*.yaml --include=*.plist)",
+      "Bash(pip install:*)",
+      "Bash(python -c \"print\\(''ready''\\)\")",
+      "Bash(ls ~/Downloads/*.mobileprovision)",
+      "Bash(cat \"/c/Users/karim/Downloads/Peptide_Cortex_Distribution \\(2\\).mobileprovision\")",
+      "Bash(base64 -w)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\karim\\Desktop"
+    ]
+  }
+}
