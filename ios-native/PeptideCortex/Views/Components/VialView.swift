@@ -302,11 +302,14 @@ struct TappableVial: View {
     let isDueNow: Bool
     let usePhotoStyle: Bool
     let recon: ReconstitutionResult?
+    var showLabel: Bool = true
+    var size: CGFloat = 1.0 // scale multiplier
 
     @State private var showDetail = false
+    @State private var bouncing = false
 
     var body: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 4) {
             Group {
                 if usePhotoStyle {
                     PhotoVialView(name: name, dose: dose, unit: unit, isDueNow: isDueNow)
@@ -314,20 +317,25 @@ struct TappableVial: View {
                     VectorVialView(name: name, dose: dose, unit: unit, fillPercent: fillPercent, isDueNow: isDueNow)
                 }
             }
-            .scaleEffect(showDetail ? 1.15 : 1.0)
+            .scaleEffect(size * (bouncing ? 1.1 : 1.0))
+            .animation(.spring(response: 0.3, dampingFraction: 0.5), value: bouncing)
             .onTapGesture {
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
+                bouncing = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    bouncing = false
                     showDetail = true
                 }
             }
 
-            Text(shortName(name).capitalized)
-                .font(.system(size: 10, weight: .medium))
-                .foregroundColor(.cxBlack)
-                .lineLimit(1)
-                .frame(width: 60)
+            if showLabel {
+                Text(shortName(name).capitalized)
+                    .font(.system(size: 10 * size, weight: .medium))
+                    .foregroundColor(.cxBlack)
+                    .lineLimit(1)
+                    .frame(width: 60 * size)
+            }
         }
-        .sheet(isPresented: $showDetail) {
+        .fullScreenCover(isPresented: $showDetail) {
             VialDetailPopup(name: name, dose: dose, unit: unit, recon: recon, onClose: { showDetail = false })
         }
     }
@@ -576,7 +584,7 @@ struct VialStackView: View {
             }
 
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 14) {
+                HStack(spacing: 16) {
                     ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                         TappableVial(
                             name: item.name,
@@ -585,7 +593,9 @@ struct VialStackView: View {
                             fillPercent: 0.7,
                             isDueNow: false,
                             usePhotoStyle: true,
-                            recon: reconResults[item.id]
+                            recon: reconResults[item.id],
+                            showLabel: false,
+                            size: 1.3
                         )
                         .scaleEffect(appeared ? 1.0 : 0.3)
                         .opacity(appeared ? 1 : 0)
@@ -596,7 +606,7 @@ struct VialStackView: View {
                         )
                     }
                 }
-                .padding(.vertical, 8)
+                .padding(.vertical, 10)
                 .padding(.horizontal, 4)
             }
         }
