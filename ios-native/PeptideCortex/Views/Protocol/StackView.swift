@@ -7,47 +7,7 @@ struct StackView: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             ScrollView {
-                LazyVStack(spacing: 12) {
-                    // MARK: - Vial Tray
-                    if !vm.items.isEmpty {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("YOUR VIALS")
-                                .font(.system(size: 11, weight: .semibold))
-                                .tracking(2)
-                                .foregroundColor(.cxStone)
-
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 22) {
-                                    ForEach(Array(vm.items.enumerated()), id: \.element.id) { index, item in
-                                        TappableVial(
-                                            name: item.name,
-                                            dose: item.dose,
-                                            unit: item.unit,
-                                            fillPercent: 0.7,
-                                            isDueNow: false,
-                                            usePhotoStyle: true,
-                                            recon: nil,
-                                            showLabel: false,
-                                            size: 1.6
-                                        )
-                                        .scaleEffect(vialsAppeared ? 1.0 : 0.3)
-                                        .opacity(vialsAppeared ? 1 : 0)
-                                        .animation(
-                                            .spring(response: 0.5, dampingFraction: 0.6)
-                                            .delay(Double(index) * 0.08),
-                                            value: vialsAppeared
-                                        )
-                                    }
-                                }
-                                .padding(.vertical, 10)
-                                .padding(.horizontal, 4)
-                            }
-                        }
-                        .onAppear {
-                            withAnimation { vialsAppeared = true }
-                        }
-                    }
-
+                LazyVStack(spacing: 14) {
                     if vm.isLoading {
                         LoadingView()
                             .frame(height: 200)
@@ -58,8 +18,21 @@ struct StackView: View {
                             message: "Add peptides, medications, or supplements to your stack"
                         )
                     } else {
-                        ForEach(vm.items) { item in
+                        Text("YOUR STACK")
+                            .font(.system(size: 11, weight: .semibold))
+                            .tracking(2)
+                            .foregroundColor(.cxStone)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+
+                        ForEach(Array(vm.items.enumerated()), id: \.element.id) { index, item in
                             StackVialRow(item: item, vm: vm)
+                                .scaleEffect(vialsAppeared ? 1.0 : 0.8)
+                                .opacity(vialsAppeared ? 1 : 0)
+                                .animation(
+                                    .spring(response: 0.4, dampingFraction: 0.7)
+                                    .delay(Double(index) * 0.06),
+                                    value: vialsAppeared
+                                )
                         }
                     }
                 }
@@ -81,6 +54,7 @@ struct StackView: View {
             }
             .padding(20)
         }
+        .onAppear { withAnimation { vialsAppeared = true } }
         .task { await vm.load() }
         .refreshable { await vm.load() }
         .sheet(isPresented: $vm.showAddForm) {
