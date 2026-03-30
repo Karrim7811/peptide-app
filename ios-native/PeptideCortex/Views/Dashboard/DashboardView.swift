@@ -66,94 +66,24 @@ struct DashboardView: View {
                     }
                 }
 
-                // Today's Doses
+                // Today's Doses — Vector Vial Tray
                 if !vm.todayReminders.isEmpty {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("TODAY'S DOSES")
-                            .font(.system(size: 11, weight: .semibold))
-                            .tracking(2)
-                            .foregroundColor(.cxStone)
-
-                        VStack(spacing: 0) {
-                            ForEach(Array(vm.todayReminders.enumerated()), id: \.element.id) { index, item in
-                                HStack(spacing: 12) {
-                                    Image(systemName: item.taken ? "checkmark.circle.fill" : "circle")
-                                        .font(.system(size: 20))
-                                        .foregroundColor(item.taken ? .green : .cxStone)
-
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(item.reminder.stackItem?.name ?? "Unknown")
-                                            .font(.system(size: 15, weight: .semibold))
-                                            .foregroundColor(.cxBlack)
-                                        HStack(spacing: 6) {
-                                            Text(item.reminder.dose)
-                                                .font(.system(size: 13, weight: .medium))
-                                                .foregroundColor(.cxTeal)
-                                            Text("at \(item.reminder.time)")
-                                                .font(.system(size: 12))
-                                                .foregroundColor(.cxStone)
-                                        }
-                                    }
-
-                                    Spacer()
-
-                                    if !item.taken {
-                                        Button {
-                                            Task { await vm.quickLogDose(reminder: item.reminder) }
-                                        } label: {
-                                            Text("Take")
-                                                .font(.system(size: 13, weight: .semibold))
-                                                .foregroundColor(.white)
-                                                .padding(.horizontal, 16)
-                                                .padding(.vertical, 8)
-                                                .background(Color.cxTeal)
-                                                .cornerRadius(8)
-                                        }
-                                    } else {
-                                        Text("Done")
-                                            .font(.system(size: 13, weight: .medium))
-                                            .foregroundColor(.green)
-                                    }
-                                }
-                                .padding(.vertical, 12)
-                                .padding(.horizontal, 14)
-                                if index < vm.todayReminders.count - 1 {
-                                    Divider().padding(.horizontal, 14)
-                                }
-                            }
+                    VialTrayView(
+                        reminders: vm.todayReminders,
+                        reconResults: vm.reconResults,
+                        onTake: { reminder in
+                            await vm.quickLogDose(reminder: reminder)
                         }
-                        .background(Color.white)
-                        .cornerRadius(12)
-                        .shadow(color: .black.opacity(0.03), radius: 4, y: 1)
-                    }
+                    )
                 }
 
-                // Active Stack with Reconstitution
+                // Active Stack — Photo Vial Style
                 if !vm.activeStackItems.isEmpty {
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Text("MY ACTIVE STACK")
-                                .font(.system(size: 11, weight: .semibold))
-                                .tracking(2)
-                                .foregroundColor(.cxStone)
-                            Spacer()
-                            Button {
-                                selectedTab = .stack
-                            } label: {
-                                Text("Edit")
-                                    .font(.system(size: 13))
-                                    .foregroundColor(.cxTeal)
-                            }
-                        }
-
-                        VStack(spacing: 8) {
-                            ForEach(vm.activeStackItems) { item in
-                                StackItemRow(item: item, recon: vm.reconResults[item.id]) {
-                                    selectedTab = .stack
-                                }
-                            }
-                        }
-                    }
+                    VialStackView(
+                        items: vm.activeStackItems,
+                        reconResults: vm.reconResults,
+                        onTap: { selectedTab = .stack }
+                    )
                 }
 
                 // Supply Alerts
