@@ -362,11 +362,14 @@ struct VialDetailPopup: View {
                 .onTapGesture { dismiss() }
 
             VStack(spacing: 20) {
-                // Large vial with bounce
-                VectorVialView(name: name, dose: dose, unit: unit, fillPercent: 0.7, isDueNow: false)
-                    .scaleEffect(appeared ? 3.0 : 0.1)
-                    .opacity(appeared ? 1 : 0)
-                    .frame(height: 240)
+                // Large 3D vial
+                Vial3DView(
+                    name: name, dose: dose, unit: unit,
+                    fillPercent: 0.7, isDueNow: false, isRotating: true
+                )
+                .frame(width: 180, height: 260)
+                .scaleEffect(appeared ? 1.0 : 0.1)
+                .opacity(appeared ? 1 : 0)
 
                 // Info card
                 VStack(spacing: 10) {
