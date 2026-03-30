@@ -292,7 +292,63 @@ struct VialShape: Shape {
     }
 }
 
-// MARK: - Vial Detail Popup
+// MARK: - Tappable Vial with Spin
+
+struct TappableVial: View {
+    let name: String
+    let dose: String
+    let unit: String
+    let fillPercent: Double
+    let isDueNow: Bool
+    let usePhotoStyle: Bool
+    let recon: ReconstitutionResult?
+
+    @State private var spinning = false
+    @State private var showDetail = false
+    @State private var spinDegrees: Double = 0
+
+    var body: some View {
+        VStack(spacing: 6) {
+            Group {
+                if usePhotoStyle {
+                    PhotoVialView(name: name, dose: dose, unit: unit, isDueNow: isDueNow)
+                } else {
+                    VectorVialView(name: name, dose: dose, unit: unit, fillPercent: fillPercent, isDueNow: isDueNow)
+                }
+            }
+            .rotation3DEffect(.degrees(spinDegrees), axis: (x: 0, y: 1, z: 0))
+            .onTapGesture {
+                // Spin then show detail
+                withAnimation(.easeInOut(duration: 0.6)) {
+                    spinDegrees += 360
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    showDetail = true
+                }
+            }
+
+            Text(shortName(name).capitalized)
+                .font(.system(size: 10, weight: .medium))
+                .foregroundColor(.cxBlack)
+                .lineLimit(1)
+                .frame(width: 60)
+        }
+        .sheet(isPresented: $showDetail) {
+            VialDetailPopup(name: name, dose: dose, unit: unit, recon: recon, onClose: { showDetail = false })
+        }
+    }
+
+    func shortName(_ name: String) -> String {
+        let cleaned = name
+            .replacingOccurrences(of: " (research)", with: "")
+            .replacingOccurrences(of: " (not a peptide, but commonly discussed)", with: "")
+            .replacingOccurrences(of: "Vasoactive Intestinal Peptide", with: "VIP")
+        if cleaned.count > 12 { return String(cleaned.prefix(11)) + "..." }
+        return cleaned
+    }
+}
+
+// MARK: - Vial Detail Popup with Animated Entry
 
 struct VialDetailPopup: View {
     let name: String
@@ -303,61 +359,126 @@ struct VialDetailPopup: View {
 
     var capColor: Color { vialCapColor(for: "", name: name) }
 
+    @State private var appeared = false
+    @State private var vialSpin: Double = 0
+
     var body: some View {
-        VStack(spacing: 16) {
-            // Large vial
-            VectorVialView(name: name, dose: dose, unit: unit, fillPercent: 0.7, isDueNow: false)
-                .scaleEffect(2.5)
-                .frame(height: 200)
+        ZStack {
+            Color.black.opacity(appeared ? 0.5 : 0)
+                .ignoresSafeArea()
+                .onTapGesture { dismiss() }
 
-            // Info
-            VStack(spacing: 8) {
-                Text(name)
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundColor(.cxBlack)
+            VStack(spacing: 20) {
+                // Large spinning vial
+                VectorVialView(name: name, dose: dose, unit: unit, fillPercent: 0.7, isDueNow: false)
+                    .scaleEffect(appeared ? 3.0 : 0.1)
+                    .rotation3DEffect(.degrees(vialSpin), axis: (x: 0, y: 1, z: 0))
+                    .opacity(appeared ? 1 : 0)
+                    .frame(height: 240)
 
-                if !dose.isEmpty {
-                    Text("\(dose) \(unit)")
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.cxTeal)
-                }
+                // Info card
+                VStack(spacing: 10) {
+                    Text(name)
+                        .font(.system(size: 22, weight: .bold))
+                        .foregroundColor(.cxBlack)
 
-                if let recon = recon {
-                    Divider()
-                    VStack(spacing: 6) {
-                        HStack(spacing: 16) {
-                            Label("BAC: \(String(format: "%.1f", recon.recommendedBacWaterMl)) mL", systemImage: "drop.fill")
-                                .foregroundColor(.blue)
-                            Label("\(String(format: "%.0f", recon.concentrationMcgPerMl)) mcg/mL", systemImage: "eyedropper")
-                                .foregroundColor(.green)
+                    if !dose.isEmpty {
+                        HStack(spacing: 6) {
+                            Image(systemName: "eyedropper")
+                                .foregroundColor(.cxTeal)
+                            Text("\(dose) \(unit)")
+                                .font(.system(size: 17, weight: .semibold))
+                                .foregroundColor(.cxTeal)
                         }
-                        .font(.system(size: 13))
+                    }
 
-                        if !recon.tipicalDoseRange.isEmpty {
-                            Text("Typical: \(recon.tipicalDoseRange)")
-                                .font(.system(size: 12))
-                                .foregroundColor(.cxStone)
+                    if let recon = recon {
+                        Divider().padding(.horizontal, 20)
+
+                        VStack(spacing: 8) {
+                            HStack(spacing: 20) {
+                                VStack(spacing: 2) {
+                                    Image(systemName: "drop.fill")
+                                        .foregroundColor(.blue)
+                                        .font(.system(size: 18))
+                                    Text("BAC Water")
+                                        .font(.system(size: 9, weight: .medium))
+                                        .foregroundColor(.cxStone)
+                                    Text("\(String(format: "%.1f", recon.recommendedBacWaterMl)) mL")
+                                        .font(.system(size: 14, weight: .semibold))
+                                        .foregroundColor(.cxBlack)
+                                }
+
+                                VStack(spacing: 2) {
+                                    Image(systemName: "flask.fill")
+                                        .foregroundColor(.green)
+                                        .font(.system(size: 18))
+                                    Text("Concentration")
+                                        .font(.system(size: 9, weight: .medium))
+                                        .foregroundColor(.cxStone)
+                                    Text("\(String(format: "%.0f", recon.concentrationMcgPerMl)) mcg/mL")
+                                        .font(.system(size: 14, weight: .semibold))
+                                        .foregroundColor(.cxBlack)
+                                }
+
+                                VStack(spacing: 2) {
+                                    Image(systemName: "syringe")
+                                        .foregroundColor(.cxTeal)
+                                        .font(.system(size: 18))
+                                    Text("Typical Dose")
+                                        .font(.system(size: 9, weight: .medium))
+                                        .foregroundColor(.cxStone)
+                                    Text(recon.tipicalDoseRange.isEmpty ? "—" : recon.tipicalDoseRange)
+                                        .font(.system(size: 12, weight: .medium))
+                                        .foregroundColor(.cxBlack)
+                                        .lineLimit(2)
+                                        .multilineTextAlignment(.center)
+                                }
+                            }
                         }
                     }
                 }
-            }
-            .padding(20)
-            .background(Color.white)
-            .cornerRadius(16)
+                .padding(24)
+                .background(Color.white)
+                .cornerRadius(20)
+                .shadow(color: .black.opacity(0.1), radius: 20, y: 10)
+                .scaleEffect(appeared ? 1 : 0.5)
+                .opacity(appeared ? 1 : 0)
+                .padding(.horizontal, 24)
 
-            Button(action: onClose) {
-                Text("Close")
+                Button(action: dismiss) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "xmark.circle.fill")
+                        Text("Close")
+                    }
                     .font(.system(size: 15, weight: .medium))
-                    .foregroundColor(.cxStone)
-                    .padding(.horizontal, 32)
+                    .foregroundColor(.white.opacity(0.9))
+                    .padding(.horizontal, 28)
                     .padding(.vertical, 12)
-                    .background(Color.white)
-                    .cornerRadius(10)
+                    .background(Color.white.opacity(0.2))
+                    .cornerRadius(24)
+                }
+                .scaleEffect(appeared ? 1 : 0)
+                .opacity(appeared ? 1 : 0)
             }
         }
-        .padding(24)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black.opacity(0.4))
+        .onAppear {
+            withAnimation(.spring(response: 0.6, dampingFraction: 0.7)) {
+                appeared = true
+            }
+            withAnimation(.easeInOut(duration: 0.8)) {
+                vialSpin = 720 // Two full spins on entry
+            }
+        }
+    }
+
+    func dismiss() {
+        withAnimation(.easeOut(duration: 0.25)) {
+            appeared = false
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+            onClose()
+        }
     }
 }
 
@@ -369,8 +490,6 @@ struct VialTrayView: View {
     let onTake: (Reminder) async -> Void
 
     @State private var appeared = false
-    @State private var selectedIndex: Int?
-    @State private var showDetail = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -384,12 +503,14 @@ struct VialTrayView: View {
                     ForEach(Array(reminders.enumerated()), id: \.element.id) { index, item in
                         VStack(spacing: 6) {
                             ZStack {
-                                VectorVialView(
+                                TappableVial(
                                     name: item.reminder.stackItem?.name ?? "Unknown",
                                     dose: item.reminder.dose,
                                     unit: "",
                                     fillPercent: item.taken ? 0.1 : 0.7,
-                                    isDueNow: !item.taken
+                                    isDueNow: !item.taken,
+                                    usePhotoStyle: false,
+                                    recon: item.reminder.stackItem.flatMap { reconResults[$0.id] }
                                 )
                                 .scaleEffect(appeared ? 1.0 : 0.3)
                                 .opacity(appeared ? 1 : 0)
@@ -426,12 +547,6 @@ struct VialTrayView: View {
                                 }
                             }
                         }
-                        .onTapGesture {
-                            if !item.taken {
-                                selectedIndex = index
-                                showDetail = true
-                            }
-                        }
                     }
                 }
                 .padding(.vertical, 8)
@@ -439,22 +554,7 @@ struct VialTrayView: View {
             }
         }
         .onAppear {
-            withAnimation {
-                appeared = true
-            }
-        }
-        .sheet(isPresented: $showDetail) {
-            if let idx = selectedIndex, idx < reminders.count {
-                let item = reminders[idx]
-                VialDetailPopup(
-                    name: item.reminder.stackItem?.name ?? "Unknown",
-                    dose: item.reminder.dose,
-                    unit: "",
-                    recon: item.reminder.stackItem.flatMap { reconResults[$0.id] }
-                ) {
-                    showDetail = false
-                }
-            }
+            withAnimation { appeared = true }
         }
     }
 }
@@ -467,8 +567,6 @@ struct VialStackView: View {
     let onTap: () -> Void
 
     @State private var appeared = false
-    @State private var selectedIndex: Int?
-    @State private var showDetail = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -488,31 +586,22 @@ struct VialStackView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 14) {
                     ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
-                        VStack(spacing: 6) {
-                            PhotoVialView(
-                                name: item.name,
-                                dose: item.dose,
-                                unit: item.unit,
-                                isDueNow: false
-                            )
-                            .scaleEffect(appeared ? 1.0 : 0.3)
-                            .opacity(appeared ? 1 : 0)
-                            .animation(
-                                .spring(response: 0.5, dampingFraction: 0.6)
-                                .delay(Double(index) * 0.08),
-                                value: appeared
-                            )
-
-                            Text(item.name.capitalized)
-                                .font(.system(size: 10, weight: .medium))
-                                .foregroundColor(.cxBlack)
-                                .lineLimit(1)
-                                .frame(width: 60)
-                        }
-                        .onTapGesture {
-                            selectedIndex = index
-                            showDetail = true
-                        }
+                        TappableVial(
+                            name: item.name,
+                            dose: item.dose,
+                            unit: item.unit,
+                            fillPercent: 0.7,
+                            isDueNow: false,
+                            usePhotoStyle: true,
+                            recon: reconResults[item.id]
+                        )
+                        .scaleEffect(appeared ? 1.0 : 0.3)
+                        .opacity(appeared ? 1 : 0)
+                        .animation(
+                            .spring(response: 0.5, dampingFraction: 0.6)
+                            .delay(Double(index) * 0.08),
+                            value: appeared
+                        )
                     }
                 }
                 .padding(.vertical, 8)
@@ -520,22 +609,7 @@ struct VialStackView: View {
             }
         }
         .onAppear {
-            withAnimation {
-                appeared = true
-            }
-        }
-        .sheet(isPresented: $showDetail) {
-            if let idx = selectedIndex, idx < items.count {
-                let item = items[idx]
-                VialDetailPopup(
-                    name: item.name,
-                    dose: item.dose,
-                    unit: item.unit,
-                    recon: reconResults[item.id]
-                ) {
-                    showDetail = false
-                }
-            }
+            withAnimation { appeared = true }
         }
     }
 }

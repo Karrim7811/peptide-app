@@ -31,11 +31,68 @@ struct DoseLogView: View {
     @StateObject private var vm = DoseLogViewModel()
     @State private var viewMode: DoseLogViewMode = .list
     @State private var showDoseSuggestion: String?
+    @State private var vialsAppeared = false
+
+    /// Unique active peptides from recent logs
+    private var recentActivePeptides: [StackItem] {
+        var seen = Set<UUID>()
+        var result: [StackItem] = []
+        for log in vm.logs {
+            if let item = log.stackItem, !seen.contains(item.id) {
+                seen.insert(item.id)
+                result.append(item)
+            }
+        }
+        // Also include active stack items not yet logged
+        for item in vm.stackItems where item.active && !seen.contains(item.id) {
+            seen.insert(item.id)
+            result.append(item)
+        }
+        return result
+    }
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             ScrollView {
                 LazyVStack(spacing: 12) {
+                    // MARK: - Vial Tray
+                    if !recentActivePeptides.isEmpty {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("YOUR VIALS")
+                                .font(.system(size: 11, weight: .semibold))
+                                .tracking(2)
+                                .foregroundColor(.cxStone)
+
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 14) {
+                                    ForEach(Array(recentActivePeptides.enumerated()), id: \.element.id) { index, item in
+                                        TappableVial(
+                                            name: item.name,
+                                            dose: item.dose,
+                                            unit: item.unit,
+                                            fillPercent: 0.7,
+                                            isDueNow: false,
+                                            usePhotoStyle: false,
+                                            recon: nil
+                                        )
+                                        .scaleEffect(vialsAppeared ? 1.0 : 0.3)
+                                        .opacity(vialsAppeared ? 1 : 0)
+                                        .animation(
+                                            .spring(response: 0.5, dampingFraction: 0.6)
+                                            .delay(Double(index) * 0.08),
+                                            value: vialsAppeared
+                                        )
+                                    }
+                                }
+                                .padding(.vertical, 8)
+                                .padding(.horizontal, 4)
+                            }
+                        }
+                        .onAppear {
+                            withAnimation { vialsAppeared = true }
+                        }
+                    }
+
                     // View toggle
                     Picker("View", selection: $viewMode) {
                         ForEach(DoseLogViewMode.allCases, id: \.self) { mode in

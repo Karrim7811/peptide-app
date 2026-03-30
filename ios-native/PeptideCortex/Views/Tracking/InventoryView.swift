@@ -2,11 +2,50 @@ import SwiftUI
 
 struct InventoryView: View {
     @StateObject private var vm = InventoryViewModel()
+    @State private var vialsAppeared = false
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             ScrollView {
                 LazyVStack(spacing: 12) {
+                    // MARK: - Vial Tray
+                    if !vm.items.isEmpty {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("YOUR VIALS")
+                                .font(.system(size: 11, weight: .semibold))
+                                .tracking(2)
+                                .foregroundColor(.cxStone)
+
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 14) {
+                                    ForEach(Array(vm.items.enumerated()), id: \.element.id) { index, item in
+                                        TappableVial(
+                                            name: item.name,
+                                            dose: String(format: "%.1f", item.quantityRemaining),
+                                            unit: item.unit,
+                                            fillPercent: item.vialSize > 0 ? item.quantityRemaining / item.vialSize : 0.7,
+                                            isDueNow: false,
+                                            usePhotoStyle: true,
+                                            recon: nil
+                                        )
+                                        .scaleEffect(vialsAppeared ? 1.0 : 0.3)
+                                        .opacity(vialsAppeared ? 1 : 0)
+                                        .animation(
+                                            .spring(response: 0.5, dampingFraction: 0.6)
+                                            .delay(Double(index) * 0.08),
+                                            value: vialsAppeared
+                                        )
+                                    }
+                                }
+                                .padding(.vertical, 8)
+                                .padding(.horizontal, 4)
+                            }
+                        }
+                        .onAppear {
+                            withAnimation { vialsAppeared = true }
+                        }
+                    }
+
                     if vm.isLoading {
                         LoadingView()
                             .frame(height: 200)
