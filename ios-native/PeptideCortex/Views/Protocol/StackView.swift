@@ -4,6 +4,8 @@ struct StackView: View {
     @StateObject private var vm = StackViewModel()
     @State private var vialsAppeared = false
     @State private var showClearAllAlert = false
+    @State private var editMode = false
+    @State private var selectedForDeletion: Set<UUID> = []
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -25,28 +27,82 @@ struct StackView: View {
                                 .tracking(2)
                                 .foregroundColor(.cxStone)
                             Spacer()
-                            Button {
-                                showClearAllAlert = true
-                            } label: {
-                                HStack(spacing: 4) {
-                                    Image(systemName: "trash")
-                                        .font(.system(size: 11))
+
+                            if editMode {
+                                Button {
+                                    showClearAllAlert = true
+                                } label: {
                                     Text("Clear All")
                                         .font(.system(size: 12, weight: .medium))
+                                        .foregroundColor(.red.opacity(0.7))
                                 }
-                                .foregroundColor(.red.opacity(0.7))
+
+                                if !selectedForDeletion.isEmpty {
+                                    Button {
+                                        Task {
+                                            for id in selectedForDeletion {
+                                                if let item = vm.items.first(where: { $0.id == id }) {
+                                                    await vm.delete(item)
+                                                }
+                                            }
+                                            selectedForDeletion = []
+                                            editMode = false
+                                        }
+                                    } label: {
+                                        Text("Delete (\(selectedForDeletion.count))")
+                                            .font(.system(size: 12, weight: .semibold))
+                                            .foregroundColor(.white)
+                                            .padding(.horizontal, 12)
+                                            .padding(.vertical, 6)
+                                            .background(Color.red)
+                                            .cornerRadius(8)
+                                    }
+                                }
+
+                                Button {
+                                    editMode = false
+                                    selectedForDeletion = []
+                                } label: {
+                                    Text("Done")
+                                        .font(.system(size: 13, weight: .semibold))
+                                        .foregroundColor(.cxTeal)
+                                }
+                            } else {
+                                Button {
+                                    editMode = true
+                                } label: {
+                                    Text("Edit")
+                                        .font(.system(size: 13))
+                                        .foregroundColor(.cxTeal)
+                                }
                             }
                         }
 
                         ForEach(Array(vm.items.enumerated()), id: \.element.id) { index, item in
-                            StackVialRow(item: item, vm: vm)
-                                .scaleEffect(vialsAppeared ? 1.0 : 0.8)
-                                .opacity(vialsAppeared ? 1 : 0)
-                                .animation(
-                                    .spring(response: 0.4, dampingFraction: 0.7)
-                                    .delay(Double(index) * 0.06),
-                                    value: vialsAppeared
-                                )
+                            HStack(spacing: 12) {
+                                if editMode {
+                                    Button {
+                                        if selectedForDeletion.contains(item.id) {
+                                            selectedForDeletion.remove(item.id)
+                                        } else {
+                                            selectedForDeletion.insert(item.id)
+                                        }
+                                    } label: {
+                                        Image(systemName: selectedForDeletion.contains(item.id) ? "checkmark.circle.fill" : "circle")
+                                            .font(.system(size: 22))
+                                            .foregroundColor(selectedForDeletion.contains(item.id) ? .red : .cxStone)
+                                    }
+                                }
+
+                                StackVialRow(item: item, vm: vm)
+                            }
+                            .scaleEffect(vialsAppeared ? 1.0 : 0.8)
+                            .opacity(vialsAppeared ? 1 : 0)
+                            .animation(
+                                .spring(response: 0.4, dampingFraction: 0.7)
+                                .delay(Double(index) * 0.06),
+                                value: vialsAppeared
+                            )
                         }
                     }
                 }

@@ -4,6 +4,8 @@ struct InventoryView: View {
     @StateObject private var vm = InventoryViewModel()
     @State private var vialsAppeared = false
     @State private var showClearInventoryAlert = false
+    @State private var editMode = false
+    @State private var selectedForDeletion: Set<UUID> = []
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -71,8 +73,66 @@ struct InventoryView: View {
                             message: "Track your peptide vials, quantities, and expiry dates"
                         )
                     } else {
+                        HStack {
+                            Spacer()
+                            if editMode {
+                                if !selectedForDeletion.isEmpty {
+                                    Button {
+                                        Task {
+                                            for id in selectedForDeletion {
+                                                if let item = vm.items.first(where: { $0.id == id }) {
+                                                    await vm.delete(item)
+                                                }
+                                            }
+                                            selectedForDeletion = []
+                                            editMode = false
+                                        }
+                                    } label: {
+                                        Text("Delete (\(selectedForDeletion.count))")
+                                            .font(.system(size: 12, weight: .semibold))
+                                            .foregroundColor(.white)
+                                            .padding(.horizontal, 12)
+                                            .padding(.vertical, 6)
+                                            .background(Color.red)
+                                            .cornerRadius(8)
+                                    }
+                                }
+                                Button {
+                                    editMode = false
+                                    selectedForDeletion = []
+                                } label: {
+                                    Text("Done")
+                                        .font(.system(size: 13, weight: .semibold))
+                                        .foregroundColor(.cxTeal)
+                                }
+                            } else {
+                                Button {
+                                    editMode = true
+                                } label: {
+                                    Text("Edit")
+                                        .font(.system(size: 13))
+                                        .foregroundColor(.cxTeal)
+                                }
+                            }
+                        }
+
                         ForEach(vm.items) { item in
-                            InventoryCard(item: item, vm: vm)
+                            HStack(spacing: 12) {
+                                if editMode {
+                                    Button {
+                                        if selectedForDeletion.contains(item.id) {
+                                            selectedForDeletion.remove(item.id)
+                                        } else {
+                                            selectedForDeletion.insert(item.id)
+                                        }
+                                    } label: {
+                                        Image(systemName: selectedForDeletion.contains(item.id) ? "checkmark.circle.fill" : "circle")
+                                            .font(.system(size: 22))
+                                            .foregroundColor(selectedForDeletion.contains(item.id) ? .red : .cxStone)
+                                    }
+                                }
+                                InventoryCard(item: item, vm: vm)
+                            }
                         }
                     }
                 }
