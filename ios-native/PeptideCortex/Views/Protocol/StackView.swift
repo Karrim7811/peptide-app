@@ -3,6 +3,7 @@ import SwiftUI
 struct StackView: View {
     @StateObject private var vm = StackViewModel()
     @State private var vialsAppeared = false
+    @State private var showClearAllAlert = false
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -18,11 +19,24 @@ struct StackView: View {
                             message: "Add peptides, medications, or supplements to your stack"
                         )
                     } else {
-                        Text("YOUR STACK")
-                            .font(.system(size: 11, weight: .semibold))
-                            .tracking(2)
-                            .foregroundColor(.cxStone)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                        HStack {
+                            Text("YOUR STACK")
+                                .font(.system(size: 11, weight: .semibold))
+                                .tracking(2)
+                                .foregroundColor(.cxStone)
+                            Spacer()
+                            Button {
+                                showClearAllAlert = true
+                            } label: {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "trash")
+                                        .font(.system(size: 11))
+                                    Text("Clear All")
+                                        .font(.system(size: 12, weight: .medium))
+                                }
+                                .foregroundColor(.red.opacity(0.7))
+                            }
+                        }
 
                         ForEach(Array(vm.items.enumerated()), id: \.element.id) { index, item in
                             StackVialRow(item: item, vm: vm)
@@ -59,6 +73,14 @@ struct StackView: View {
         .refreshable { await vm.load() }
         .sheet(isPresented: $vm.showAddForm) {
             AddStackItemSheet(vm: vm)
+        }
+        .alert("Clear All Stack Items", isPresented: $showClearAllAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Clear All", role: .destructive) {
+                Task { await vm.clearAll() }
+            }
+        } message: {
+            Text("Are you sure you want to remove all items from your stack? This cannot be undone.")
         }
     }
 }

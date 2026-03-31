@@ -82,7 +82,10 @@ struct DashboardView: View {
                     VialStackView(
                         items: vm.activeStackItems,
                         reconResults: vm.reconResults,
-                        onTap: { selectedTab = .stack }
+                        onTap: { selectedTab = .stack },
+                        onRemove: { item in
+                            Task { await vm.removeFromStack(item) }
+                        }
                     )
                 }
 

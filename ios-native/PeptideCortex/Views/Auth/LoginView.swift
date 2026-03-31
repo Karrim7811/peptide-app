@@ -165,6 +165,13 @@ struct LoginView: View {
                         }
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(.cxStone)
+
+                        Text("Peptide Cortex is for educational and research purposes only. Not medical advice.")
+                            .font(.system(size: 10))
+                            .foregroundColor(.cxStone.opacity(0.7))
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 32)
+                            .padding(.top, 6)
                     }
                 }
             }

@@ -2,7 +2,7 @@ import Foundation
 
 @MainActor
 class ProtocolPlannerViewModel: ObservableObject {
-    @Published var currentStep: Int = 0  // 0=Welcome, 1=Peptides, 2=Profile, 3=Generating, 4=Results, 5=Reminders
+    @Published var currentStep: Int = 0  // 0=Welcome, 10=Consult, 1=Peptides, 2=Profile, 3=Generating, 4=Results, 5=Reminders
 
     // Step 1 - Peptide selection
     @Published var selectedPeptides: [String] = []
@@ -17,6 +17,14 @@ class ProtocolPlannerViewModel: ObservableObject {
     @Published var experience = "Beginner"
     @Published var selectedConditions: Set<String> = []
     @Published var selectedGoals: Set<String> = []
+
+    // Consult flow (conversational step)
+    @Published var userGoalText = ""
+    @Published var cortexQuestions: [CortexQA] = []
+    @Published var consultHistory: [[String: String]] = []
+    @Published var consultRound = 0
+    @Published var isConsulting = false
+    @Published var consultDone = false
 
     // Generation
     @Published var isGenerating = false
@@ -76,6 +84,67 @@ class ProtocolPlannerViewModel: ObservableObject {
         } else {
             selectedGoals.insert(goal)
         }
+    }
+
+    func askCortex() async {
+        guard !userGoalText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        isConsulting = true
+        errorMessage = nil
+
+        // Add user message to history
+        consultHistory.append(["role": "user", "content": userGoalText])
+
+        do {
+            let response = try await APIService.shared.protocolConsult(
+                message: userGoalText,
+                history: consultHistory
+            )
+
+            if response.type == "recommendation" {
+                // Cortex has enough info — apply recommendations
+                if let peptides = response.peptides {
+                    for p in peptides {
+                        addPeptide(p)
+                    }
+                }
+                if let profile = response.profile {
+                    if let a = profile.age, !a.isEmpty { age = a }
+                    if let w = profile.weight, !w.isEmpty { weight = w }
+                    if let s = profile.sex, !s.isEmpty { sex = s }
+                    if let e = profile.experience, !e.isEmpty { experience = e }
+                    if let goals = profile.goals {
+                        for g in goals { selectedGoals.insert(g) }
+                    }
+                    if let conditions = profile.conditions {
+                        for c in conditions { selectedConditions.insert(c) }
+                    }
+                }
+                // Add assistant summary to history
+                if let summary = response.summary {
+                    consultHistory.append(["role": "assistant", "content": summary])
+                }
+                consultDone = true
+            } else if let questions = response.questions {
+                // Cortex wants to ask follow-up questions
+                cortexQuestions = questions.map { CortexQA(question: $0, answer: "") }
+                let formatted = questions.enumerated().map { "\($0.offset + 1). \($0.element)" }.joined(separator: "\n")
+                consultHistory.append(["role": "assistant", "content": formatted])
+                consultRound += 1
+            }
+        } catch {
+            errorMessage = "Failed to consult Cortex AI. Please try again."
+        }
+
+        userGoalText = ""
+        isConsulting = false
+    }
+
+    func submitConsultAnswers() async {
+        // Combine Q&A into a single user message
+        let answersText = cortexQuestions.map { "Q: \($0.question)\nA: \($0.answer)" }.joined(separator: "\n\n")
+        userGoalText = answersText
+        cortexQuestions = []
+        await askCortex()
     }
 
     func generatePlan() async {
@@ -193,5 +262,11 @@ class ProtocolPlannerViewModel: ObservableObject {
         errorMessage = nil
         reminderSelections = [:]
         resultsViewMode = 0
+        userGoalText = ""
+        cortexQuestions = []
+        consultHistory = []
+        consultRound = 0
+        isConsulting = false
+        consultDone = false
     }
 }

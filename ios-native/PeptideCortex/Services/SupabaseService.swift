@@ -282,4 +282,14 @@ class SupabaseService {
             .eq("id", value: id.uuidString)
             .execute()
     }
+
+    // MARK: - Reset All Data
+
+    func resetAllData() async throws {
+        guard let userId = currentUserId else { return }
+        try await client.from("stack_items").delete().eq("user_id", value: userId.uuidString).execute()
+        try await client.from("inventory").delete().eq("user_id", value: userId.uuidString).execute()
+        try await client.from("dose_logs").delete().eq("user_id", value: userId.uuidString).execute()
+        try await client.from("reminders").delete().eq("user_id", value: userId.uuidString).execute()
+    }
 }

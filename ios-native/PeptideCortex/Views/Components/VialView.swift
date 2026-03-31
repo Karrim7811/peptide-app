@@ -584,6 +584,7 @@ struct VialStackView: View {
     let items: [StackItem]
     let reconResults: [UUID: ReconstitutionResult]
     let onTap: () -> Void
+    var onRemove: ((StackItem) -> Void)? = nil
 
     @State private var appeared = false
 
@@ -616,6 +617,13 @@ struct VialStackView: View {
                             showLabel: false,
                             size: 1.6
                         )
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                onRemove?(item)
+                            } label: {
+                                Label("Remove from Stack", systemImage: "trash")
+                            }
+                        }
                         .scaleEffect(appeared ? 1.0 : 0.3)
                         .opacity(appeared ? 1 : 0)
                         .animation(

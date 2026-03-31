@@ -112,6 +112,16 @@ class DashboardViewModel: ObservableObject {
         }
     }
 
+    func removeFromStack(_ item: StackItem) async {
+        do {
+            try await SupabaseService.shared.deleteStackItem(id: item.id)
+            activeStackItems.removeAll { $0.id == item.id }
+            stackCount = activeStackItems.count
+        } catch {
+            print("Remove from stack error: \(error)")
+        }
+    }
+
     func quickLogDose(reminder: Reminder) async {
         guard let userId = SupabaseService.shared.currentUserId else { return }
         let formatter = ISO8601DateFormatter()

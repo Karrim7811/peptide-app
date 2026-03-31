@@ -93,6 +93,31 @@ struct ProtocolPlan: Codable {
     }
 }
 
+// MARK: - Protocol Consult (Conversational)
+
+struct CortexQA: Codable, Identifiable {
+    var id: String { question }
+    let question: String
+    var answer: String
+}
+
+struct ConsultResponse: Codable {
+    let type: String  // "questions" or "recommendation"
+    let questions: [String]?
+    let peptides: [String]?
+    let profile: ConsultProfile?
+    let summary: String?
+}
+
+struct ConsultProfile: Codable {
+    let age: String?
+    let weight: String?
+    let sex: String?
+    let experience: String?
+    let goals: [String]?
+    let conditions: [String]?
+}
+
 struct MarketPulseResponse: Codable {
     let lastUpdated: String
     let headlines: [Headline]
@@ -285,6 +310,13 @@ class APIService {
         try await makeRequest(path: "/api/protocol-plan", body: [
             "peptides": peptides,
             "profile": profile
+        ])
+    }
+
+    func protocolConsult(message: String, history: [[String: String]]) async throws -> ConsultResponse {
+        try await makeRequest(path: "/api/protocol-consult", body: [
+            "message": message,
+            "history": history
         ])
     }
 

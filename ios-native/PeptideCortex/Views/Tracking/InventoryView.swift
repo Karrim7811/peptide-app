@@ -3,6 +3,7 @@ import SwiftUI
 struct InventoryView: View {
     @StateObject private var vm = InventoryViewModel()
     @State private var vialsAppeared = false
+    @State private var showClearInventoryAlert = false
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -11,10 +12,24 @@ struct InventoryView: View {
                     // MARK: - Vial Tray
                     if !vm.items.isEmpty {
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("YOUR VIALS")
-                                .font(.system(size: 11, weight: .semibold))
-                                .tracking(2)
-                                .foregroundColor(.cxStone)
+                            HStack {
+                                Text("YOUR VIALS")
+                                    .font(.system(size: 11, weight: .semibold))
+                                    .tracking(2)
+                                    .foregroundColor(.cxStone)
+                                Spacer()
+                                Button {
+                                    showClearInventoryAlert = true
+                                } label: {
+                                    HStack(spacing: 4) {
+                                        Image(systemName: "trash")
+                                            .font(.system(size: 11))
+                                        Text("Clear All")
+                                            .font(.system(size: 12, weight: .medium))
+                                    }
+                                    .foregroundColor(.red.opacity(0.7))
+                                }
+                            }
 
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 14) {
@@ -83,12 +98,21 @@ struct InventoryView: View {
         .sheet(isPresented: $vm.showAddForm) {
             AddInventorySheet(vm: vm)
         }
+        .alert("Clear Inventory", isPresented: $showClearInventoryAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Clear All", role: .destructive) {
+                Task { await vm.clearAll() }
+            }
+        } message: {
+            Text("Are you sure you want to remove all inventory items? This cannot be undone.")
+        }
     }
 }
 
 struct InventoryCard: View {
     let item: InventoryItem
     @ObservedObject var vm: InventoryViewModel
+    @State private var showDeleteAlert = false
 
     var stockColor: Color {
         if item.percentRemaining < 20 { return .red }
@@ -135,7 +159,7 @@ struct InventoryCard: View {
                 }
                 Spacer()
                 Button {
-                    Task { await vm.delete(item) }
+                    showDeleteAlert = true
                 } label: {
                     Image(systemName: "trash")
                         .font(.system(size: 14))
@@ -147,6 +171,14 @@ struct InventoryCard: View {
         .background(Color.white)
         .cornerRadius(14)
         .shadow(color: Color.black.opacity(0.03), radius: 4, x: 0, y: 1)
+        .alert("Delete \(item.name)?", isPresented: $showDeleteAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Delete", role: .destructive) {
+                Task { await vm.delete(item) }
+            }
+        } message: {
+            Text("This will permanently remove this inventory item. This cannot be undone.")
+        }
     }
 
     func formatExpiry(_ iso: String) -> String {

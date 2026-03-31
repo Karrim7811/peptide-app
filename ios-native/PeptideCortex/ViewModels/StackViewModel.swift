@@ -65,6 +65,17 @@ class StackViewModel: ObservableObject {
         }
     }
 
+    func clearAll() async {
+        do {
+            for item in items {
+                try await SupabaseService.shared.deleteStackItem(id: item.id)
+            }
+            await load()
+        } catch {
+            print("Clear all error: \(error)")
+        }
+    }
+
     private func resetForm() {
         newName = ""
         newType = "peptide"

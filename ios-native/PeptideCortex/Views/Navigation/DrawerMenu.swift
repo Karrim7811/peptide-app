@@ -104,6 +104,8 @@ struct DrawerMenu: View {
     @Binding var isOpen: Bool
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var storeService: StoreService
+    @State private var showResetAlert = false
+    @State private var isResetting = false
 
     var body: some View {
         ZStack(alignment: .leading) {
@@ -195,6 +197,26 @@ struct DrawerMenu: View {
                         }
 
                         Button {
+                            showResetAlert = true
+                        } label: {
+                            HStack {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                Text("Reset Everything")
+                            }
+                            .font(.system(size: 14))
+                            .foregroundColor(.red.opacity(0.8))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(Color.red.opacity(0.05))
+                            .cornerRadius(12)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color.red.opacity(0.15), lineWidth: 1)
+                            )
+                        }
+                        .disabled(isResetting)
+
+                        Button {
                             Task { await appState.signOut() }
                         } label: {
                             HStack {
@@ -220,6 +242,23 @@ struct DrawerMenu: View {
         }
         .animation(.spring(response: 0.35, dampingFraction: 0.85), value: isOpen)
         .ignoresSafeArea()
+        .alert("Reset Everything", isPresented: $showResetAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Reset All Data", role: .destructive) {
+                isResetting = true
+                Task {
+                    do {
+                        try await SupabaseService.shared.resetAllData()
+                    } catch {
+                        print("Reset error: \(error)")
+                    }
+                    isResetting = false
+                    withAnimation(.spring(response: 0.35)) { isOpen = false }
+                }
+            }
+        } message: {
+            Text("Are you sure? This will remove all stack items, inventory, dose logs, and reminders. This cannot be undone.")
+        }
     }
 }
 

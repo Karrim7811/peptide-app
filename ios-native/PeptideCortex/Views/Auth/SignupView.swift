@@ -4,6 +4,7 @@ struct SignupView: View {
     @EnvironmentObject var appState: AppState
     @StateObject private var vm = AuthViewModel()
     @Environment(\.dismiss) private var dismiss
+    @State private var agreedToTerms = false
 
     var body: some View {
         ZStack {
@@ -109,6 +110,27 @@ struct SignupView: View {
                                     .multilineTextAlignment(.center)
                             }
 
+                            // Legal Disclaimer
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text("By creating an account, you agree to our Terms of Service and Privacy Policy. Peptide Cortex is an educational research tool developed by Tigris Tech Labs. It does not provide medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider before starting any peptide protocol. Tigris Tech Labs and Peptide Cortex assume no liability for decisions made based on information provided by this application.")
+                                    .font(.system(size: 11))
+                                    .foregroundColor(.cxStone)
+                                    .lineSpacing(2)
+
+                                Button {
+                                    agreedToTerms.toggle()
+                                } label: {
+                                    HStack(alignment: .top, spacing: 8) {
+                                        Image(systemName: agreedToTerms ? "checkmark.square.fill" : "square")
+                                            .font(.system(size: 18))
+                                            .foregroundColor(agreedToTerms ? .cxTeal : .cxStone)
+                                        Text("I agree to the Terms & Disclaimer")
+                                            .font(.system(size: 13, weight: .medium))
+                                            .foregroundColor(.cxBlack)
+                                    }
+                                }
+                            }
+
                             Button {
                                 Task { await vm.signUp() }
                             } label: {
@@ -123,10 +145,10 @@ struct SignupView: View {
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 15)
-                                .background(Color.cxTeal)
+                                .background(agreedToTerms ? Color.cxTeal : Color.cxStone.opacity(0.4))
                                 .cornerRadius(12)
                             }
-                            .disabled(vm.isLoading)
+                            .disabled(vm.isLoading || !agreedToTerms)
 
                             Button {
                                 dismiss()

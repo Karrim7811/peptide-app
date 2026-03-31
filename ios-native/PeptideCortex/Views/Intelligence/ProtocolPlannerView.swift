@@ -15,8 +15,9 @@ struct ProtocolPlannerView: View {
                     // Progress dots
                     HStack(spacing: 8) {
                         ForEach(0..<5, id: \.self) { i in
+                            let effectiveStep = vm.currentStep == 10 ? 0 : vm.currentStep
                             Circle()
-                                .fill(i <= vm.currentStep ? Color.cxTeal : Color.cxStone.opacity(0.3))
+                                .fill(i <= effectiveStep ? Color.cxTeal : Color.cxStone.opacity(0.3))
                                 .frame(width: 8, height: 8)
                         }
                     }
@@ -24,6 +25,7 @@ struct ProtocolPlannerView: View {
 
                     switch vm.currentStep {
                     case 0: welcomeStep
+                    case 10: consultStep
                     case 1: peptideStep
                     case 2: profileStep
                     case 3: generatingStep
@@ -65,10 +67,175 @@ struct ProtocolPlannerView: View {
                 .cornerRadius(12)
             }
 
+            Button {
+                vm.currentStep = 10
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "bubble.left.and.text.bubble.right")
+                    Text("Tell Cortex AI What You Need")
+                }
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(.cxTeal)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(Color.cxTeal.opacity(0.1))
+                .cornerRadius(12)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.cxTeal.opacity(0.3), lineWidth: 1)
+                )
+            }
+
             Button { selectedTab = .stack } label: {
                 Text("I'll set it up manually")
                     .font(.system(size: 15))
                     .foregroundColor(.cxStone)
+            }
+        }
+    }
+
+    // MARK: - Step 10: Consult (Conversational)
+
+    var consultStep: some View {
+        VStack(spacing: 16) {
+            aiBubble("Tell me what you're looking to achieve. What are your goals, concerns, or interests? I'll ask you some questions and then create a personalized protocol for you.")
+
+            if vm.cortexQuestions.isEmpty && !vm.consultDone {
+                // Initial text input or follow-up free text
+                ZStack(alignment: .topLeading) {
+                    if vm.userGoalText.isEmpty {
+                        Text("e.g., I want to lose weight and improve recovery after workouts. I'm also interested in anti-aging...")
+                            .font(.system(size: 14))
+                            .foregroundColor(.cxStone.opacity(0.6))
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 14)
+                    }
+                    TextEditor(text: $vm.userGoalText)
+                        .font(.system(size: 15))
+                        .foregroundColor(.cxBlack)
+                        .scrollContentBackground(.hidden)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                }
+                .frame(minHeight: 120)
+                .background(Color.white)
+                .cornerRadius(12)
+
+                Button {
+                    Task { await vm.askCortex() }
+                } label: {
+                    HStack(spacing: 8) {
+                        if vm.isConsulting {
+                            ProgressView().tint(.white)
+                        } else {
+                            Image(systemName: "paperplane.fill")
+                        }
+                        Text("Send to Cortex")
+                    }
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(vm.userGoalText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || vm.isConsulting ? Color.cxStone.opacity(0.3) : Color.cxTeal)
+                    .cornerRadius(12)
+                }
+                .disabled(vm.userGoalText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || vm.isConsulting)
+            }
+
+            // Show Cortex follow-up questions
+            if !vm.cortexQuestions.isEmpty {
+                aiBubble("I have a few questions to help me build the best protocol for you:")
+
+                ForEach(vm.cortexQuestions.indices, id: \.self) { index in
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(vm.cortexQuestions[index].question)
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.cxBlack)
+
+                        TextField("Your answer...", text: $vm.cortexQuestions[index].answer)
+                            .font(.system(size: 15))
+                            .foregroundColor(.cxBlack)
+                            .padding(12)
+                            .background(Color.white)
+                            .cornerRadius(10)
+                    }
+                }
+
+                Button {
+                    Task { await vm.submitConsultAnswers() }
+                } label: {
+                    HStack(spacing: 8) {
+                        if vm.isConsulting {
+                            ProgressView().tint(.white)
+                        } else {
+                            Image(systemName: "paperplane.fill")
+                        }
+                        Text(vm.consultRound >= 2 ? "Get My Protocol" : "Send Answers")
+                    }
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(vm.cortexQuestions.allSatisfy({ !$0.answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) && !vm.isConsulting ? Color.cxTeal : Color.cxStone.opacity(0.3))
+                    .cornerRadius(12)
+                }
+                .disabled(!vm.cortexQuestions.allSatisfy({ !$0.answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) || vm.isConsulting)
+            }
+
+            // Consult is done — Cortex has recommendations
+            if vm.consultDone {
+                aiBubble("Based on our conversation, I've selected peptides and filled in your profile. You can review and adjust before I generate your protocol.")
+
+                if !vm.selectedPeptides.isEmpty {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("SUGGESTED PEPTIDES").font(.system(size: 11, weight: .semibold)).tracking(2).foregroundColor(.cxStone)
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                ForEach(vm.selectedPeptides, id: \.self) { name in
+                                    Text(name)
+                                        .font(.system(size: 14, weight: .medium))
+                                        .foregroundColor(.cxTeal)
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 8)
+                                        .background(Color.cxTeal.opacity(0.1))
+                                        .cornerRadius(20)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                HStack(spacing: 12) {
+                    Button { vm.currentStep = 2 } label: {
+                        Text("Review Profile")
+                            .font(.system(size: 15, weight: .medium))
+                            .foregroundColor(.cxStone)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                            .background(Color.white)
+                            .cornerRadius(10)
+                    }
+                    Button {
+                        Task { await vm.generatePlan() }
+                    } label: {
+                        Text("Generate My Plan")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                            .background(Color.cxTeal)
+                            .cornerRadius(10)
+                    }
+                }
+            }
+
+            if let error = vm.errorMessage {
+                Text(error).font(.system(size: 13)).foregroundColor(.red)
+                    .padding(12).background(Color.red.opacity(0.08)).cornerRadius(10)
+            }
+
+            Button { vm.currentStep = 0 } label: {
+                Text("Back").font(.system(size: 14)).foregroundColor(.cxStone)
             }
         }
     }

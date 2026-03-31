@@ -69,6 +69,17 @@ class InventoryViewModel: ObservableObject {
         }
     }
 
+    func clearAll() async {
+        do {
+            for item in items {
+                try await SupabaseService.shared.deleteInventoryItem(id: item.id)
+            }
+            await load()
+        } catch {
+            print("Clear all inventory error: \(error)")
+        }
+    }
+
     private func resetForm() {
         newName = ""
         newUnit = "mg"

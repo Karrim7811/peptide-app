@@ -128,16 +128,33 @@ struct AboutView: View {
                 .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
 
                 // Disclaimer
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: 12) {
                     Text("DISCLAIMER")
                         .font(.system(size: 11, weight: .semibold))
                         .tracking(2)
                         .foregroundColor(.cxStone)
 
-                    Text("Peptide Cortex is an educational and informational tool for the research community. It is not intended to provide medical advice, diagnosis, or treatment. Always consult a qualified healthcare professional before using any peptide or supplement. The information provided is for research purposes only.")
-                        .font(.system(size: 13))
-                        .foregroundColor(.cxStone)
-                        .lineSpacing(3)
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Peptide Cortex is an educational and research reference tool developed by Tigris Tech Labs. The information provided in this application is for informational and educational purposes only and is not intended as a substitute for professional medical advice, diagnosis, or treatment.")
+                            .font(.system(size: 13))
+                            .foregroundColor(.cxStone)
+                            .lineSpacing(3)
+
+                        Text("Always seek the advice of your physician or other qualified healthcare provider with any questions you may have regarding a medical condition or treatment. Never disregard professional medical advice or delay in seeking it because of something you have read or seen in this application.")
+                            .font(.system(size: 13))
+                            .foregroundColor(.cxStone)
+                            .lineSpacing(3)
+
+                        Text("Tigris Tech Labs, its affiliates, and the Peptide Cortex application assume no responsibility or liability for any errors or omissions in the content of this application. The use of any information provided is solely at your own risk.")
+                            .font(.system(size: 13))
+                            .foregroundColor(.cxStone)
+                            .lineSpacing(3)
+
+                        Text("Peptide Cortex does not endorse, recommend, or promote the use of any specific peptide, medication, or supplement. All dosage information, protocols, and recommendations are derived from publicly available research literature and are presented for educational purposes only.")
+                            .font(.system(size: 13))
+                            .foregroundColor(.cxStone)
+                            .lineSpacing(3)
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(20)
@@ -146,7 +163,7 @@ struct AboutView: View {
                 .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
 
                 // Copyright
-                Text("© 2025 Tigris Tech Labs. All rights reserved.")
+                Text("\u{00A9} 2026 Tigris Tech Labs. All rights reserved.")
                     .font(.system(size: 12))
                     .foregroundColor(.cxStone)
                     .padding(.top, 8)
