@@ -43,30 +43,7 @@ struct LoginView: View {
                                 .font(.system(size: 15, weight: .regular))
                                 .foregroundColor(.cxSmoke)
 
-                            // Social Sign In
-                            VStack(spacing: 10) {
-                                // Apple Sign In
-                                SignInWithAppleButton(.signIn) { request in
-                                    vm.configureAppleRequest(request)
-                                } onCompletion: { result in
-                                    Task { await vm.handleAppleSignIn(result: result, appState: appState) }
-                                }
-                                .signInWithAppleButtonStyle(.black)
-                                .frame(height: 50)
-                                .cornerRadius(12)
-
-                                // Email sign-in is below
-                            }
-
-                            // Divider
-                            HStack {
-                                Rectangle().fill(Color.cxBorder).frame(height: 1)
-                                Text("or")
-                                    .font(.system(size: 13))
-                                    .foregroundColor(.cxStone)
-                                    .padding(.horizontal, 12)
-                                Rectangle().fill(Color.cxBorder).frame(height: 1)
-                            }
+                            // Email sign-in
 
                             VStack(spacing: 14) {
                                 // Email
