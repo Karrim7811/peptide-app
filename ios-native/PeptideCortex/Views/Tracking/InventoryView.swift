@@ -6,6 +6,7 @@ struct InventoryView: View {
     @State private var showClearInventoryAlert = false
     @State private var editMode = false
     @State private var selectedForDeletion: Set<UUID> = []
+    @State private var showVialScanner = false
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -156,7 +157,14 @@ struct InventoryView: View {
         .task { await vm.load() }
         .refreshable { await vm.load() }
         .sheet(isPresented: $vm.showAddForm) {
-            AddInventorySheet(vm: vm)
+            AddInventorySheet(vm: vm, showVialScanner: $showVialScanner)
+        }
+        .sheet(isPresented: $showVialScanner) {
+            VialScannerView { scannedVials in
+                showVialScanner = false
+                guard !scannedVials.isEmpty else { return }
+                Task { await vm.addScannedVials(scannedVials) }
+            }
         }
         .alert("Clear Inventory", isPresented: $showClearInventoryAlert) {
             Button("Cancel", role: .cancel) { }
@@ -254,9 +262,9 @@ struct InventoryCard: View {
 
 struct AddInventorySheet: View {
     @ObservedObject var vm: InventoryViewModel
+    @Binding var showVialScanner: Bool
     @Environment(\.dismiss) var dismiss
     @State private var showSuggestions = false
-    @State private var showVialScanner = false
 
     private var suggestions: [String] {
         guard !vm.newName.isEmpty else { return [] }
@@ -269,7 +277,10 @@ struct AddInventorySheet: View {
             Form {
                 Section {
                     Button {
-                        showVialScanner = true
+                        dismiss()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            showVialScanner = true
+                        }
                     } label: {
                         HStack(spacing: 10) {
                             Image(systemName: "camera.viewfinder")
@@ -338,27 +349,6 @@ struct AddInventorySheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add") { Task { await vm.addItem(); dismiss() } }
                         .disabled(vm.newName.isEmpty || vm.newVialSize.isEmpty)
-                }
-            }
-            .sheet(isPresented: $showVialScanner) {
-                VialScannerView { scannedVials in
-                    guard !scannedVials.isEmpty else { return }
-                    // Save all scanned vials directly to inventory
-                    Task {
-                        for vial in scannedVials {
-                            let amt = vial.amount.filter { $0.isNumber || $0 == "." }
-                            let vialSize = Double(amt) ?? 5.0 // default to 5mg if amount not detected
-                            await vm.insertItemDirectly(
-                                name: vial.name,
-                                unit: "mg",
-                                vialSize: vialSize,
-                                quantity: vialSize,
-                                notes: vial.notes
-                            )
-                        }
-                        await vm.load()
-                        dismiss()
-                    }
                 }
             }
         }

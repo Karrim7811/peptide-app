@@ -49,23 +49,28 @@ class InventoryViewModel: ObservableObject {
         }
     }
 
-    /// Insert an item directly without resetting the form or dismissing the sheet
-    func insertItemDirectly(name: String, unit: String, vialSize: Double, quantity: Double, notes: String) async {
+    /// Batch-add scanned vials directly to inventory
+    func addScannedVials(_ vials: [ScannedVial]) async {
         guard let userId = SupabaseService.shared.currentUserId else { return }
         let formatter = ISO8601DateFormatter()
-        let item = InventoryItem(
-            id: UUID(), userId: userId,
-            name: name, unit: unit,
-            vialSize: vialSize,
-            quantityRemaining: quantity,
-            expiryDate: formatter.string(from: Date()),
-            notes: notes, createdAt: nil
-        )
-        do {
-            try await SupabaseService.shared.insertInventoryItem(item)
-        } catch {
-            print("Add inventory error: \(error)")
+        for vial in vials {
+            let amt = vial.amount.filter { $0.isNumber || $0 == "." }
+            let vialSize = Double(amt) ?? 5.0
+            let item = InventoryItem(
+                id: UUID(), userId: userId,
+                name: vial.name, unit: "mg",
+                vialSize: vialSize,
+                quantityRemaining: vialSize,
+                expiryDate: formatter.string(from: Date()),
+                notes: vial.notes, createdAt: nil
+            )
+            do {
+                try await SupabaseService.shared.insertInventoryItem(item)
+            } catch {
+                print("Add scanned vial error: \(error)")
+            }
         }
+        await load()
     }
 
     func updateQuantity(_ item: InventoryItem, newQty: Double) async {

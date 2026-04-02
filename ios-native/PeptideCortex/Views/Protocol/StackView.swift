@@ -6,6 +6,7 @@ struct StackView: View {
     @State private var showClearAllAlert = false
     @State private var editMode = false
     @State private var selectedForDeletion: Set<UUID> = []
+    @State private var showVialScanner = false
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -128,7 +129,14 @@ struct StackView: View {
         .task { await vm.load() }
         .refreshable { await vm.load() }
         .sheet(isPresented: $vm.showAddForm) {
-            AddStackItemSheet(vm: vm)
+            AddStackItemSheet(vm: vm, showVialScanner: $showVialScanner)
+        }
+        .sheet(isPresented: $showVialScanner) {
+            VialScannerView { scannedVials in
+                showVialScanner = false
+                guard !scannedVials.isEmpty else { return }
+                Task { await vm.addScannedVials(scannedVials) }
+            }
         }
         .alert("Clear All Stack Items", isPresented: $showClearAllAlert) {
             Button("Cancel", role: .cancel) { }
@@ -199,9 +207,9 @@ struct StackItemCard: View {
 
 struct AddStackItemSheet: View {
     @ObservedObject var vm: StackViewModel
+    @Binding var showVialScanner: Bool
     @Environment(\.dismiss) var dismiss
     @State private var showSuggestions = false
-    @State private var showVialScanner = false
 
     private var suggestions: [String] {
         guard !vm.newName.isEmpty else { return [] }
@@ -214,7 +222,10 @@ struct AddStackItemSheet: View {
             Form {
                 Section {
                     Button {
-                        showVialScanner = true
+                        dismiss()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            showVialScanner = true
+                        }
                     } label: {
                         HStack(spacing: 10) {
                             Image(systemName: "camera.viewfinder")
@@ -285,23 +296,6 @@ struct AddStackItemSheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add") { Task { await vm.addItem(); dismiss() } }
                         .disabled(vm.newName.isEmpty)
-                }
-            }
-            .sheet(isPresented: $showVialScanner) {
-                VialScannerView { scannedVials in
-                    guard !scannedVials.isEmpty else { return }
-                    // Save all scanned vials directly to stack
-                    Task {
-                        for vial in scannedVials {
-                            await vm.insertItemDirectly(
-                                name: vial.name,
-                                type: vial.type.isEmpty ? "peptide" : vial.type,
-                                notes: vial.notes
-                            )
-                        }
-                        await vm.load()
-                        dismiss()
-                    }
                 }
             }
         }

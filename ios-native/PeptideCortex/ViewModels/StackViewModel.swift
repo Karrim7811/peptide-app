@@ -45,20 +45,25 @@ class StackViewModel: ObservableObject {
         }
     }
 
-    /// Insert an item directly without resetting the form or dismissing the sheet
-    func insertItemDirectly(name: String, type: String, notes: String) async {
+    /// Batch-add scanned vials directly to stack
+    func addScannedVials(_ vials: [ScannedVial]) async {
         guard let userId = SupabaseService.shared.currentUserId else { return }
-        let item = StackItem(
-            id: UUID(), userId: userId,
-            name: name, type: type, dose: "",
-            unit: "mcg", notes: notes, active: true,
-            createdAt: nil
-        )
-        do {
-            try await SupabaseService.shared.insertStackItem(item)
-        } catch {
-            print("Add stack item error: \(error)")
+        for vial in vials {
+            let item = StackItem(
+                id: UUID(), userId: userId,
+                name: vial.name,
+                type: vial.type.isEmpty ? "peptide" : vial.type,
+                dose: "", unit: "mcg",
+                notes: vial.notes, active: true,
+                createdAt: nil
+            )
+            do {
+                try await SupabaseService.shared.insertStackItem(item)
+            } catch {
+                print("Add scanned vial error: \(error)")
+            }
         }
+        await load()
     }
 
     func toggleActive(_ item: StackItem) async {
