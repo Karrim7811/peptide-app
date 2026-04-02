@@ -290,23 +290,21 @@ struct AddStackItemSheet: View {
             .sheet(isPresented: $showVialScanner) {
                 VialScannerView { scannedVials in
                     guard let first = scannedVials.first else { return }
-                    // Auto-fill with first scanned vial
+                    // Auto-fill form with first scanned vial
                     vm.newName = first.name
                     vm.newType = first.type.isEmpty ? "peptide" : first.type
                     vm.newNotes = first.notes
-                    // If there are multiple, add the rest directly
+                    // Add all additional vials directly to stack
                     if scannedVials.count > 1 {
                         Task {
                             for vial in scannedVials.dropFirst() {
-                                vm.newName = vial.name
-                                vm.newType = vial.type.isEmpty ? "peptide" : vial.type
-                                vm.newNotes = vial.notes
-                                await vm.addItem()
+                                await vm.insertItemDirectly(
+                                    name: vial.name,
+                                    type: vial.type.isEmpty ? "peptide" : vial.type,
+                                    notes: vial.notes
+                                )
                             }
-                            // Restore first item in form
-                            vm.newName = first.name
-                            vm.newType = first.type.isEmpty ? "peptide" : first.type
-                            vm.newNotes = first.notes
+                            await vm.load()
                         }
                     }
                 }

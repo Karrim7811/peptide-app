@@ -49,6 +49,25 @@ class InventoryViewModel: ObservableObject {
         }
     }
 
+    /// Insert an item directly without resetting the form or dismissing the sheet
+    func insertItemDirectly(name: String, unit: String, vialSize: Double, quantity: Double, notes: String) async {
+        guard let userId = SupabaseService.shared.currentUserId else { return }
+        let formatter = ISO8601DateFormatter()
+        let item = InventoryItem(
+            id: UUID(), userId: userId,
+            name: name, unit: unit,
+            vialSize: vialSize,
+            quantityRemaining: quantity,
+            expiryDate: formatter.string(from: Date()),
+            notes: notes, createdAt: nil
+        )
+        do {
+            try await SupabaseService.shared.insertInventoryItem(item)
+        } catch {
+            print("Add inventory error: \(error)")
+        }
+    }
+
     func updateQuantity(_ item: InventoryItem, newQty: Double) async {
         var updated = item
         updated.quantityRemaining = newQty

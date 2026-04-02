@@ -45,6 +45,22 @@ class StackViewModel: ObservableObject {
         }
     }
 
+    /// Insert an item directly without resetting the form or dismissing the sheet
+    func insertItemDirectly(name: String, type: String, notes: String) async {
+        guard let userId = SupabaseService.shared.currentUserId else { return }
+        let item = StackItem(
+            id: UUID(), userId: userId,
+            name: name, type: type, dose: "",
+            unit: "mcg", notes: notes, active: true,
+            createdAt: nil
+        )
+        do {
+            try await SupabaseService.shared.insertStackItem(item)
+        } catch {
+            print("Add stack item error: \(error)")
+        }
+    }
+
     func toggleActive(_ item: StackItem) async {
         var updated = item
         updated.active.toggle()

@@ -343,36 +343,31 @@ struct AddInventorySheet: View {
             .sheet(isPresented: $showVialScanner) {
                 VialScannerView { scannedVials in
                     guard let first = scannedVials.first else { return }
-                    // Auto-fill with first scanned vial
+                    // Auto-fill form with first scanned vial
                     vm.newName = first.name
-                    // Parse amount for vial size (e.g. "5mg" -> "5")
                     let numericAmount = first.amount.filter { $0.isNumber || $0 == "." }
                     if !numericAmount.isEmpty {
                         vm.newVialSize = numericAmount
                         vm.newQuantity = numericAmount
                     }
                     vm.newNotes = first.notes
-                    // If there are multiple, add the rest directly
+                    // Add all additional vials directly to inventory
                     if scannedVials.count > 1 {
                         Task {
                             for vial in scannedVials.dropFirst() {
-                                vm.newName = vial.name
                                 let amt = vial.amount.filter { $0.isNumber || $0 == "." }
-                                if !amt.isEmpty {
-                                    vm.newVialSize = amt
-                                    vm.newQuantity = amt
+                                let vialSize = Double(amt) ?? 0
+                                if vialSize > 0 {
+                                    await vm.insertItemDirectly(
+                                        name: vial.name,
+                                        unit: "mg",
+                                        vialSize: vialSize,
+                                        quantity: vialSize,
+                                        notes: vial.notes
+                                    )
                                 }
-                                vm.newNotes = vial.notes
-                                await vm.addItem()
                             }
-                            // Restore first item in form
-                            vm.newName = first.name
-                            let amt = first.amount.filter { $0.isNumber || $0 == "." }
-                            if !amt.isEmpty {
-                                vm.newVialSize = amt
-                                vm.newQuantity = amt
-                            }
-                            vm.newNotes = first.notes
+                            await vm.load()
                         }
                     }
                 }
