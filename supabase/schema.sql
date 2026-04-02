@@ -88,7 +88,7 @@ create table if not exists public.inventory (
   user_id uuid references public.profiles(id) on delete cascade not null,
   name text not null,
   unit text not null,
-  vial_size numeric(10,2) not null,
+  vial_size_mg numeric(10,2) not null,
   quantity_remaining numeric(10,2) not null,
   expiry_date text,
   notes text default '',

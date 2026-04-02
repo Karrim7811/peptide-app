@@ -225,7 +225,7 @@ class SupabaseService {
             let user_id: UUID
             let name: String
             let unit: String
-            let vial_size: Double
+            let vial_size_mg: Double
             let quantity_remaining: Double
             let expiry_date: String?
             let notes: String
@@ -235,7 +235,7 @@ class SupabaseService {
             user_id: item.userId,
             name: item.name,
             unit: item.unit,
-            vial_size: item.vialSize,
+            vial_size_mg: item.vialSize,
             quantity_remaining: item.quantityRemaining,
             expiry_date: item.expiryDate,
             notes: item.notes
