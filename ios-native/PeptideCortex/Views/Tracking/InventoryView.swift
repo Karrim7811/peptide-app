@@ -342,33 +342,22 @@ struct AddInventorySheet: View {
             }
             .sheet(isPresented: $showVialScanner) {
                 VialScannerView { scannedVials in
-                    guard let first = scannedVials.first else { return }
-                    // Auto-fill form with first scanned vial
-                    vm.newName = first.name
-                    let numericAmount = first.amount.filter { $0.isNumber || $0 == "." }
-                    if !numericAmount.isEmpty {
-                        vm.newVialSize = numericAmount
-                        vm.newQuantity = numericAmount
-                    }
-                    vm.newNotes = first.notes
-                    // Add all additional vials directly to inventory
-                    if scannedVials.count > 1 {
-                        Task {
-                            for vial in scannedVials.dropFirst() {
-                                let amt = vial.amount.filter { $0.isNumber || $0 == "." }
-                                let vialSize = Double(amt) ?? 0
-                                if vialSize > 0 {
-                                    await vm.insertItemDirectly(
-                                        name: vial.name,
-                                        unit: "mg",
-                                        vialSize: vialSize,
-                                        quantity: vialSize,
-                                        notes: vial.notes
-                                    )
-                                }
-                            }
-                            await vm.load()
+                    guard !scannedVials.isEmpty else { return }
+                    // Save all scanned vials directly to inventory
+                    Task {
+                        for vial in scannedVials {
+                            let amt = vial.amount.filter { $0.isNumber || $0 == "." }
+                            let vialSize = Double(amt) ?? 5.0 // default to 5mg if amount not detected
+                            await vm.insertItemDirectly(
+                                name: vial.name,
+                                unit: "mg",
+                                vialSize: vialSize,
+                                quantity: vialSize,
+                                notes: vial.notes
+                            )
                         }
+                        await vm.load()
+                        dismiss()
                     }
                 }
             }
