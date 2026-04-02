@@ -15,8 +15,9 @@ struct ScannedVial: Identifiable {
 // MARK: - VialScannerView
 
 struct VialScannerView: View {
-    let onComplete: ([ScannedVial]) -> Void
+    let onComplete: ([ScannedVial]) async -> Void
     @Environment(\.dismiss) var dismiss
+    @State private var isSaving = false
 
     @State private var showCamera = false
     @State private var showPhotoPicker = false
@@ -266,23 +267,32 @@ struct VialScannerView: View {
                 // Add Selected button
                 Button {
                     let selected = scannedVials.filter { $0.selected }
-                    onComplete(selected)
-                    dismiss()
+                    isSaving = true
+                    Task {
+                        await onComplete(selected)
+                        isSaving = false
+                        dismiss()
+                    }
                 } label: {
                     HStack(spacing: 8) {
-                        Image(systemName: "plus.circle.fill")
-                        Text("Add Selected (\(scannedVials.filter { $0.selected }.count))")
+                        if isSaving {
+                            ProgressView()
+                                .tint(.white)
+                        } else {
+                            Image(systemName: "plus.circle.fill")
+                        }
+                        Text(isSaving ? "Saving..." : "Add Selected (\(scannedVials.filter { $0.selected }.count))")
                     }
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(Color.cxTeal)
+                    .background(isSaving ? Color.cxTeal.opacity(0.6) : Color.cxTeal)
                     .cornerRadius(12)
                 }
                 .padding(.horizontal)
                 .padding(.bottom, 8)
-                .disabled(scannedVials.filter { $0.selected }.isEmpty)
+                .disabled(isSaving || scannedVials.filter { $0.selected }.isEmpty)
             }
         }
     }

@@ -133,14 +133,7 @@ struct StackView: View {
         }
         .sheet(isPresented: $showVialScanner) {
             VialScannerView { scannedVials in
-                vm.pendingScannedVials = scannedVials
-            }
-        }
-        .onChange(of: showVialScanner) { isShowing in
-            if !isShowing && !vm.pendingScannedVials.isEmpty {
-                let vials = vm.pendingScannedVials
-                vm.pendingScannedVials = []
-                Task { await vm.addScannedVials(vials) }
+                await vm.addScannedVials(scannedVials)
             }
         }
         .alert("Clear All Stack Items", isPresented: $showClearAllAlert) {

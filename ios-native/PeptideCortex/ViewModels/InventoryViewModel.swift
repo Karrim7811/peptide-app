@@ -5,7 +5,6 @@ class InventoryViewModel: ObservableObject {
     @Published var items: [InventoryItem] = []
     @Published var isLoading = false
     @Published var showAddForm = false
-    @Published var pendingScannedVials: [ScannedVial] = []
 
     // Add form state
     @Published var newName = ""

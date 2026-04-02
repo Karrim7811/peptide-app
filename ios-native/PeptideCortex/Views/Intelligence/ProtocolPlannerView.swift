@@ -266,7 +266,7 @@ struct ProtocolPlannerView: View {
                 )
             }
             .sheet(isPresented: $showVialScanner) {
-                VialScannerView { scannedVials in
+                VialScannerView { scannedVials async in
                     for vial in scannedVials {
                         vm.addPeptide(vial.name)
                     }

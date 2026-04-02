@@ -5,7 +5,6 @@ class StackViewModel: ObservableObject {
     @Published var items: [StackItem] = []
     @Published var isLoading = false
     @Published var showAddForm = false
-    @Published var pendingScannedVials: [ScannedVial] = []
 
     // Add form state
     @Published var newName = ""
