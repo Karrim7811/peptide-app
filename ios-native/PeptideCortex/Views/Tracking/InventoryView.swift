@@ -353,9 +353,24 @@ struct AddInventorySheet: View {
                     Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Add") { Task { await vm.addItem(); dismiss() } }
-                        .disabled(vm.newName.isEmpty || vm.newVialSize.isEmpty)
+                    Button("Add") {
+                        Task {
+                            await vm.addItem()
+                            if vm.errorMessage == nil {
+                                dismiss()
+                            }
+                        }
+                    }
+                    .disabled(vm.newName.isEmpty || vm.newVialSize.isEmpty)
                 }
+            }
+            .alert("Error", isPresented: Binding(
+                get: { vm.errorMessage != nil },
+                set: { if !$0 { vm.errorMessage = nil } }
+            )) {
+                Button("OK") { vm.errorMessage = nil }
+            } message: {
+                Text(vm.errorMessage ?? "")
             }
         }
     }

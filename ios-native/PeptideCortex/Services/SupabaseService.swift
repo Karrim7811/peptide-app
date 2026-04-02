@@ -220,7 +220,27 @@ class SupabaseService {
     }
 
     func insertInventoryItem(_ item: InventoryItem) async throws {
-        try await client.from("inventory").insert(item).execute()
+        struct InsertInventory: Codable {
+            let id: UUID
+            let user_id: UUID
+            let name: String
+            let unit: String
+            let vial_size: Double
+            let quantity_remaining: Double
+            let expiry_date: String?
+            let notes: String
+        }
+        let insert = InsertInventory(
+            id: item.id,
+            user_id: item.userId,
+            name: item.name,
+            unit: item.unit,
+            vial_size: item.vialSize,
+            quantity_remaining: item.quantityRemaining,
+            expiry_date: item.expiryDate,
+            notes: item.notes
+        )
+        try await client.from("inventory").insert(insert).execute()
     }
 
     func updateInventoryItem(_ item: InventoryItem) async throws {

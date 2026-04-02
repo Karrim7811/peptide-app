@@ -23,14 +23,21 @@ class InventoryViewModel: ObservableObject {
             items = try await SupabaseService.shared.getInventory()
         } catch {
             print("Inventory load error: \(error)")
+            errorMessage = "Failed to load inventory: \(error.localizedDescription)"
         }
         isLoading = false
     }
 
     func addItem() async {
         guard !newName.isEmpty,
-              let vialSize = Double(newVialSize), vialSize > 0 else { return }
-        guard let userId = SupabaseService.shared.currentUserId else { return }
+              let vialSize = Double(newVialSize), vialSize > 0 else {
+            errorMessage = "Please enter a name and valid vial size."
+            return
+        }
+        guard let userId = SupabaseService.shared.currentUserId else {
+            errorMessage = "Not signed in. Please sign in and try again."
+            return
+        }
         let formatter = ISO8601DateFormatter()
         let item = InventoryItem(
             id: UUID(), userId: userId,
@@ -47,6 +54,7 @@ class InventoryViewModel: ObservableObject {
             await load()
         } catch {
             print("Add inventory error: \(error)")
+            errorMessage = "Failed to add item: \(error.localizedDescription)"
         }
     }
 
