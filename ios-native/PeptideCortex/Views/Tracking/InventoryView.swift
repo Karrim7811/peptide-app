@@ -172,6 +172,14 @@ struct InventoryView: View {
         } message: {
             Text("Are you sure you want to remove all inventory items? This cannot be undone.")
         }
+        .alert("Error", isPresented: Binding(
+            get: { vm.errorMessage != nil },
+            set: { if !$0 { vm.errorMessage = nil } }
+        )) {
+            Button("OK") { vm.errorMessage = nil }
+        } message: {
+            Text(vm.errorMessage ?? "")
+        }
     }
 }
 

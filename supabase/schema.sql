@@ -81,6 +81,27 @@ create policy "Users manage own logs"
   using (auth.uid() = user_id);
 
 -- ============================================================
+-- inventory
+-- ============================================================
+create table if not exists public.inventory (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  name text not null,
+  unit text not null,
+  vial_size numeric(10,2) not null,
+  quantity_remaining numeric(10,2) not null,
+  expiry_date text,
+  notes text default '',
+  created_at timestamptz default now() not null
+);
+
+alter table public.inventory enable row level security;
+
+create policy "Users manage own inventory"
+  on public.inventory for all
+  using (auth.uid() = user_id);
+
+-- ============================================================
 -- Auto-create profile on new user signup
 -- ============================================================
 create or replace function public.handle_new_user()

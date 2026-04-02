@@ -5,6 +5,7 @@ class InventoryViewModel: ObservableObject {
     @Published var items: [InventoryItem] = []
     @Published var isLoading = false
     @Published var showAddForm = false
+    @Published var errorMessage: String?
 
     // Add form state
     @Published var newName = ""
@@ -51,8 +52,12 @@ class InventoryViewModel: ObservableObject {
 
     /// Batch-add scanned vials directly to inventory
     func addScannedVials(_ vials: [ScannedVial]) async {
-        guard let userId = SupabaseService.shared.currentUserId else { return }
+        guard let userId = SupabaseService.shared.currentUserId else {
+            errorMessage = "Not signed in. Please sign in and try again."
+            return
+        }
         let formatter = ISO8601DateFormatter()
+        var added = 0
         for vial in vials {
             let amt = vial.amount.filter { $0.isNumber || $0 == "." }
             let vialSize = Double(amt) ?? 5.0
@@ -66,11 +71,15 @@ class InventoryViewModel: ObservableObject {
             )
             do {
                 try await SupabaseService.shared.insertInventoryItem(item)
+                added += 1
             } catch {
                 print("Add scanned vial error: \(error)")
+                errorMessage = "Failed to save \(vial.name): \(error.localizedDescription)"
             }
         }
-        await load()
+        if added > 0 {
+            await load()
+        }
     }
 
     func updateQuantity(_ item: InventoryItem, newQty: Double) async {
