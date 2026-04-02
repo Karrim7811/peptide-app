@@ -20,6 +20,19 @@ struct InventoryItem: Codable, Identifiable {
         case createdAt = "created_at"
     }
 
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(userId, forKey: .userId)
+        try container.encode(name, forKey: .name)
+        try container.encode(unit, forKey: .unit)
+        try container.encode(vialSize, forKey: .vialSize)
+        try container.encode(quantityRemaining, forKey: .quantityRemaining)
+        try container.encodeIfPresent(expiryDate, forKey: .expiryDate)
+        try container.encode(notes, forKey: .notes)
+        try container.encodeIfPresent(createdAt, forKey: .createdAt)
+    }
+
     var percentRemaining: Double {
         guard vialSize > 0 else { return 0 }
         return (quantityRemaining / vialSize) * 100
