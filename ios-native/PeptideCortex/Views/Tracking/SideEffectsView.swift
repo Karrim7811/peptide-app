@@ -219,7 +219,9 @@ struct AddSideEffectSheet: View {
                     DatePicker("Occurred At", selection: $vm.newDate)
                 }
                 Section("Notes") {
-                    RichNotesField(placeholder: "Optional notes", text: $vm.newNotes)
+                    TextField("Optional notes", text: $vm.newNotes, axis: .vertical)
+                        .foregroundColor(.black)
+                        .lineLimit(3...6)
                 }
             }
             .navigationTitle("Log Side Effect")

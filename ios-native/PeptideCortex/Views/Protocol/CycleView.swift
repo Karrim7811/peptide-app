@@ -168,7 +168,9 @@ struct AddCycleSheet: View {
                     DatePicker("Start Date", selection: $vm.newStartDate, displayedComponents: .date)
                 }
                 Section("Notes") {
-                    RichNotesField(placeholder: "Optional notes", text: $vm.newNotes)
+                    TextField("Optional notes", text: $vm.newNotes, axis: .vertical)
+                        .foregroundColor(.black)
+                        .lineLimit(3...6)
                 }
             }
             .navigationTitle("New Cycle")

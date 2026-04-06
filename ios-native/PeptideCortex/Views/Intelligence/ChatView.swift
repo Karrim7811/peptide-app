@@ -44,19 +44,13 @@ struct ChatView: View {
 
             // Input bar
             HStack(spacing: 10) {
-                VStack(spacing: 4) {
-                    FormattingToolbar(text: $vm.inputText)
-                        .padding(.horizontal, 12)
-                        .padding(.top, 8)
-                    TextField("Ask about peptides...", text: $vm.inputText, axis: .vertical)
-                        .font(.system(size: 15))
-                        .foregroundColor(.black)
-                        .padding(.horizontal, 12)
-                        .padding(.bottom, 12)
-                        .lineLimit(1...4)
-                }
-                .background(Color.white)
-                .cornerRadius(12)
+                TextField("Ask about peptides...", text: $vm.inputText, axis: .vertical)
+                    .font(.system(size: 15))
+                    .foregroundColor(.black)
+                    .padding(12)
+                    .background(Color.white)
+                    .cornerRadius(12)
+                    .lineLimit(1...4)
 
                 Button {
                     Task { await vm.send() }
