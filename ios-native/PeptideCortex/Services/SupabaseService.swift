@@ -257,6 +257,38 @@ class SupabaseService {
             .execute()
     }
 
+    // MARK: - Bloodwork Results
+
+    func getBloodworkResults() async throws -> [BloodworkResult] {
+        guard let userId = currentUserId else { return [] }
+        return try await client.from("bloodwork_results")
+            .select()
+            .eq("user_id", value: userId.uuidString)
+            .order("created_at", ascending: false)
+            .execute()
+            .value
+    }
+
+    func insertBloodworkResult(_ result: BloodworkResult) async throws {
+        struct InsertBloodwork: Codable {
+            let id: UUID
+            let user_id: UUID
+            let markers: String
+            let analysis: String
+            let recommendations: String
+            let warnings: String
+        }
+        let insert = InsertBloodwork(
+            id: result.id,
+            user_id: result.userId,
+            markers: result.markers,
+            analysis: result.analysis,
+            recommendations: result.recommendations,
+            warnings: result.warnings
+        )
+        try await client.from("bloodwork_results").insert(insert).execute()
+    }
+
     // MARK: - Side Effects
 
     func getSideEffects() async throws -> [SideEffect] {

@@ -116,6 +116,9 @@ class BloodworkViewModel: ObservableObject {
             recommendations = result.recommendations
             warnings = result.warnings
             hasResults = true
+
+            // Save results to database
+            await saveResults()
         } catch let urlError as URLError where urlError.code == .timedOut {
             errorMessage = "Request timed out. The server may be busy -- please try again."
         } catch let urlError as URLError where urlError.code == .notConnectedToInternet {
@@ -128,6 +131,9 @@ class BloodworkViewModel: ObservableObject {
 
         isLoading = false
     }
+
+    // MARK: - History
+    @Published var savedResults: [BloodworkResult] = []
 
     @Published var isScanning = false
     @Published var scanMessage: String?
@@ -181,6 +187,49 @@ class BloodworkViewModel: ObservableObject {
             case "hematocrit": hematocrit = str
             default: break
             }
+        }
+    }
+
+    private func saveResults() async {
+        guard let userId = SupabaseService.shared.currentUserId else { return }
+
+        // Encode markers as JSON
+        var markersDict: [String: Double] = [:]
+        for def in markerDefinitions {
+            let value = self[keyPath: def.keyPath].trimmingCharacters(in: .whitespaces)
+            if let num = Double(value) { markersDict[def.label] = num }
+        }
+        let markersJson = (try? JSONSerialization.data(withJSONObject: markersDict))
+            .flatMap { String(data: $0, encoding: .utf8) } ?? "{}"
+
+        // Encode recommendations as JSON
+        let recsArray = recommendations.map { ["peptide": $0.peptide, "reason": $0.reason, "priority": $0.priority] }
+        let recsJson = (try? JSONSerialization.data(withJSONObject: recsArray))
+            .flatMap { String(data: $0, encoding: .utf8) } ?? "[]"
+
+        let warningsJson = (try? JSONSerialization.data(withJSONObject: warnings))
+            .flatMap { String(data: $0, encoding: .utf8) } ?? "[]"
+
+        let result = BloodworkResult(
+            id: UUID(), userId: userId,
+            markers: markersJson,
+            analysis: analysis,
+            recommendations: recsJson,
+            warnings: warningsJson,
+            createdAt: nil
+        )
+        do {
+            try await SupabaseService.shared.insertBloodworkResult(result)
+        } catch {
+            print("Save bloodwork error: \(error)")
+        }
+    }
+
+    func loadHistory() async {
+        do {
+            savedResults = try await SupabaseService.shared.getBloodworkResults()
+        } catch {
+            print("Load bloodwork history error: \(error)")
         }
     }
 

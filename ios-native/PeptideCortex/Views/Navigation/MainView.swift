@@ -107,7 +107,7 @@ struct MainView: View {
         case .stackFinder:
             StackFinderView()
         case .bloodwork:
-            BloodworkView()
+            BloodworkView(selectedTab: $selectedTab)
         case .protocolPlanner:
             ProtocolPlannerView(selectedTab: $selectedTab)
         case .stack:

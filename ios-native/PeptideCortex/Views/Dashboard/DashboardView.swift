@@ -146,6 +146,9 @@ struct DashboardView: View {
                         QuickActionRow(icon: "flask.fill", label: "Reconstitution Calculator", color: .green) {
                             selectedTab = .reconstitution
                         }
+                        QuickActionRow(icon: "heart.text.square", label: "Analyze Bloodwork", color: .red) {
+                            selectedTab = .bloodwork
+                        }
                         QuickActionRow(icon: "books.vertical.fill", label: "Browse Peptide Bible", color: .purple) {
                             selectedTab = .reference
                         }

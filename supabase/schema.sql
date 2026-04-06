@@ -102,6 +102,25 @@ create policy "Users manage own inventory"
   using (auth.uid() = user_id);
 
 -- ============================================================
+-- bloodwork_results
+-- ============================================================
+create table if not exists public.bloodwork_results (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  markers text not null default '{}',
+  analysis text not null default '',
+  recommendations text not null default '[]',
+  warnings text not null default '[]',
+  created_at timestamptz default now() not null
+);
+
+alter table public.bloodwork_results enable row level security;
+
+create policy "Users manage own bloodwork"
+  on public.bloodwork_results for all
+  using (auth.uid() = user_id);
+
+-- ============================================================
 -- Auto-create profile on new user signup
 -- ============================================================
 create or replace function public.handle_new_user()

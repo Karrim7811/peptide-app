@@ -3,6 +3,7 @@ import PhotosUI
 import UniformTypeIdentifiers
 
 struct BloodworkView: View {
+    @Binding var selectedTab: NavDestination
     @EnvironmentObject var storeService: StoreService
     @StateObject private var vm = BloodworkViewModel()
     @State private var showCamera = false
@@ -271,6 +272,24 @@ struct BloodworkView: View {
                             .background(Color.white)
                             .cornerRadius(10)
                         }
+
+                        // Create a plan CTA
+                        Button {
+                            selectedTab = .protocolPlanner
+                        } label: {
+                            HStack(spacing: 10) {
+                                Image(systemName: "wand.and.stars")
+                                    .font(.system(size: 16))
+                                Text("Have Cortex Create a Plan")
+                                    .font(.system(size: 16, weight: .semibold))
+                            }
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(Color.cxTeal)
+                            .cornerRadius(12)
+                        }
+                        .padding(.top, 8)
                     }
                 }
             }
