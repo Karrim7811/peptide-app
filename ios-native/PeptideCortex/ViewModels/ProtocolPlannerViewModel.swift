@@ -247,6 +247,38 @@ class ProtocolPlannerViewModel: ObservableObject {
         }
     }
 
+    /// Pre-fill from bloodwork results and jump straight to the consult
+    func prefillFromBloodwork(analysis: String, recommendations: [BloodworkRecommendation], warnings: [String]) {
+        reset()
+
+        // Build a comprehensive prompt from the bloodwork data
+        var prompt = "Based on my bloodwork analysis, please create a protocol plan.\n\n"
+
+        if !warnings.isEmpty {
+            prompt += "Warnings from my labs:\n"
+            for w in warnings { prompt += "- \(w)\n" }
+            prompt += "\n"
+        }
+
+        prompt += "Analysis:\n\(analysis)\n\n"
+
+        if !recommendations.isEmpty {
+            prompt += "Recommended peptides:\n"
+            for rec in recommendations {
+                prompt += "- \(rec.peptide) (\(rec.priority) priority): \(rec.reason)\n"
+            }
+        }
+
+        // Pre-add recommended peptides
+        for rec in recommendations {
+            addPeptide(rec.peptide)
+        }
+
+        // Go to consult step with the prompt pre-filled
+        currentStep = 10
+        userGoalText = prompt
+    }
+
     func reset() {
         currentStep = 0
         selectedPeptides = []

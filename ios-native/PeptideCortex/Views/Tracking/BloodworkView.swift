@@ -5,6 +5,7 @@ import UniformTypeIdentifiers
 struct BloodworkView: View {
     @Binding var selectedTab: NavDestination
     @EnvironmentObject var storeService: StoreService
+    @EnvironmentObject var appState: AppState
     @StateObject private var vm = BloodworkViewModel()
     @State private var showCamera = false
     @State private var showPhotoPicker = false
@@ -275,6 +276,11 @@ struct BloodworkView: View {
 
                         // Create a plan CTA
                         Button {
+                            appState.pendingBloodwork = AppState.PendingBloodwork(
+                                analysis: vm.analysis,
+                                recommendations: vm.recommendations,
+                                warnings: vm.warnings
+                            )
                             selectedTab = .protocolPlanner
                         } label: {
                             HStack(spacing: 10) {

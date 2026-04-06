@@ -7,6 +7,15 @@ class AppState: ObservableObject {
     @Published var isLoading = true
     @Published var profile: Profile?
 
+    // Pass bloodwork data to Protocol Planner
+    @Published var pendingBloodwork: PendingBloodwork?
+
+    struct PendingBloodwork {
+        let analysis: String
+        let recommendations: [BloodworkRecommendation]
+        let warnings: [String]
+    }
+
     init() {
         Task { await checkSession() }
     }

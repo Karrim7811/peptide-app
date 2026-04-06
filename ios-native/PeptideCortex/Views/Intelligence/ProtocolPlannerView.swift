@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ProtocolPlannerView: View {
     @EnvironmentObject var storeService: StoreService
+    @EnvironmentObject var appState: AppState
     @StateObject private var vm = ProtocolPlannerViewModel()
     @Binding var selectedTab: NavDestination
     @State private var showVialScanner = false
@@ -36,6 +37,18 @@ struct ProtocolPlannerView: View {
                 .padding()
             }
             .background(Color.cxParchment)
+            .onAppear {
+                if let bloodwork = appState.pendingBloodwork {
+                    vm.prefillFromBloodwork(
+                        analysis: bloodwork.analysis,
+                        recommendations: bloodwork.recommendations,
+                        warnings: bloodwork.warnings
+                    )
+                    appState.pendingBloodwork = nil
+                    // Auto-submit to Cortex
+                    Task { await vm.askCortex() }
+                }
+            }
         }
     }
 
