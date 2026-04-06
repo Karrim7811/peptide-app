@@ -177,9 +177,7 @@ struct AddNoteSheet: View {
                             .frame(maxHeight: 180)
                         }
                     }
-                    TextField("Your note or observation", text: $vm.newNote, axis: .vertical)
-                        .foregroundColor(.black)
-                        .lineLimit(4...10)
+                    RichNotesField(placeholder: "Your note or observation", text: $vm.newNote, lineLimit: 4...10)
                 }
                 Section("Source (Optional)") {
                     TextField("URL link", text: $vm.newUrl)

@@ -341,9 +341,7 @@ struct AddInventorySheet: View {
                     DatePicker("Expiry Date", selection: $vm.newExpiry, displayedComponents: .date)
                 }
                 Section("Notes") {
-                    TextField("Optional notes", text: $vm.newNotes, axis: .vertical)
-                        .foregroundColor(.black)
-                        .lineLimit(3...6)
+                    RichNotesField(placeholder: "Optional notes", text: $vm.newNotes)
                 }
             }
             .navigationTitle("Add Inventory")

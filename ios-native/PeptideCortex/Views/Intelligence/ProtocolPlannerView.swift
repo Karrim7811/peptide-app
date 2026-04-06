@@ -110,6 +110,9 @@ struct ProtocolPlannerView: View {
                             .padding(.horizontal, 16)
                             .padding(.vertical, 14)
                     }
+                    FormattingToolbar(text: $vm.userGoalText)
+                        .padding(.horizontal, 12)
+                        .padding(.top, 8)
                     TextEditor(text: $vm.userGoalText)
                         .font(.system(size: 15))
                         .foregroundColor(.cxBlack)
