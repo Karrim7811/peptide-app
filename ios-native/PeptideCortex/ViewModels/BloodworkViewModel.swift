@@ -222,6 +222,7 @@ class BloodworkViewModel: ObservableObject {
             try await SupabaseService.shared.insertBloodworkResult(result)
         } catch {
             print("Save bloodwork error: \(error)")
+            errorMessage = "Results analyzed but failed to save: \(error.localizedDescription)"
         }
     }
 

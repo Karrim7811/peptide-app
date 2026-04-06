@@ -286,8 +286,8 @@ struct BloodworkView: View {
                             HStack(spacing: 10) {
                                 Image(systemName: "wand.and.stars")
                                     .font(.system(size: 16))
-                                Text("Have Cortex Create a Plan")
-                                    .font(.system(size: 16, weight: .semibold))
+                                Text("Create Plan with Recommended Peptides")
+                                    .font(.system(size: 15, weight: .semibold))
                             }
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)

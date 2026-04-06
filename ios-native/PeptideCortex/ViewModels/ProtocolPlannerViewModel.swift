@@ -247,36 +247,29 @@ class ProtocolPlannerViewModel: ObservableObject {
         }
     }
 
-    /// Pre-fill from bloodwork results and jump straight to the consult
+    /// Pre-fill from bloodwork results and go straight to plan generation
     func prefillFromBloodwork(analysis: String, recommendations: [BloodworkRecommendation], warnings: [String]) {
         reset()
-
-        // Build a comprehensive prompt from the bloodwork data
-        var prompt = "Based on my bloodwork analysis, please create a protocol plan.\n\n"
-
-        if !warnings.isEmpty {
-            prompt += "Warnings from my labs:\n"
-            for w in warnings { prompt += "- \(w)\n" }
-            prompt += "\n"
-        }
-
-        prompt += "Analysis:\n\(analysis)\n\n"
-
-        if !recommendations.isEmpty {
-            prompt += "Recommended peptides:\n"
-            for rec in recommendations {
-                prompt += "- \(rec.peptide) (\(rec.priority) priority): \(rec.reason)\n"
-            }
-        }
 
         // Pre-add recommended peptides
         for rec in recommendations {
             addPeptide(rec.peptide)
         }
 
-        // Go to consult step with the prompt pre-filled
-        currentStep = 10
-        userGoalText = prompt
+        // Set goals from bloodwork context
+        if !warnings.isEmpty {
+            for w in warnings {
+                let lower = w.lowercased()
+                if lower.contains("cholesterol") || lower.contains("lipid") { selectedGoals.insert("Fat Loss") }
+                if lower.contains("glucose") || lower.contains("insulin") { selectedGoals.insert("Fat Loss") }
+                if lower.contains("testosterone") || lower.contains("igf") { selectedGoals.insert("Muscle Growth") }
+                if lower.contains("inflammation") || lower.contains("crp") { selectedGoals.insert("Recovery") }
+                if lower.contains("thyroid") { selectedConditions.insert("Thyroid") }
+            }
+        }
+        if selectedGoals.isEmpty {
+            selectedGoals.insert("Recovery")
+        }
     }
 
     func reset() {

@@ -45,8 +45,8 @@ struct ProtocolPlannerView: View {
                         warnings: bloodwork.warnings
                     )
                     appState.pendingBloodwork = nil
-                    // Auto-submit to Cortex
-                    Task { await vm.askCortex() }
+                    // Go straight to plan generation
+                    Task { await vm.generatePlan() }
                 }
             }
         }
