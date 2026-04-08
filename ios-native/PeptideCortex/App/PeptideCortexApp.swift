@@ -4,6 +4,7 @@ import SwiftUI
 struct PeptideCortexApp: App {
     @StateObject private var appState = AppState()
     @StateObject private var storeService = StoreService()
+    @ObservedObject private var consentManager = AIConsentManager.shared
 
     var body: some Scene {
         WindowGroup {
@@ -29,6 +30,9 @@ struct PeptideCortexApp: App {
             .animation(.easeInOut(duration: 0.3), value: appState.isAuthenticated)
             .animation(.easeInOut(duration: 0.3), value: appState.isLoading)
             .preferredColorScheme(.light)
+            .sheet(isPresented: $consentManager.showConsentSheet) {
+                AIConsentSheet()
+            }
             .onOpenURL { url in
                 // Handle OAuth callbacks (e.g. peptidecortex://auth-callback)
                 Task {

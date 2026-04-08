@@ -145,6 +145,18 @@ class APIService {
     static let shared = APIService()
     private let baseURL = AppConstants.apiBaseURL
 
+    private static let aiPaths: Set<String> = [
+        "/api/chat",
+        "/api/check-interaction",
+        "/api/reconstitution-ai",
+        "/api/stack-finder",
+        "/api/bloodwork-analyze",
+        "/api/bloodwork-ocr",
+        "/api/scan-vials",
+        "/api/protocol-plan",
+        "/api/protocol-consult"
+    ]
+
     private init() {}
 
     private func makeRequest<T: Decodable>(
@@ -152,6 +164,16 @@ class APIService {
         method: String = "POST",
         body: [String: Any]? = nil
     ) async throws -> T {
+        // Check AI consent for AI endpoints
+        if Self.aiPaths.contains(path) {
+            let consented = await AIConsentManager.shared.requireConsent()
+            if !consented {
+                throw NSError(domain: "API", code: 403, userInfo: [
+                    NSLocalizedDescriptionKey: "AI features require data consent. Please accept the AI data disclosure to continue."
+                ])
+            }
+        }
+
         guard let url = URL(string: "\(baseURL)\(path)") else {
             throw URLError(.badURL)
         }
