@@ -4,12 +4,12 @@ import AiConsentProvider from '@/components/AiConsentProvider'
 
 export const metadata: Metadata = {
   title: 'Peptide Cortex',
-  description: 'AI-Powered Peptide Intelligence Engine — track, optimize, and analyze your peptide protocol.',
+  description: 'AI-Powered Peptide Research Companion — organize, reference, and explore your peptide protocol. For educational purposes only — not medical advice.',
   manifest: '/manifest.json',
   metadataBase: new URL('https://peptidecortex.ai'),
   openGraph: {
     title: 'Peptide Cortex',
-    description: 'AI-Powered Peptide Intelligence Engine — track, optimize, and analyze your peptide protocol.',
+    description: 'AI-Powered Peptide Research Companion — organize, reference, and explore your peptide protocol. For educational purposes only — not medical advice.',
     url: 'https://peptidecortex.ai',
     siteName: 'Peptide Cortex',
     type: 'website',
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Peptide Cortex',
-    description: 'AI-Powered Peptide Intelligence Engine — track, optimize, and analyze your peptide protocol.',
+    description: 'AI-Powered Peptide Research Companion — organize, reference, and explore your peptide protocol. For educational purposes only — not medical advice.',
   },
   appleWebApp: {
     capable: true,

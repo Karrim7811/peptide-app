@@ -74,7 +74,7 @@ struct PricingView: View {
                         ("brain.head.profile", "Cortex AI Chat"),
                         ("arrow.triangle.2.circlepath", "Interaction Checker"),
                         ("square.stack.3d.up", "Stack Finder"),
-                        ("heart.text.square", "Bloodwork Analyzer")
+                        ("heart.text.square", "Bloodwork Reference")
                     ]
                     ForEach(proFeatures, id: \.1) { icon, feature in
                         HStack(spacing: 8) {

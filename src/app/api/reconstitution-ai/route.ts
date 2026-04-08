@@ -23,15 +23,15 @@ export async function POST(req: NextRequest) {
     const message = await anthropic.messages.create({
       model: 'claude-opus-4-5',
       max_tokens: 512,
-      system: `You are a peptide reconstitution expert. When given a peptide name and the amount in mg,
-you recommend how much bacteriostatic (BAC) water to add and why. Be concise and practical.
+      system: `You are an educational peptide reconstitution reference tool. When given a peptide name and the amount in mg,
+you provide commonly referenced BAC water volumes from published research literature. This is for educational reference only, not medical advice.
 Always respond with a JSON object in this exact format:
 {
   "recommendedBacWaterMl": <number>,
   "concentrationMgPerMl": <number>,
   "concentrationMcgPerMl": <number>,
-  "reasoning": "<brief explanation>",
-  "tipicalDoseRange": "<e.g. 250-500 mcg>",
+  "reasoning": "<brief explanation referencing common research practices>",
+  "tipicalDoseRange": "<e.g. 250-500 mcg — commonly reported in research>",
   "storageNote": "<brief storage note>"
 }`,
       messages: [

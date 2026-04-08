@@ -197,8 +197,8 @@ export default function ReconstitutionPage() {
             <FlaskConical className="w-5 h-5 text-[#1A8A9E]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#1A1915] leading-tight">Reconstitution Calculator</h1>
-            <p className="text-[#B0AAA0] text-sm">AI-powered BAC water recommendations + manual calculator</p>
+            <h1 className="text-2xl font-bold text-[#1A1915] leading-tight">Reconstitution Guide</h1>
+            <p className="text-[#B0AAA0] text-sm">AI-powered BAC water reference + unit conversion tool</p>
           </div>
         </div>
       </div>
@@ -341,7 +341,7 @@ export default function ReconstitutionPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="bg-[#F2F0ED] rounded-lg px-3 py-2">
-                    <p className="text-xs text-[#B0AAA0] mb-0.5">Typical Dose Range</p>
+                    <p className="text-xs text-[#B0AAA0] mb-0.5">Research-Reported Range</p>
                     <p className="text-sm text-emerald-400 font-medium">{aiResult.tipicalDoseRange}</p>
                   </div>
                   <div className="bg-[#F2F0ED] rounded-lg px-3 py-2">
@@ -412,14 +412,14 @@ export default function ReconstitutionPage() {
         <section className="bg-white border border-[#E8E5E0] rounded-2xl overflow-hidden">
           <div className="flex items-center gap-2 px-6 py-4 border-b border-[#E8E5E0] bg-gradient-to-r from-[#1A8A9E]/8 to-transparent">
             <Calculator className="w-4 h-4 text-[#1A8A9E]" />
-            <h2 className="text-base font-semibold text-[#1A1915]">Dose Calculator</h2>
+            <h2 className="text-base font-semibold text-[#1A1915]">Unit Converter</h2>
           </div>
 
           <div className="p-6 space-y-4">
             {/* Desired dose input + unit toggle */}
             <div className="bg-white border border-[#E8E5E0] rounded-xl p-4">
               <label className="block text-xs font-semibold text-[#B0AAA0] uppercase tracking-wider mb-3">
-                Desired Dose
+                Amount to Convert
               </label>
               <div className="flex items-center gap-3">
                 <input
@@ -461,7 +461,7 @@ export default function ReconstitutionPage() {
             {doseCalc !== null ? (
               <div className="space-y-3">
                 <ResultBox
-                  label="Volume to Inject"
+                  label="Equivalent Volume"
                   value={`${doseCalc.volumeMl.toFixed(3)} mL`}
                   large
                 />
@@ -482,7 +482,7 @@ export default function ReconstitutionPage() {
             ) : (
               <div className="bg-[#FAFAF8] border border-dashed border-[#E8E5E0] rounded-xl px-5 py-6 text-center">
                 <Calculator className="w-8 h-8 text-[#3A3730] mx-auto mb-2" />
-                <p className="text-[#B0AAA0] text-sm">Enter your desired dose above to calculate injection volume</p>
+                <p className="text-[#B0AAA0] text-sm">Enter an amount above to convert between units</p>
               </div>
             )}
           </div>
@@ -536,6 +536,14 @@ export default function ReconstitutionPage() {
         <p className="text-[#3A3730] text-sm leading-relaxed">
           <span className="font-semibold text-[#1A1915]">Tip:</span> Always use bacteriostatic water (BAC water).
           Sterile water can be used but the peptide degrades faster and does not allow multi-dose use.
+        </p>
+      </div>
+
+      {/* Disclaimer */}
+      <div className="bg-white/50 border border-[#E8E5E0] rounded-xl p-4 flex gap-3">
+        <Info className="w-4 h-4 text-[#B0AAA0] flex-shrink-0 mt-0.5" />
+        <p className="text-[#B0AAA0] text-xs leading-relaxed">
+          <span className="font-semibold">Disclaimer:</span> This tool is for educational reference and unit conversion only. It does not constitute medical advice or dosing instructions. All information reflects published research literature. Always consult a qualified healthcare professional before using any peptide or compound.
         </p>
       </div>
     </div>

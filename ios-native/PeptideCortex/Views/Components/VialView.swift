@@ -447,7 +447,7 @@ struct VialDetailPopup: View {
                                     Image(systemName: "syringe")
                                         .foregroundColor(.cxTeal)
                                         .font(.system(size: 18))
-                                    Text("Typical Dose")
+                                    Text("Reported Range")
                                         .font(.system(size: 9, weight: .medium))
                                         .foregroundColor(.cxStone)
                                     Text(recon.tipicalDoseRange.isEmpty ? "—" : recon.tipicalDoseRange)

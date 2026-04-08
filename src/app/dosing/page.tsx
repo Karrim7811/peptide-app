@@ -505,10 +505,10 @@ export default function DosingPage() {
           <div className="w-10 h-10 rounded-xl bg-[#1A8A9E]/12 flex items-center justify-center">
             <Calculator className="w-5 h-5 text-[#1A8A9E]" />
           </div>
-          <h1 className="text-2xl font-bold text-[#1A1915]">Dosage Calculator</h1>
+          <h1 className="text-2xl font-bold text-[#1A1915]">Dosing Reference</h1>
         </div>
         <p className="text-[#B0AAA0] text-sm ml-13">
-          Select a peptide to view recommended dosing protocols and reference information.
+          Select a peptide to view commonly reported dosing information from published research.
         </p>
       </div>
 
@@ -570,7 +570,7 @@ export default function DosingPage() {
 
           {/* Card body */}
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
-            <FieldRow icon={Activity} label="Dose Range" value={peptide.doseRange} />
+            <FieldRow icon={Activity} label="Reported Range" value={peptide.doseRange} />
             <FieldRow icon={Clock} label="Frequency" value={peptide.frequency} />
             <FieldRow icon={Target} label="Best Time to Take" value={peptide.bestTime} />
             <FieldRow icon={Clock} label="Half-Life" value={peptide.halfLife} />
@@ -596,7 +596,7 @@ export default function DosingPage() {
         <div className="bg-white border border-[#E8E5E0] rounded-2xl p-6">
           <div className="flex items-center gap-2 mb-4">
             <Scale className="w-5 h-5 text-[#1A8A9E]" />
-            <h3 className="text-lg font-semibold text-[#1A1915]">Dosage Calculator</h3>
+            <h3 className="text-lg font-semibold text-[#1A1915]">Weight-Based Reference</h3>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 mb-4">
@@ -648,7 +648,7 @@ export default function DosingPage() {
             {calculatedDose ? (
               <div>
                 <p className="text-xs text-[#B0AAA0] uppercase tracking-wider font-medium mb-1">
-                  Calculated Dose for {weightInput} {weightUnit}
+                  Research-Reported Range for {weightInput} {weightUnit}
                 </p>
                 <p className="text-2xl font-bold text-[#1A8A9E]">{calculatedDose}</p>
               </div>
@@ -657,14 +657,14 @@ export default function DosingPage() {
                 <Info className="w-5 h-5 text-[#1A8A9E] flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="text-xs text-[#B0AAA0] uppercase tracking-wider font-medium mb-1">
-                    Standard Dose Range
+                    Commonly Reported Range
                   </p>
                   <p className="text-lg font-bold text-[#1A8A9E]">{peptide.doseRange}</p>
                   <p className="text-[#B0AAA0] text-xs mt-1">
-                    {peptide.name} uses a fixed dosing protocol not based on body weight.
+                    {peptide.name} is commonly reported at a fixed amount not adjusted by body weight.
                     {weightInput
-                      ? ' The standard range above applies regardless of body weight.'
-                      : ' Enter your weight to confirm the standard protocol applies to you.'}
+                      ? ' The range above reflects published research literature.'
+                      : ''}
                   </p>
                 </div>
               </div>
@@ -677,7 +677,7 @@ export default function DosingPage() {
       {!peptide && (
         <div className="bg-white border border-dashed border-[#E8E5E0] rounded-2xl p-12 text-center">
           <Calculator className="w-12 h-12 text-[#B0AAA0] mx-auto mb-3" />
-          <p className="text-[#B0AAA0] text-sm">Select a peptide above to view dosing information</p>
+          <p className="text-[#B0AAA0] text-sm">Select a peptide above to view research-based dosing information</p>
         </div>
       )}
 
@@ -685,9 +685,7 @@ export default function DosingPage() {
       <div className="bg-white/50 border border-[#E8E5E0] rounded-xl p-4 flex gap-3">
         <AlertTriangle className="w-4 h-4 text-[#B0AAA0] flex-shrink-0 mt-0.5" />
         <p className="text-[#B0AAA0] text-xs leading-relaxed">
-          <span className="font-semibold text-[#B0AAA0]">Disclaimer:</span> For informational purposes only. Always
-          consult a qualified healthcare provider before using peptides. Peptides may be regulated or prohibited in your
-          jurisdiction. This tool does not constitute medical advice.
+          <span className="font-semibold text-[#B0AAA0]">Disclaimer:</span> This information is for educational and research reference only and does not constitute medical advice, diagnosis, or treatment recommendations. All dosing data reflects published research literature and community-reported ranges — not personalized medical guidance. Always consult a qualified, licensed healthcare professional before using any peptide, supplement, or compound. Peptides may be regulated or prohibited in your jurisdiction.
         </p>
       </div>
     </div>

@@ -258,7 +258,7 @@ export default function LandingPage() {
           <div className="hero-logo">CORTE<span className="x">X</span></div>
           <div className="hero-rule" />
           <div className="hero-tagline">The intelligence center<br />of your protocol.</div>
-          <div className="hero-sub">The only peptide tracker built around an AI reasoning engine. Every cycle, every dose, every biomarker — analyzed, optimized, and delivered as insight.</div>
+          <div className="hero-sub">The only peptide research companion built around an AI reasoning engine. Every cycle, every log entry, every biomarker — organized, referenced, and delivered as educational insight.</div>
           <div className="hero-ctas">
             <button className="btn-hero" onClick={() => router.push('/signup')}>Start Free</button>
             <button className="btn-hero-ghost" onClick={() => scrollTo('features')}>Explore Features</button>
@@ -291,9 +291,9 @@ export default function LandingPage() {
             <div className="section-title">Further than anything<br /><em>in the market.</em></div>
             <div className="features-grid">
               {[
-                { title: 'AI Insight Engine', body: 'Not a log — a reasoning system. Cortex AI continuously analyzes your stack, dosing patterns, and cycle history to generate protocol-level intelligence no other tracker can produce.', icon: <><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></> },
-                { title: 'Protocol Memory', body: 'Every cycle, dose, response, and biomarker — indexed and queryable. Your entire protocol history becomes the foundation for every future recommendation Cortex makes.', icon: <><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></> },
-                { title: 'Cycle Intelligence', body: 'AI-generated dosing windows, cycle forecasts, and off-cycle timing based on your peptide class, half-life data, and personal response patterns tracked over time.', icon: <><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 9h18M9 21V9"/></> },
+                { title: 'AI Insight Engine', body: 'Not a log — a reasoning system. Cortex AI organizes your stack, research notes, and cycle history to generate educational insights no other reference tool can produce.', icon: <><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></> },
+                { title: 'Protocol Memory', body: 'Every cycle, log entry, response, and biomarker — indexed and queryable. Your entire protocol history becomes a personal research journal that Cortex helps you navigate.', icon: <><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></> },
+                { title: 'Cycle Intelligence', body: 'AI-generated cycle insights, scheduling references, and off-cycle timing based on peptide class, half-life data, and personal notes tracked over time.', icon: <><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 9h18M9 21V9"/></> },
                 { title: 'Biomarker Tracking', body: 'Log labs and bloodwork directly in your protocol. Cortex correlates marker changes with your stack to surface insights invisible to any other tracker on the market.', icon: <><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></> },
                 { title: 'Stack Builder', body: 'Design and simulate peptide stacks with interaction awareness. Cortex flags potential conflicts and recommends optimized sequencing before you commit to a cycle.', icon: <><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></> },
                 { title: 'Vendor Intelligence', body: 'Ranked vendor data, purity reports, and COA sourcing intelligence built into the platform. Know exactly where to source — and which vendors the Cortex community trusts most.', icon: <><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></> },
@@ -318,10 +318,10 @@ export default function LandingPage() {
             <div className="section-title">From first dose<br /><em>to full intelligence.</em></div>
             <div className="steps">
               {[
-                { n: '01', title: 'Build your stack', body: 'Select from 58+ mapped peptides across every class. Cortex auto-populates half-life data, dosing ranges, and initial cycle recommendations the moment you add a peptide.' },
-                { n: '02', title: 'Log your protocol', body: 'Track doses, timing, injection sites, and subjective responses in seconds. Every entry feeds the AI reasoning engine — the more you log, the sharper Cortex gets.' },
-                { n: '03', title: 'Surface the insights', body: 'Cortex surfaces protocol-level insights you\'d never catch manually — optimal dosing windows, cycle timing, response patterns, and stack interactions as actionable guidance.' },
-                { n: '04', title: 'Optimize continuously', body: 'Pattern recognition compounds over time. Your protocol history becomes a personal performance dataset that no spreadsheet, no generic tracker, and no other app can replicate.' },
+                { n: '01', title: 'Build your stack', body: 'Select from 58+ mapped peptides across every class. Cortex auto-populates half-life data, research-reported ranges, and reference information the moment you add a peptide.' },
+                { n: '02', title: 'Log your protocol', body: 'Track your entries, timing, sites, and subjective responses in seconds. Every entry feeds the AI reasoning engine — the more you log, the sharper Cortex gets.' },
+                { n: '03', title: 'Surface the insights', body: 'Cortex surfaces educational insights you\'d never catch manually — scheduling references, cycle timing, response patterns, and interaction research as organized guidance.' },
+                { n: '04', title: 'Optimize continuously', body: 'Pattern recognition compounds over time. Your protocol history becomes a personal research journal that no spreadsheet, no generic tracker, and no other app can replicate.' },
               ].map(({ n, title, body }) => (
                 <div key={n} className="step">
                   <div className="step-num">{n}</div>
@@ -339,7 +339,7 @@ export default function LandingPage() {
         <div className="intel-band">
           <div className="intel-label">Why Cortex Wins</div>
           <div className="intel-title">Your protocol deserves more<br />than <em>a spreadsheet.</em></div>
-          <div className="intel-sub">Most trackers log. A few visualize. Only Peptide Cortex reasons — turning your stack history into a living, adaptive intelligence layer that improves every single cycle.</div>
+          <div className="intel-sub">Most trackers log. A few visualize. Only Peptide Cortex reasons — turning your stack history into a living, adaptive reference layer that improves every single cycle. For educational and research purposes only — not medical advice.</div>
           <div className="intel-metrics">
             {[
               { num: 'AI', label: 'Reasoning Engine' },

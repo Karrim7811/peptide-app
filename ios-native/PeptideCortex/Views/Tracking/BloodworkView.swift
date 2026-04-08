@@ -14,7 +14,7 @@ struct BloodworkView: View {
 
     var body: some View {
         if !storeService.isProUser {
-            ProGateView(featureName: "Bloodwork Analyzer")
+            ProGateView(featureName: "Bloodwork Reference")
         } else {
         ScrollView {
             VStack(spacing: 16) {
@@ -23,7 +23,7 @@ struct BloodworkView: View {
                     Image(systemName: "heart.text.square")
                         .font(.system(size: 32))
                         .foregroundColor(.cxTeal)
-                    Text("Bloodwork Analyzer")
+                    Text("Bloodwork Reference")
                         .font(.system(size: 18, weight: .semibold))
                         .foregroundColor(.cxBlack)
                     Text("Enter your lab results manually, or scan/import your bloodwork report.")

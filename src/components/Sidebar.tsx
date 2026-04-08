@@ -20,7 +20,7 @@ const ICON_RAIL = [
   { href: '/stack-finder', icon: Sparkles, label: 'Stack Finder' },
   null,
   { href: '/stack', icon: Layers, label: 'My Stack' },
-  { href: '/dosing', icon: Calculator, label: 'Dosage Calculator' },
+  { href: '/dosing', icon: Calculator, label: 'Dosing Reference' },
   { href: '/cycle', icon: RotateCcw, label: 'Cycle Tracker' },
   { href: '/sites', icon: MapPin, label: 'Injection Sites' },
 ] as const
@@ -40,7 +40,7 @@ const NAV_SECTIONS = [
     links: [
       { href: '/stack', label: 'My Stack' },
       { href: '/reconstitution', label: 'Reconstitution' },
-      { href: '/dosing', label: 'Dosage Calculator' },
+      { href: '/dosing', label: 'Dosing Reference' },
       { href: '/cycle', label: 'Cycle Tracker' },
       { href: '/sites', label: 'Injection Sites' },
     ],

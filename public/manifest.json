@@ -1,7 +1,7 @@
 {
   "name": "PeptideTracker",
   "short_name": "PeptideTracker",
-  "description": "Track your peptides, medications, and supplements with AI-powered interaction checking.",
+  "description": "Educational peptide research companion with AI-powered reference tools.",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#0f172a",
@@ -21,17 +21,17 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["health", "medical"],
+  "categories": ["education", "reference"],
   "shortcuts": [
     {
       "name": "Interaction Checker",
       "url": "/checker",
-      "description": "Check peptide/medication interactions"
+      "description": "Research peptide interaction information"
     },
     {
       "name": "Log a Dose",
       "url": "/log",
-      "description": "Log your latest dose"
+      "description": "Log your latest entry"
     }
   ]
 }

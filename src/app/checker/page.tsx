@@ -243,7 +243,7 @@ export default function CheckerPage() {
         </form>
 
         <p className="text-xs text-[#B0AAA0] mt-3 text-center">
-          For informational purposes only. Always consult a qualified healthcare provider.
+          For educational and research reference only — not medical advice. Always consult a qualified healthcare provider before making any decisions about peptides, supplements, or medications.
         </p>
       </div>
 

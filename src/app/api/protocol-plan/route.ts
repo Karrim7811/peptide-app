@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
 - Medical conditions: ${profile.conditions?.join(', ') || 'none reported'}`
       : 'No profile provided — use conservative defaults for a beginner.'
 
-    const systemPrompt = `You are Cortex AI, an expert peptide protocol planner. You create personalized weekly dosing schedules based on the user's peptides, profile, and goals.
+    const systemPrompt = `You are Cortex AI, an educational peptide research reference tool. You generate example weekly schedules based on published research literature for the user's selected peptides and profile. ALL information you provide is for educational and research reference only — NOT medical advice, diagnosis, or treatment recommendations.
 
 Peptide Knowledge Base:
 ${knowledgeBase}
@@ -56,17 +56,19 @@ ${profileSummary}
 
 ${customInstructions ? `Additional user instructions: ${customInstructions}` : ''}
 
-TASK: Create a complete weekly dosing protocol for these peptides: ${peptides.join(', ')}
+TASK: Generate an example research-based weekly reference schedule for these peptides: ${peptides.join(', ')}
+
+IMPORTANT: Frame everything as educational reference from published literature, not as personalized medical instructions. Use language like "commonly reported", "research literature suggests", "typically referenced at" instead of prescriptive language.
 
 You MUST:
-1. Analyze all peptides for interactions and safety concerns
-2. Create a weekly dosing schedule (Monday through Sunday)
-3. Include timing (Morning/Evening/Night), dose amounts, injection route, and injection site rotation
-4. Flag any dangerous combinations with clear warnings
-5. Consider the user's medical conditions — contraindicate where necessary
-6. Adjust protocol complexity based on experience level (Beginner = simpler schedules, fewer injections per day; Advanced = can handle complex timing)
-7. Include reconstitution instructions for each peptide (vial size, BAC water volume, resulting concentration, typical dose volume)
-8. Suggest reminders for each peptide with specific times and days
+1. Reference published research on all peptides for interaction information and safety notes
+2. Create an example weekly reference schedule (Monday through Sunday) based on research literature
+3. Include commonly reported timing (Morning/Evening/Night), research-reported amounts, administration route, and site rotation references
+4. Flag any potentially concerning combinations with clear notes from research
+5. Note any research-reported contraindications relevant to the user's profile
+6. Adjust complexity based on experience level (Beginner = simpler schedules; Advanced = can handle complex timing)
+7. Include reconstitution reference information for each peptide (vial size, BAC water volume, resulting concentration, commonly reported volume)
+8. Suggest schedule reminders for reference
 
 Respond ONLY with a valid JSON object in this exact format (no markdown, no code blocks, just raw JSON):
 {
@@ -117,7 +119,7 @@ Respond ONLY with a valid JSON object in this exact format (no markdown, no code
 The "level" for interactions must be one of: "safe", "caution", "danger".
 Days in suggestedReminders use: 0=Sunday, 1=Monday, ..., 6=Saturday.
 Include ALL 7 days in weeklySchedule even if some have no doses (empty doses array).
-Always recommend consulting a healthcare provider.`
+CRITICAL: This is for educational reference only. Always include a reminder to consult a qualified healthcare professional. Never present information as personalized medical advice.`
 
     const response = await client.messages.create({
       model: 'claude-opus-4-5',

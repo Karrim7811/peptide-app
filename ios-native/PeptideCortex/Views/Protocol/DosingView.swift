@@ -39,7 +39,7 @@ struct DosingView: View {
                 } else {
                     EmptyStateView(
                         icon: "function",
-                        title: "Dosage Calculator",
+                        title: "Dosing Reference",
                         message: "Search for a peptide to see detailed dosing information"
                     )
                 }

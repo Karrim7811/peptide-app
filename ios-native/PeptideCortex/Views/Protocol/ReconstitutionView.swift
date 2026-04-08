@@ -16,14 +16,14 @@ struct ReconstitutionView: View {
                     VStack(spacing: 12) {
                         FormField(label: "Peptide Amount (mg)", text: $vm.peptideAmountMg, keyboard: .decimalPad)
                         FormField(label: "Bacteriostatic Water (mL)", text: $vm.bacWaterMl, keyboard: .decimalPad)
-                        FormField(label: "Desired Dose (mcg)", text: $vm.desiredDoseMcg, keyboard: .decimalPad)
+                        FormField(label: "Amount to Convert (mcg)", text: $vm.desiredDoseMcg, keyboard: .decimalPad)
                     }
 
                     if let conc = vm.concentrationMcgPerMl {
                         VStack(spacing: 8) {
                             CalcResultRow(label: "Concentration", value: String(format: "%.1f mcg/mL", conc))
                             if let vol = vm.volumePerDose {
-                                CalcResultRow(label: "Volume per Dose", value: String(format: "%.3f mL (%.0f units)", vol, vol * 100))
+                                CalcResultRow(label: "Equivalent Volume", value: String(format: "%.3f mL (%.0f units)", vol, vol * 100))
                             }
                             if let doses = vm.dosesPerVial {
                                 CalcResultRow(label: "Doses per Vial", value: "\(doses)")
@@ -57,7 +57,7 @@ struct ReconstitutionView: View {
                                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
                             }
                             Image(systemName: "sparkles")
-                            Text(vm.isLoading ? "Calculating..." : "Get AI Recommendation")
+                            Text(vm.isLoading ? "Looking up..." : "Get AI Reference")
                                 .font(.system(size: 15, weight: .semibold))
                         }
                         .foregroundColor(.white)
@@ -78,7 +78,7 @@ struct ReconstitutionView: View {
                         VStack(alignment: .leading, spacing: 10) {
                             CalcResultRow(label: "Recommended BAC Water", value: String(format: "%.1f mL", result.recommendedBacWaterMl))
                             CalcResultRow(label: "Concentration", value: String(format: "%.1f mcg/mL", result.concentrationMcgPerMl))
-                            CalcResultRow(label: "Typical Dose Range", value: result.tipicalDoseRange)
+                            CalcResultRow(label: "Research-Reported Range", value: result.tipicalDoseRange)
                             CalcResultRow(label: "Storage", value: result.storageNote)
 
                             Text("Reasoning")

@@ -26,7 +26,7 @@ const NAV_SECTIONS = [
     links: [
       { href: '/stack', label: 'My Stack', icon: Layers },
       { href: '/reconstitution', label: 'Reconstitution', icon: FlaskRound },
-      { href: '/dosing', label: 'Dosage Calculator', icon: Calculator },
+      { href: '/dosing', label: 'Dosing Reference', icon: Calculator },
       { href: '/cycle', label: 'Cycle Tracker', icon: RotateCcw },
       { href: '/sites', label: 'Injection Sites', icon: MapPin },
     ],

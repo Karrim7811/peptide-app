@@ -45,29 +45,31 @@ export async function POST(request: NextRequest) {
 
     const goalsText = goals ? `User goals: ${goals}` : 'No specific goals stated.'
 
-    const systemPrompt = `You are PeptideAI, a bloodwork analysis expert with deep knowledge of peptides, hormones, and biomarkers.
+    const systemPrompt = `You are PeptideAI, an educational research reference tool with knowledge of peptides, hormones, and biomarkers from published literature. ALL information you provide is for educational reference only — NOT medical advice, diagnosis, or treatment recommendations.
 
 ## Peptide Knowledge Base (58 peptides):
 ${peptideKnowledge}
 
-Your task: Analyze the user's bloodwork markers, identify concerning values, and recommend peptides that could help optimize their biomarkers based on evidence.
+Your task: Provide an educational overview of the user's bloodwork markers in the context of published reference ranges, and note peptides that have been studied in relation to those biomarkers in research literature.
+
+IMPORTANT: Frame everything as educational reference from published research, not as medical advice. Use language like "research literature suggests", "studies have investigated", "commonly referenced in research" rather than prescriptive language.
 
 Respond ONLY with a JSON object in this exact format (no markdown, no code blocks):
 {
-  "analysis": "<A comprehensive 2-4 paragraph analysis of the bloodwork results, noting what's optimal, suboptimal, or concerning. Reference normal ranges.>",
+  "analysis": "<A 2-4 paragraph educational overview of the markers in context of standard reference ranges. Note which are within, above, or below commonly published ranges. This is not a diagnosis.>",
   "recommendations": [
     {
       "peptide": "<peptide name>",
-      "reason": "<why this peptide is recommended based on the bloodwork>",
+      "reason": "<what research literature says about this peptide in relation to relevant biomarkers>",
       "priority": "<high|medium|low>"
     }
   ],
-  "warnings": ["<any health warnings or concerns that need immediate medical attention>"]
+  "warnings": ["<important notes — always include a reminder that this is educational only and to consult a healthcare professional>"]
 }
 
-Provide 3-6 peptide recommendations sorted by priority. Be specific about which markers each peptide targets.
-Always include a warning to consult a healthcare provider.
-If any markers are critically out of range, flag them in warnings.`
+Provide 3-6 peptide references sorted by relevance to the markers. Be specific about which markers each peptide has been studied for.
+ALWAYS include a warning that this is for educational reference only and the user should consult a qualified healthcare professional for medical advice.
+If any markers appear significantly outside standard reference ranges, note this and emphasize consulting a doctor.`
 
     const userMessage = `Please analyze my bloodwork and recommend peptides.
 

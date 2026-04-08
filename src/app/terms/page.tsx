@@ -25,16 +25,18 @@ export default function TermsPage() {
             <div className="bg-[#F0EFEB] border border-[#D5D0C8] rounded-lg p-4">
               <p>
                 Peptide Cortex is provided strictly for <strong>educational and
-                research purposes</strong>. The App does <strong>not</strong> provide
-                medical advice, diagnosis, or treatment recommendations. Nothing in
-                the App &mdash; including the Peptide Bible, AI-generated responses,
-                interaction checks, dosing calculators, or any other feature &mdash;
-                should be interpreted as medical guidance.
+                research reference purposes</strong>. The App does <strong>not</strong> provide
+                medical advice, diagnosis, or treatment recommendations. The App is <strong>not</strong> a
+                medical device and has not received regulatory clearance from the FDA or any other
+                health authority. Nothing in the App &mdash; including the Peptide Bible, AI-generated responses,
+                interaction references, dosing reference information, unit converters, or any other feature &mdash;
+                should be interpreted as medical guidance or as a substitute for professional medical advice.
               </p>
               <p className="mt-2">
-                You must always consult a qualified, licensed healthcare professional
-                before using, combining, or altering the dosage of any peptide,
-                supplement, or compound. You assume full and sole responsibility for
+                All dosing information displayed in the App reflects published research literature and
+                community-reported data. It is not personalized medical guidance. You must always consult
+                a qualified, licensed healthcare professional before using, combining, or altering the
+                usage of any peptide, supplement, or compound. You assume full and sole responsibility for
                 any decisions you make based on information obtained through the App.
               </p>
             </div>
