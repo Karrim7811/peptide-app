@@ -22,6 +22,8 @@ export async function POST(request: NextRequest) {
 
     // Use Bearer token client for mobile, cookie client for web
     const authHeader = request.headers.get('Authorization')
+    let updateError: string | null = null
+
     if (authHeader?.startsWith('Bearer ')) {
       const token = authHeader.slice(7)
       const client = createJsClient(
@@ -34,15 +36,34 @@ export async function POST(request: NextRequest) {
         }
       )
       const { error } = await client.auth.updateUser({ data: metadata })
-      if (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 })
-      }
+      if (error) updateError = error.message
     } else {
-      const client = createClient()
-      const { error } = await client.auth.updateUser({ data: metadata })
-      if (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 })
+      // For cookie-based auth, get the session token and use it directly
+      // This avoids issues with the server client cookie context
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (session?.access_token) {
+        const client = createJsClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          {
+            global: {
+              headers: { Authorization: `Bearer ${session.access_token}` },
+            },
+          }
+        )
+        const { error } = await client.auth.updateUser({ data: metadata })
+        if (error) updateError = error.message
+      } else {
+        // Fallback: try the server client directly
+        const { error } = await supabase.auth.updateUser({ data: metadata })
+        if (error) updateError = error.message
       }
+    }
+
+    if (updateError) {
+      return NextResponse.json({ error: updateError }, { status: 500 })
     }
 
     return NextResponse.json({ success: true })

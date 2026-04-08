@@ -31,19 +31,25 @@ const DATA_ITEMS = [
 export default function AiConsentModal({ onAccept, onDecline }: Props) {
   const [checked, setChecked] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
 
   const handleAccept = async () => {
     if (!checked || saving) return
     setSaving(true)
+    setError('')
     try {
       const res = await fetch('/api/ai-consent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       })
-      if (!res.ok) throw new Error('Failed to save')
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error || 'Failed to save consent')
+      }
       onAccept()
-    } catch {
+    } catch (err) {
       setSaving(false)
+      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
     }
   }
 
@@ -256,6 +262,22 @@ export default function AiConsentModal({ onAccept, onDecline }: Props) {
 
         {/* Checkbox + Actions */}
         <div style={{ padding: '20px 24px 24px' }}>
+          {error && (
+            <div
+              style={{
+                background: '#FEF2F2',
+                border: '1px solid #FECACA',
+                borderRadius: 8,
+                padding: '10px 14px',
+                marginBottom: 12,
+                fontFamily: "'Gill Sans', 'Gill Sans MT', Calibri, sans-serif",
+                fontSize: 13,
+                color: '#DC2626',
+              }}
+            >
+              {error}
+            </div>
+          )}
           <label
             style={{
               display: 'flex',
