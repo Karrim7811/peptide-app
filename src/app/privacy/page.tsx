@@ -98,18 +98,34 @@ export default function PrivacyPage() {
               </li>
               <li>
                 <strong>Anthropic (Claude AI)</strong> &mdash; AI-powered analysis,
-                interaction checking, and chat features. When you use AI features,
-                your query and relevant context are sent to Anthropic&apos;s API.
-                Anthropic does not use API inputs to train its models. Refer to{' '}
-                <a
-                  href="https://www.anthropic.com/privacy"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#1A8A9E] hover:underline"
-                >
-                  Anthropic&apos;s Privacy Policy
-                </a>{' '}
-                for their data handling practices.
+                interaction checking, protocol planning, and chat features. When you
+                use AI features, the following data may be sent to Anthropic&apos;s
+                Claude API for processing:
+                <ul className="list-disc pl-5 mt-1 space-y-1 text-sm">
+                  <li>Bloodwork markers and lab values you enter or upload</li>
+                  <li>Lab report images and PDFs (for OCR extraction)</li>
+                  <li>Chat conversation history with the AI assistant</li>
+                  <li>Peptide stack details including names, dosages, and cycles</li>
+                  <li>Health goals and profile information (age, weight, sex)</li>
+                  <li>Medical conditions and current medications</li>
+                  <li>Vial photos (for identification)</li>
+                </ul>
+                <p className="mt-1">
+                  This data is sent securely via encrypted HTTPS. Anthropic does not
+                  use API inputs to train their models, and data is not permanently
+                  stored by Anthropic. Your data is never sold or shared for
+                  advertising purposes. You will be asked for explicit consent before
+                  any data is shared with Anthropic. Refer to{' '}
+                  <a
+                    href="https://www.anthropic.com/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#1A8A9E] hover:underline"
+                  >
+                    Anthropic&apos;s Privacy Policy
+                  </a>{' '}
+                  for their data handling practices.
+                </p>
               </li>
               <li>
                 <strong>Vercel</strong> &mdash; Application hosting and deployment.

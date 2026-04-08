@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
+import { getAuthenticatedUser } from '@/lib/supabase/server'
+import { requireAiConsent } from '@/lib/ai-consent'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 export async function POST(req: NextRequest) {
   try {
+    const user = await getAuthenticatedUser(req)
+    if (!user) {
+      return NextResponse.json({ error: 'Please sign in.', code: 'AUTH_REQUIRED' }, { status: 401 })
+    }
+
+    const consentError = requireAiConsent(user)
+    if (consentError) return consentError
+
     const { peptideName, amountMg } = await req.json()
     if (!peptideName || !amountMg) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })

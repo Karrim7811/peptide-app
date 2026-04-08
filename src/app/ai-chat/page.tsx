@@ -13,6 +13,7 @@ import {
   Sparkles,
   RotateCcw,
 } from 'lucide-react'
+import { useAiConsent } from '@/components/AiConsentProvider'
 
 type Message = {
   role: 'user' | 'assistant'
@@ -39,6 +40,7 @@ export default function AiChatPage() {
   const [stackNames, setStackNames] = useState<string[]>([])
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const { requireConsent } = useAiConsent()
 
   // Fetch user's active stack on mount
   useEffect(() => {
@@ -88,6 +90,9 @@ export default function AiChatPage() {
     async (overrideInput?: string) => {
       const text = (overrideInput ?? input).trim()
       if (!text || loading) return
+
+      const consented = await requireConsent()
+      if (!consented) return
 
       const userMsg: Message = { role: 'user', content: text }
       const updatedMessages = [...messages, userMsg]

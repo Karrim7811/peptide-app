@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { findPeptide } from '@/lib/peptide-knowledge'
+import { getAuthenticatedUser } from '@/lib/supabase/server'
+import { requireAiConsent } from '@/lib/ai-consent'
 
 const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -8,6 +10,14 @@ const client = new Anthropic({
 
 export async function POST(request: NextRequest) {
   try {
+    const user = await getAuthenticatedUser(request)
+    if (!user) {
+      return NextResponse.json({ error: 'Please sign in.', code: 'AUTH_REQUIRED' }, { status: 401 })
+    }
+
+    const consentError = requireAiConsent(user)
+    if (consentError) return consentError
+
     const body = await request.json()
     const { itemA, itemB } = body
 

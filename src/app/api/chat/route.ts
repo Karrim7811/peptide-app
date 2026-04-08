@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { PEPTIDE_KNOWLEDGE } from '@/lib/peptide-knowledge'
 import { getAuthenticatedUser } from '@/lib/supabase/server'
+import { requireAiConsent } from '@/lib/ai-consent'
 // Pro gating temporarily removed — all authenticated users have full access
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
@@ -22,6 +23,9 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: 'Please sign in to use Cortex AI.', code: 'AUTH_REQUIRED' }, { status: 401 })
     }
+
+    const consentError = requireAiConsent(user)
+    if (consentError) return consentError
 
     const body = await request.json()
     const { messages, stackContext } = body

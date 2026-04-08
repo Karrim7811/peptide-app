@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import AiConsentProvider from '@/components/AiConsentProvider'
 
 export const metadata: Metadata = {
   title: 'Peptide Cortex',
@@ -58,7 +59,9 @@ export default function RootLayout({
         />
       </head>
       <body style={{ background: '#FAFAF8', color: '#1A1915' }}>
-        {children}
+        <AiConsentProvider>
+          {children}
+        </AiConsentProvider>
       </body>
     </html>
   )

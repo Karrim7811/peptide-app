@@ -13,6 +13,7 @@ import {
   Loader2,
 } from 'lucide-react'
 import { PEPTIDE_KNOWLEDGE } from '@/lib/peptide-knowledge'
+import { useAiConsent } from '@/components/AiConsentProvider'
 
 // ─── Quick Reference Data ──────────────────────────────────────────────────────
 
@@ -94,6 +95,7 @@ const SENTIMENT_COLORS: Record<string, string> = {
 
 export default function ReconstitutionPage() {
   const router = useRouter()
+  const { requireConsent } = useAiConsent()
 
   // AI peptide selector state
   const [selectedPeptide, setSelectedPeptide] = useState('')
@@ -119,6 +121,10 @@ export default function ReconstitutionPage() {
 
   async function handleAiCalculate() {
     if (!selectedPeptide || !aiMg) return
+
+    const consented = await requireConsent()
+    if (!consented) return
+
     setAiLoading(true)
     setAiError('')
     setAiResult(null)

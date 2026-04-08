@@ -7,6 +7,7 @@ import {
   Loader2, AlertCircle, FlaskConical, ArrowRight, X
 } from 'lucide-react'
 import { PEPTIDE_KNOWLEDGE, PEPTIDE_CATEGORIES } from '@/lib/peptide-knowledge'
+import { useAiConsent } from '@/components/AiConsentProvider'
 import Link from 'next/link'
 
 const GOAL_OPTIONS = [
@@ -40,6 +41,7 @@ const ALL_NAMES = PEPTIDE_KNOWLEDGE.map(p => p.name)
 
 export default function StackFinderPage() {
   const router = useRouter()
+  const { requireConsent } = useAiConsent()
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState<string>('')
   const [goal, setGoal] = useState('')
@@ -72,6 +74,10 @@ export default function StackFinderPage() {
   async function handleSearch() {
     const peptideName = selected || query.trim()
     if (!peptideName) return
+
+    const consented = await requireConsent()
+    if (!consented) return
+
     setLoading(true)
     setResult('')
     setError('')

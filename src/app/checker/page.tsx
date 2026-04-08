@@ -12,6 +12,7 @@ import {
   X,
 } from 'lucide-react'
 import { ALL_PEPTIDES as COMMON_PEPTIDES } from '@/lib/peptides'
+import { useAiConsent } from '@/components/AiConsentProvider'
 
 interface InteractionResult {
   level: 'safe' | 'caution' | 'danger' | 'unknown'
@@ -114,6 +115,7 @@ function SuggestionDropdown({
 }
 
 export default function CheckerPage() {
+  const { requireConsent } = useAiConsent()
   const [itemA, setItemA] = useState('')
   const [itemB, setItemB] = useState('')
   const [loading, setLoading] = useState(false)
@@ -134,6 +136,9 @@ export default function CheckerPage() {
   async function handleCheck(e: React.FormEvent) {
     e.preventDefault()
     if (!itemA.trim() || !itemB.trim()) return
+
+    const consented = await requireConsent()
+    if (!consented) return
 
     setLoading(true)
     setError('')
