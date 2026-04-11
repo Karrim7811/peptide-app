@@ -156,43 +156,42 @@ struct BloodworkView: View {
 
                 // Context
                 SectionHeader(title: "CONTEXT")
-                VStack(alignment: .leading, spacing: 4) {
+
+                // Current Stack — one row per peptide/vial the user is taking.
+                // Each row captures: name, vial mg, dose amount, dose unit, and
+                // when the user takes it. Cortex uses this to frame references
+                // around the user's existing schedule instead of replacing it.
+                VStack(alignment: .leading, spacing: 8) {
                     Text("Current Stack")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(.cxStone)
-                    TextField("e.g. BPC-157, TB-500, Ipamorelin", text: $vm.currentStack)
-                        .font(.system(size: 14))
-                        .foregroundColor(.black)
-                        .padding(10)
-                        .background(Color.white)
-                        .cornerRadius(8)
-                }
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("When are you taking them?")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.cxStone)
-                    Text("So Cortex can reference peptides that fit around your existing schedule.")
+                    Text("Add each peptide you're currently taking so Cortex can reference additions that fit around your existing schedule.")
                         .font(.system(size: 11))
                         .foregroundColor(.cxStone.opacity(0.8))
-                    ZStack(alignment: .topLeading) {
-                        if vm.currentStackSchedule.isEmpty {
-                            Text("e.g. BPC-157 daily at 8am, TB-500 Mon/Thu morning, Ipamorelin pre-bed")
-                                .font(.system(size: 13))
-                                .foregroundColor(.cxStone.opacity(0.5))
-                                .padding(.horizontal, 14)
-                                .padding(.vertical, 12)
+
+                    ForEach($vm.currentStackEntries) { $entry in
+                        CurrentStackEntryRow(entry: $entry) {
+                            vm.removeStackEntry(id: entry.id)
                         }
-                        TextEditor(text: $vm.currentStackSchedule)
-                            .font(.system(size: 14))
-                            .foregroundColor(.black)
-                            .scrollContentBackground(.hidden)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 6)
                     }
-                    .frame(minHeight: 70)
-                    .background(Color.white)
-                    .cornerRadius(8)
+
+                    Button {
+                        vm.addStackEntry()
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.system(size: 14))
+                            Text(vm.currentStackEntries.isEmpty ? "Add a peptide you're currently taking" : "Add another peptide")
+                                .font(.system(size: 13, weight: .semibold))
+                        }
+                        .foregroundColor(.cxTeal)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                        .background(Color.cxTeal.opacity(0.1))
+                        .cornerRadius(10)
+                    }
                 }
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Goals")
                         .font(.system(size: 12, weight: .medium))
@@ -286,9 +285,20 @@ struct BloodworkView: View {
                                     .cornerRadius(4)
 
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text(rec.peptide)
-                                        .font(.system(size: 15, weight: .semibold))
-                                        .foregroundColor(.cxBlack)
+                                    HStack(spacing: 8) {
+                                        Text(rec.peptide)
+                                            .font(.system(size: 15, weight: .semibold))
+                                            .foregroundColor(.cxBlack)
+                                        if let vial = rec.suggestedVialMg?.trimmingCharacters(in: .whitespaces), !vial.isEmpty {
+                                            Text(vial.contains("mg") || vial.contains("IU") ? vial : "\(vial) mg vial")
+                                                .font(.system(size: 11, weight: .semibold))
+                                                .foregroundColor(.cxTeal)
+                                                .padding(.horizontal, 7)
+                                                .padding(.vertical, 2)
+                                                .background(Color.cxTeal.opacity(0.12))
+                                                .cornerRadius(6)
+                                        }
+                                    }
                                     Text(rec.reason)
                                         .font(.system(size: 13))
                                         .foregroundColor(.cxStone)
@@ -302,16 +312,23 @@ struct BloodworkView: View {
 
                         // Create a plan CTA
                         Button {
-                            let existingStack = vm.currentStack
-                                .split(separator: ",")
-                                .map { $0.trimmingCharacters(in: .whitespaces) }
+                            // Hand off the structured entries to the Protocol
+                            // Planner: names become the existing stack, and
+                            // each entry's rich prompt description becomes
+                            // one line of the existingSchedule so Cortex
+                            // preserves the user's current timing.
+                            let filled = vm.filledStackEntries
+                            let existingStack = filled.map { $0.name.trimmingCharacters(in: .whitespaces) }
+                            let existingSchedule = filled
+                                .map { $0.promptDescription }
                                 .filter { !$0.isEmpty }
+                                .joined(separator: "\n")
                             appState.pendingBloodwork = AppState.PendingBloodwork(
                                 analysis: vm.analysis,
                                 recommendations: vm.recommendations,
                                 warnings: vm.warnings,
                                 existingStack: existingStack,
-                                existingSchedule: vm.currentStackSchedule
+                                existingSchedule: existingSchedule
                             )
                             selectedTab = .protocolPlanner
                         } label: {
@@ -438,5 +455,107 @@ struct MarkerField: View {
                 .foregroundColor(.cxStone)
                 .frame(width: 50, alignment: .leading)
         }
+    }
+}
+
+/// Editor row for one peptide in the user's current stack. Captures the
+/// peptide name, vial mg, per-dose amount + unit, and free-text schedule.
+struct CurrentStackEntryRow: View {
+    @Binding var entry: CurrentStackEntry
+    let onRemove: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Header row: name + remove
+            HStack(spacing: 8) {
+                TextField("Peptide name (e.g. BPC-157)", text: $entry.name)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.black)
+                    .padding(10)
+                    .background(Color.cxParchment.opacity(0.5))
+                    .cornerRadius(8)
+                Button(action: onRemove) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 18))
+                        .foregroundColor(.cxStone.opacity(0.6))
+                }
+            }
+
+            // Vial size
+            HStack(spacing: 8) {
+                Text("Vial")
+                    .font(.system(size: 12))
+                    .foregroundColor(.cxStone)
+                    .frame(width: 56, alignment: .leading)
+                TextField("e.g. 5", text: $entry.vialMg)
+                    .font(.system(size: 14))
+                    .foregroundColor(.black)
+                    .keyboardType(.decimalPad)
+                    .padding(10)
+                    .background(Color.cxParchment.opacity(0.5))
+                    .cornerRadius(8)
+                Text("mg")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.cxStone)
+                    .frame(width: 32, alignment: .leading)
+            }
+
+            // Dose amount + unit dropdown
+            HStack(spacing: 8) {
+                Text("Dose")
+                    .font(.system(size: 12))
+                    .foregroundColor(.cxStone)
+                    .frame(width: 56, alignment: .leading)
+                TextField("e.g. 250", text: $entry.doseAmount)
+                    .font(.system(size: 14))
+                    .foregroundColor(.black)
+                    .keyboardType(.decimalPad)
+                    .padding(10)
+                    .background(Color.cxParchment.opacity(0.5))
+                    .cornerRadius(8)
+                Menu {
+                    Picker("Unit", selection: $entry.doseUnit) {
+                        ForEach(DoseUnit.allCases) { unit in
+                            Text(unit.label).tag(unit)
+                        }
+                    }
+                } label: {
+                    HStack(spacing: 4) {
+                        Text(entry.doseUnit.label)
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundColor(.cxTeal)
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundColor(.cxTeal)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+                    .frame(width: 78)
+                    .background(Color.cxTeal.opacity(0.12))
+                    .cornerRadius(8)
+                }
+            }
+
+            // Schedule / when
+            HStack(spacing: 8) {
+                Text("When")
+                    .font(.system(size: 12))
+                    .foregroundColor(.cxStone)
+                    .frame(width: 56, alignment: .leading)
+                TextField("e.g. daily 8am, Mon/Thu morning", text: $entry.schedule)
+                    .font(.system(size: 14))
+                    .foregroundColor(.black)
+                    .padding(10)
+                    .background(Color.cxParchment.opacity(0.5))
+                    .cornerRadius(8)
+            }
+        }
+        .padding(12)
+        .background(Color.white)
+        .cornerRadius(10)
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.cxStone.opacity(0.15), lineWidth: 1)
+        )
     }
 }

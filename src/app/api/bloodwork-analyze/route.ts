@@ -23,10 +23,20 @@ export async function POST(request: NextRequest) {
     if (consentError) return consentError
 
     const body = await request.json()
+    // currentStack accepts either the new structured shape (preferred) or a
+    // legacy string[]. Legacy requests are coerced into structured entries
+    // so the rest of the code has a single shape to work with.
+    type StackEntry = {
+      name: string
+      vialMg?: string | number
+      doseAmount?: string | number
+      doseUnit?: string
+      schedule?: string
+    }
     const { markers, currentStack, currentStackSchedule, goals } = body as {
       markers: { name: string; value: number; unit: string }[]
-      currentStack: string[]
-      currentStackSchedule?: string
+      currentStack?: (StackEntry | string)[]
+      currentStackSchedule?: string  // legacy free-text
       goals: string
     }
 
@@ -40,16 +50,39 @@ export async function POST(request: NextRequest) {
       .map(m => `${m.name}: ${m.value} ${m.unit}`)
       .join('\n')
 
-    const hasStack = currentStack && currentStack.length > 0
+    const stackEntries: StackEntry[] = (currentStack || [])
+      .map((e) => (typeof e === 'string' ? { name: e } : e))
+      .filter((e) => e && typeof e.name === 'string' && e.name.trim().length > 0)
+
+    const hasStack = stackEntries.length > 0
+
+    // Build a rich per-entry description for the prompt. Each entry is
+    // rendered as one bullet point with vial mg, per-dose amount+unit and
+    // schedule — whatever the user filled in.
+    const stackLines = stackEntries.map((e) => {
+      const parts: string[] = [String(e.name).trim()]
+      if (e.vialMg !== undefined && String(e.vialMg).trim().length > 0) {
+        parts.push(`(${String(e.vialMg).trim()} mg vial)`)
+      }
+      if (e.doseAmount !== undefined && String(e.doseAmount).trim().length > 0) {
+        const unit = e.doseUnit && String(e.doseUnit).trim().length > 0 ? String(e.doseUnit) : 'mcg'
+        parts.push(`— ${String(e.doseAmount).trim()} ${unit} per dose`)
+      }
+      if (e.schedule && String(e.schedule).trim().length > 0) {
+        parts.push(`, ${String(e.schedule).trim()}`)
+      }
+      return `- ${parts.join(' ')}`
+    })
+
     const stackText = hasStack
-      ? `Current peptide stack: ${currentStack.join(', ')}`
+      ? `Current peptide stack (the user is already using these — the vial mg, per-dose amount and timing are the user's actual current protocol):\n${stackLines.join('\n')}`
       : 'No current peptide stack.'
 
-    // Free-text description of when the user is already taking their stack.
-    // Passed through so Cortex can reference peptides that complement the
-    // existing schedule instead of proposing overlapping or duplicate ones.
-    const scheduleText = hasStack && currentStackSchedule && currentStackSchedule.trim().length > 0
-      ? `Current reference schedule (the user is already using these at this timing — suggest additional peptides that would complement this schedule rather than duplicate it): ${currentStackSchedule.trim()}`
+    // Legacy free-text schedule (only if the new structured entries did not
+    // already include per-entry schedules) — kept for backwards compat.
+    const scheduleText = hasStack && !stackEntries.some((e) => e.schedule && String(e.schedule).trim().length > 0)
+      && currentStackSchedule && currentStackSchedule.trim().length > 0
+      ? `Additional schedule notes: ${currentStackSchedule.trim()}`
       : ''
 
     const goalsText = goals ? `User goals: ${goals}` : 'No specific goals stated.'
@@ -70,14 +103,18 @@ If the user indicates they are already using a peptide stack with a specific sch
 - In each recommendation's reason, note how the referenced peptide would fit around the user's existing schedule (e.g. "research literature often references this for evening use, which would complement the user's morning BPC-157 reference").
 - Note any interactions research literature has identified between the referenced peptides and the user's existing stack.
 
+VIAL MG REFERENCE:
+For every recommended peptide, include a \`suggestedVialMg\` hint — the vial size that is most commonly referenced in research literature for that peptide (e.g. 5, 10). This is so the user can reference what vial size to look for. Use a numeric value (mg) or, if the peptide is typically sold in a non-mg unit, a short string like "2 mg" / "5000 IU".
+
 Respond ONLY with a JSON object in this exact format (no markdown, no code blocks):
 {
   "analysis": "<A 2-4 paragraph educational overview of the markers in context of standard reference ranges. Note which are within, above, or below commonly published ranges. This is not a diagnosis.>",
   "recommendations": [
     {
       "peptide": "<peptide name>",
-      "reason": "<what research literature says about this peptide in relation to relevant biomarkers>",
-      "priority": "<high|medium|low>"
+      "reason": "<what research literature says about this peptide in relation to relevant biomarkers, and how it fits around the user's existing schedule if one was provided>",
+      "priority": "<high|medium|low>",
+      "suggestedVialMg": "<commonly referenced vial size, e.g. '5' or '10 mg'>"
     }
   ],
   "warnings": ["<important notes — always include a reminder that this is educational only and to consult a healthcare professional>"]
@@ -96,7 +133,7 @@ ${markersText}
 ${stackText}${scheduleText ? `\n${scheduleText}` : ''}
 ${goalsText}
 
-Analyze these results, identify any concerning values, and recommend peptides that could help optimize my biomarkers.${hasStack ? ' Keep my existing stack and its schedule intact as context — suggest additional peptides that would complement what I am already referencing, rather than replacing it.' : ''}`
+Analyze these results, identify any concerning values, and recommend peptides that could help optimize my biomarkers. For each recommendation include the commonly-referenced vial mg size.${hasStack ? ' Keep my existing stack and its schedule intact as context — suggest additional peptides that would complement what I am already referencing, rather than replacing it.' : ''}`
 
     const response = await client.messages.create({
       model: 'claude-opus-4-5',
@@ -115,6 +152,16 @@ Analyze these results, identify any concerning values, and recommend peptides th
     }
 
     const result = JSON.parse(jsonText)
+
+    // Normalise suggestedVialMg to a string so the iOS decoder has a
+    // single shape to parse (Claude sometimes returns a bare number).
+    if (Array.isArray(result?.recommendations)) {
+      for (const rec of result.recommendations) {
+        if (rec && rec.suggestedVialMg !== undefined && rec.suggestedVialMg !== null) {
+          rec.suggestedVialMg = String(rec.suggestedVialMg)
+        }
+      }
+    }
 
     return NextResponse.json(result)
   } catch (error) {

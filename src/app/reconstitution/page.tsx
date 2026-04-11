@@ -110,10 +110,12 @@ export default function ReconstitutionPage() {
   const [vialSize, setVialSize] = useState('')
   const [bacWater, setBacWater] = useState('')
 
-  // Dose calculator inputs
+  // Dose calculator inputs.
+  // 'units' = U-100 insulin-syringe units (1 unit = 0.01 mL).
+  // 'ml' / 'cc' are direct volume inputs (1 cc = 1 mL).
+  type DoseUnit = 'mcg' | 'mg' | 'units' | 'ml' | 'cc'
   const [desiredDose, setDesiredDose] = useState('')
-  // 'units' = U-100 insulin-syringe units (1 unit = 0.01 mL)
-  const [doseUnit, setDoseUnit] = useState<'mcg' | 'mg' | 'units'>('mcg')
+  const [doseUnit, setDoseUnit] = useState<DoseUnit>('mcg')
 
   const filteredPeptides = useMemo(() => {
     if (!peptideSearch) return PEPTIDE_NAMES
@@ -162,17 +164,31 @@ export default function ReconstitutionPage() {
     const raw = parseFloat(desiredDose)
     if (!raw || raw <= 0) return null
 
-    // Normalise to mg, then derive volume & unit-equivalents.
-    // 'units' input is U-100 syringe units (1 unit = 0.01 mL), so volume is
-    // computed directly and the mg/mcg dose is backed out of concentration.
+    // Resolve a volume in mL and a dose in mg for every input unit.
+    // Volume-typed inputs (units / mL / cc) give us volume directly and we
+    // back out mass from concentration; mass-typed inputs give us mass and
+    // we compute volume.
     let volumeMl: number
     let doseMg: number
-    if (doseUnit === 'units') {
-      volumeMl = raw / 100
-      doseMg = volumeMl * concentration
-    } else {
-      doseMg = doseUnit === 'mcg' ? raw / 1000 : raw
-      volumeMl = doseMg / concentration
+    switch (doseUnit) {
+      case 'units':
+        volumeMl = raw / 100        // 1 U-100 unit = 0.01 mL
+        doseMg = volumeMl * concentration
+        break
+      case 'ml':
+      case 'cc':
+        volumeMl = raw              // 1 cc = 1 mL
+        doseMg = volumeMl * concentration
+        break
+      case 'mcg':
+        doseMg = raw / 1000
+        volumeMl = doseMg / concentration
+        break
+      case 'mg':
+      default:
+        doseMg = raw
+        volumeMl = doseMg / concentration
+        break
     }
     const u100 = volumeMl * 100
     const u40 = volumeMl * 40
@@ -442,43 +458,30 @@ export default function ReconstitutionPage() {
                   placeholder="e.g. 250"
                   className="flex-1 bg-[#FAFAF8] border border-[#E8E5E0] rounded-lg px-4 py-2.5 text-[#1A1915] placeholder-[#B0AAA0] focus:outline-none focus:border-[#1A8A9E] focus:ring-1 focus:ring-[#1A8A9E] transition-colors text-sm"
                 />
-                {/* Unit toggle */}
-                <div className="flex rounded-lg overflow-hidden border border-[#E8E5E0] shrink-0">
-                  <button
-                    onClick={() => setDoseUnit('mcg')}
-                    className={`px-3 py-2.5 text-sm font-semibold transition-colors ${
-                      doseUnit === 'mcg'
-                        ? 'bg-[#1A8A9E] text-[#1A1915]'
-                        : 'bg-[#FAFAF8] text-[#B0AAA0] hover:text-[#1A1915]'
-                    }`}
+                {/* Unit dropdown — mcg / mg / units / mL / cc */}
+                <div className="relative shrink-0">
+                  <select
+                    value={doseUnit}
+                    onChange={(e) => setDoseUnit(e.target.value as DoseUnit)}
+                    className="appearance-none bg-[#FAFAF8] border border-[#E8E5E0] rounded-lg pl-4 pr-9 py-2.5 text-sm font-semibold text-[#1A1915] focus:outline-none focus:border-[#1A8A9E] focus:ring-1 focus:ring-[#1A8A9E] cursor-pointer"
                   >
-                    mcg
-                  </button>
-                  <button
-                    onClick={() => setDoseUnit('mg')}
-                    className={`px-3 py-2.5 text-sm font-semibold transition-colors ${
-                      doseUnit === 'mg'
-                        ? 'bg-[#1A8A9E] text-[#1A1915]'
-                        : 'bg-[#FAFAF8] text-[#B0AAA0] hover:text-[#1A1915]'
-                    }`}
-                  >
-                    mg
-                  </button>
-                  <button
-                    onClick={() => setDoseUnit('units')}
-                    className={`px-3 py-2.5 text-sm font-semibold transition-colors ${
-                      doseUnit === 'units'
-                        ? 'bg-[#1A8A9E] text-[#1A1915]'
-                        : 'bg-[#FAFAF8] text-[#B0AAA0] hover:text-[#1A1915]'
-                    }`}
-                  >
-                    units
-                  </button>
+                    <option value="mcg">mcg</option>
+                    <option value="mg">mg</option>
+                    <option value="units">units</option>
+                    <option value="ml">mL</option>
+                    <option value="cc">cc</option>
+                  </select>
+                  <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B0AAA0] pointer-events-none" />
                 </div>
               </div>
               {doseUnit === 'units' && (
                 <p className="text-xs text-[#B0AAA0] mt-2">
                   Units are U-100 insulin-syringe units (1 unit = 0.01 mL). Converted back to mg/mcg using the concentration above.
+                </p>
+              )}
+              {(doseUnit === 'ml' || doseUnit === 'cc') && (
+                <p className="text-xs text-[#B0AAA0] mt-2">
+                  Direct injection volume (1 cc = 1 mL). Converted back to mg/mcg using the concentration above.
                 </p>
               )}
             </div>
@@ -491,9 +494,10 @@ export default function ReconstitutionPage() {
                   value={`${doseCalc.volumeMl.toFixed(3)} mL`}
                   large
                 />
-                {/* When the input is in units, show what that resolves to
-                    in mcg/mg so the user sees the actual dose amount. */}
-                {doseUnit === 'units' && (
+                {/* When the user enters a volume (units / mL / cc), show
+                    what that resolves to in mcg/mg so they see the actual
+                    mass of peptide being delivered. */}
+                {(doseUnit === 'units' || doseUnit === 'ml' || doseUnit === 'cc') && (
                   <ResultBox
                     label="Equivalent Amount"
                     value={`${doseCalc.doseMcg.toLocaleString(undefined, { maximumFractionDigits: 0 })} mcg · ${doseCalc.doseMg.toFixed(3)} mg`}

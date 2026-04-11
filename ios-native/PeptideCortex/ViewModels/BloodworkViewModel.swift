@@ -1,5 +1,65 @@
 import Foundation
 
+/// One peptide the user is currently taking, as they describe it in the
+/// Bloodwork Reference form. All fields are strings so the user can type
+/// freely — conversion happens when building the API payload.
+struct CurrentStackEntry: Identifiable, Equatable {
+    let id: UUID
+    var name: String
+    /// Total mg in the vial the user actually has (e.g. "5" means a 5 mg vial).
+    var vialMg: String
+    /// Amount per dose, typed by the user and interpreted alongside `doseUnit`.
+    var doseAmount: String
+    var doseUnit: DoseUnit
+    /// Free-text timing note, e.g. "daily at 8am" or "Mon/Thu morning".
+    var schedule: String
+
+    init(
+        id: UUID = UUID(),
+        name: String = "",
+        vialMg: String = "",
+        doseAmount: String = "",
+        doseUnit: DoseUnit = .mcg,
+        schedule: String = ""
+    ) {
+        self.id = id
+        self.name = name
+        self.vialMg = vialMg
+        self.doseAmount = doseAmount
+        self.doseUnit = doseUnit
+        self.schedule = schedule
+    }
+
+    /// True if the user has typed anything useful into this row.
+    var hasContent: Bool {
+        !name.trimmingCharacters(in: .whitespaces).isEmpty
+    }
+
+    /// Human-readable description used both for the Cortex prompt and for
+    /// the existingSchedule string handed off to Protocol Planner.
+    /// Only includes the fields the user actually filled in.
+    var promptDescription: String {
+        var parts: [String] = []
+        let trimmedName = name.trimmingCharacters(in: .whitespaces)
+        guard !trimmedName.isEmpty else { return "" }
+        parts.append(trimmedName)
+
+        let vial = vialMg.trimmingCharacters(in: .whitespaces)
+        if !vial.isEmpty {
+            parts.append("(\(vial) mg vial)")
+        }
+        let dose = doseAmount.trimmingCharacters(in: .whitespaces)
+        if !dose.isEmpty {
+            parts.append("— \(dose) \(doseUnit.label) per dose")
+        }
+        let timing = schedule.trimmingCharacters(in: .whitespaces)
+        if !timing.isEmpty {
+            parts.append(", \(timing)")
+        }
+        return parts.joined(separator: " ")
+    }
+}
+
 @MainActor
 class BloodworkViewModel: ObservableObject {
     // MARK: - Marker Inputs (strings so user can type freely)
@@ -30,13 +90,24 @@ class BloodworkViewModel: ObservableObject {
     @Published var hematocrit = ""
 
     // MARK: - Context
-    @Published var currentStack = ""
-    /// Free-text description of when the user is currently taking each peptide
-    /// in their stack. Passed to Cortex so recommendations are framed around
-    /// the existing reference schedule instead of replacing it.
-    /// e.g. "BPC-157 daily at 8am, TB-500 Mon/Thu morning"
-    @Published var currentStackSchedule = ""
+    /// Structured list of the peptides the user is currently taking — one
+    /// row per vial, each with name, vial mg, dose, unit and schedule.
+    /// Replaces the old free-text `currentStack` + `currentStackSchedule`.
+    @Published var currentStackEntries: [CurrentStackEntry] = []
     @Published var goals = ""
+
+    /// Entries that actually have a peptide name filled in.
+    var filledStackEntries: [CurrentStackEntry] {
+        currentStackEntries.filter { $0.hasContent }
+    }
+
+    func addStackEntry() {
+        currentStackEntries.append(CurrentStackEntry())
+    }
+
+    func removeStackEntry(id: UUID) {
+        currentStackEntries.removeAll { $0.id == id }
+    }
 
     // MARK: - Results
     @Published var analysis = ""
@@ -106,15 +177,28 @@ class BloodworkViewModel: ObservableObject {
         hasResults = false
 
         do {
-            let stackArray = currentStack
-                .split(separator: ",")
-                .map { $0.trimmingCharacters(in: .whitespaces) }
-                .filter { !$0.isEmpty }
+            // Build structured stack payload from filled entries. Each entry
+            // becomes a JSON object the backend uses to write a richer
+            // prompt description than a comma-separated list ever could.
+            let stackPayload: [[String: Any]] = filledStackEntries.map { entry in
+                var obj: [String: Any] = [
+                    "name": entry.name.trimmingCharacters(in: .whitespaces)
+                ]
+                let vial = entry.vialMg.trimmingCharacters(in: .whitespaces)
+                if !vial.isEmpty { obj["vialMg"] = vial }
+                let dose = entry.doseAmount.trimmingCharacters(in: .whitespaces)
+                if !dose.isEmpty {
+                    obj["doseAmount"] = dose
+                    obj["doseUnit"] = entry.doseUnit.rawValue
+                }
+                let sched = entry.schedule.trimmingCharacters(in: .whitespaces)
+                if !sched.isEmpty { obj["schedule"] = sched }
+                return obj
+            }
 
             let result = try await APIService.shared.analyzeBloodwork(
                 markers: markers,
-                currentStack: stackArray,
-                currentStackSchedule: currentStackSchedule,
+                currentStack: stackPayload,
                 goals: goals
             )
 
@@ -208,8 +292,19 @@ class BloodworkViewModel: ObservableObject {
         let markersJson = (try? JSONSerialization.data(withJSONObject: markersDict))
             .flatMap { String(data: $0, encoding: .utf8) } ?? "{}"
 
-        // Encode recommendations as JSON
-        let recsArray = recommendations.map { ["peptide": $0.peptide, "reason": $0.reason, "priority": $0.priority] }
+        // Encode recommendations as JSON. suggestedVialMg is optional —
+        // older results won't have it and that's fine.
+        let recsArray: [[String: String]] = recommendations.map { rec in
+            var obj: [String: String] = [
+                "peptide": rec.peptide,
+                "reason": rec.reason,
+                "priority": rec.priority
+            ]
+            if let vial = rec.suggestedVialMg, !vial.isEmpty {
+                obj["suggestedVialMg"] = vial
+            }
+            return obj
+        }
         let recsJson = (try? JSONSerialization.data(withJSONObject: recsArray))
             .flatMap { String(data: $0, encoding: .utf8) } ?? "[]"
 
@@ -266,8 +361,7 @@ class BloodworkViewModel: ObservableObject {
         rbc = ""
         hemoglobin = ""
         hematocrit = ""
-        currentStack = ""
-        currentStackSchedule = ""
+        currentStackEntries = []
         goals = ""
         analysis = ""
         recommendations = []

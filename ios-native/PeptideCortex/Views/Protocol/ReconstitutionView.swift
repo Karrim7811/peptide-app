@@ -17,7 +17,7 @@ struct ReconstitutionView: View {
                         FormField(label: "Peptide Amount (mg)", text: $vm.peptideAmountMg, keyboard: .decimalPad)
                         FormField(label: "Bacteriostatic Water (mL)", text: $vm.bacWaterMl, keyboard: .decimalPad)
 
-                        // Amount to Convert + unit toggle (mcg / mg / units)
+                        // Amount to Convert + unit dropdown (mcg / mg / units / mL / cc)
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Amount to Convert")
                                 .font(.system(size: 13, weight: .medium))
@@ -30,18 +30,39 @@ struct ReconstitutionView: View {
                                     .padding(12)
                                     .background(Color.cxParchment.opacity(0.5))
                                     .cornerRadius(10)
-                                Picker("Unit", selection: $vm.doseUnit) {
-                                    ForEach(DoseUnit.allCases) { unit in
-                                        Text(unit.label).tag(unit)
+                                Menu {
+                                    Picker("Unit", selection: $vm.doseUnit) {
+                                        ForEach(DoseUnit.allCases) { unit in
+                                            Text(unit.label).tag(unit)
+                                        }
                                     }
+                                } label: {
+                                    HStack(spacing: 4) {
+                                        Text(vm.doseUnit.label)
+                                            .font(.system(size: 15, weight: .semibold))
+                                            .foregroundColor(.cxTeal)
+                                        Image(systemName: "chevron.down")
+                                            .font(.system(size: 11, weight: .semibold))
+                                            .foregroundColor(.cxTeal)
+                                    }
+                                    .padding(.horizontal, 14)
+                                    .padding(.vertical, 12)
+                                    .frame(minWidth: 90)
+                                    .background(Color.cxTeal.opacity(0.12))
+                                    .cornerRadius(10)
                                 }
-                                .pickerStyle(.segmented)
-                                .frame(width: 160)
                             }
-                            if vm.doseUnit == .units {
-                                Text("Units are U-100 insulin-syringe units (1 unit = 0.01 mL).")
+                            switch vm.doseUnit {
+                            case .units:
+                                Text("U-100 insulin-syringe units (1 unit = 0.01 mL).")
                                     .font(.system(size: 11))
                                     .foregroundColor(.cxStone.opacity(0.8))
+                            case .ml, .cc:
+                                Text("Direct injection volume. 1 cc = 1 mL. Converted back to mg/mcg using the concentration above.")
+                                    .font(.system(size: 11))
+                                    .foregroundColor(.cxStone.opacity(0.8))
+                            case .mcg, .mg:
+                                EmptyView()
                             }
                         }
                     }

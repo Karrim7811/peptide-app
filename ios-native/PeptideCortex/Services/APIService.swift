@@ -39,6 +39,9 @@ struct BloodworkRecommendation: Codable {
     let peptide: String
     let reason: String
     let priority: String
+    /// Commonly-referenced vial size for this peptide (e.g. "5" or "10 mg").
+    /// Optional because older analyses saved to the database won't have it.
+    let suggestedVialMg: String?
 }
 
 // MARK: - Protocol Planner
@@ -260,11 +263,13 @@ class APIService {
 
     // MARK: - Bloodwork Analyzer
 
-    func analyzeBloodwork(markers: [[String: Any]], currentStack: [String], currentStackSchedule: String, goals: String) async throws -> BloodworkResponse {
+    /// `currentStack` is an array of structured entries, each with name and
+    /// optional vialMg / doseAmount / doseUnit / schedule fields. The
+    /// backend accepts either this shape or a legacy string[].
+    func analyzeBloodwork(markers: [[String: Any]], currentStack: [[String: Any]], goals: String) async throws -> BloodworkResponse {
         try await makeRequest(path: "/api/bloodwork-analyze", body: [
             "markers": markers,
             "currentStack": currentStack,
-            "currentStackSchedule": currentStackSchedule,
             "goals": goals
         ])
     }

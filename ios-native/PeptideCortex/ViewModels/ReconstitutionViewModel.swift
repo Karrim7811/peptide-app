@@ -1,16 +1,30 @@
 import Foundation
 
+/// Units the user can choose when entering a dose amount. Shared by the
+/// Reconstitution dose calculator and the Bloodwork Reference stack entries.
+/// mcg / mg are mass; units are U-100 insulin-syringe units (1 u = 0.01 mL);
+/// mL and cc are direct volume inputs (1 cc = 1 mL).
 enum DoseUnit: String, CaseIterable, Identifiable {
     case mcg
     case mg
-    /// U-100 insulin syringe units (1 unit = 0.01 mL)
     case units
+    case ml
+    case cc
     var id: String { rawValue }
     var label: String {
         switch self {
         case .mcg: return "mcg"
         case .mg: return "mg"
         case .units: return "units"
+        case .ml: return "mL"
+        case .cc: return "cc"
+        }
+    }
+    /// True if this unit describes a volume (mL/cc/units) rather than a mass.
+    var isVolume: Bool {
+        switch self {
+        case .units, .ml, .cc: return true
+        case .mcg, .mg: return false
         }
     }
 }
@@ -38,9 +52,9 @@ class ReconstitutionViewModel: ObservableObject {
 
     /// The user's entered amount normalised to mcg.
     /// - mcg: as-typed
-    /// - mg: multiplied by 1000
-    /// - units (U-100): converted to mL first (raw / 100), then multiplied by
-    ///   concentration — so doseMcg depends on the current concentration.
+    /// - mg: ×1000
+    /// - units (U-100): converted to mL (raw/100) then × concentration
+    /// - mL / cc: raw × concentration (they are the same volume)
     var desiredDoseMcg: Double? {
         guard let raw = Double(desiredDose), raw > 0 else { return nil }
         switch doseUnit {
@@ -51,15 +65,22 @@ class ReconstitutionViewModel: ObservableObject {
         case .units:
             guard let conc = concentrationMcgPerMl else { return nil }
             return (raw / 100) * conc
+        case .ml, .cc:
+            guard let conc = concentrationMcgPerMl else { return nil }
+            return raw * conc
         }
     }
 
     /// Injection volume in mL required to deliver the desired amount.
-    /// For `units` input we can compute volume directly (1 unit = 0.01 mL)
-    /// without needing concentration first.
+    /// Volume-typed inputs (units/mL/cc) can compute volume without needing
+    /// concentration at all.
     var volumePerDose: Double? {
-        if doseUnit == .units, let raw = Double(desiredDose), raw > 0 {
-            return raw / 100
+        if let raw = Double(desiredDose), raw > 0 {
+            switch doseUnit {
+            case .units: return raw / 100
+            case .ml, .cc: return raw
+            case .mcg, .mg: break
+            }
         }
         guard let conc = concentrationMcgPerMl, let doseMcg = desiredDoseMcg, conc > 0 else { return nil }
         return doseMcg / conc
