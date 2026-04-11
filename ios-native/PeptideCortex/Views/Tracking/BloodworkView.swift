@@ -168,6 +168,32 @@ struct BloodworkView: View {
                         .cornerRadius(8)
                 }
                 VStack(alignment: .leading, spacing: 4) {
+                    Text("When are you taking them?")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.cxStone)
+                    Text("So Cortex can reference peptides that fit around your existing schedule.")
+                        .font(.system(size: 11))
+                        .foregroundColor(.cxStone.opacity(0.8))
+                    ZStack(alignment: .topLeading) {
+                        if vm.currentStackSchedule.isEmpty {
+                            Text("e.g. BPC-157 daily at 8am, TB-500 Mon/Thu morning, Ipamorelin pre-bed")
+                                .font(.system(size: 13))
+                                .foregroundColor(.cxStone.opacity(0.5))
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 12)
+                        }
+                        TextEditor(text: $vm.currentStackSchedule)
+                            .font(.system(size: 14))
+                            .foregroundColor(.black)
+                            .scrollContentBackground(.hidden)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                    }
+                    .frame(minHeight: 70)
+                    .background(Color.white)
+                    .cornerRadius(8)
+                }
+                VStack(alignment: .leading, spacing: 4) {
                     Text("Goals")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(.cxStone)
@@ -276,10 +302,16 @@ struct BloodworkView: View {
 
                         // Create a plan CTA
                         Button {
+                            let existingStack = vm.currentStack
+                                .split(separator: ",")
+                                .map { $0.trimmingCharacters(in: .whitespaces) }
+                                .filter { !$0.isEmpty }
                             appState.pendingBloodwork = AppState.PendingBloodwork(
                                 analysis: vm.analysis,
                                 recommendations: vm.recommendations,
-                                warnings: vm.warnings
+                                warnings: vm.warnings,
+                                existingStack: existingStack,
+                                existingSchedule: vm.currentStackSchedule
                             )
                             selectedTab = .protocolPlanner
                         } label: {

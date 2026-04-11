@@ -42,7 +42,9 @@ struct ProtocolPlannerView: View {
                     vm.prefillFromBloodwork(
                         analysis: bloodwork.analysis,
                         recommendations: bloodwork.recommendations,
-                        warnings: bloodwork.warnings
+                        warnings: bloodwork.warnings,
+                        existingStack: bloodwork.existingStack,
+                        existingSchedule: bloodwork.existingSchedule
                     )
                     appState.pendingBloodwork = nil
                     // Go straight to plan generation

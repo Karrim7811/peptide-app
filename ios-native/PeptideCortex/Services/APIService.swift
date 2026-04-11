@@ -260,10 +260,11 @@ class APIService {
 
     // MARK: - Bloodwork Analyzer
 
-    func analyzeBloodwork(markers: [[String: Any]], currentStack: [String], goals: String) async throws -> BloodworkResponse {
+    func analyzeBloodwork(markers: [[String: Any]], currentStack: [String], currentStackSchedule: String, goals: String) async throws -> BloodworkResponse {
         try await makeRequest(path: "/api/bloodwork-analyze", body: [
             "markers": markers,
             "currentStack": currentStack,
+            "currentStackSchedule": currentStackSchedule,
             "goals": goals
         ])
     }
@@ -328,11 +329,15 @@ class APIService {
 
     // MARK: - Protocol Planner
 
-    func generateProtocolPlan(peptides: [String], profile: [String: Any]) async throws -> ProtocolPlan {
-        try await makeRequest(path: "/api/protocol-plan", body: [
+    func generateProtocolPlan(peptides: [String], profile: [String: Any], customInstructions: String? = nil) async throws -> ProtocolPlan {
+        var body: [String: Any] = [
             "peptides": peptides,
             "profile": profile
-        ])
+        ]
+        if let ci = customInstructions, !ci.isEmpty {
+            body["customInstructions"] = ci
+        }
+        return try await makeRequest(path: "/api/protocol-plan", body: body)
     }
 
     func protocolConsult(message: String, history: [[String: String]]) async throws -> ConsultResponse {

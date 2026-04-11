@@ -54,7 +54,9 @@ ${knowledgeBase}
 
 ${profileSummary}
 
-${customInstructions ? `Additional user instructions: ${customInstructions}` : ''}
+${customInstructions ? `CRITICAL USER CONTEXT (these instructions override your defaults for this request — follow them exactly while preserving the educational-reference framing):
+${customInstructions}
+` : ''}
 
 TASK: Generate an example research-based weekly reference schedule for these peptides: ${peptides.join(', ')}
 

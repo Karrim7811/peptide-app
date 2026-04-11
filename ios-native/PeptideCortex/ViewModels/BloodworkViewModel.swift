@@ -31,6 +31,11 @@ class BloodworkViewModel: ObservableObject {
 
     // MARK: - Context
     @Published var currentStack = ""
+    /// Free-text description of when the user is currently taking each peptide
+    /// in their stack. Passed to Cortex so recommendations are framed around
+    /// the existing reference schedule instead of replacing it.
+    /// e.g. "BPC-157 daily at 8am, TB-500 Mon/Thu morning"
+    @Published var currentStackSchedule = ""
     @Published var goals = ""
 
     // MARK: - Results
@@ -109,6 +114,7 @@ class BloodworkViewModel: ObservableObject {
             let result = try await APIService.shared.analyzeBloodwork(
                 markers: markers,
                 currentStack: stackArray,
+                currentStackSchedule: currentStackSchedule,
                 goals: goals
             )
 
@@ -261,6 +267,7 @@ class BloodworkViewModel: ObservableObject {
         hemoglobin = ""
         hematocrit = ""
         currentStack = ""
+        currentStackSchedule = ""
         goals = ""
         analysis = ""
         recommendations = []

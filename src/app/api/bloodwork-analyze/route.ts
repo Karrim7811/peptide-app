@@ -23,9 +23,10 @@ export async function POST(request: NextRequest) {
     if (consentError) return consentError
 
     const body = await request.json()
-    const { markers, currentStack, goals } = body as {
+    const { markers, currentStack, currentStackSchedule, goals } = body as {
       markers: { name: string; value: number; unit: string }[]
       currentStack: string[]
+      currentStackSchedule?: string
       goals: string
     }
 
@@ -39,9 +40,17 @@ export async function POST(request: NextRequest) {
       .map(m => `${m.name}: ${m.value} ${m.unit}`)
       .join('\n')
 
-    const stackText = currentStack && currentStack.length > 0
+    const hasStack = currentStack && currentStack.length > 0
+    const stackText = hasStack
       ? `Current peptide stack: ${currentStack.join(', ')}`
       : 'No current peptide stack.'
+
+    // Free-text description of when the user is already taking their stack.
+    // Passed through so Cortex can reference peptides that complement the
+    // existing schedule instead of proposing overlapping or duplicate ones.
+    const scheduleText = hasStack && currentStackSchedule && currentStackSchedule.trim().length > 0
+      ? `Current reference schedule (the user is already using these at this timing — suggest additional peptides that would complement this schedule rather than duplicate it): ${currentStackSchedule.trim()}`
+      : ''
 
     const goalsText = goals ? `User goals: ${goals}` : 'No specific goals stated.'
 
@@ -53,6 +62,13 @@ ${peptideKnowledge}
 Your task: Provide an educational overview of the user's bloodwork markers in the context of published reference ranges, and note peptides that have been studied in relation to those biomarkers in research literature.
 
 IMPORTANT: Frame everything as educational reference from published research, not as medical advice. Use language like "research literature suggests", "studies have investigated", "commonly referenced in research" rather than prescriptive language.
+
+RESPECT THE USER'S EXISTING REFERENCE SCHEDULE:
+If the user indicates they are already using a peptide stack with a specific schedule, treat that schedule as fixed context. Your peptide references must:
+- NOT duplicate peptides already in the user's current stack (unless the research literature suggests a meaningfully different amount would be relevant — and call that out explicitly).
+- Favor peptides that complement the existing schedule — e.g. if the user already references a morning injection, prefer peptides that research literature commonly references for evening/night use, unless co-administration is supported by the literature.
+- In each recommendation's reason, note how the referenced peptide would fit around the user's existing schedule (e.g. "research literature often references this for evening use, which would complement the user's morning BPC-157 reference").
+- Note any interactions research literature has identified between the referenced peptides and the user's existing stack.
 
 Respond ONLY with a JSON object in this exact format (no markdown, no code blocks):
 {
@@ -77,10 +93,10 @@ If any markers appear significantly outside standard reference ranges, note this
 ${markersText}
 
 ## Context:
-${stackText}
+${stackText}${scheduleText ? `\n${scheduleText}` : ''}
 ${goalsText}
 
-Analyze these results, identify any concerning values, and recommend peptides that could help optimize my biomarkers.`
+Analyze these results, identify any concerning values, and recommend peptides that could help optimize my biomarkers.${hasStack ? ' Keep my existing stack and its schedule intact as context — suggest additional peptides that would complement what I am already referencing, rather than replacing it.' : ''}`
 
     const response = await client.messages.create({
       model: 'claude-opus-4-5',

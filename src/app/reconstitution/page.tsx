@@ -112,7 +112,8 @@ export default function ReconstitutionPage() {
 
   // Dose calculator inputs
   const [desiredDose, setDesiredDose] = useState('')
-  const [doseUnit, setDoseUnit] = useState<'mcg' | 'mg'>('mcg')
+  // 'units' = U-100 insulin-syringe units (1 unit = 0.01 mL)
+  const [doseUnit, setDoseUnit] = useState<'mcg' | 'mg' | 'units'>('mcg')
 
   const filteredPeptides = useMemo(() => {
     if (!peptideSearch) return PEPTIDE_NAMES
@@ -161,13 +162,23 @@ export default function ReconstitutionPage() {
     const raw = parseFloat(desiredDose)
     if (!raw || raw <= 0) return null
 
-    // Normalise to mg
-    const doseMg = doseUnit === 'mcg' ? raw / 1000 : raw
-    const volumeMl = doseMg / concentration
+    // Normalise to mg, then derive volume & unit-equivalents.
+    // 'units' input is U-100 syringe units (1 unit = 0.01 mL), so volume is
+    // computed directly and the mg/mcg dose is backed out of concentration.
+    let volumeMl: number
+    let doseMg: number
+    if (doseUnit === 'units') {
+      volumeMl = raw / 100
+      doseMg = volumeMl * concentration
+    } else {
+      doseMg = doseUnit === 'mcg' ? raw / 1000 : raw
+      volumeMl = doseMg / concentration
+    }
     const u100 = volumeMl * 100
     const u40 = volumeMl * 40
+    const doseMcg = doseMg * 1000
 
-    return { volumeMl, u100, u40 }
+    return { volumeMl, u100, u40, doseMg, doseMcg }
   }, [desiredDose, doseUnit, concentration])
 
   // ── Quick reference table ──────────────────────────────────────────────────
@@ -453,8 +464,23 @@ export default function ReconstitutionPage() {
                   >
                     mg
                   </button>
+                  <button
+                    onClick={() => setDoseUnit('units')}
+                    className={`px-3 py-2.5 text-sm font-semibold transition-colors ${
+                      doseUnit === 'units'
+                        ? 'bg-[#1A8A9E] text-[#1A1915]'
+                        : 'bg-[#FAFAF8] text-[#B0AAA0] hover:text-[#1A1915]'
+                    }`}
+                  >
+                    units
+                  </button>
                 </div>
               </div>
+              {doseUnit === 'units' && (
+                <p className="text-xs text-[#B0AAA0] mt-2">
+                  Units are U-100 insulin-syringe units (1 unit = 0.01 mL). Converted back to mg/mcg using the concentration above.
+                </p>
+              )}
             </div>
 
             {/* Results */}
@@ -465,6 +491,14 @@ export default function ReconstitutionPage() {
                   value={`${doseCalc.volumeMl.toFixed(3)} mL`}
                   large
                 />
+                {/* When the input is in units, show what that resolves to
+                    in mcg/mg so the user sees the actual dose amount. */}
+                {doseUnit === 'units' && (
+                  <ResultBox
+                    label="Equivalent Amount"
+                    value={`${doseCalc.doseMcg.toLocaleString(undefined, { maximumFractionDigits: 0 })} mcg · ${doseCalc.doseMg.toFixed(3)} mg`}
+                  />
+                )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <ResultBox
                     label="U-100 Insulin Syringe"

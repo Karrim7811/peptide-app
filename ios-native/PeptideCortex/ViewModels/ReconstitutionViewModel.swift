@@ -1,11 +1,28 @@
 import Foundation
 
+enum DoseUnit: String, CaseIterable, Identifiable {
+    case mcg
+    case mg
+    /// U-100 insulin syringe units (1 unit = 0.01 mL)
+    case units
+    var id: String { rawValue }
+    var label: String {
+        switch self {
+        case .mcg: return "mcg"
+        case .mg: return "mg"
+        case .units: return "units"
+        }
+    }
+}
+
 @MainActor
 class ReconstitutionViewModel: ObservableObject {
     // Manual calc
     @Published var peptideAmountMg = ""
     @Published var bacWaterMl = ""
-    @Published var desiredDoseMcg = ""
+    /// Raw amount-to-convert value as typed by the user; interpret alongside `doseUnit`.
+    @Published var desiredDose = ""
+    @Published var doseUnit: DoseUnit = .mcg
 
     // AI recommendation
     @Published var peptideName = ""
@@ -19,9 +36,39 @@ class ReconstitutionViewModel: ObservableObject {
         return (mg * 1000) / ml
     }
 
+    /// The user's entered amount normalised to mcg.
+    /// - mcg: as-typed
+    /// - mg: multiplied by 1000
+    /// - units (U-100): converted to mL first (raw / 100), then multiplied by
+    ///   concentration — so doseMcg depends on the current concentration.
+    var desiredDoseMcg: Double? {
+        guard let raw = Double(desiredDose), raw > 0 else { return nil }
+        switch doseUnit {
+        case .mcg:
+            return raw
+        case .mg:
+            return raw * 1000
+        case .units:
+            guard let conc = concentrationMcgPerMl else { return nil }
+            return (raw / 100) * conc
+        }
+    }
+
+    /// Injection volume in mL required to deliver the desired amount.
+    /// For `units` input we can compute volume directly (1 unit = 0.01 mL)
+    /// without needing concentration first.
     var volumePerDose: Double? {
-        guard let conc = concentrationMcgPerMl, let dose = Double(desiredDoseMcg), conc > 0 else { return nil }
-        return dose / conc
+        if doseUnit == .units, let raw = Double(desiredDose), raw > 0 {
+            return raw / 100
+        }
+        guard let conc = concentrationMcgPerMl, let doseMcg = desiredDoseMcg, conc > 0 else { return nil }
+        return doseMcg / conc
+    }
+
+    /// Injection volume expressed in U-100 insulin-syringe units.
+    var unitsPerDose: Double? {
+        guard let vol = volumePerDose else { return nil }
+        return vol * 100
     }
 
     var dosesPerVial: Int? {
@@ -53,7 +100,8 @@ class ReconstitutionViewModel: ObservableObject {
     func reset() {
         peptideAmountMg = ""
         bacWaterMl = ""
-        desiredDoseMcg = ""
+        desiredDose = ""
+        doseUnit = .mcg
         peptideName = ""
         aiResult = nil
         errorMessage = nil

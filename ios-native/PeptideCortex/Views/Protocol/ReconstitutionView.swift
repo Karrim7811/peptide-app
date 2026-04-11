@@ -16,14 +16,50 @@ struct ReconstitutionView: View {
                     VStack(spacing: 12) {
                         FormField(label: "Peptide Amount (mg)", text: $vm.peptideAmountMg, keyboard: .decimalPad)
                         FormField(label: "Bacteriostatic Water (mL)", text: $vm.bacWaterMl, keyboard: .decimalPad)
-                        FormField(label: "Amount to Convert (mcg)", text: $vm.desiredDoseMcg, keyboard: .decimalPad)
+
+                        // Amount to Convert + unit toggle (mcg / mg / units)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Amount to Convert")
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundColor(.cxStone)
+                            HStack(spacing: 8) {
+                                TextField("Amount to Convert", text: $vm.desiredDose)
+                                    .font(.system(size: 15))
+                                    .foregroundColor(.black)
+                                    .keyboardType(.decimalPad)
+                                    .padding(12)
+                                    .background(Color.cxParchment.opacity(0.5))
+                                    .cornerRadius(10)
+                                Picker("Unit", selection: $vm.doseUnit) {
+                                    ForEach(DoseUnit.allCases) { unit in
+                                        Text(unit.label).tag(unit)
+                                    }
+                                }
+                                .pickerStyle(.segmented)
+                                .frame(width: 160)
+                            }
+                            if vm.doseUnit == .units {
+                                Text("Units are U-100 insulin-syringe units (1 unit = 0.01 mL).")
+                                    .font(.system(size: 11))
+                                    .foregroundColor(.cxStone.opacity(0.8))
+                            }
+                        }
                     }
 
                     if let conc = vm.concentrationMcgPerMl {
                         VStack(spacing: 8) {
                             CalcResultRow(label: "Concentration", value: String(format: "%.1f mcg/mL", conc))
+                            if let doseMcg = vm.desiredDoseMcg {
+                                CalcResultRow(
+                                    label: "Equivalent Amount",
+                                    value: String(format: "%.0f mcg (%.3f mg)", doseMcg, doseMcg / 1000)
+                                )
+                            }
                             if let vol = vm.volumePerDose {
-                                CalcResultRow(label: "Equivalent Volume", value: String(format: "%.3f mL (%.0f units)", vol, vol * 100))
+                                CalcResultRow(
+                                    label: "Equivalent Volume",
+                                    value: String(format: "%.3f mL (%.1f units U-100)", vol, vol * 100)
+                                )
                             }
                             if let doses = vm.dosesPerVial {
                                 CalcResultRow(label: "Doses per Vial", value: "\(doses)")

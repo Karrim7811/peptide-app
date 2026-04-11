@@ -32,6 +32,14 @@ class ProtocolPlannerViewModel: ObservableObject {
     @Published var plan: ProtocolPlan?
     @Published var errorMessage: String?
 
+    /// Peptides the user is already taking (set when this planner is launched
+    /// from the Bloodwork Reference flow). Planner will preserve these and
+    /// schedule the newly-recommended peptides around them instead of
+    /// replacing them.
+    @Published var existingStack: [String] = []
+    /// Free-text description of when the existing stack is being taken.
+    @Published var existingSchedule: String = ""
+
     // Results view mode
     @Published var resultsViewMode = 0  // 0=Weekly, 1=Timeline, 2=List
 
@@ -168,10 +176,28 @@ class ProtocolPlannerViewModel: ObservableObject {
             "experience": experience
         ]
 
+        // Build custom instructions when the planner is continuing from a
+        // bloodwork analysis where the user already has a schedule we need
+        // to preserve. These are injected into the protocol-plan prompt so
+        // Cortex keeps the existing peptides at their current timing and
+        // only slots the newly-recommended peptides into free windows.
+        var customInstructions: String? = nil
+        if !existingStack.isEmpty {
+            var lines: [String] = []
+            lines.append("The user is ALREADY referencing the following peptides at a fixed schedule. Do NOT replace or re-time them — preserve their timing exactly and add the new peptides around them.")
+            lines.append("Existing stack: \(existingStack.joined(separator: ", "))")
+            if !existingSchedule.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                lines.append("Existing schedule: \(existingSchedule)")
+            }
+            lines.append("For each existing peptide, keep the same amount and timing the user described. For each new peptide, slot it into free time windows that don't conflict with the existing references, and explicitly note in the dose notes how it fits around the existing stack.")
+            customInstructions = lines.joined(separator: "\n")
+        }
+
         do {
             let result = try await APIService.shared.generateProtocolPlan(
                 peptides: selectedPeptides,
-                profile: profile
+                profile: profile,
+                customInstructions: customInstructions
             )
             plan = result
 
@@ -248,8 +274,25 @@ class ProtocolPlannerViewModel: ObservableObject {
     }
 
     /// Pre-fill from bloodwork results and go straight to plan generation
-    func prefillFromBloodwork(analysis: String, recommendations: [BloodworkRecommendation], warnings: [String]) {
+    func prefillFromBloodwork(
+        analysis: String,
+        recommendations: [BloodworkRecommendation],
+        warnings: [String],
+        existingStack: [String] = [],
+        existingSchedule: String = ""
+    ) {
         reset()
+
+        // Remember the user's existing protocol so generatePlan() can tell
+        // Cortex to preserve it when building the new weekly reference.
+        self.existingStack = existingStack
+        self.existingSchedule = existingSchedule
+
+        // Seed the planner with the existing stack first so those peptides
+        // show up in the plan alongside the new recommendations.
+        for name in existingStack {
+            addPeptide(name)
+        }
 
         // Pre-add recommended peptides
         for rec in recommendations {
@@ -293,5 +336,7 @@ class ProtocolPlannerViewModel: ObservableObject {
         consultRound = 0
         isConsulting = false
         consultDone = false
+        existingStack = []
+        existingSchedule = ""
     }
 }
