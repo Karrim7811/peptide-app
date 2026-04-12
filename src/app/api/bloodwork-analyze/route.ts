@@ -145,10 +145,22 @@ Analyze these results, identify any concerning values, and recommend peptides th
     const content = response.content[0]
     if (content.type !== 'text') throw new Error('Unexpected response type')
 
-    // Extract JSON from response
+    // Extract JSON from response — Claude may wrap the JSON in markdown
+    // fences or include preamble text, so we try multiple strategies.
     let jsonText = content.text.trim()
-    if (jsonText.startsWith('```')) {
-      jsonText = jsonText.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '')
+
+    // Strategy 1: strip markdown code fences (```json ... ``` or ``` ... ```)
+    const fenceMatch = jsonText.match(/```(?:json)?\s*\n?([\s\S]*?)\n?\s*```/)
+    if (fenceMatch) {
+      jsonText = fenceMatch[1].trim()
+    }
+
+    // Strategy 2: if it still doesn't start with '{', extract the first JSON object
+    if (!jsonText.startsWith('{')) {
+      const objMatch = jsonText.match(/\{[\s\S]*\}/)
+      if (objMatch) {
+        jsonText = objMatch[0]
+      }
     }
 
     const result = JSON.parse(jsonText)
@@ -168,6 +180,7 @@ Analyze these results, identify any concerning values, and recommend peptides th
     console.error('Bloodwork analyze error:', error)
 
     if (error instanceof SyntaxError) {
+      console.error('JSON parse failure — raw AI response was not valid JSON. Check logs above for the response text.')
       return NextResponse.json({
         analysis: 'Unable to parse the AI analysis. Please try again.',
         recommendations: [],
