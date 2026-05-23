@@ -6,11 +6,11 @@ export const metadata: Metadata = {
   title: 'Peptide Cortex',
   description: 'AI-Powered Peptide Research Companion — organize, reference, and explore your peptide protocol. For educational purposes only — not medical advice.',
   manifest: '/manifest.json',
-  metadataBase: new URL('https://peptidecortex.ai'),
+  metadataBase: new URL('https://peptidecortex.com'),
   openGraph: {
     title: 'Peptide Cortex',
     description: 'AI-Powered Peptide Research Companion — organize, reference, and explore your peptide protocol. For educational purposes only — not medical advice.',
-    url: 'https://peptidecortex.ai',
+    url: 'https://peptidecortex.com',
     siteName: 'Peptide Cortex',
     type: 'website',
   },

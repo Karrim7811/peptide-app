@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'No billing account found' }, { status: 404 })
   }
 
-  const origin = request.headers.get('origin') ?? 'https://peptidetracker.app'
+  const origin = request.headers.get('origin') ?? 'https://peptidecortex.com'
   const url = await createCustomerPortalSession(
     profile.stripe_customer_id,
     `${origin}/dashboard`

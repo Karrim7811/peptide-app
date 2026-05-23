@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     const { plan } = await request.json() // 'monthly' | 'yearly'
     const priceId = plan === 'yearly' ? STRIPE_PRICES.proYearly : STRIPE_PRICES.proMonthly
 
-    const origin = request.headers.get('origin') ?? 'https://peptidetracker.app'
+    const origin = request.headers.get('origin') ?? 'https://peptidecortex.com'
     const url = await createCheckoutSession(
       user.id,
       user.email!,
