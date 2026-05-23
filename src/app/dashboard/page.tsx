@@ -2,9 +2,11 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { format } from 'date-fns'
-import { Layers, Bell, BookOpen, Shield, ChevronRight, Clock, FlaskConical } from 'lucide-react'
+import { Layers, BookOpen, Shield, ChevronRight, Clock, FlaskConical } from 'lucide-react'
 import type { StackItem, Reminder, DoseLog } from '@/types'
 import MarketPulse from './MarketPulse'
+import Vial from '@/components/Vial'
+import { vialDisplayName } from '@/lib/peptide-display'
 
 const FONT = "'Gill Sans', 'Gill Sans MT', Calibri, sans-serif"
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -111,7 +113,7 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        {/* Active Stack widget */}
+        {/* Active Stack widget — vial rack */}
         <div style={{ ...card, padding: '18px 20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -128,20 +130,57 @@ export default async function DashboardPage() {
               <Link href="/stack" style={{ fontFamily: FONT, fontSize: 11, color: '#1A8A9E', textDecoration: 'none' }}>Add your first item</Link>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {activeStack.slice(0, 4).map((item: StackItem) => (
-                <div key={item.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderLeft: '3px solid #1A8A9E', paddingLeft: 10, paddingTop: 4, paddingBottom: 4 }}>
-                  <div>
-                    <div style={{ fontFamily: FONT, fontSize: 13, fontWeight: 500, color: '#1A1915' }}>{item.name}</div>
-                    <div style={{ fontFamily: FONT, fontSize: 11, color: '#B0AAA0' }}>{item.dose} {item.unit} · active</div>
+            <Link
+              href="/stack"
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 14,
+                rowGap: 16,
+                padding: '6px 2px 2px',
+                textDecoration: 'none',
+                alignItems: 'flex-end',
+              }}
+            >
+              {activeStack.slice(0, 6).map((item: StackItem) => (
+                <div key={item.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: 64 }}>
+                  <Vial name={item.name} dose={item.dose} unit={item.unit} size={1.1} />
+                  <div
+                    style={{
+                      fontFamily: FONT,
+                      fontSize: 10,
+                      color: '#3A3730',
+                      textAlign: 'center',
+                      lineHeight: 1.15,
+                      maxWidth: 64,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {vialDisplayName(item.name)}
                   </div>
-                  <span style={{ background: 'rgba(26,138,158,0.11)', color: '#1A8A9E', fontSize: 9, fontFamily: FONT, fontWeight: 500, padding: '2px 8px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>PEPTIDE</span>
                 </div>
               ))}
-              {activeStack.length > 4 && (
-                <Link href="/stack" style={{ fontFamily: FONT, fontSize: 11, color: '#B0AAA0', textDecoration: 'none', paddingLeft: 13, paddingTop: 2 }}>+{activeStack.length - 4} more</Link>
+              {activeStack.length > 6 && (
+                <div
+                  style={{
+                    width: 64,
+                    height: 88 * 1.1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontFamily: FONT,
+                    fontSize: 12,
+                    color: '#B0AAA0',
+                    border: '1px dashed rgba(176,170,160,0.5)',
+                    borderRadius: 8,
+                  }}
+                >
+                  +{activeStack.length - 6}
+                </div>
               )}
-            </div>
+            </Link>
           )}
         </div>
 
