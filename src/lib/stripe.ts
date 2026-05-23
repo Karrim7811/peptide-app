@@ -12,27 +12,48 @@ function getStripe(): Stripe {
 
 export const STRIPE_PRICES = {
   get proMonthly() { return process.env.STRIPE_PRO_MONTHLY_PRICE_ID! },
-  get proYearly() { return process.env.STRIPE_PRO_YEARLY_PRICE_ID! },
+  get proLifetime() { return process.env.STRIPE_PRO_LIFETIME_PRICE_ID! },
 }
+
+export type ProPlan = 'monthly' | 'lifetime'
 
 export async function createCheckoutSession(
   userId: string,
   email: string,
-  priceId: string,
+  plan: ProPlan,
   successUrl: string,
   cancelUrl: string
 ): Promise<string> {
   const stripe = getStripe()
+  const priceId = plan === 'lifetime' ? STRIPE_PRICES.proLifetime : STRIPE_PRICES.proMonthly
+
+  // Lifetime is a one-time payment; monthly is a recurring subscription.
+  // The webhook handler branches on event type to write the correct
+  // subscription_tier and subscription_expires_at.
+  if (plan === 'lifetime') {
+    const session = await stripe.checkout.sessions.create({
+      mode: 'payment',
+      payment_method_types: ['card'],
+      customer_email: email,
+      line_items: [{ price: priceId, quantity: 1 }],
+      metadata: { userId, plan },
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      allow_promotion_codes: true,
+    })
+    return session.url!
+  }
+
   const session = await stripe.checkout.sessions.create({
     mode: 'subscription',
     payment_method_types: ['card'],
     customer_email: email,
     line_items: [{ price: priceId, quantity: 1 }],
-    metadata: { userId },
+    metadata: { userId, plan },
     success_url: successUrl,
     cancel_url: cancelUrl,
     allow_promotion_codes: true,
-    subscription_data: { metadata: { userId } },
+    subscription_data: { metadata: { userId, plan } },
   })
   return session.url!
 }

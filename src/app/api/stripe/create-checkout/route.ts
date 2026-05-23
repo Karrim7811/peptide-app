@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuthenticatedUser } from '@/lib/supabase/server'
-import { createCheckoutSession, STRIPE_PRICES } from '@/lib/stripe'
+import { createCheckoutSession, type ProPlan } from '@/lib/stripe'
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,14 +10,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { plan } = await request.json() // 'monthly' | 'yearly'
-    const priceId = plan === 'yearly' ? STRIPE_PRICES.proYearly : STRIPE_PRICES.proMonthly
+    const { plan } = (await request.json()) as { plan: ProPlan }
+    if (plan !== 'monthly' && plan !== 'lifetime') {
+      return NextResponse.json({ error: 'Invalid plan' }, { status: 400 })
+    }
 
     const origin = request.headers.get('origin') ?? 'https://peptidecortex.com'
     const url = await createCheckoutSession(
       user.id,
       user.email!,
-      priceId,
+      plan,
       `${origin}/dashboard?upgraded=true`,
       `${origin}/pricing`
     )

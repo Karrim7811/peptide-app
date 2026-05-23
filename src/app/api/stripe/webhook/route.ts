@@ -30,7 +30,22 @@ export async function POST(request: NextRequest) {
       const userId = session.metadata?.userId
       if (!userId) break
 
-      // Get subscription end date
+      // Lifetime (one-time payment) — set tier to 'lifetime' permanently.
+      if (session.mode === 'payment') {
+        await supabase
+          .from('profiles')
+          .update({
+            subscription_tier: 'lifetime',
+            subscription_expires_at: null,
+            stripe_customer_id: session.customer as string,
+          })
+          .eq('id', userId)
+
+        await logSubscriptionEvent(supabase, userId, 'subscribed', 'lifetime', 'stripe', event.id)
+        break
+      }
+
+      // Monthly recurring subscription.
       const subscription = await stripe.subscriptions.retrieve(session.subscription as string)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const expiresAt = new Date(((subscription as any).current_period_end as number) * 1000).toISOString()
