@@ -1,18 +1,19 @@
 {
-  "name": "PeptideTracker",
-  "short_name": "PeptideTracker",
-  "description": "Educational peptide research companion with AI-powered reference tools.",
+  "name": "Peptide Cortex",
+  "short_name": "Peptide Cortex",
+  "description": "AI-powered peptide research companion. Reference, track, and analyze your protocol. For educational purposes only.",
   "start_url": "/dashboard",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#0f172a",
+  "background_color": "#FAFAF8",
+  "theme_color": "#1A8A9E",
   "orientation": "portrait",
   "icons": [
     {
       "src": "/icons/icon-192.svg",
       "sizes": "192x192",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/icons/icon-512.svg",
@@ -21,7 +22,7 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["education", "reference"],
+  "categories": ["health", "education", "reference", "productivity"],
   "shortcuts": [
     {
       "name": "Interaction Checker",
@@ -32,6 +33,11 @@
       "name": "Log a Dose",
       "url": "/log",
       "description": "Log your latest entry"
+    },
+    {
+      "name": "Peptide Bible",
+      "url": "/reference",
+      "description": "Browse the peptide reference"
     }
   ]
 }
