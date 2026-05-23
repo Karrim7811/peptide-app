@@ -5,22 +5,43 @@ import Link from 'next/link'
 import { FlaskConical, Eye, EyeOff, Loader2, CheckCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
+// 18+ gate: signup is refused below this age.
+const MIN_AGE_YEARS = 18
+
+function computeAgeYears(dob: string): number | null {
+  if (!dob) return null
+  const birth = new Date(dob + 'T00:00:00')
+  if (Number.isNaN(birth.getTime())) return null
+  const today = new Date()
+  let years = today.getFullYear() - birth.getFullYear()
+  const m = today.getMonth() - birth.getMonth()
+  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) years -= 1
+  return years
+}
+
 export default function SignupPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [dob, setDob] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
 
+  // Max date attribute for the DOB input — exactly 18 years ago.
+  const maxDob = (() => {
+    const d = new Date()
+    d.setFullYear(d.getFullYear() - MIN_AGE_YEARS)
+    return d.toISOString().slice(0, 10)
+  })()
+
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
     setError('')
 
-    // Validate passwords match
     if (password !== confirmPassword) {
       setError('Passwords do not match.')
       setLoading(false)
@@ -33,17 +54,14 @@ export default function SignupPage() {
       return
     }
 
-    // Check user count limit
-    try {
-      const res = await fetch('/api/user-count')
-      const data = await res.json()
-      if (data.count >= 20) {
-        setError('Registration is currently closed. Maximum user limit (20) reached.')
-        setLoading(false)
-        return
-      }
-    } catch {
-      setError('Could not verify user limit. Please try again.')
+    const age = computeAgeYears(dob)
+    if (age === null) {
+      setError('Please enter your date of birth.')
+      setLoading(false)
+      return
+    }
+    if (age < MIN_AGE_YEARS) {
+      setError(`You must be ${MIN_AGE_YEARS} or older to create an account.`)
       setLoading(false)
       return
     }
@@ -53,6 +71,7 @@ export default function SignupPage() {
       email,
       password,
       options: {
+        data: { dob },
         emailRedirectTo: `${window.location.origin}/dashboard`,
       },
     })
@@ -95,18 +114,16 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center bg-[#1A8A9E]/12 p-3 rounded-2xl mb-4">
             <FlaskConical className="w-8 h-8 text-[#1A8A9E]" />
           </div>
           <h1 className="text-3xl font-bold text-[#1A1915]">
-            Peptide<span className="text-[#1A8A9E]">Tracker</span>
+            Peptide<span className="text-[#1A8A9E]">Cortex</span>
           </h1>
           <p className="text-[#B0AAA0] mt-2">Create your account</p>
         </div>
 
-        {/* Card */}
         <div className="bg-white border border-[#E8E5E0] rounded-2xl p-8">
           <form onSubmit={handleSignup} className="space-y-5">
             {error && (
@@ -127,6 +144,24 @@ export default function SignupPage() {
                 required
                 autoComplete="email"
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#3A3730] mb-2">
+                Date of birth
+              </label>
+              <input
+                type="date"
+                value={dob}
+                onChange={(e) => setDob(e.target.value)}
+                max={maxDob}
+                required
+                autoComplete="bday"
+                className="font-mono tabular-nums"
+              />
+              <p className="text-xs text-[#B0AAA0] mt-1">
+                You must be {MIN_AGE_YEARS} or older.
+              </p>
             </div>
 
             <div>
@@ -193,8 +228,11 @@ export default function SignupPage() {
             </button>
           </form>
 
-          <p className="mt-4 text-xs text-[#B0AAA0] text-center">
-            Limited to 20 users during beta.
+          <p className="mt-4 text-xs text-[#B0AAA0] text-center leading-relaxed">
+            By creating an account you agree to our{' '}
+            <Link href="/terms" className="text-[#1A8A9E] hover:underline">Terms of Service</Link>
+            {' '}and{' '}
+            <Link href="/privacy" className="text-[#1A8A9E] hover:underline">Privacy Policy</Link>.
           </p>
 
           <div className="mt-5 text-center text-sm text-[#B0AAA0]">

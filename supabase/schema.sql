@@ -7,6 +7,7 @@
 create table if not exists public.profiles (
   id uuid references auth.users on delete cascade primary key,
   email text not null,
+  dob date,
   created_at timestamptz default now() not null
 );
 
@@ -127,7 +128,21 @@ create or replace function public.handle_new_user()
 returns trigger as $$
 declare
   v_tier text;
+  v_dob date;
 begin
+  -- DOB must be present in the signup metadata.
+  v_dob := nullif(new.raw_user_meta_data->>'dob', '')::date;
+  if v_dob is null then
+    raise exception 'Date of birth is required'
+      using errcode = '22023';
+  end if;
+
+  -- Hard 18+ gate (defence in depth — client also validates).
+  if v_dob > (current_date - interval '18 years')::date then
+    raise exception 'You must be 18 or older to use Peptide Cortex'
+      using errcode = '22023';
+  end if;
+
   select tier into v_tier
   from public.pro_whitelist
   where lower(email) = lower(new.email)
@@ -137,8 +152,8 @@ begin
     v_tier := 'free';
   end if;
 
-  insert into public.profiles (id, email, subscription_tier)
-  values (new.id, new.email, v_tier);
+  insert into public.profiles (id, email, subscription_tier, dob)
+  values (new.id, new.email, v_tier, v_dob);
   return new;
 end;
 $$ language plpgsql security definer;
