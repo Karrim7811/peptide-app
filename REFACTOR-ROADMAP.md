@@ -4,6 +4,8 @@ Prioritized remediation backlog for the **web app** (`src/`), independent of the
 
 Effort sizes: XS≈<1h, S≈2–4h, M≈half-day, L≈full-day+.
 
+> **Sprint 1 complete (2026-05-23)** — the "pre-launch legal / financial defensibility floor" landed in a single session: ✅ C-3 DOB age gate, ✅ C-6 domain cleanup, ✅ C-7 reconstitution reframing, ✅ C-8 interim refund policy + auto-renewal disclosure, ✅ C-9 EU/EEA/UK/CH geoblock, ✅ C-10 Stripe SKU restructure (monthly + lifetime), ✅ H-1 (partial — manifest text + colors; raster icons still pending), ✅ H-6 / H-7 prompt fixes, ✅ L-1 / L-2 / L-3 / L-5 hygiene wins. Sprint 2 (schema + security + continuity floor) is next: C-1, C-2, C-4, H-4, H-5, H-8.
+
 ---
 
 ## Critical (pre-revenue blockers)
