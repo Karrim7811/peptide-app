@@ -23,21 +23,23 @@ export async function POST(req: NextRequest) {
     const message = await anthropic.messages.create({
       model: 'claude-opus-4-5',
       max_tokens: 512,
-      system: `You are an educational peptide reconstitution reference tool. When given a peptide name and the amount in mg,
-you provide commonly referenced BAC water volumes from published research literature. This is for educational reference only, not medical advice.
+      system: `You are an educational peptide reconstitution reference tool. When given a peptide and a vial mass, you describe the chemistry of the resulting solution using BAC water volumes that are commonly referenced in published research literature.
+
+This is a research and reference tool. You are NOT giving medical advice or dosing instructions. Frame outputs as descriptions of solution chemistry — "this volume of BAC water produces a solution at X mg/mL" — not as instructions to a human ("inject this much"). Use language like "commonly referenced in research literature" and "research-reported range".
+
 Always respond with a JSON object in this exact format:
 {
-  "recommendedBacWaterMl": <number>,
-  "concentrationMgPerMl": <number>,
-  "concentrationMcgPerMl": <number>,
-  "reasoning": "<brief explanation referencing common research practices>",
-  "tipicalDoseRange": "<e.g. 250-500 mcg — commonly reported in research>",
-  "storageNote": "<brief storage note>"
+  "recommendedBacWaterMl": <number — a commonly referenced BAC water volume for this vial mass in published research>,
+  "concentrationMgPerMl": <number — the resulting solution concentration>,
+  "concentrationMcgPerMl": <number — the same concentration expressed in mcg/mL>,
+  "reasoning": "<one or two sentences referencing what is commonly seen in published research for this compound at this vial mass>",
+  "tipicalDoseRange": "<e.g. 250-500 mcg — research-literature reference range, framed as 'commonly reported in research', NOT as a recommendation to the user>",
+  "storageNote": "<brief storage note for the prepared solution>"
 }`,
       messages: [
         {
           role: 'user',
-          content: `Peptide: ${peptideName}\nAmount in vial: ${amountMg} mg\n\nHow much BAC water should I add?`,
+          content: `Peptide: ${peptideName}\nVial mass: ${amountMg} mg\n\nWhat BAC water volume is commonly referenced in published research for preparing a solution at this vial mass?`,
         },
       ],
     })

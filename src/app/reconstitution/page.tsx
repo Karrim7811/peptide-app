@@ -11,6 +11,7 @@ import {
   Sparkles,
   ChevronDown,
   Loader2,
+  AlertTriangle,
 } from 'lucide-react'
 import { PEPTIDE_KNOWLEDGE } from '@/lib/peptide-knowledge'
 import { useAiConsent } from '@/components/AiConsentProvider'
@@ -224,9 +225,22 @@ export default function ReconstitutionPage() {
             <FlaskConical className="w-5 h-5 text-[#1A8A9E]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#1A1915] leading-tight">Reconstitution Guide</h1>
-            <p className="text-[#B0AAA0] text-sm">AI-powered BAC water reference + unit conversion tool</p>
+            <h1 className="text-2xl font-bold text-[#1A1915] leading-tight">Reconstitution Reference</h1>
+            <p className="text-[#B0AAA0] text-sm">Solution chemistry calculator + research-literature unit conversions</p>
           </div>
+        </div>
+      </div>
+
+      {/* ── Mandatory disclaimer banner — research framing, not dosing ──────── */}
+      <div className="bg-amber-50 border border-amber-200 rounded-2xl px-5 py-4 flex gap-3">
+        <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+        <div className="text-[#3A3730] text-sm leading-relaxed">
+          <p className="font-semibold text-[#1A1915] mb-1">For research and reference purposes only.</p>
+          <p>
+            This tool describes the chemistry of a prepared solution. It is{' '}
+            <span className="font-semibold">not intended as dosing instructions for human or animal use</span> and
+            does not constitute medical advice. Consult a licensed physician before any medical decisions.
+          </p>
         </div>
       </div>
 
@@ -234,13 +248,13 @@ export default function ReconstitutionPage() {
       <section className="bg-white border border-[#1A8A9E]/30 rounded-2xl overflow-hidden">
         <div className="flex items-center gap-2 px-6 py-4 border-b border-[#E8E5E0] bg-gradient-to-r from-[#1A8A9E]/10 to-transparent">
           <Sparkles className="w-4 h-4 text-[#1A8A9E]" />
-          <h2 className="text-base font-semibold text-[#1A1915]">AI Reconstitution Advisor</h2>
+          <h2 className="text-base font-semibold text-[#1A1915]">Research Reference Assistant</h2>
           <span className="text-xs text-[#1A8A9E] bg-[#1A8A9E]/8 px-2 py-0.5 rounded-full ml-auto">AI</span>
         </div>
 
         <div className="p-6 space-y-4">
           <p className="text-sm text-[#B0AAA0]">
-            Select your peptide and enter the vial amount — AI will recommend how much BAC water to add and auto-fill the calculator below.
+            Select a peptide and enter the vial amount — the assistant will reference common BAC water volumes from published research literature and auto-fill the solution-chemistry calculator below.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -329,7 +343,7 @@ export default function ReconstitutionPage() {
             ) : (
               <>
                 <Sparkles className="w-4 h-4" />
-                Get AI Recommendation
+                Get Research Reference
               </>
             )}
           </button>
@@ -343,7 +357,7 @@ export default function ReconstitutionPage() {
             <div className="bg-[#FAFAF8] border border-[#1A8A9E]/30 rounded-xl p-5 space-y-4">
               <div className="flex items-center gap-2 mb-1">
                 <Sparkles className="w-4 h-4 text-[#1A8A9E]" />
-                <p className="text-sm font-semibold text-[#1A8A9E]">AI Recommendation for {selectedPeptide}</p>
+                <p className="text-sm font-semibold text-[#1A8A9E]">Research-literature reference for {selectedPeptide}</p>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
@@ -390,13 +404,16 @@ export default function ReconstitutionPage() {
       <section className="bg-white border border-[#E8E5E0] rounded-2xl overflow-hidden">
         <div className="flex items-center gap-2 px-6 py-4 border-b border-[#E8E5E0] bg-gradient-to-r from-[#1A8A9E]/8 to-transparent">
           <FlaskConical className="w-4 h-4 text-[#1A8A9E]" />
-          <h2 className="text-base font-semibold text-[#1A1915]">Manual Reconstitution</h2>
+          <h2 className="text-base font-semibold text-[#1A1915]">Solution Chemistry</h2>
         </div>
 
         <div className="p-6 space-y-4">
+          <p className="text-xs text-[#B0AAA0]">
+            Enter the protocol concentration you want to prepare. The result describes the chemistry of the resulting solution — not dosing instructions.
+          </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <InputCard
-              label="Vial Size"
+              label="Vial Mass"
               unit="mg"
               value={vialSize}
               onChange={setVialSize}
@@ -415,12 +432,12 @@ export default function ReconstitutionPage() {
           {concentration !== null ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
               <ResultBox
-                label="Concentration"
+                label="Resulting Solution"
                 value={`${concentration.toFixed(2)} mg/mL`}
                 large
               />
               <ResultBox
-                label="Concentration"
+                label="Resulting Solution"
                 value={`${(concentration * 1000).toLocaleString(undefined, { maximumFractionDigits: 0 })} mcg/mL`}
                 large
               />
@@ -428,7 +445,7 @@ export default function ReconstitutionPage() {
           ) : (
             <div className="bg-[#FAFAF8] border border-dashed border-[#E8E5E0] rounded-xl px-5 py-6 text-center">
               <Droplets className="w-8 h-8 text-[#3A3730] mx-auto mb-2" />
-              <p className="text-[#B0AAA0] text-sm">Enter vial size and BAC water to calculate concentration</p>
+              <p className="text-[#B0AAA0] text-sm">Enter vial mass and BAC water to see the chemistry of the resulting solution</p>
             </div>
           )}
         </div>
@@ -439,10 +456,13 @@ export default function ReconstitutionPage() {
         <section className="bg-white border border-[#E8E5E0] rounded-2xl overflow-hidden">
           <div className="flex items-center gap-2 px-6 py-4 border-b border-[#E8E5E0] bg-gradient-to-r from-[#1A8A9E]/8 to-transparent">
             <Calculator className="w-4 h-4 text-[#1A8A9E]" />
-            <h2 className="text-base font-semibold text-[#1A1915]">Unit Converter</h2>
+            <h2 className="text-base font-semibold text-[#1A1915]">Solution Unit Converter</h2>
           </div>
 
           <div className="p-6 space-y-4">
+            <p className="text-xs text-[#B0AAA0]">
+              Converts between mass and volume in the prepared solution. Describes what an amount on a U-100 or U-40 syringe contains — does not prescribe an injection.
+            </p>
             {/* Desired dose input + unit toggle */}
             <div className="bg-white border border-[#E8E5E0] rounded-xl p-4">
               <label className="block text-xs font-semibold text-[#B0AAA0] uppercase tracking-wider mb-3">
@@ -490,26 +510,27 @@ export default function ReconstitutionPage() {
             {doseCalc !== null ? (
               <div className="space-y-3">
                 <ResultBox
-                  label="Equivalent Volume"
+                  label="Equivalent Volume of Solution"
                   value={`${doseCalc.volumeMl.toFixed(3)} mL`}
                   large
                 />
                 {/* When the user enters a volume (units / mL / cc), show
-                    what that resolves to in mcg/mg so they see the actual
-                    mass of peptide being delivered. */}
+                    what mass of compound that volume contains in the
+                    prepared solution — describes the chemistry, not a
+                    prescription. */}
                 {(doseUnit === 'units' || doseUnit === 'ml' || doseUnit === 'cc') && (
                   <ResultBox
-                    label="Equivalent Amount"
+                    label="Mass of Compound in Solution"
                     value={`${doseCalc.doseMcg.toLocaleString(undefined, { maximumFractionDigits: 0 })} mcg · ${doseCalc.doseMg.toFixed(3)} mg`}
                   />
                 )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <ResultBox
-                    label="U-100 Insulin Syringe"
+                    label="On a U-100 Insulin Syringe"
                     value={`${doseCalc.u100.toFixed(1)} units`}
                   />
                   <ResultBox
-                    label="U-40 Insulin Syringe"
+                    label="On a U-40 Insulin Syringe"
                     value={`${doseCalc.u40.toFixed(1)} units`}
                   />
                 </div>
