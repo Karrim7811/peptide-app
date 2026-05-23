@@ -118,9 +118,9 @@ Tigris Tech Labs family. The Tailwind palette in `tailwind.config.js` defines:
 | `cx.teal` | `#1A8A9E` | Primary accent (CTAs, badges, links) |
 | `cx.sidebar` | `#1A1915` | Sidebar background |
 
-**Type**: Cormorant Garamond (display, serif), Jost (sans). JetBrains Mono (mentioned in the Tigris Tech Labs family spec) is **not** currently in the Tailwind config or layout — flag in §13.
+**Type**: Cormorant Garamond (display, serif), Jost (sans), **JetBrains Mono (mono, for data)**. JetBrains Mono is the resolved choice for any precise numeric content — dosages, vial concentrations, blood marker values, dates, IDs, lab ranges. Reasoning: "instrument-panel" feel that matches the research-tool positioning, and column-wise digit alignment in tables (genuinely easier to scan in bloodwork results and dose logs). Migration is tracked in `REFACTOR-ROADMAP.md`.
 
-**Accent colour mismatch**: the Tigris Tech Labs family spec referenced by Karim names the primary accent "Neural Teal `#00C9B1`". This codebase uses `#1A8A9E` (a darker, cooler teal closer to petrol). Whether the brand spec changed or the code drifted is an open question — see §13.
+**Primary accent — intentional divergence from family spec**: this codebase uses `cx.teal = #1A8A9E` (a deeper, more clinical teal). The Tigris Tech Labs family spec names the primary accent "Neural Teal `#00C9B1`" — that brighter, more saturated teal is used in **PRAIX**, **Jarvis**, and **alevant-app**. **Peptide Cortex is the deliberate exception** in the family. The deeper `#1A8A9E` reads more "research/instrument" and less "consumer SaaS", which fits the peptide-research positioning better than the family teal would. **Future sessions: do not "fix" `#1A8A9E` back to `#00C9B1`.** Treat the divergence as a feature.
 
 **Marketing voice** (`MARKETING.md`): "analytical, practical, slightly edgy. Science-first biohacking. NOT overly medical, scary, or supplement-bro. Smart and direct." `MARKETING.md` is also out of date — it carries the old `PeptideTracker` name and an old dark-navy/indigo colour palette (`#0f172a`, `#6366f1`) that no longer matches the live cx palette.
 
@@ -366,20 +366,9 @@ The next 90 days of work are about getting `peptidecortex.com` to the polish lev
 7. **No off-NAS backup** — origin GitHub remote is `Karrim7811/peptide-app.git` and the working copy is on the T:\ network share. GitHub push status is up-to-date as of clone (`b611890`). Single point of failure if the GitHub account or the NAS is lost.
 8. **No tests, no CI for the web app** — `.github/workflows/` has iOS-only workflows. No `vitest` / `jest` / `playwright` config.
 
-### Soft / strategic questions for Karim
+### Resolved strategic decisions
 
-1. **Brand accent colour** — is the primary teal `#1A8A9E` (current code) or `#00C9B1` (Tigris Tech Labs family spec named "Neural Teal")? Same question for the Tigris monogram / wordmark usage on the web app.
-2. **JetBrains Mono** — the Tigris Tech Labs family typography spec includes JetBrains Mono for data. Not used anywhere in this codebase. Wanted on web?
-3. **Third commercial tier** — `subscription_tier` schema allows `'free' | 'pro' | 'lifetime'`. The pricing page shows only Free and Pro. Is `lifetime` meant to be a paid tier we sell (e.g. one-time $299), or is it only ever a comp grant?
-4. **Stripe price strategy** — pricing page hardcodes "Save 51%" calc from `$9.99 * 12 → $79.99`. Are those the live values, or stale?
-5. **Bloodwork prompt literal** — the bloodwork-analyze system prompt says "Peptide Knowledge Base (58 peptides)". Actual knowledge file is 81+ entries. Update to compute count dynamically.
-6. **Web push** — should `peptidecortex.com` support Web Push for dose reminders (VAPID + service worker subscription)? Required to compete with the native iOS push reminders.
-7. **Bloodwork PDF/image upload via web** — the iOS app has camera scan + file import (`4516e2a feat: add camera scan and file import for bloodwork analyzer`). Web does not. How critical to v1 web parity?
-8. **Vial Scanner on web** — `getUserMedia` + canvas → `/api/scan-vials` is straightforward, but is this a Pro feature on web or free?
-9. **Dose-calculator framing on web** — Apple rejected on 1.4.2 because the recon calculator gives dosing without manufacturer/institutional sponsorship. On web, this is allowed under US law but still creates product-liability surface. Keep, hide behind disclaimer, or convert to a "reference tool" that shows ranges only?
-10. **Data residency / DPA** — Supabase US region assumed. Confirm before any EU users sign up; current Terms says US law only.
-11. **Age verification** — Terms requires 18+, but signup flow does not collect DOB or assert age. Consider an age gate on `/signup`.
-12. **Refund policy** — Terms say refunds "at our discretion" with a 7-day window. State refund-policy languages required by FTC / various state AGs? Defer to counsel before public launch.
+The previously-open strategic questions for Karim have all been resolved — see §16 "Resolved Decisions" for the full list and reasoning. Future Claude sessions: do not re-open these without explicit instruction.
 
 ---
 
@@ -419,22 +408,68 @@ The next 90 days of work are about getting `peptidecortex.com` to the polish lev
 
 ---
 
-## 16. Open Questions (consolidated for §13)
+## 16. Resolved Decisions
 
-These need Karim's decision before further work. Future sessions: each unanswered item below is a parking-lot for now — don't assume a default.
+All twelve previously-open strategic questions have been answered by Karim (2026-05-23). Future sessions: these are settled — do not re-open without explicit instruction.
 
-1. Canonical production domain — `peptidecortex.com` vs `peptidecortex.ai`?
-2. Primary teal — `#1A8A9E` (current code) vs `#00C9B1` (Neural Teal brand spec)?
-3. JetBrains Mono — adopt for web?
-4. `lifetime` tier — sell as third commercial tier, or comp-only?
-5. Stripe live price IDs and amounts — confirm the `$9.99/mo`, `$79.99/yr` strings in `pricing/page.tsx`.
-6. Web Push for reminders — v1 web parity requirement?
-7. Bloodwork OCR upload UI on web — v1 requirement?
-8. Vial Scanner on web — free or Pro-gated?
-9. Reconstitution calculator on web — keep, hide, or convert to range-only reference?
-10. Age gate at signup — collect DOB or self-assert?
-11. EU / DPA / GDPR — when do non-US users become a real market?
-12. State-specific refund-policy language — defer to counsel before public launch?
+### 16.1 Canonical production domain → `peptidecortex.com`
+Eliminate every reference to `peptidecortex.ai` and `peptidetracker.app` from the codebase. The `peptidetracker.app` fallback in `src/app/api/stripe/create-checkout/route.ts` is a real bug: if Stripe ever falls through to that string in production, paid users land on a dead domain mid-checkout. Tracked as Critical roadmap item.
+
+### 16.2 Primary accent teal → `#1A8A9E` (locked, intentional divergence)
+Peptide Cortex's deeper, clinical teal stays. The Tigris Tech Labs family Neural Teal `#00C9B1` is used in PRAIX, Jarvis, and alevant-app; Peptide Cortex is the deliberate exception because the deeper teal reads more "research/instrument" and less "consumer SaaS". Future sessions must not "fix" this back to family teal. See §6.
+
+### 16.3 JetBrains Mono → adopt for data
+Render precise numeric content in JetBrains Mono: mg dosages, vial concentrations, lab values, dates, IDs, lab ranges. Two benefits: (a) instrument-panel feel matches the brand, (b) column-wise digit alignment is genuinely easier to scan in bloodwork results and dose logs. Roadmap item upgraded to High.
+
+### 16.4 Subscription tiers → Free + Pro (two SKUs)
+- **Free** — current free-tier limits unchanged.
+- **Pro** — same feature set, two billing SKUs:
+  - `$9.99 / month` recurring
+  - `$99.99 one-time` lifetime
+- **Annual `$79.99 / year` is deprecated and removed.** Existing annual subscribers are grandfathered until their next renewal, at which point they are offered conversion to monthly or lifetime.
+- The Supabase `subscription_tier` enum (`'free' | 'pro' | 'lifetime'`) stays as-is — `lifetime` is now a payment path into Pro, not a marketed third tier. Lifetime customers get a `subscription_tier = 'lifetime'` row that the gating code treats identically to `'pro'`.
+
+### 16.5 Live Stripe prices → `$9.99/mo` and `$99.99` lifetime
+Both must be created (or updated) in live Stripe; the env vars `STRIPE_PRO_MONTHLY_PRICE_ID` and a new `STRIPE_PRO_LIFETIME_PRICE_ID` reference them. `STRIPE_PRO_YEARLY_PRICE_ID` is retired. `pricing/page.tsx` updated to show the two SKUs and remove the monthly/yearly toggle.
+
+### 16.6 Web Push for reminders → v1 requirement, non-negotiable
+Web Push (VAPID + service worker subscription) is required at v1 of the web-primary surface. Without it, the web app cannot replace the iOS reminder use-case — users have no way to be reminded to inject without keeping a browser tab open. Web Push targets **iOS Safari 16.4+ when installed as a PWA on home screen** (which is already our install pattern) plus all desktop browsers. Without this, the web app feels like a website; with it, it feels like an app. Roadmap item promoted to Critical.
+
+### 16.7 Bloodwork PDF upload on web → v1 requirement
+The `/api/bloodwork-analyze` and `/api/bloodwork-ocr` endpoints are built. Build the matching web UI at `src/app/bloodwork/page.tsx` that accepts PDF (and image) uploads, calls the OCR endpoint, displays parsed markers, runs the analyze endpoint, and saves to `bloodwork_results`. This is the headline Pro feature — not exposing it on web is leaving paid functionality stranded. Most users get bloodwork as PDFs from Labcorp / Quest; without PDF upload, they must manually transcribe values, which nobody does.
+
+### 16.8 Vial Scanner on web → Pro-gated
+Same gating as iOS. `/api/scan-vials` is built. Web UI is a file upload (`<input type="file" accept="image/*" capture="environment">`) plus a `getUserMedia` camera capture path for desktop. Calls the existing API. Pro check via `isProUser()` from `src/lib/subscription.ts`.
+
+### 16.9 Reconstitution calculator → keep on web, reframe for US legal defensibility
+Apple flagged this on Guideline 1.4.2 for a reason that applies to web too: specific dose calculations directed at an individual create US legal exposure. The math stays; the framing changes:
+
+- **Input language**: ask "what's the protocol concentration you want to prepare?" — not "what's your dose?"
+- **Output language**: "this solution will contain X mcg per Y units on a U-100 syringe at this reconstitution" — describes the chemistry of the solution, not dosing instructions to a human.
+- **Mandatory disclaimer banner above the calculator**: _"For research and reference purposes only. Not intended as dosing instructions for human or animal use. Consult a licensed physician before any medical decisions."_
+
+Roadmap item added at Critical priority. This reframing must land before the next public launch push.
+
+### 16.10 Age gate at signup → collect DOB, not self-attest
+Collect date-of-birth at `/signup`. Store in `profiles.dob` (date). Block signup if the computed age is under 18. Self-attestation ("I confirm I am 18+") is rejected — a real DOB on record is far more defensible if challenged.
+
+### 16.11 EU / GDPR → geoblock EU at the edge now, revisit when EU is a real market
+GDPR applies the moment we have EU users — full stop. The compliance burden (DPA with Supabase + Stripe, cookie banner, data-export/deletion endpoints, EU representative if processing at scale) is 3–5 days of focused work. We have ~zero EU users today. Decision: solve the problem by not having the problem.
+
+- **Now**: Vercel edge middleware geoblocks EU IPs. EU traffic gets a clean "Peptide Cortex is currently available to US-based users only" page. ~1 hour of work.
+- **Trigger to revisit**: first time we actively market to EU, OR first time the geoblock is intentionally removed because EU is now a target market. At that point spend the 3–5 days on full compliance.
+
+### 16.12 Refund policy → ship interim now, full legal review before paid marketing
+The states that matter (California, New York, Connecticut, Illinois) all have specific subscription auto-renewal laws and digital-goods refund rules. A real attorney review of ToS + refund policy is `$500–$2000` and is worth it before any meaningful marketing push.
+
+**Interim policy (defensible, ship now):**
+- 7-day refund window on initial **monthly** subscription, no questions asked.
+- 14-day refund window on **lifetime** purchase, no questions asked.
+- No refunds after the applicable window.
+- Cancellation anytime; takes effect at the end of the current billing period.
+- **Auto-renewal disclosure prominent at checkout** (this is California's specific subscription-auto-renewal-law requirement; the dollar amount, frequency, and cancellation method must be displayed before the user clicks Pay).
+
+**Full legal review**: required before any paid marketing push. Roadmap item added at Critical priority.
 
 ---
 
