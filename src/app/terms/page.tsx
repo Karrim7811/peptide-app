@@ -64,12 +64,61 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-[#1A1915] text-lg font-semibold mb-2">4. Subscriptions and Billing</h2>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>Pro subscriptions are billed monthly or annually through Stripe.</li>
-              <li>You may cancel your subscription at any time; Pro access continues until the end of the current billing period.</li>
-              <li>Refunds are handled at our discretion. Contact support within 7 days of a charge for refund requests.</li>
-              <li>Prices may change with 30 days&apos; written notice to active subscribers.</li>
+            <h2 className="text-[#1A1915] text-lg font-semibold mb-2">4. Subscriptions, Billing, and Refunds</h2>
+            <p className="mb-3">
+              Peptide Cortex offers two Pro purchase options: a recurring monthly
+              subscription and a one-time lifetime purchase. All payments are
+              processed by Stripe. Prices, frequency, and a clear cancellation
+              path are disclosed on the pricing page before any charge.
+            </p>
+            <ul className="list-disc pl-5 space-y-1.5">
+              <li>
+                <strong>Monthly Pro:</strong> billed every month at the price
+                shown on the pricing page at the time of purchase. The monthly
+                subscription auto-renews each month until you cancel. You can
+                cancel at any time from your account; access continues until the
+                end of the current billing period.
+              </li>
+              <li>
+                <strong>Lifetime Pro:</strong> a one-time charge for permanent
+                Pro access. Does not auto-renew.
+              </li>
+              <li>
+                <strong>Refund window — monthly:</strong> we will refund the
+                initial monthly subscription charge in full if you request a
+                refund within <strong>7 days</strong> of that charge, no
+                questions asked. No refunds are offered for monthly charges
+                after the 7-day window.
+              </li>
+              <li>
+                <strong>Refund window — lifetime:</strong> we will refund a
+                lifetime purchase in full if you request a refund within{' '}
+                <strong>14 days</strong> of purchase, no questions asked. No
+                refunds are offered for lifetime purchases after the 14-day
+                window.
+              </li>
+              <li>
+                <strong>Cancellation:</strong> monthly subscriptions can be
+                cancelled at any time from the account billing portal.
+                Cancellation takes effect at the end of the current billing
+                period. Lifetime purchases cannot be &quot;cancelled&quot; — only
+                refunded within the 14-day window above.
+              </li>
+              <li>
+                Prices may change with 30 days&apos; written notice to active
+                monthly subscribers. Lifetime customers are unaffected by
+                future price changes.
+              </li>
+              <li>
+                To request a refund or cancellation help, email{' '}
+                <a
+                  href="mailto:support@tigristechlabs.com"
+                  className="text-[#1A8A9E] hover:underline"
+                >
+                  support@tigristechlabs.com
+                </a>
+                .
+              </li>
             </ul>
           </section>
 
