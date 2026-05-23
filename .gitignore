@@ -30,3 +30,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# source authoring docs — kept locally, not shipped in the repo
+Complete_Peptide_Bible_v2.pdf
