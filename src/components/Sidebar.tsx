@@ -141,9 +141,6 @@ export default function Sidebar() {
 
         {/* Bottom */}
         <div style={{ padding: '10px 8px', borderTop: '0.5px solid rgba(176,170,160,0.30)', flexShrink: 0 }}>
-          <a href="/pricing" style={{ display: 'block', width: '100%', padding: '9px', borderRadius: 7, background: '#1A8A9E', color: '#FAFAF8', fontFamily: FONT, fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textAlign: 'center', textDecoration: 'none', marginBottom: 6 }}>
-            Upgrade to Pro
-          </a>
           <button onClick={handleSignOut} disabled={signingOut} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '7px 10px', background: 'none', border: 'none', cursor: 'pointer', borderRadius: 7, fontFamily: FONT, fontSize: 12, color: '#B0AAA0' }}>
             <LogOut style={{ width: 13, height: 13 }} />
             {signingOut ? 'Signing out…' : 'Sign Out'}

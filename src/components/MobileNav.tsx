@@ -292,26 +292,6 @@ export default function MobileNav() {
           paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)',
           borderTop: '0.5px solid rgba(176, 170, 160, 0.3)',
         }}>
-          <Link
-            href="/pricing"
-            style={{
-              display: 'block',
-              width: '100%',
-              padding: '14px',
-              borderRadius: 12,
-              background: '#1A8A9E',
-              color: '#FAFAF8',
-              fontFamily: "'Gill Sans', 'Gill Sans MT', Calibri, sans-serif",
-              fontSize: 15,
-              fontWeight: 600,
-              letterSpacing: '0.04em',
-              textAlign: 'center',
-              textDecoration: 'none',
-              marginBottom: 8,
-            }}
-          >
-            Upgrade to Pro
-          </Link>
           <button
             onClick={handleSignOut}
             disabled={signingOut}
