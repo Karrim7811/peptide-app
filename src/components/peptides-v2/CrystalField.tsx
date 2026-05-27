@@ -403,12 +403,15 @@ export default function CrystalField({ seed = 1337, children, progress }: Crysta
 
       // Derive scroll-state factors. Smoothstep ranges chosen so transitions
       // overlap slightly — never a hard handoff between states.
+      // Coalescence/shrink now finish at 0.85 (was 0.92) to leave clear room
+      // for the vial reveal (0.88–0.97). Cosmos fade also tightens so the
+      // cloud is gone by the time the vial reaches full materialization.
       const parallaxT = smoothstep(t, 0.05, 0.65)
-      const coalK = smoothstep(t, 0.55, 0.92)
+      const coalK = smoothstep(t, 0.55, 0.85)
       const centerThinT = smoothstep(t, 0.30, 0.55)
       const sizeGrowT = smoothstep(t, 0.0, 0.55)
-      const sizeShrinkT = smoothstep(t, 0.55, 0.92)
-      const fadeOutT = smoothstep(t, 0.85, 1.0)
+      const sizeShrinkT = smoothstep(t, 0.55, 0.85)
+      const fadeOutT = smoothstep(t, 0.82, 0.94)
 
       // Molecule anchor positions in viewport pixels. Computed once per frame
       // since viewport size + cy + R can change on resize.

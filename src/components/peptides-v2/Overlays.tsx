@@ -208,9 +208,9 @@ export function ActionSection({ progress }: { progress: MotionValue<number> }) {
 /* ----- Use section ----- */
 
 export function UseSection({ progress }: { progress: MotionValue<number> }) {
-  const labelRange: [number, number, number, number] = [0.72, 0.78, 0.92, 0.98]
-  // Use fields appear before CAUTIONS pushes them out; they share scroll with molecule.
-  const fieldRange: [number, number, number, number] = [0.78, 0.84, 0.92, 0.98]
+  // Tightened so USE clears the stage before the vial dominates (was 0.78–0.98).
+  const labelRange: [number, number, number, number] = [0.72, 0.78, 0.86, 0.90]
+  const fieldRange: [number, number, number, number] = [0.78, 0.82, 0.86, 0.90]
   return (
     <>
       <SectionLabel progress={progress} label="USE" range={labelRange} />
@@ -235,8 +235,10 @@ export function UseSection({ progress }: { progress: MotionValue<number> }) {
 /* ----- Cautions section ----- */
 
 export function CautionsSection({ progress }: { progress: MotionValue<number> }) {
-  const labelRange: [number, number, number, number] = [0.86, 0.90, 1.0, 1.05]
-  const fieldRange: [number, number, number, number] = [0.88, 0.92, 1.0, 1.05]
+  // Tightened so CAUTIONS clears before final rest (was 0.86–1.05).
+  // The vial sits alone at 0.95+.
+  const labelRange: [number, number, number, number] = [0.84, 0.87, 0.92, 0.95]
+  const fieldRange: [number, number, number, number] = [0.85, 0.88, 0.92, 0.95]
   return (
     <>
       <SectionLabel progress={progress} label="CAUTIONS" range={labelRange} />
@@ -281,8 +283,11 @@ const NODES: Array<{ x: number; y: number; label: string }> = [
 ]
 
 export function MoleculeOverlay({ progress }: { progress: MotionValue<number> }) {
-  const opacity = useTransform(progress, [0.78, 0.96], [0, 1])
-  const scale = useTransform(progress, [0.78, 0.96], [0.92, 1])
+  // Resolve by 0.85 (compressed from 0.96 to make room for the vial reveal),
+  // hold for the brief beat at 0.85–0.88, then dissolve to 0 by 0.94 as the
+  // dissolution particles fly into the vial.
+  const opacity = useTransform(progress, [0.78, 0.85, 0.88, 0.94], [0, 1, 1, 0])
+  const scale = useTransform(progress, [0.78, 0.85], [0.92, 1])
   return (
     <motion.div
       style={{
