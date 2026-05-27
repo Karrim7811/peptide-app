@@ -167,10 +167,18 @@ export default function HeroVial({
             <stop offset="100%" stopColor={powderColor} stopOpacity="0.96" />
           </linearGradient>
 
-          {/* Glass shine — left-side specular. Animates via glint prop. */}
+          {/* Glass shine — left-side specular. Static; intensity from glint prop. */}
           <linearGradient id="hv-shine" x1="0" x2="1" y1="0" y2="1">
             <stop offset="0%" stopColor="#FFFFFF" stopOpacity={0.55 * glintAmt} />
             <stop offset="35%" stopColor="#FFFFFF" stopOpacity="0" />
+          </linearGradient>
+
+          {/* Sweeping ambient glint — a thin vertical band of light that
+              crosses the glass over a slow 4s cycle. */}
+          <linearGradient id="hv-sweep" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0" />
+            <stop offset="50%" stopColor="#FFFFFF" stopOpacity={0.42 * glintAmt} />
+            <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
           </linearGradient>
 
           {/* Label paper — slightly aged cream, with a faint warm tint. */}
@@ -191,9 +199,11 @@ export default function HeroVial({
             />
           </clipPath>
 
-          {/* Clip for the label paper area so text stays bounded. */}
+          {/* Clip for the label paper area so text stays bounded. Label sits
+              in the upper portion of the body so settled powder (lower 35%)
+              remains fully visible through the glass below it. */}
           <clipPath id={labelClip}>
-            <rect x={BODY_X + 14} y={232} width={BODY_W - 28} height={108} rx="3" ry="3" />
+            <rect x={BODY_X + 14} y={138} width={BODY_W - 28} height={108} rx="3" ry="3" />
           </clipPath>
         </defs>
 
@@ -302,7 +312,7 @@ export default function HeroVial({
         <g clipPath={`url(#${labelClip})`}>
           <rect
             x={BODY_X + 14}
-            y={232}
+            y={138}
             width={BODY_W - 28}
             height={108}
             rx={3}
@@ -316,8 +326,8 @@ export default function HeroVial({
           <line
             x1={BODY_X + 22}
             x2={BODY_X + BODY_W - 22}
-            y1={249}
-            y2={249}
+            y1={155}
+            y2={155}
             stroke={apoBrass}
             strokeOpacity={0.55}
             strokeWidth={0.4}
@@ -325,8 +335,8 @@ export default function HeroVial({
           <line
             x1={BODY_X + 22}
             x2={BODY_X + BODY_W - 22}
-            y1={326}
-            y2={326}
+            y1={232}
+            y2={232}
             stroke={apoBrass}
             strokeOpacity={0.55}
             strokeWidth={0.4}
@@ -335,7 +345,7 @@ export default function HeroVial({
           {/* "Cortex Peptide" — small caps, brass. */}
           <text
             x={BASE_W / 2}
-            y={269}
+            y={175}
             textAnchor="middle"
             fontFamily='"Cormorant Garamond", Georgia, serif'
             fontSize={14}
@@ -351,7 +361,7 @@ export default function HeroVial({
           {peptideName && (
             <text
               x={BASE_W / 2}
-              y={310}
+              y={216}
               textAnchor="middle"
               fontFamily='"Cormorant Garamond", Georgia, serif'
               fontSize={28}
@@ -374,6 +384,27 @@ export default function HeroVial({
             fill="url(#hv-shine)"
             pointerEvents="none"
           />
+
+          {/* Sweeping glint — a slim vertical band drifts across the body once
+              every 4s. Subtle: feels like light moving over a real bottle. */}
+          {glintAmt > 0 && (
+            <rect
+              y={INNER_Y}
+              width={48}
+              height={INNER_H}
+              fill="url(#hv-sweep)"
+              pointerEvents="none"
+            >
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                values={`${INNER_X - 60} 0; ${INNER_X + INNER_W + 12} 0; ${INNER_X - 60} 0`}
+                keyTimes="0; 0.5; 1"
+                dur="4s"
+                repeatCount="indefinite"
+              />
+            </rect>
+          )}
         </g>
 
         {/* A subtle hand-blown irregularity: faint vertical line on the right side
