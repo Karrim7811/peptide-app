@@ -186,4 +186,66 @@ Nothing else in the codebase was modified.
 
 ---
 
-_Authored: 2026-05-27 by Claude (Opus 4.7, 1M context). Branch head at write time: pending the commit that adds this file._
+## Phase 1.5 — Microscope refactor
+
+The Phase 1 Microscope was a single smooth scale-up + horizontal drift. It read as "a small chart drifting past" rather than "an instrument revealing detail." Phase 1.5 rebuilds it as a progressive zoom through **five discrete states** tied to scroll position.
+
+### Five zoom states
+
+```
+State 1   0–15%    0.6×    full topology, no HUD             specimen at low magnification
+State 2   15–35%   2.0×    faint reticle, 100× MAG           specimen under the lens
+State 3   35–60%   4.0×    sub-structure, scale bar, 400×    deep focus
+State 4   60–85%   1.5×    side annotations, PROFILE VIEW    pulling back to context
+State 5   85–100%  0.25×   HUD fades                          spec mark in the footer
+```
+
+Keypoints are scroll-driven via `useScroll` → `useSpring` → `useTransform`, smoothed once at the spring stage so every derived value inherits the same easing.
+
+### Molecule changes
+
+`IpamorelinMolecule.tsx` gained two new props — `subDetailOpacity` and `annotationOpacity` — each typed `number | MotionValue<number>` so static call sites (the specimen page hero) pass nothing while the Microscope hands MotionValues through. Both render inside `motion.g`s with `style={{ opacity }}`. Default of `0` means the layers are invisible on the specimen page; no change to the static figure.
+
+Two new layers inside the SVG:
+- **Sub-structure** — four short bond-angle ticks radiating from each node, plus a residue-specific interior glyph: Aib as two short stubs (gem-dimethyl), His as a small pentagon (imidazole), D-2-Nal as a pair of small fused circles (naphthalene), D-Phe as a small hexagon (benzene), Lys as a short zigzag (4-carbon chain). All outline only, drawn behind the inner brass dot so the dot still reads as the node's center at every zoom.
+- **Side annotations** — two minimal callouts in the SVG-internal coordinate space: a thin brass line + JetBrains Mono label for `→ GHS-R1a` (anchored near D-2-Nal) and `→ pituitary` (anchored near His). These ride the molecule's scale + rotation, since they're labelling specific residues.
+
+### Microscope HUD (screen-space)
+
+Four overlay elements, all `currentColor` so they inherit the wrapper's `text-apo-brass`:
+
+- **Vignette** — full-viewport radial gradient, transparent at center to `rgba(168,139,94,0.18)` at the edges, opacity peaks at state 3 (~0.55), fades by state 5.
+- **Reticle** — two 1px cross-hairs through viewport center plus a 12×12 ring at the crossing. Lives at opacity ~0.15 in state 2, ~0.20 in state 3, gone by state 4.
+- **Scale bar** — a 48×1 brass tick with `50 Å` in JetBrains Mono underneath, bottom-left. State 3 only.
+- **Mag readout** — three overlapping spans bottom-right (`100× MAG`, `400× MAG`, `PROFILE VIEW`), each with its own opacity ramp so exactly one is visible per state. The longest is rendered invisibly to set the layout box width.
+
+The reticle is fixed to the viewport, not to the molecule. The metaphor is a microscope eyepiece: the lens is stationary, the specimen moves under it. Horizontal/vertical drift from Phase 1 was dropped for the same reason — real specimens don't pan across the field of view.
+
+### Decisions I made
+
+- **Spring tuning** — used the brief's literal `stiffness: 80, damping: 30`. With mass 1, that's slightly over-damped (critical damping ≈ 17.9), so settle is monotone rather than overshooting. The brief asked for "slight overshoot/settle as if the focus is being found" — what landed is more "confident-optics" than "spring." If we want true overshoot, drop damping to ~14–16.
+- **Sub-structure literalism** — the brief said "small interior shapes hinting at side-chain rings." Drew them as outline glyphs that correspond to each residue's actual side-chain identity (Aib gem-dimethyl, His imidazole, etc.) rather than abstract decorative shapes. An organic chemist would still call them decorative, but the visual rhyme with the chemistry is intentional and earns the "apothecary" register.
+- **Magnification values** — `100×` and `400×` are mood values, not literal optics. A peptide visualized at this scale on a screen has no real magnification number; common eyepiece + objective combos on biological microscopes are 100×, 400×, 1000×, so `100×/400×` reads as "low-power / high-power" without claiming a microscopy regime the page doesn't actually live in.
+- **Scale bar value** — "50 Å" rounds a typical pentapeptide extended length (~25 Å for ipamorelin) to a memorable, friendly number. The bar is decorative; the value is dictated by the visual weight of three characters in JetBrains Mono rather than by any measurement.
+- **Reticle treatment** — brief said "horizontal + vertical, centered, low opacity." I added the small focus-ring at the crossing because apothecary-era eyepieces almost always have a centered reticle dot or ring. Drop it if it reads as too instrumented.
+- **Molecule wrapper opacity** — switched from `text-apo-brass/45` to `text-apo-brass/55` because at deep zoom the watermark needs slightly more presence to feel like the page's subject, not its wallpaper.
+- **No horizontal drift, no y drift** — see "reticle is fixed to the viewport" above. The molecule scales and rotates; the rest is HUD.
+
+### Deferred
+
+- **Reduced-motion respect** — none of the five zoom states, the rotation, or the HUD opacity ramps check `prefers-reduced-motion: reduce`. Phase 1 already deferred this; Phase 1.5 doubled the surface area but didn't address it.
+- **Mobile QA** — scroll-linked Microscope behavior on touch devices has not been verified on a real iPhone. Spring tuning and zoom keypoints may need adjustment for momentum-scroll behavior.
+- **Magnification curve at low end** — state 1's `0.6×` start is identical to a held value for the first 15% of scroll. If the page header is taller than expected on certain viewports, the user lands inside state 1 with the molecule already at the resting state — fine, but worth verifying on tall mobile viewports.
+- **HUD readability on dark page sections** — there are none in the current layout, but if a future section uses a dark surface, the brass HUD on cream assumes a cream-or-lighter background throughout.
+- **Spring overshoot** — see "Spring tuning" above. Holding the brief's literal values until visual feedback says otherwise.
+
+### Files touched
+
+- `src/components/peptides/IpamorelinMolecule.tsx` — two new layers (`motion.g`) + two new props
+- `src/components/peptides/Microscope.tsx` — full rewrite around five zoom states and HUD
+
+No other files changed.
+
+---
+
+_Phase 1: 2026-05-27. Phase 1.5: 2026-05-27. Claude (Opus 4.7, 1M context)._
