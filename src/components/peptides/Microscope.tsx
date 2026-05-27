@@ -60,7 +60,7 @@ export default function Microscope() {
         className="will-change-transform"
       >
         <IpamorelinMolecule
-          className="w-[min(78vw,560px)] h-auto text-apo-ink/70"
+          className="w-[min(78vw,560px)] h-auto text-apo-brass/45"
           stroke="currentColor"
           accent="#A88B5E"
           label={false}

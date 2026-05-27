@@ -79,7 +79,7 @@ export default function IpamorelinSpecimen() {
         {/* ── MOLECULE ───────────────────────────────────────────────── */}
         <Reveal delay={0.15} className="mt-16 mb-12 flex justify-center">
           <IpamorelinMolecule
-            className="w-full max-w-[560px] h-auto text-apo-ink"
+            className="w-full max-w-[560px] h-auto text-apo-brass"
             stroke="currentColor"
             accent="#A88B5E"
           />
