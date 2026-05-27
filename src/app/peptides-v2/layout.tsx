@@ -16,10 +16,8 @@ export default function PeptidesV2Layout({
     <div
       className={jetbrainsMono.variable}
       style={{
-        position: 'fixed',
-        inset: 0,
         background: '#EDE3D0',
-        overflow: 'auto',
+        minHeight: '100vh',
       }}
     >
       {children}

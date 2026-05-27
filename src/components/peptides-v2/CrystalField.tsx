@@ -1,10 +1,33 @@
 'use client'
 
 import { useEffect, useRef, type ReactNode } from 'react'
+import type { MotionValue } from 'framer-motion'
 
 interface CrystalFieldProps {
   seed?: number
   children?: ReactNode
+  /**
+   * 0..1 scroll-progress MotionValue. When provided, the field drives camera
+   * depth: outward parallax, size growth, cloud thinning, coalescence into
+   * five molecule anchors, and final fade as the molecule resolves.
+   */
+  progress?: MotionValue<number>
+}
+
+// Five-node Ipamorelin topology in SVG coords (viewBox 0..580 x, ~180..220 y).
+// Order: Aib · His · D-2-Nal · D-Phe · Lys.
+const ANCHORS_X_SVG = [90, 190, 290, 390, 490]
+const ANCHORS_Y_SVG = [220, 190, 180, 190, 220]
+const MOLECULE_SVG_W = 580
+const MOLECULE_SVG_H = 280
+const MOLECULE_VIEWPORT_W_FRAC = 0.70
+const MOLECULE_MAX_W = 720
+
+function smoothstep(x: number, a: number, b: number): number {
+  if (x <= a) return 0
+  if (x >= b) return 1
+  const t = (x - a) / (b - a)
+  return t * t * (3 - 2 * t)
 }
 
 type Layer = 'back' | 'front'
@@ -30,6 +53,7 @@ interface Particle {
   color: string
   letter?: string
   layer: Layer
+  anchorIdx: number  // 0..4 — which of the 5 molecule anchors this particle coalesces into
   // Per-frame mutable state
   xNorm: number      // current x in cloud-local units of R (drift)
   yNorm: number
@@ -136,6 +160,10 @@ function generateParticles(seed: number): Particle[] {
     const xNorm = baseRNorm * Math.cos(baseTheta)
     const yNorm = baseRNorm * Math.sin(baseTheta)
 
+    // Anchor assignment: split the cloud into 5 vertical bands by base x.
+    // Particles in the left band collapse to anchor 0 (Aib), rightmost to 4 (Lys).
+    const anchorIdx = Math.min(4, Math.max(0, Math.floor((xNorm + 1) / 2 * 5)))
+
     // Velocity: small random vector. Brief target: 0.05–0.2 px/frame at 60fps.
     // Convert by dividing by REF_R so actual pixel speed lands near spec on typical viewports.
     const vMagPx = 0.05 + rand() * 0.15
@@ -151,7 +179,7 @@ function generateParticles(seed: number): Particle[] {
     }
 
     out.push({
-      type, baseRNorm, baseTheta, size, baseRotation, opacity, color, letter, layer,
+      type, baseRNorm, baseTheta, size, baseRotation, opacity, color, letter, layer, anchorIdx,
       xNorm, yNorm, vxNorm, vyNorm, rotationOffset: 0, omega,
     })
   }
@@ -295,9 +323,25 @@ function drawParticle(
   ctx.restore()
 }
 
-export default function CrystalField({ seed = 1337, children }: CrystalFieldProps) {
+export default function CrystalField({ seed = 1337, children, progress }: CrystalFieldProps) {
   const backRef = useRef<HTMLCanvasElement>(null)
   const frontRef = useRef<HTMLCanvasElement>(null)
+  const progressRef = useRef<number>(0)
+
+  // Keep a plain-number mirror of the MotionValue so the rAF loop can read
+  // synchronously without invoking any framer-motion subscription machinery
+  // per frame. The MotionValue updates progressRef.current via `on('change')`.
+  useEffect(() => {
+    if (!progress) {
+      progressRef.current = 0
+      return
+    }
+    progressRef.current = progress.get()
+    const unsub = progress.on('change', (v) => {
+      progressRef.current = v
+    })
+    return unsub
+  }, [progress])
 
   useEffect(() => {
     const particles = generateParticles(seed)
@@ -352,6 +396,32 @@ export default function CrystalField({ seed = 1337, children }: CrystalFieldProp
 
       const cx = viewportW / 2
       const cy = viewportH * CLOUD_CY_FRAC
+      const R = Math.max(Math.min(viewportW, viewportH) * 0.46, viewportW * 0.32)
+
+      // Read current scroll progress once per frame
+      const t = progressRef.current
+
+      // Derive scroll-state factors. Smoothstep ranges chosen so transitions
+      // overlap slightly — never a hard handoff between states.
+      const parallaxT = smoothstep(t, 0.05, 0.65)
+      const coalK = smoothstep(t, 0.55, 0.92)
+      const centerThinT = smoothstep(t, 0.30, 0.55)
+      const sizeGrowT = smoothstep(t, 0.0, 0.55)
+      const sizeShrinkT = smoothstep(t, 0.55, 0.92)
+      const fadeOutT = smoothstep(t, 0.85, 1.0)
+
+      // Molecule anchor positions in viewport pixels. Computed once per frame
+      // since viewport size + cy + R can change on resize.
+      const moleculeWidth = Math.min(viewportW * MOLECULE_VIEWPORT_W_FRAC, MOLECULE_MAX_W)
+      const moleculeScale = moleculeWidth / MOLECULE_SVG_W
+      const moleculeLeft = cx - moleculeWidth / 2
+      const anchorPx: Array<[number, number]> = [
+        [moleculeLeft + ANCHORS_X_SVG[0] * moleculeScale, cy + (ANCHORS_Y_SVG[0] - 200) * moleculeScale],
+        [moleculeLeft + ANCHORS_X_SVG[1] * moleculeScale, cy + (ANCHORS_Y_SVG[1] - 200) * moleculeScale],
+        [moleculeLeft + ANCHORS_X_SVG[2] * moleculeScale, cy + (ANCHORS_Y_SVG[2] - 200) * moleculeScale],
+        [moleculeLeft + ANCHORS_X_SVG[3] * moleculeScale, cy + (ANCHORS_Y_SVG[3] - 200) * moleculeScale],
+        [moleculeLeft + ANCHORS_X_SVG[4] * moleculeScale, cy + (ANCHORS_Y_SVG[4] - 200) * moleculeScale],
+      ]
 
       for (const p of particles) {
         // 1. Drift update — gentle wander in normalized cloud-local space
@@ -380,19 +450,45 @@ export default function CrystalField({ seed = 1337, children }: CrystalFieldProp
           }
         }
 
-        // 3. Cloud projection — Reference R picks up viewport size each frame
-        // (resize handled by recomputing here, no per-particle state to rescale).
-        const R = Math.max(Math.min(viewportW, viewportH) * 0.46, viewportW * 0.32)
-        const drawX = cx + p.xNorm * R
-        const drawY = cy + p.yNorm * R
+        // 3. Cloud-local drift position in viewport pixels
+        const baseDrawX = cx + p.xNorm * R
+        const baseDrawY = cy + p.yNorm * R
 
-        if (p.opacity < 0.01) continue
-        const isFront = p.layer === 'front'
-        const alpha = isFront ? p.opacity * 0.75 : p.opacity
+        // 4. Outward parallax — center particles barely move, edge particles
+        // accelerate toward the viewport edge as we "fall into" the cloud.
+        // Direction comes from base angle (stable), magnitude from base radius.
+        const dirX = Math.cos(p.baseTheta)
+        const dirY = Math.sin(p.baseTheta)
+        const parallaxMag = parallaxT * R * 1.8 * Math.pow(p.baseRNorm, 0.7)
+        let drawX = baseDrawX + dirX * parallaxMag
+        let drawY = baseDrawY + dirY * parallaxMag
 
-        const ctx = isFront ? frontCtx : backCtx
+        // 5. Coalescence — past scroll 0.55, the remaining particles drift
+        // toward their assigned molecule anchor. By scroll 0.92 they're
+        // fully piled at 5 points; the molecule SVG then renders on top.
+        if (coalK > 0) {
+          const [ax, ay] = anchorPx[p.anchorIdx]
+          drawX = drawX * (1 - coalK) + ax * coalK
+          drawY = drawY * (1 - coalK) + ay * coalK
+        }
+
+        // 6. Size: grow as the cloud comes "closer" (state 2/3), then shrink
+        // as particles converge on anchors (state 4/5) so 5 dense points
+        // don't visually overwhelm the resolving molecule.
+        const sizeScale = (1 + 0.5 * sizeGrowT) * (1 - 0.85 * sizeShrinkT)
+        const size = p.size * sizeScale
+
+        // 7. Opacity: thin out inner-cloud particles in state 3 (so cloud
+        // "thins" near center), then global fade as the molecule overtakes.
+        const centerThin = centerThinT * (1 - p.baseRNorm) * 0.65
+        const fronAlpha = p.layer === 'front' ? 0.75 : 1
+        const alpha = p.opacity * (1 - centerThin) * (1 - fadeOutT) * fronAlpha
+
+        if (alpha < 0.01 || size < 0.4) continue
+
+        const ctx = p.layer === 'front' ? frontCtx : backCtx
         const rotation = p.baseRotation + p.rotationOffset
-        drawParticle(ctx, p, drawX, drawY, p.size, rotation, alpha)
+        drawParticle(ctx, p, drawX, drawY, size, rotation, alpha)
       }
 
       raf = requestAnimationFrame(tick)
