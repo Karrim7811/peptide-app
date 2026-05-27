@@ -1,6 +1,13 @@
 'use client'
 
 import CrystalField from '@/components/peptides-v2/CrystalField'
+import {
+  ActionSection,
+  CautionsSection,
+  IdentitySection,
+  MoleculeOverlay,
+  UseSection,
+} from '@/components/peptides-v2/Overlays'
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion'
 
 // Total scroll length — 5 viewport-heights gives each of the five zoom states
@@ -31,7 +38,7 @@ export default function IpamorelinV2Page() {
         aria-hidden="true"
       />
 
-      {/* Fixed visual surface — canvases, wordmark, content overlays */}
+      {/* Fixed visual surface — canvases, wordmark, content overlays, molecule */}
       <div
         style={{
           position: 'fixed',
@@ -69,6 +76,12 @@ export default function IpamorelinV2Page() {
             IPAMORELIN
           </motion.h1>
         </CrystalField>
+
+        <IdentitySection progress={progress} />
+        <ActionSection progress={progress} />
+        <UseSection progress={progress} />
+        <CautionsSection progress={progress} />
+        <MoleculeOverlay progress={progress} />
       </div>
     </>
   )
