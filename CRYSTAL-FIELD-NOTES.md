@@ -149,14 +149,104 @@ Molecule SVG: viewBox 0 0 580 280, smooth quadratic chain `M 90 220 Q 140 202 19
 - **Molecule width `min(70vw, 720px)`** — wide enough to read as the destination, capped so it doesn't lose its compactness on 4K monitors.
 - **Coalescence ends at scroll 0.92, not 1.0**. Leaves ~8% of scroll for the molecule to sit alone, fully resolved. The bottom of the scroll is "the truth" with no motion still happening.
 
-## Deferred to iteration 3
+## What's in iteration 3
 
-- **Mobile / narrow-viewport tuning** (smaller particle count, denser cloud relative to viewport, wordmark size curve, content overlay positions that work on narrow screens — the floating-corner layout pattern needs a stacked alternative below ~640px).
-- **Reduced-motion respect for `prefers-reduced-motion`**: should disable ambient drift and snap scroll states rather than animate them. Easy hook into the rAF loop and overlay opacity-only fades (no scale, no translate).
-- **EVIDENCE section**: dose-response studies, sample sizes, study references. Sits between CAUTIONS and the paywall.
-- **Paywall**: gating layer for non-Pro users at the deepest state.
-- **Polish remaining**: cursor parallax (subtle field-tilt with mouse position), Neural Teal accent for interactive states (hover/focus), light-catching specular glints on a few crystals, fine-tune molecule node interactivity (hover for amino info).
-- **`/peptides-v2` index route**: currently only `ipamorelin` exists. Other peptides need their own pages or a templated `[slug]` route.
+Iteration 3 is the conceptual climax: the molecule resolved in iteration 2
+dissolves back into dust and pours into an apothecary vial that rises from
+below the viewport. Four commits, in order, on top of iteration 2:
+
+1. `feat(crystal-field): HeroVial component — apothecary scale, brass typography, powder support` — `b91eab0`
+2. `feat(crystal-field): vial reveal scroll state — materialize from below at 88-95%` — `1d476b7`
+3. `feat(crystal-field): molecule dissolution and particle pour — cosmos resolves into powder` — `fb59eee`
+4. `feat(crystal-field): final rest state — settled vial, ambient glint, page complete` — `cf08cdf`
+
+### Part A — HeroVial component
+
+`src/components/peptides-v2/HeroVial.tsx` — forked from `src/components/Vial.tsx` (which is untouched) and reshaped for hero context.
+
+- 280×440 viewBox (5× the inventory vial). Interior geometry built from scratch around an apothecary specimen aesthetic: chunky screw-cap with shoulder + faint knurling, narrow neck, 22-px-radius rounded body.
+- Glass is meaningfully transparent: a horizontal gradient (`#FFFFFF` 0.55 → `#F0EBE0` 0.18 → `#FFFFFF` 0.35) plus a faint vertical warm-cool tint. Visibly an empty bottle, not a frosted tube.
+- Cap colour comes from `vialCapColor()` (Ipamorelin → `#D9A832` GH-axis gold). Cap-shadow stop overridden to `#7A5A1F` — patinated brass rather than plastic-clinical.
+- Label paper: warm aged cream (`#FAF4E5` → `#F0E6CE`), hairline brass borders top/bottom. "Cortex Peptide" in Cormorant 500 small caps brass; peptide name in Cormorant 400 ink, ~2× larger. Dose text dropped.
+- `powderHeight` prop (0–1) drives a stippled brass heap at the bottom of the body — filled rect base under a 9-point irregular top-edge path, 42 deterministic-seeded stipple circles, a few cream-highlight grains near the heap top, and a faint horizontal settling line. Not a smooth fill: granular crystalline material.
+- `glint` prop (default 0.3) modulates two highlights: the static left-side specular and a 4-second SMIL `animateTransform` sweep that drifts a thin vertical band of light across the body.
+- No due-now pulse, no `onClick` wrapping.
+
+### Part B — Vial reveal scroll state
+
+`src/app/peptides-v2/ipamorelin/page.tsx` gains a `VialReveal` component that wraps `HeroVial` in two nested `motion.div`s (outer handles centering; inner handles the `y`/`opacity`/`scale` transforms). MotionValue → numeric `powder` via `useMotionValueEvent` so the SVG re-renders only when the powder height changes.
+
+Scroll keyframes:
+
+| MotionValue | Range | Mapping |
+|---|---|---|
+| `vialY` | 0.88 → 0.95 | `60vh` → `0vh` (rise from below) |
+| `vialOpacity` | 0.88 → 0.92 → 0.95 | `0` → `0.7` → `1` (eased fade-in) |
+| `vialScale` | 0.88 → 0.95 | `1.2` → `1.0` (settle as it lands) |
+| `powderHeight` | 0.90 → 0.97 | `0` → `0.35` (lags the rise) |
+
+Cosmos timings compressed to make room:
+
+| Factor | Old | New | Why |
+|---|---|---|---|
+| `coalK` | 0.55 → 0.92 | 0.55 → 0.85 | molecule fully resolved earlier |
+| `sizeShrinkT` | 0.55 → 0.92 | 0.55 → 0.85 | matches coalescence end |
+| `fadeOutT` | 0.85 → 1.0 | 0.80 → 0.90 | cloud gone before dust peak (particle budget) |
+
+`MoleculeOverlay` now uses a 4-stop opacity transform `[0.78, 0.85, 0.88, 0.94] → [0, 1, 1, 0]` — it resolves, holds briefly, then dissolves to nothing. Scale settles by 0.85. `UseSection` and `CautionsSection` ranges tightened so both are gone by 0.95, leaving final rest clean.
+
+### Part C+D — Dissolution and pour
+
+A second particle pass added inside the existing `CrystalField` rAF loop. `generateDust(seed)` produces 200 `DustParticle`s (5 anchors × 40), each with:
+
+- Origin jitter (small polar scatter around its anchor, 4–18 px) so the stream looks like dust shedding rather than a point source.
+- A target inside the vial body — biased to the lower half (±90 px horizontal, +40..+170 px vertical of viewport center) so the accumulation reads as "pouring in".
+- A quadratic bezier control point: midpoint of origin→target, offset perpendicular by `ctrlOffsetMag` (40–130 px) with a random sign per particle, so streams arc and braid.
+- Per-particle `startT` (0.88 + 0–0.025) and `endT` (0.92 + 0–0.025) — staggers so the pour isn't monolithic.
+
+Per-frame draw: skip if outside `[startT, endT]`. Compute `u`, evaluate the bezier, shrink the dot 1 → 0.55× as `u → 1`, lerp the colour from brass toward `#A88B5E` powder tint over `u ∈ [0.6, 1]`, alpha-envelope rise/hold/fall. Rendered onto the front canvas (above cloud remnants, below the z:4 vial).
+
+Outside the 0.875–1.0 scroll window the dust pass short-circuits to a single conditional, costing nothing.
+
+### Part E — Final rest state
+
+By scroll 1.0 the page is the vial alone:
+
+| Element | State at 1.0 |
+|---|---|
+| Cosmos particles | alpha 0, all culled by 0.90 |
+| Molecule SVG | opacity 0 (from 0.94) |
+| Dust particles | all past `endT` (max 0.945), skipped |
+| USE / CAUTIONS overlays | windows closed at 0.95 |
+| HeroVial | opacity 1, scale 1, y 0 |
+| Powder | 35% of body height, label still legible above |
+| Ambient glint | 4s sweep continues in perpetuity, baseline 0.3 |
+
+`next build` clean. `/peptides-v2/ipamorelin` route is 47.9 kB First Load JS.
+
+### Decisions made autonomously in iteration 3
+
+- **Single canvas for dust, not a separate layer.** The brief offered both. Reusing the existing front canvas keeps the rAF loop single (a perf hard requirement) and avoids canvas ordering complications between cosmos remnants and arriving dust. The dust always sits visually above the cloud remnants because the cloud is already alpha-fading at this scroll.
+- **Powder accumulation is scroll-driven (lagged), not particle-driven.** The brief explicitly green-lit this approximation. Computing exact powder volume from individual particle arrivals would be plausible-physics but visually identical to a smoothed `useTransform(progress, [0.90, 0.97], [0, 0.35])`. The lag (start at 0.90 rather than 0.88) reads as "heap forms as particles begin landing" without per-particle bookkeeping.
+- **Label moved to the upper half of the body, not the middle.** First placement put the label band over y=232–340 in viewBox units; the powder heap at 35% would have sat behind it. Moved label to y=138–246 so the lower body is unobscured glass — the powder reads through, exactly the way a real specimen does.
+- **Glint as SMIL `animateTransform`, not framer-motion / rAF.** Browser-handled animation costs zero React renders and zero JS frames. It's also visually identical to a JS-driven sweep. The brief mentioned a 4s period; SMIL handles it natively with `keyTimes`.
+- **Cap shadow `#7A5A1F` (custom), not `vialCapColor().capShadow` (`#A6801F`).** The default GH-axis shadow is golden-clinical; an apothecary cap should patina toward iron-oxide. The custom stop sits between the cap colour and a deep brown — reads as aged brass, the original gold still visible.
+- **Cosmos `fadeOutT` tightened to 0.80→0.90 (was 0.82→0.94).** With 200 dust particles spawning at 0.88, the 750-active-particle budget would have been blown if cosmos lingered. Tightening the fade leaves ~100 visible cloud particles when dust peaks, keeping total active ≤ ~300.
+- **40 dust per anchor (not 30 or 50).** The brief's range was 30–50. At 40, the stream reads as "the molecule is breaking apart" without crowding. Fewer felt thin; more felt like a second cloud.
+- **Bezier control-point sign is random per particle, magnitude varies.** Constant-sign curves would all bow the same way and read as a synchronized swarm. Random sign + 40–130 px magnitude gives a braiding, hand-poured feel.
+- **Vial label content hardcoded to Ipamorelin.** Parameterization deferred to iteration 4 (when the templated peptide route lands).
+- **No `prefers-reduced-motion` gating yet.** SMIL `animateTransform` and the spring-driven scroll pipeline will need it; explicitly out of scope per the brief.
+- **Vial sits at z:4, above all overlays.** During the dust pour (0.88–0.95) the vial is fading in, and the dust needs to read as flying *to* the vial. Z-stacking it above lets the cap visually receive the stream.
+
+## Deferred to iteration 4
+
+- **Mobile / narrow-viewport tuning**. Vial at `size={1}` is 280×440; on a 375-wide viewport it overflows. Needs a size curve based on `min(vw, vh)`. Dust target offsets are in absolute px and assume the vial fits.
+- **`prefers-reduced-motion`**. Disable ambient drift, vial rise/scale/glint sweep, snap scroll states. SMIL animation should respect `@media (prefers-reduced-motion: reduce)`.
+- **EVIDENCE section**. Dose-response studies, sample sizes, study references. Sits between CAUTIONS and the vial — needs a scroll window that doesn't fight the dissolution.
+- **Paywall**. Gating layer for non-Pro users at the deepest state.
+- **Peptide parameterization for the vial label.** `HeroVial` already accepts `name` and `peptideName` props; the page currently hardcodes both to Ipamorelin. Generalize when the templated `[slug]` route lands.
+- **Polish remaining from iteration 2**: cursor parallax, Neural Teal accent for interactive states, light-catching specular glints on a few crystals, molecule node interactivity (hover for amino info).
+- **`/peptides-v2` index route**.
 
 ## How to view
 
@@ -209,3 +299,35 @@ What to look for (iteration 2):
 **Performance notes**
 - Target: 60fps on a 2021+ MacBook Pro. Particle count is held at iteration 1's 620.
 - One canvas pair, one rAF loop. Scroll progress mirrored from a framer-motion MotionValue into a plain ref read synchronously per frame.
+
+What to look for (iteration 3 additions):
+
+**Scroll 0.85 — molecule resolved (compressed from 0.92)**
+- The five-node Ipamorelin SVG is fully resolved and held in place at center.
+- Cosmos particles have collapsed onto the 5 anchors and are fading rapidly (~50% gone).
+
+**Scroll 0.88 — dissolution begins, vial appears below viewport**
+- The molecule SVG opacity starts dropping.
+- Dust particles begin spawning at the 5 anchor positions.
+- The bottom edge of the vial cap may just be peeking up from below the viewport.
+
+**Scroll 0.90 — dust streams visible, vial mid-rise**
+- Strong streams of brass dust arcing from each anchor toward the rising vial. Curves braid: some bow left, some right.
+- Vial is ~30% up from the bottom; opacity ~0.4; molecule SVG nearly gone.
+- Cosmos is essentially invisible.
+
+**Scroll 0.92 — peak pour**
+- Vial is ~70% materialized, opacity ~0.7, still slightly oversized (scale ~1.07).
+- Dust streams are at peak intensity, particles entering the cap and fading on contact.
+- Powder heap beginning to form at the bottom of the vial (~10% of body height).
+
+**Scroll 0.95 — vial settled, pour completing**
+- Vial fully opaque, scale 1, sitting at center. Label legible: "Cortex Peptide" / "IPAMORELIN".
+- Last few dust particles arriving and fading.
+- Powder at ~25% of body height.
+- USE and CAUTIONS content fully gone.
+
+**Scroll 0.97 → 1.0 — final rest**
+- Vial centered, powder at 35% of body height — a brass-tinted granular heap with stippled texture and a slightly irregular top edge.
+- A thin vertical glint sweeps across the glass every 4 seconds.
+- Nothing else on screen. Page ends here.
