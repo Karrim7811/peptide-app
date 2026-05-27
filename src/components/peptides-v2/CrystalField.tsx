@@ -39,6 +39,12 @@ const BRASS = ['#C9A876', '#A88B5E', '#7D6638']
 const CREAM = '#FFFEF8'
 const TOTAL = 620
 const FRONT_RATIO = 0.25
+// Minimum normalized radius — particles cannot occupy the inner ring.
+// 0.18 of the cloud R ≈ ~80px on a 1440-wide viewport, giving the wordmark breathing room.
+const MIN_R_NORM = 0.18
+// Cloud vertical center as a fraction of viewport height. Display type's optical
+// center sits slightly above geometric center; cloud follows the wordmark.
+const CLOUD_CY_FRAC = 0.45
 
 function mulberry32(seedValue: number) {
   let state = seedValue >>> 0
@@ -57,7 +63,8 @@ function generateParticles(seed: number): Particle[] {
 
   for (let i = 0; i < TOTAL; i++) {
     const u = rand()
-    const r = Math.pow(u, 1.7) * (0.95 + rand() * 0.10)
+    const rRaw = Math.pow(u, 1.7) * (0.95 + rand() * 0.10)
+    const r = MIN_R_NORM + (1 - MIN_R_NORM) * rRaw
     const theta = rand() * Math.PI * 2
 
     const tRoll = rand()
@@ -279,7 +286,7 @@ export default function CrystalField({ layer, seed = 1337 }: CrystalFieldProps) 
       ctx.clearRect(0, 0, w, h)
 
       const cx = w / 2
-      const cy = h / 2
+      const cy = h * CLOUD_CY_FRAC
       const R = Math.max(Math.min(w, h) * 0.46, w * 0.32)
 
       for (const p of particles) {

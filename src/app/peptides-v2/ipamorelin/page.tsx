@@ -16,7 +16,7 @@ export default function IpamorelinV2Page() {
       <h1
         style={{
           position: 'fixed',
-          top: '50%',
+          top: '45%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
           margin: 0,
@@ -25,7 +25,7 @@ export default function IpamorelinV2Page() {
           fontWeight: 300,
           fontStyle: 'normal',
           fontSize: 'clamp(4rem, 12vw, 16rem)',
-          letterSpacing: '-0.02em',
+          letterSpacing: '0.04em',
           lineHeight: 1,
           color: '#1A1915',
           whiteSpace: 'nowrap',
