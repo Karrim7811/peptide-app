@@ -1,13 +1,13 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-
-type Layer = 'back' | 'front'
+import { useEffect, useRef, type ReactNode } from 'react'
 
 interface CrystalFieldProps {
-  layer: Layer
   seed?: number
+  children?: ReactNode
 }
+
+type Layer = 'back' | 'front'
 
 type ParticleType =
   | 'mote-hex'
@@ -21,14 +21,22 @@ type ParticleType =
 
 interface Particle {
   type: ParticleType
-  r: number
-  theta: number
+  // Stable identity (set once at generation)
+  baseRNorm: number
+  baseTheta: number
   size: number
-  rotation: number
+  baseRotation: number
   opacity: number
   color: string
   letter?: string
   layer: Layer
+  // Per-frame mutable state
+  xNorm: number      // current x in cloud-local units of R (drift)
+  yNorm: number
+  vxNorm: number     // velocity per 60fps-frame, in units of R
+  vyNorm: number
+  rotationOffset: number
+  omega: number      // rad per 60fps-frame
 }
 
 const AMINO_LETTERS = [
@@ -45,6 +53,10 @@ const MIN_R_NORM = 0.18
 // Cloud vertical center as a fraction of viewport height. Display type's optical
 // center sits slightly above geometric center; cloud follows the wordmark.
 const CLOUD_CY_FRAC = 0.45
+// Reference R used to convert the brief's "px/frame at 60fps" velocity range to
+// our normalized units. At typical viewports R ≈ 460, so actual pixel speeds land
+// inside the 0.05–0.2 px/frame target.
+const REF_R = 480
 
 function mulberry32(seedValue: number) {
   let state = seedValue >>> 0
@@ -64,8 +76,8 @@ function generateParticles(seed: number): Particle[] {
   for (let i = 0; i < TOTAL; i++) {
     const u = rand()
     const rRaw = Math.pow(u, 1.7) * (0.95 + rand() * 0.10)
-    const r = MIN_R_NORM + (1 - MIN_R_NORM) * rRaw
-    const theta = rand() * Math.PI * 2
+    const baseRNorm = MIN_R_NORM + (1 - MIN_R_NORM) * rRaw
+    const baseTheta = rand() * Math.PI * 2
 
     const tRoll = rand()
     let type: ParticleType
@@ -89,7 +101,7 @@ function generateParticles(seed: number): Particle[] {
     else if (type.startsWith('frag')) size = 6 + rand() * 6
     else size = 3 + rand() * 4
 
-    const rotation = rand() * Math.PI * 2
+    const baseRotation = rand() * Math.PI * 2
 
     let opacity: number
     if (type === 'letter') {
@@ -120,7 +132,28 @@ function generateParticles(seed: number): Particle[] {
 
     const layer: Layer = rand() < FRONT_RATIO ? 'front' : 'back'
 
-    out.push({ type, r, theta, size, rotation, opacity, color, letter, layer })
+    // Initial drift position == base position (in normalized cloud-local cartesian)
+    const xNorm = baseRNorm * Math.cos(baseTheta)
+    const yNorm = baseRNorm * Math.sin(baseTheta)
+
+    // Velocity: small random vector. Brief target: 0.05–0.2 px/frame at 60fps.
+    // Convert by dividing by REF_R so actual pixel speed lands near spec on typical viewports.
+    const vMagPx = 0.05 + rand() * 0.15
+    const vDir = rand() * Math.PI * 2
+    const vxNorm = (vMagPx / REF_R) * Math.cos(vDir)
+    const vyNorm = (vMagPx / REF_R) * Math.sin(vDir)
+
+    // Rotation drift: only for crystals and fragments. Brief: 0.05–0.2 deg/frame.
+    let omega = 0
+    if (type !== 'letter') {
+      const omegaMag = (0.05 + rand() * 0.15) * (Math.PI / 180) // deg → rad
+      omega = (rand() < 0.5 ? -1 : 1) * omegaMag
+    }
+
+    out.push({
+      type, baseRNorm, baseTheta, size, baseRotation, opacity, color, letter, layer,
+      xNorm, yNorm, vxNorm, vyNorm, rotationOffset: 0, omega,
+    })
   }
 
   return out
@@ -140,18 +173,20 @@ function drawParticle(
   p: Particle,
   x: number,
   y: number,
-  isFront: boolean,
+  size: number,
+  rotation: number,
+  alpha: number,
 ) {
-  ctx.globalAlpha = isFront ? p.opacity * 0.75 : p.opacity
+  ctx.globalAlpha = alpha
   ctx.strokeStyle = p.color
   ctx.fillStyle = p.color
   ctx.lineWidth = 0.7
 
   ctx.save()
   ctx.translate(x, y)
-  ctx.rotate(p.rotation)
+  ctx.rotate(rotation)
 
-  const s = p.size
+  const s = size
 
   switch (p.type) {
     case 'mote-hex': {
@@ -203,7 +238,8 @@ function drawParticle(
       break
     }
     case 'letter': {
-      ctx.rotate(-p.rotation)
+      // Letters stay upright — undo rotation before stroking text.
+      ctx.rotate(-rotation)
       ctx.font = `300 ${s}px "JetBrains Mono", ui-monospace, Menlo, monospace`
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
@@ -259,76 +295,151 @@ function drawParticle(
   ctx.restore()
 }
 
-export default function CrystalField({ layer, seed = 1337 }: CrystalFieldProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+export default function CrystalField({ seed = 1337, children }: CrystalFieldProps) {
+  const backRef = useRef<HTMLCanvasElement>(null)
+  const frontRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-
+    const particles = generateParticles(seed)
     let raf = 0
     let mounted = true
-    const particles = generateParticles(seed)
+    let lastT = performance.now()
+    let viewportW = window.innerWidth
+    let viewportH = window.innerHeight
 
-    const draw = () => {
-      if (!mounted) return
+    const sizeCanvas = (c: HTMLCanvasElement) => {
       const dpr = window.devicePixelRatio || 1
-      const w = window.innerWidth
-      const h = window.innerHeight
-      canvas.width = Math.floor(w * dpr)
-      canvas.height = Math.floor(h * dpr)
-      canvas.style.width = `${w}px`
-      canvas.style.height = `${h}px`
-
-      const ctx = canvas.getContext('2d')
-      if (!ctx) return
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      ctx.clearRect(0, 0, w, h)
-
-      const cx = w / 2
-      const cy = h * CLOUD_CY_FRAC
-      const R = Math.max(Math.min(w, h) * 0.46, w * 0.32)
-
-      for (const p of particles) {
-        if (p.layer !== layer) continue
-        const rNoise = boundaryNoise(p.theta)
-        const px = cx + p.r * R * rNoise * Math.cos(p.theta)
-        const py = cy + p.r * R * rNoise * Math.sin(p.theta)
-        drawParticle(ctx, p, px, py, layer === 'front')
-      }
+      const targetW = Math.floor(viewportW * dpr)
+      const targetH = Math.floor(viewportH * dpr)
+      if (c.width !== targetW) c.width = targetW
+      if (c.height !== targetH) c.height = targetH
+      c.style.width = `${viewportW}px`
+      c.style.height = `${viewportH}px`
+      return dpr
     }
 
-    const onResize = () => {
-      cancelAnimationFrame(raf)
-      raf = requestAnimationFrame(draw)
+    const tick = (now: number) => {
+      if (!mounted) return
+      const dtFrame = Math.min((now - lastT) / 16.67, 3)
+      lastT = now
+
+      const backCanvas = backRef.current
+      const frontCanvas = frontRef.current
+      if (!backCanvas || !frontCanvas) {
+        raf = requestAnimationFrame(tick)
+        return
+      }
+
+      // Resize check
+      if (window.innerWidth !== viewportW || window.innerHeight !== viewportH) {
+        viewportW = window.innerWidth
+        viewportH = window.innerHeight
+      }
+
+      const dpr = sizeCanvas(backCanvas)
+      sizeCanvas(frontCanvas)
+
+      const backCtx = backCanvas.getContext('2d')
+      const frontCtx = frontCanvas.getContext('2d')
+      if (!backCtx || !frontCtx) {
+        raf = requestAnimationFrame(tick)
+        return
+      }
+      backCtx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      frontCtx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      backCtx.clearRect(0, 0, viewportW, viewportH)
+      frontCtx.clearRect(0, 0, viewportW, viewportH)
+
+      const cx = viewportW / 2
+      const cy = viewportH * CLOUD_CY_FRAC
+
+      for (const p of particles) {
+        // 1. Drift update — gentle wander in normalized cloud-local space
+        p.xNorm += p.vxNorm * dtFrame
+        p.yNorm += p.vyNorm * dtFrame
+        p.rotationOffset += p.omega * dtFrame
+
+        // 2. Soft bounce at the cloud boundary so particles stay in the lobed zone
+        const rNorm = Math.hypot(p.xNorm, p.yNorm)
+        if (rNorm > 0.001) {
+          const angle = Math.atan2(p.yNorm, p.xNorm)
+          const boundary = boundaryNoise(angle) * 0.98
+          if (rNorm > boundary) {
+            const nx = p.xNorm / rNorm
+            const ny = p.yNorm / rNorm
+            const dot = p.vxNorm * nx + p.vyNorm * ny
+            if (dot > 0) {
+              p.vxNorm -= 2 * dot * nx
+              p.vyNorm -= 2 * dot * ny
+              // gentle damping so bounces feel like settling, not pinball
+              p.vxNorm *= 0.85
+              p.vyNorm *= 0.85
+            }
+            p.xNorm = nx * boundary
+            p.yNorm = ny * boundary
+          }
+        }
+
+        // 3. Cloud projection — Reference R picks up viewport size each frame
+        // (resize handled by recomputing here, no per-particle state to rescale).
+        const R = Math.max(Math.min(viewportW, viewportH) * 0.46, viewportW * 0.32)
+        const drawX = cx + p.xNorm * R
+        const drawY = cy + p.yNorm * R
+
+        if (p.opacity < 0.01) continue
+        const isFront = p.layer === 'front'
+        const alpha = isFront ? p.opacity * 0.75 : p.opacity
+
+        const ctx = isFront ? frontCtx : backCtx
+        const rotation = p.baseRotation + p.rotationOffset
+        drawParticle(ctx, p, drawX, drawY, p.size, rotation, alpha)
+      }
+
+      raf = requestAnimationFrame(tick)
+    }
+
+    const startLoop = () => {
+      lastT = performance.now()
+      raf = requestAnimationFrame(tick)
     }
 
     if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) {
       document.fonts.ready.then(() => {
-        if (mounted) draw()
+        if (mounted) startLoop()
       })
     } else {
-      draw()
+      startLoop()
     }
 
-    window.addEventListener('resize', onResize)
     return () => {
       mounted = false
-      window.removeEventListener('resize', onResize)
       cancelAnimationFrame(raf)
     }
-  }, [layer, seed])
+  }, [seed])
 
   return (
-    <canvas
-      ref={canvasRef}
-      aria-hidden="true"
-      style={{
-        position: 'fixed',
-        inset: 0,
-        pointerEvents: 'none',
-        zIndex: layer === 'back' ? 0 : 2,
-      }}
-    />
+    <>
+      <canvas
+        ref={backRef}
+        aria-hidden="true"
+        style={{
+          position: 'fixed',
+          inset: 0,
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      />
+      {children}
+      <canvas
+        ref={frontRef}
+        aria-hidden="true"
+        style={{
+          position: 'fixed',
+          inset: 0,
+          pointerEvents: 'none',
+          zIndex: 2,
+        }}
+      />
+    </>
   )
 }

@@ -11,33 +11,31 @@ export default function IpamorelinV2Page() {
         background: '#EDE3D0',
       }}
     >
-      <CrystalField layer="back" />
-
-      <h1
-        style={{
-          position: 'fixed',
-          top: '45%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          margin: 0,
-          padding: 0,
-          fontFamily: '"Cormorant Garamond", Georgia, serif',
-          fontWeight: 300,
-          fontStyle: 'normal',
-          fontSize: 'clamp(4rem, 12vw, 16rem)',
-          letterSpacing: '0.04em',
-          lineHeight: 1,
-          color: '#1A1915',
-          whiteSpace: 'nowrap',
-          zIndex: 1,
-          pointerEvents: 'none',
-          userSelect: 'none',
-        }}
-      >
-        IPAMORELIN
-      </h1>
-
-      <CrystalField layer="front" />
+      <CrystalField>
+        <h1
+          style={{
+            position: 'fixed',
+            top: '45%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            margin: 0,
+            padding: 0,
+            fontFamily: '"Cormorant Garamond", Georgia, serif',
+            fontWeight: 300,
+            fontStyle: 'normal',
+            fontSize: 'clamp(4rem, 12vw, 16rem)',
+            letterSpacing: '0.04em',
+            lineHeight: 1,
+            color: '#1A1915',
+            whiteSpace: 'nowrap',
+            zIndex: 1,
+            pointerEvents: 'none',
+            userSelect: 'none',
+          }}
+        >
+          IPAMORELIN
+        </h1>
+      </CrystalField>
     </main>
   )
 }
