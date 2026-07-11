@@ -69,6 +69,33 @@ struct SignupView: View {
                                 }
 
                                 VStack(alignment: .leading, spacing: 6) {
+                                    Text("Date of Birth")
+                                        .font(.system(size: 13, weight: .medium))
+                                        .foregroundColor(.cxBlack)
+                                    HStack {
+                                        DatePicker(
+                                            "",
+                                            selection: $vm.dob,
+                                            in: ...Date(),
+                                            displayedComponents: .date
+                                        )
+                                        .labelsHidden()
+                                        .datePickerStyle(.compact)
+                                        Spacer()
+                                        Text("You must be 18 or older")
+                                            .font(.system(size: 11))
+                                            .foregroundColor(.cxStone)
+                                    }
+                                    .padding(10)
+                                    .background(Color.white)
+                                    .cornerRadius(10)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(Color.cxBorder, lineWidth: 1)
+                                    )
+                                }
+
+                                VStack(alignment: .leading, spacing: 6) {
                                     Text("Password")
                                         .font(.system(size: 13, weight: .medium))
                                         .foregroundColor(.cxBlack)
@@ -132,7 +159,7 @@ struct SignupView: View {
                             }
 
                             Button {
-                                Task { await vm.signUp() }
+                                Task { await vm.signUp(appState: appState) }
                             } label: {
                                 Group {
                                     if vm.isLoading {

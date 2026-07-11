@@ -9,6 +9,7 @@ class AuthViewModel: ObservableObject {
     @Published var email = ""
     @Published var password = ""
     @Published var confirmPassword = ""
+    @Published var dob: Date = Calendar.current.date(from: DateComponents(year: 2000, month: 1, day: 1)) ?? Date()
     @Published var isLoading = false
     @Published var errorMessage: String?
     @Published var showSignup = false
@@ -37,9 +38,14 @@ class AuthViewModel: ObservableObject {
 
     // MARK: - Email/Password Sign Up
 
-    func signUp() async {
+    func signUp(appState: AppState) async {
         guard !email.isEmpty else {
             errorMessage = "Please enter your email"
+            return
+        }
+        let age = Calendar.current.dateComponents([.year], from: dob, to: Date()).year ?? 0
+        guard age >= 18 else {
+            errorMessage = "You must be 18 or older to use Peptide Cortex"
             return
         }
         guard password.count >= 6 else {
@@ -53,8 +59,12 @@ class AuthViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         do {
-            try await SupabaseService.shared.signUp(email: email, password: password)
-            signupSuccess = true
+            let session = try await SupabaseService.shared.signUp(email: email, password: password, dob: dob)
+            if session != nil {
+                await appState.checkSession()
+            } else {
+                signupSuccess = true
+            }
         } catch {
             errorMessage = error.localizedDescription
         }

@@ -20,8 +20,19 @@ class SupabaseService {
         try await client.auth.signIn(email: email, password: password)
     }
 
-    func signUp(email: String, password: String) async throws {
-        try await client.auth.signUp(email: email, password: password)
+    /// Returns a session when Supabase auto-confirms the email (email
+    /// confirmation disabled in the project); nil means a confirmation
+    /// email is pending.
+    func signUp(email: String, password: String, dob: Date) async throws -> Session? {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.timeZone = TimeZone(identifier: "UTC")
+        let response = try await client.auth.signUp(
+            email: email,
+            password: password,
+            data: ["dob": .string(formatter.string(from: dob))]
+        )
+        return response.session
     }
 
     func signOut() async throws {
