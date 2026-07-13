@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
@@ -70,6 +70,28 @@ export default function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const [signingOut, setSigningOut] = useState(false)
+  // null = unknown/not-signed-in, true = Pro/Lifetime, false = free.
+  const [isPro, setIsPro] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return
+      supabase
+        .from('profiles')
+        .select('subscription_tier, subscription_expires_at')
+        .eq('id', user.id)
+        .single()
+        .then(({ data }) => {
+          const tier = data?.subscription_tier
+          const expired =
+            tier === 'pro' && data?.subscription_expires_at
+              ? new Date(data.subscription_expires_at) < new Date()
+              : false
+          setIsPro((tier === 'pro' && !expired) || tier === 'lifetime')
+        })
+    })
+  }, [])
 
   async function handleSignOut() {
     setSigningOut(true)
@@ -141,6 +163,12 @@ export default function Sidebar() {
 
         {/* Bottom */}
         <div style={{ padding: '10px 8px', borderTop: '0.5px solid rgba(176,170,160,0.30)', flexShrink: 0 }}>
+          {isPro === false && (
+            <Link href="/pricing" style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '9px 10px', marginBottom: 6, borderRadius: 8, textDecoration: 'none', background: '#1A8A9E', color: '#FFFFFF', fontFamily: FONT, fontSize: 12, fontWeight: 500 }}>
+              <Zap style={{ width: 13, height: 13 }} />
+              Upgrade to Pro
+            </Link>
+          )}
           <button onClick={handleSignOut} disabled={signingOut} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '7px 10px', background: 'none', border: 'none', cursor: 'pointer', borderRadius: 7, fontFamily: FONT, fontSize: 12, color: '#B0AAA0' }}>
             <LogOut style={{ width: 13, height: 13 }} />
             {signingOut ? 'Signing out…' : 'Sign Out'}

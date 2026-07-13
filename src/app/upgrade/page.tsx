@@ -16,9 +16,9 @@ const FEATURE_INFO: Record<string, { title: string; desc: string; icon: React.Re
     desc: "Free plan includes 3 checks/day. Upgrade for unlimited safety checks — know before you pin.",
     icon: <Shield className="w-6 h-6 text-emerald-400" />,
   },
-  'stack': {
-    title: 'Unlimited Stack Items',
-    desc: 'Free plan supports up to 5 items. Pro lets you track every compound, medication, and supplement you run.',
+  'stack-finder': {
+    title: 'Stack Finder',
+    desc: 'Tell Cortex your goals and get AI-built stack recommendations drawn from the full peptide knowledge base.',
     icon: <Layers className="w-6 h-6 text-orange-400" />,
   },
 }
@@ -45,22 +45,21 @@ function UpgradeContent() {
           <p className="text-[#B0AAA0] mb-6">{info.desc}</p>
 
           <div className="bg-[#F2F0ED]/50 rounded-xl p-4 mb-6 text-left">
-            <p className="text-[#3A3730] text-sm font-medium mb-2">Pro includes:</p>
+            <p className="text-[#3A3730] text-sm font-medium mb-2">Pro unlocks the AI engine:</p>
             <ul className="space-y-1.5 text-sm text-[#B0AAA0]">
               <li>✓ Unlimited PeptideAI chat</li>
+              <li>✓ Protocol Planner &amp; Bloodwork Analyzer</li>
+              <li>✓ Stack Finder &amp; Vial Scanner</li>
               <li>✓ Unlimited interaction checks</li>
-              <li>✓ Unlimited stack items</li>
-              <li>✓ Full dose log history</li>
-              <li>✓ All 14 tracking tools</li>
             </ul>
           </div>
 
           <Link
             href="/pricing"
-            className="flex items-center justify-center gap-2 w-full bg-[#1A8A9E] hover:bg-[#1A8A9E] text-[#1A1915] py-3 rounded-xl font-semibold transition-colors mb-3"
+            className="flex items-center justify-center gap-2 w-full bg-[#1A8A9E] hover:bg-[#15707f] text-white py-3 rounded-xl font-semibold transition-colors mb-3"
           >
             <Zap className="w-4 h-4" />
-            Upgrade to Pro — from $6.67/mo
+            Upgrade to Pro — $9.99/mo or $99.99 once
           </Link>
 
           <Link

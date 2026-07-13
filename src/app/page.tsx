@@ -371,55 +371,51 @@ export default function LandingPage() {
                 <div className="pricing-annual">&nbsp;</div>
                 <div className="pricing-rule" />
                 <ul className="pricing-features">
-                  <li>Up to 3 peptide profiles</li>
-                  <li>Basic dose &amp; cycle logging</li>
-                  <li>Half-life reference data</li>
-                  <li>7-day protocol history</li>
-                  <li className="dim">AI Insight Engine</li>
-                  <li className="dim">Biomarker tracking</li>
-                  <li className="dim">Stack builder</li>
-                  <li className="dim">Vendor intelligence</li>
+                  <li>Full Peptide Bible reference</li>
+                  <li>Stack, dose log &amp; every tracking tool</li>
+                  <li>Reminders + phone-calendar export</li>
+                  <li>Injection-site guidance</li>
+                  <li>Interaction Checker — 3/day</li>
+                  <li className="dim">PeptideAI chat</li>
+                  <li className="dim">Protocol Planner</li>
+                  <li className="dim">Bloodwork Analyzer</li>
                 </ul>
                 <button className="pcta pcta-outline" onClick={() => router.push('/signup')}>Start Free</button>
               </div>
 
               <div className="pricing-card featured">
                 <div className="pricing-badge">Most Popular</div>
-                <div className="pricing-tier">Cortex Pro</div>
-                <div className="pricing-price"><sup style={{ color: '#555' }}>$</sup>24</div>
-                <div className="pricing-period" style={{ color: '#555' }}>per month</div>
-                <div className="pricing-annual" style={{ color: 'var(--accent)' }}>or $19/mo — billed annually</div>
+                <div className="pricing-tier">Pro Monthly</div>
+                <div className="pricing-price"><sup style={{ color: '#555' }}>$</sup>9.99</div>
+                <div className="pricing-period" style={{ color: '#555' }}>per month · cancel anytime</div>
+                <div className="pricing-annual">&nbsp;</div>
                 <div className="pricing-rule" />
                 <ul className="pricing-features">
-                  <li>Unlimited peptide profiles</li>
-                  <li>Full AI Insight Engine</li>
-                  <li>Unlimited protocol history</li>
-                  <li>Biomarker &amp; labs tracking</li>
-                  <li>Cycle intelligence &amp; forecasting</li>
-                  <li>Dosing window optimization</li>
-                  <li>Stack interaction alerts</li>
-                  <li className="dim">Vendor intelligence</li>
+                  <li>Everything in Free</li>
+                  <li>PeptideAI — unlimited AI chat</li>
+                  <li>Protocol Planner — AI reference protocols</li>
+                  <li>Bloodwork Analyzer</li>
+                  <li>Stack Finder &amp; Vial Scanner</li>
+                  <li>Unlimited interaction checks</li>
+                  <li>Early access to new features</li>
                 </ul>
-                <button className="pcta pcta-filled" onClick={() => router.push('/signup')}>Start Cortex Pro</button>
+                <button className="pcta pcta-filled" onClick={() => router.push('/signup')}>Start Pro</button>
               </div>
 
               <div className="pricing-card">
-                <div className="pricing-tier">Cortex Elite</div>
-                <div className="pricing-price"><sup>$</sup>49</div>
-                <div className="pricing-period">per month</div>
-                <div className="pricing-annual">or $39/mo — billed annually</div>
+                <div className="pricing-tier">Pro Lifetime</div>
+                <div className="pricing-price"><sup>$</sup>99.99</div>
+                <div className="pricing-period">one time · yours forever</div>
+                <div className="pricing-annual" style={{ color: 'var(--accent)' }}>best long-run value</div>
                 <div className="pricing-rule" />
                 <ul className="pricing-features">
-                  <li>Everything in Pro</li>
-                  <li>Advanced AI stack builder</li>
-                  <li>Vendor rankings &amp; sourcing intel</li>
-                  <li>Purity &amp; COA database access</li>
-                  <li>Priority AI processing</li>
+                  <li>Everything in Pro Monthly</li>
+                  <li>One payment — no recurring charge</li>
+                  <li>Permanent Pro access</li>
+                  <li>Locked in even if prices rise</li>
                   <li>Early access to new features</li>
-                  <li>Exportable protocol reports</li>
-                  <li>Dedicated support</li>
                 </ul>
-                <button className="pcta pcta-outline" onClick={() => router.push('/signup')}>Start Elite</button>
+                <button className="pcta pcta-outline" onClick={() => router.push('/signup')}>Get Lifetime</button>
               </div>
             </div>
           </div>

@@ -9,35 +9,28 @@ import {
 import type { ProPlan } from '@/lib/stripe'
 
 const FREE_FEATURES = [
-  { label: 'Up to 5 stack items', included: true },
-  { label: 'Interaction Checker (3/day)', included: true },
-  { label: 'Peptide Bible reference', included: true },
-  { label: 'Dose Log (last 30 days)', included: true },
-  { label: 'Popular Stacks browsing', included: true },
-  { label: 'Basic reminders (up to 3)', included: true },
+  { label: 'Peptide Bible — full reference', included: true },
+  { label: 'Interaction Checker — 3/day', included: true },
+  { label: 'My Stack + injection-site guidance', included: true },
+  { label: 'Dose Log, Reminders + calendar export', included: true },
+  { label: 'Cycle, Sites, Inventory, Notes, Side Effects', included: true },
+  { label: 'Reconstitution reference', included: true },
   { label: 'PeptideAI chat', included: false },
+  { label: 'Protocol Planner', included: false },
+  { label: 'Bloodwork Analyzer', included: false },
+  { label: 'Vial Scanner', included: false },
+  { label: 'Stack Finder', included: false },
   { label: 'Unlimited interaction checks', included: false },
-  { label: 'Unlimited stack items', included: false },
-  { label: 'Full dose log history', included: false },
-  { label: 'Cycle Tracker & Injection Sites', included: false },
-  { label: 'Fridge Inventory', included: false },
-  { label: 'Research Notes & Side Effect Log', included: false },
-  { label: 'Export data as CSV', included: false },
 ]
 
 const PRO_FEATURES = [
   { label: 'Everything in Free', included: true },
   { label: 'PeptideAI — unlimited AI chat', included: true, highlight: true },
-  { label: 'Bloodwork Analyzer (PDF + image upload)', included: true, highlight: true },
-  { label: 'Vial Scanner (Pro)', included: true },
+  { label: 'Protocol Planner — AI reference protocols', included: true, highlight: true },
+  { label: 'Bloodwork Analyzer', included: true, highlight: true },
+  { label: 'Stack Finder — AI recommendations', included: true },
+  { label: 'Vial Scanner', included: true },
   { label: 'Unlimited interaction checks', included: true },
-  { label: 'Unlimited stack items', included: true },
-  { label: 'Full dose log history', included: true },
-  { label: 'Cycle Tracker & Injection Sites', included: true },
-  { label: 'Fridge Inventory tracker', included: true },
-  { label: 'Research Notes & Side Effect Log', included: true },
-  { label: 'Unlimited reminders', included: true },
-  { label: 'Export data as CSV', included: true },
   { label: 'Early access to new features', included: true },
 ]
 
@@ -77,8 +70,8 @@ export default function PricingPage() {
           Upgrade to <span className="text-[#1A8A9E]">Pro</span>
         </h1>
         <p className="text-[#B0AAA0] text-lg max-w-xl mx-auto">
-          Two ways to unlock Pro: pay monthly, or once for life. Same feature
-          set — pick whichever fits how you build software.
+          Free gives you the full reference and every tracking tool. Pro unlocks
+          the AI intelligence engine — pay monthly, or once for life.
         </p>
       </div>
 
@@ -136,7 +129,7 @@ export default function PricingPage() {
           <button
             onClick={() => handleUpgrade('monthly')}
             disabled={loadingPlan !== null}
-            className="w-full bg-[#1A8A9E] hover:bg-[#1A8A9E] disabled:opacity-70 text-[#1A1915] py-2.5 rounded-xl text-sm font-semibold transition-colors mb-5 flex items-center justify-center gap-2"
+            className="w-full bg-[#1A8A9E] hover:bg-[#15707f] disabled:opacity-70 text-white py-2.5 rounded-xl text-sm font-semibold transition-colors mb-5 flex items-center justify-center gap-2"
           >
             {loadingPlan === 'monthly' ? (
               <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
@@ -228,7 +221,7 @@ export default function PricingPage() {
         {[
           { icon: <Bot className="w-5 h-5 text-[#1A8A9E]" />, title: 'PeptideAI', desc: 'Unlimited AI chat with full protocol knowledge' },
           { icon: <Shield className="w-5 h-5 text-emerald-500" />, title: 'Interaction Checker', desc: 'Unlimited safety checks, powered by Claude AI' },
-          { icon: <Library className="w-5 h-5 text-blue-500" />, title: 'Peptide Bible', desc: '81+ peptides with CV ratings and drug interactions' },
+          { icon: <Library className="w-5 h-5 text-blue-500" />, title: 'Peptide Bible', desc: '58+ peptides with CV ratings and drug interactions' },
           { icon: <Bell className="w-5 h-5 text-amber-500" />, title: 'Smart Reminders', desc: 'Unlimited reminders for every compound in your stack' },
           { icon: <RotateCcw className="w-5 h-5 text-purple-500" />, title: 'Cycle Tracker', desc: 'Plan and monitor on/off cycles automatically' },
           { icon: <Layers className="w-5 h-5 text-orange-500" />, title: 'Unlimited Stack', desc: 'Track as many compounds as you run' },
