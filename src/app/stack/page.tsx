@@ -14,8 +14,10 @@ import {
   X,
   ChevronDown,
   ArrowLeft,
+  MapPin,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { getSiteInfo } from '@/lib/peptide-sites'
 import type { StackItem } from '@/types'
 
 import { ALL_PEPTIDES as PEPTIDE_NAMES } from '@/lib/peptides'
@@ -386,6 +388,12 @@ export default function StackPage() {
               </div>
             </div>
           )}
+
+          <p className="text-xs text-[#B0AAA0]/80 leading-relaxed pt-1">
+            Route and injection-site information is for research and educational
+            reference only — not medical advice or administration instructions.
+            Consult a licensed physician before any medical decision.
+          </p>
         </div>
       )}
     </div>
@@ -407,6 +415,7 @@ function StackCard({
 }) {
   const typeCfg = TYPE_CONFIG[item.type] ?? TYPE_CONFIG.peptide
   const Icon = typeCfg.icon
+  const siteInfo = getSiteInfo(item.name)
 
   return (
     <div className="bg-white border border-[#E8E5E0] rounded-xl p-4 flex items-start gap-4">
@@ -433,6 +442,18 @@ function StackCard({
         )}
         {item.notes && (
           <p className="text-xs text-[#B0AAA0] mt-1 truncate">{item.notes}</p>
+        )}
+        {siteInfo && (
+          <div className="mt-2 flex items-start gap-1.5">
+            <MapPin className="w-3.5 h-3.5 text-[#1A8A9E] mt-0.5 shrink-0" />
+            <p className="text-xs leading-relaxed">
+              <span className="text-[#1A8A9E] font-medium">{siteInfo.route}</span>
+              <span className="text-[#B0AAA0]"> · {siteInfo.siteGuidance}</span>
+              {siteInfo.note && (
+                <span className="block text-[#B0AAA0]/80 mt-0.5">{siteInfo.note}</span>
+              )}
+            </p>
+          </div>
         )}
       </div>
 

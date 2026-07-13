@@ -9,8 +9,10 @@ import {
   X,
   ChevronDown,
   Clock,
+  CalendarPlus,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { remindersToICS, downloadICS } from '@/lib/ics'
 import type { Reminder, StackItem } from '@/types'
 
 const DAYS = [
@@ -137,6 +139,17 @@ export default function RemindersPage() {
     fetchData()
   }
 
+  // Export active reminders as a calendar file. The user's phone/desktop
+  // calendar then prompts to add the events and fires the native alert at each
+  // dose time — that OS prompt is the consent step.
+  const calendarReminders = reminders.filter((r) => r.active && r.days_of_week?.length > 0)
+
+  function handleAddToCalendar() {
+    if (calendarReminders.length === 0) return
+    const ics = remindersToICS(calendarReminders)
+    downloadICS('peptide-cortex-reminders.ics', ics)
+  }
+
   // Group reminders by stack item
   const grouped: Record<string, Reminder[]> = {}
   reminders.forEach((r) => {
@@ -148,26 +161,42 @@ export default function RemindersPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#1A1915] flex items-center gap-2">
             <Bell className="w-6 h-6 text-[#1A8A9E]" />
             Dosing Reminders
           </h1>
           <p className="text-[#B0AAA0] mt-1">
-            Set reminders for each compound in your stack.
+            Set reminders for each compound in your stack, then add them to your
+            phone&apos;s calendar to get a native alarm at each dose time.
           </p>
         </div>
-        <button
-          onClick={() => {
-            setShowForm(!showForm)
-            setFormError('')
-          }}
-          className="flex items-center gap-2 bg-[#1A8A9E] hover:bg-[#1A8A9E] text-[#1A1915] font-semibold px-4 py-2 rounded-lg transition-colors text-sm"
-        >
-          {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-          {showForm ? 'Cancel' : 'Add Reminder'}
-        </button>
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={handleAddToCalendar}
+            disabled={calendarReminders.length === 0}
+            title={
+              calendarReminders.length === 0
+                ? 'Add an active reminder first'
+                : 'Download a calendar file for your active reminders'
+            }
+            className="flex items-center gap-2 border border-[#1A8A9E] text-[#1A8A9E] hover:bg-[#1A8A9E]/5 disabled:opacity-40 disabled:hover:bg-transparent font-semibold px-4 py-2 rounded-lg transition-colors text-sm"
+          >
+            <CalendarPlus className="w-4 h-4" />
+            Add to Calendar
+          </button>
+          <button
+            onClick={() => {
+              setShowForm(!showForm)
+              setFormError('')
+            }}
+            className="flex items-center gap-2 bg-[#1A8A9E] hover:bg-[#15707f] text-white font-semibold px-4 py-2 rounded-lg transition-colors text-sm"
+          >
+            {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+            {showForm ? 'Cancel' : 'Add Reminder'}
+          </button>
+        </div>
       </div>
 
       {/* Add Form */}
@@ -327,7 +356,7 @@ export default function RemindersPage() {
               <div className="px-5 py-3 border-b border-[#E8E5E0] bg-white/80">
                 <h3 className="font-semibold text-[#1A1915] text-sm">{itemName}</h3>
               </div>
-              <div className="divide-y divide-slate-700/50">
+              <div className="divide-y divide-[#E8E5E0]">
                 {itemReminders.map((reminder) => (
                   <ReminderRow
                     key={reminder.id}
