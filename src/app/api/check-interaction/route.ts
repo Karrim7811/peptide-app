@@ -55,9 +55,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Bound untrusted input — these are compound names, not free text.
+    const safeA = String(itemA).slice(0, 120)
+    const safeB = String(itemB).slice(0, 120)
+
     // Look up knowledge for both items to enrich the prompt
-    const kA = findPeptide(itemA)
-    const kB = findPeptide(itemB)
+    const kA = findPeptide(safeA)
+    const kB = findPeptide(safeB)
     const contextA = kA
       ? `${kA.name}: ${kA.whatItDoes}. Drug interactions: ${kA.drugInteractions}. Cautions: ${kA.riskCautions}.`
       : ''
@@ -84,7 +88,7 @@ Respond ONLY with the JSON object, no additional text.`,
       messages: [
         {
           role: 'user',
-          content: `Check the interaction between "${itemA}" and "${itemB}". These could be peptides, medications, supplements, or any combination.`,
+          content: `Check the interaction between "${safeA}" and "${safeB}". These could be peptides, medications, supplements, or any combination.`,
         },
       ],
     })
@@ -106,8 +110,8 @@ Respond ONLY with the JSON object, no additional text.`,
     // insert must not fail an otherwise-successful check).
     await supabase.from('interaction_checks').insert({
       user_id: user.id,
-      item_a: String(itemA).slice(0, 200),
-      item_b: String(itemB).slice(0, 200),
+      item_a: safeA,
+      item_b: safeB,
     })
 
     return NextResponse.json(result)

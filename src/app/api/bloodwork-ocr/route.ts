@@ -24,8 +24,14 @@ export async function POST(request: NextRequest) {
     if (!image) {
       return NextResponse.json({ error: 'No image provided' }, { status: 400 })
     }
+    // Bound payload size (~11MB file ≈ 15M base64 chars — room for lab PDFs).
+    if (typeof image !== 'string' || image.length > 15_000_000) {
+      return NextResponse.json({ error: 'File is missing or too large (max ~11MB).' }, { status: 400 })
+    }
 
     const isPDF = mimeType === 'application/pdf'
+    const ALLOWED_IMG = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+    const imgMedia = ALLOWED_IMG.includes(mimeType) ? mimeType : 'image/jpeg'
 
     // Build the message content based on file type
     const userContent: any[] = []
@@ -44,7 +50,7 @@ export async function POST(request: NextRequest) {
         type: 'image',
         source: {
           type: 'base64',
-          media_type: mimeType || 'image/jpeg',
+          media_type: imgMedia,
           data: image,
         },
       })
@@ -111,11 +117,10 @@ Only return the JSON object, nothing else. If this is not a bloodwork report, re
     }
 
     return NextResponse.json({ markers })
-  } catch (error: any) {
-    console.error('Bloodwork OCR error:', error?.message || error)
-    const message = error?.message || 'Unknown error'
+  } catch (error) {
+    console.error('Bloodwork OCR error:', error)
     return NextResponse.json(
-      { error: `Failed to process bloodwork image: ${message}` },
+      { error: 'Failed to process bloodwork file. Please try again.' },
       { status: 500 }
     )
   }

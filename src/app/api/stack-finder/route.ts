@@ -25,9 +25,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Peptide name is required.' }, { status: 400 })
     }
 
+    // Bound untrusted input length.
+    const safeName = String(peptideName).slice(0, 80)
+    const safeGoal = typeof goal === 'string' ? goal.slice(0, 200) : ''
+
     // Find the peptide in knowledge base
     const peptide = PEPTIDE_KNOWLEDGE.find(
-      p => p.name.toLowerCase() === peptideName.toLowerCase()
+      p => p.name.toLowerCase() === safeName.toLowerCase()
     )
 
     // Build the knowledge context for the AI
@@ -44,38 +48,38 @@ Key Effects: ${peptide.keyEffects}
 Evidence: ${peptide.evidenceLevel}
 CV Rating: ${peptide.cvRating}/5
 Drug Interactions: ${peptide.drugInteractions}`
-      : `The user asked about: ${peptideName}`
+      : `The user asked about: ${safeName}`
 
-    const goalContext = goal ? `\nUser's primary goal: ${goal}` : ''
+    const goalContext = safeGoal ? `\nUser's primary goal: ${safeGoal}` : ''
 
-    const systemPrompt = `You are PeptideAI, an expert in peptide protocols and stacking. You have deep knowledge of synergistic combinations, mechanisms of action, and safety.
+    const systemPrompt = `You are Cortex AI, an educational peptide research reference tool. You summarize what published research literature reports about how peptides are commonly combined. Everything you provide is for educational and research reference only — NOT medical advice, diagnosis, or treatment recommendations.
 
 ## All 58 peptides in the knowledge base:
 ${allPeptides}
 
-Your task: Given a specific peptide, recommend the best complementary peptides to stack with it.
+Your task: Given a specific peptide, summarize complementary peptides that research literature commonly references alongside it.
 
 Always structure your response EXACTLY as follows (use these exact headers):
 
-## Why Stack With Other Peptides?
-[1-2 sentences on what complementary stacking achieves for this specific peptide]
+## Why Peptides Are Referenced Together
+[1-2 sentences on what complementary combinations are reported to achieve for this specific peptide]
 
-## Top Stacking Recommendations
+## Commonly Referenced Combinations
 [List 4-6 peptides with this format for each:]
 **[Peptide Name]** — [Goal category]
-Why it works: [1-2 sentences on the synergy mechanism]
-Combined benefit: [What the user gets from this combination]
-Caution: [Any interaction or timing note]
+Reported synergy: [1-2 sentences on the mechanism reported in the literature]
+Reported benefit: [What research literature associates with this combination]
+Caution: [Any interaction or timing note from the literature]
 
-## Timing & Protocol Tips
-[2-3 practical bullet points on how to time/administer this stack]
+## Timing & Reference Notes
+[2-3 bullet points on how these are commonly referenced together in research literature]
 
-## What to Avoid Stacking
-[2-3 peptides or classes that should NOT be combined and why]
+## Commonly Cautioned Combinations
+[2-3 peptides or classes the literature reports should not be combined, and why]
 
-Keep answers practical, specific, and safe. Always note if something lacks human evidence.`
+Frame everything as research reference — use "commonly reported", "research literature suggests", "studies note" rather than prescriptive instructions. Note when something lacks human evidence. Always end by reminding the user this is educational reference only and to consult a qualified healthcare professional before any decision.`
 
-    const userMessage = `I want to know what peptides I can stack with ${peptideName}.${goalContext}
+    const userMessage = `I want to know what peptides research literature commonly references alongside ${safeName}.${goalContext}
 
 Here is the known information about this peptide:
 ${peptideInfo}

@@ -4,7 +4,6 @@ import { PEPTIDE_KNOWLEDGE } from '@/lib/peptide-knowledge'
 import { getAuthenticatedUser } from '@/lib/supabase/server'
 import { requireAiConsent } from '@/lib/ai-consent'
 import { requirePro } from '@/lib/subscription'
-// Pro gating temporarily removed — all authenticated users have full access
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
@@ -36,6 +35,26 @@ export async function POST(request: NextRequest) {
     // messages: array of { role: 'user'|'assistant', content: string }
     // stackContext: string describing user's current stack (optional)
 
+    // Bound untrusted input: keep the last 30 valid turns, cap each turn and
+    // the stack context, and validate roles before forwarding to Claude.
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return NextResponse.json({ error: 'A message is required.' }, { status: 400 })
+    }
+    const safeMessages = messages
+      .slice(-30)
+      .filter(
+        (m: unknown): m is { role: 'user' | 'assistant'; content: string } =>
+          !!m &&
+          typeof m === 'object' &&
+          ((m as { role?: unknown }).role === 'user' || (m as { role?: unknown }).role === 'assistant') &&
+          typeof (m as { content?: unknown }).content === 'string'
+      )
+      .map((m) => ({ role: m.role, content: m.content.slice(0, 6000) }))
+    if (safeMessages.length === 0) {
+      return NextResponse.json({ error: 'A valid message is required.' }, { status: 400 })
+    }
+    const safeStackContext = typeof stackContext === 'string' ? stackContext.slice(0, 2000) : ''
+
     const knowledgeBase = buildKnowledgeContext()
 
     const systemPrompt = `You are Cortex AI, the peptide intelligence assistant inside the Peptide Cortex app. You are knowledgeable, conversational, and helpful — like talking to a well-informed friend who happens to be an expert in peptides, research chemicals, and biohacking protocols.
@@ -51,7 +70,7 @@ You know about:
 Peptide Knowledge Base (58 peptides):
 ${knowledgeBase}
 
-${stackContext ? `The user's current stack: ${stackContext}\n` : ''}
+${safeStackContext ? `The user's current stack: ${safeStackContext}\n` : ''}
 
 IMPORTANT FORMATTING RULES:
 - Write in a natural, conversational tone — like you're chatting, not writing an essay
@@ -73,7 +92,7 @@ CRITICAL RULES:
       model: 'claude-opus-4-5',
       max_tokens: 1024,
       system: systemPrompt,
-      messages: messages,
+      messages: safeMessages,
     })
 
     const content = response.content[0]

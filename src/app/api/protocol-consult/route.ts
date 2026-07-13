@@ -14,7 +14,7 @@ function buildPeptideList(): string {
   ).join('\n')
 }
 
-const SYSTEM_PROMPT = `You are Cortex AI, a peptide protocol consultant. The user wants help choosing peptides and building a personalized protocol. Your job is to have a brief conversation to understand their needs, then recommend specific peptides and fill in their profile.
+const SYSTEM_PROMPT = `You are Cortex AI, an educational peptide research reference assistant. The user wants help exploring which peptides research literature commonly references for their goals. Have a brief conversation to understand their interests, then reference specific peptides and fill in their profile. All output is for educational and research reference only — NOT medical advice, diagnosis, or treatment.
 
 Available peptides in our database:
 ${buildPeptideList()}
@@ -46,11 +46,12 @@ If you have enough information to make a recommendation:
     "goals": ["Recovery", "Healing"],
     "conditions": ["None"]
   },
-  "summary": "Based on your goals of recovery and healing, I recommend BPC-157 and TB-500. This combination is excellent for tissue repair and reducing inflammation."
+  "summary": "For goals of recovery and healing, research literature commonly references BPC-157 and TB-500 for tissue repair and inflammation. This is educational reference only — consult a qualified healthcare professional before any decision."
 }
 
 IMPORTANT:
-- Only recommend peptides that exist in the database above.
+- Frame everything as educational research reference, never as personalized medical advice, and remind the user to consult a qualified healthcare professional.
+- Only reference peptides that exist in the database above.
 - For the profile, only fill in fields the user has mentioned or that you can reasonably infer. Use empty string for unknown fields.
 - Goals must be from: Fat Loss, Muscle Growth, Recovery, Anti-Aging, Cognitive Enhancement, Sleep, Immune Support, Healing.
 - Conditions must be from: Diabetes, Heart Disease, Thyroid, High Blood Pressure, Liver Issues, Kidney Issues, None.
@@ -80,21 +81,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'A message is required.' }, { status: 400 })
     }
 
-    // Build messages array from history
+    // Bound untrusted input: cap the current message and the retained history.
+    const safeMessage = message.slice(0, 2000)
+
+    // Build messages array from history (last 20 turns, each length-capped)
     const messages: { role: 'user' | 'assistant'; content: string }[] = []
 
     if (history && Array.isArray(history)) {
-      for (const entry of history) {
-        if (entry.role === 'user' || entry.role === 'assistant') {
-          messages.push({ role: entry.role, content: entry.content })
+      for (const entry of history.slice(-20)) {
+        if ((entry.role === 'user' || entry.role === 'assistant') && typeof entry.content === 'string') {
+          messages.push({ role: entry.role, content: entry.content.slice(0, 4000) })
         }
       }
     }
 
     // If the last message in history isn't the current message, add it
     const lastMsg = messages[messages.length - 1]
-    if (!lastMsg || lastMsg.content !== message || lastMsg.role !== 'user') {
-      messages.push({ role: 'user', content: message })
+    if (!lastMsg || lastMsg.content !== safeMessage || lastMsg.role !== 'user') {
+      messages.push({ role: 'user', content: safeMessage })
     }
 
     const response = await client.messages.create({

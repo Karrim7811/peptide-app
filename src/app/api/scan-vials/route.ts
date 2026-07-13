@@ -24,6 +24,12 @@ export async function POST(request: NextRequest) {
     if (!image) {
       return NextResponse.json({ error: 'No image provided' }, { status: 400 })
     }
+    // Bound payload size (~6MB image ≈ 8M base64 chars) and pin the media type.
+    if (typeof image !== 'string' || image.length > 8_000_000) {
+      return NextResponse.json({ error: 'Image is missing or too large (max ~6MB).' }, { status: 400 })
+    }
+    const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+    const mediaType = ALLOWED_MIME.includes(mimeType) ? mimeType : 'image/jpeg'
 
     const message = await client.messages.create({
       model: 'claude-sonnet-4-20250514',
@@ -47,7 +53,7 @@ Do not include any text outside the JSON array.`,
               type: 'image',
               source: {
                 type: 'base64',
-                media_type: mimeType || 'image/jpeg',
+                media_type: mediaType,
                 data: image,
               },
             },
@@ -77,11 +83,10 @@ Do not include any text outside the JSON array.`,
     const vials = JSON.parse(arrayMatch[0])
 
     return NextResponse.json({ vials })
-  } catch (error: any) {
-    console.error('Vial scan error:', error?.message || error)
-    const message = error?.message || 'Unknown error'
+  } catch (error) {
+    console.error('Vial scan error:', error)
     return NextResponse.json(
-      { error: `Failed to scan vials: ${message}` },
+      { error: 'Failed to scan vials. Please try again.' },
       { status: 500 }
     )
   }
