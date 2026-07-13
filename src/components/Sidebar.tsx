@@ -7,7 +7,7 @@ import {
   LayoutDashboard, MessageSquare, Shield, Sparkles,
   Layers, FlaskRound, Calculator, RotateCcw, MapPin,
   BookOpen, Bell, Package, AlertCircle, FileText,
-  Library, Scale, Store, LogOut, Zap,
+  Library, Scale, Store, LogOut, Zap, FlaskConical,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -18,6 +18,7 @@ const ICON_RAIL = [
   { href: '/ai-chat', icon: MessageSquare, label: 'Peptide AI' },
   { href: '/checker', icon: Shield, label: 'Interaction Checker' },
   { href: '/stack-finder', icon: Sparkles, label: 'Stack Finder' },
+  { href: '/bloodwork', icon: FlaskConical, label: 'Bloodwork Analyzer' },
   null,
   { href: '/stack', icon: Layers, label: 'My Stack' },
   { href: '/dosing', icon: Calculator, label: 'Dosing Reference' },
@@ -33,6 +34,7 @@ const NAV_SECTIONS = [
       { href: '/ai-chat', label: 'Peptide AI' },
       { href: '/checker', label: 'Interaction Checker' },
       { href: '/stack-finder', label: 'Stack Finder' },
+      { href: '/bloodwork', label: 'Bloodwork Analyzer' },
     ],
   },
   {

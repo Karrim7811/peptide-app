@@ -7,7 +7,7 @@ import {
   LayoutDashboard, MessageSquare, Shield, Sparkles,
   Layers, FlaskRound, Calculator, RotateCcw, MapPin,
   BookOpen, Bell, Package, AlertCircle, FileText,
-  Library, Scale, Store, LogOut, Menu, X, ChevronRight,
+  Library, Scale, Store, LogOut, Menu, X, ChevronRight, FlaskConical,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -19,6 +19,7 @@ const NAV_SECTIONS = [
       { href: '/ai-chat', label: 'Peptide AI', icon: MessageSquare },
       { href: '/checker', label: 'Interaction Checker', icon: Shield },
       { href: '/stack-finder', label: 'Stack Finder', icon: Sparkles },
+      { href: '/bloodwork', label: 'Bloodwork Analyzer', icon: FlaskConical },
     ],
   },
   {
