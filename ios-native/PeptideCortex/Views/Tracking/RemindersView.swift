@@ -17,9 +17,39 @@ struct RemindersView: View {
                             message: "Set up reminders to stay on top of your protocol"
                         )
                     } else {
+                        Button {
+                            Task { await vm.addAllToCalendar() }
+                        } label: {
+                            HStack(spacing: 8) {
+                                if vm.isAddingToCalendar {
+                                    ProgressView().tint(.cxTeal)
+                                } else {
+                                    Image(systemName: "calendar.badge.plus")
+                                }
+                                Text("Add to Calendar")
+                                    .font(.system(size: 14, weight: .semibold))
+                            }
+                            .foregroundColor(.cxTeal)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(Color.cxTeal.opacity(0.1))
+                            .cornerRadius(12)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color.cxTeal.opacity(0.3), lineWidth: 1)
+                            )
+                        }
+                        .disabled(vm.isAddingToCalendar)
+
                         ForEach(vm.reminders) { reminder in
                             ReminderCard(reminder: reminder, vm: vm)
                         }
+
+                        Text("Reminders alert you on this device. \"Add to Calendar\" also places them in your calendar app, which fires its own alarm. For research and educational reference only.")
+                            .font(.system(size: 11))
+                            .foregroundColor(.cxStone)
+                            .multilineTextAlignment(.center)
+                            .padding(.top, 4)
                     }
                 }
                 .padding()
@@ -43,6 +73,14 @@ struct RemindersView: View {
         .refreshable { await vm.load() }
         .sheet(isPresented: $vm.showAddForm) {
             AddReminderSheet(vm: vm)
+        }
+        .alert("Calendar", isPresented: Binding(
+            get: { vm.calendarMessage != nil },
+            set: { if !$0 { vm.calendarMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(vm.calendarMessage ?? "")
         }
     }
 }

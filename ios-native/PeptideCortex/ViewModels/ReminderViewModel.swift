@@ -6,6 +6,8 @@ class ReminderViewModel: ObservableObject {
     @Published var stackItems: [StackItem] = []
     @Published var isLoading = false
     @Published var showAddForm = false
+    @Published var calendarMessage: String?
+    @Published var isAddingToCalendar = false
 
     // Add form state
     @Published var selectedStackItemId: UUID?
@@ -23,6 +25,8 @@ class ReminderViewModel: ObservableObject {
             if selectedStackItemId == nil {
                 selectedStackItemId = stackItems.first?.id
             }
+            // Keep device alarms in sync with the DB (covers add/toggle/delete).
+            await NotificationService.shared.syncAll(reminders)
         } catch {
             print("Reminder load error: \(error)")
         }
@@ -42,6 +46,9 @@ class ReminderViewModel: ObservableObject {
             dose: newDose, active: true,
             createdAt: nil, stackItem: nil
         )
+        // Ask for notification permission the first time a reminder is created,
+        // so the alarms scheduled in load() can actually fire.
+        await NotificationService.shared.requestAuthorization()
         do {
             try await SupabaseService.shared.insertReminder(reminder)
             resetForm()
@@ -50,6 +57,21 @@ class ReminderViewModel: ObservableObject {
         } catch {
             print("Add reminder error: \(error)")
         }
+    }
+
+    func addAllToCalendar() async {
+        isAddingToCalendar = true
+        let active = reminders.filter { $0.active && !$0.daysOfWeek.isEmpty }
+        if active.isEmpty {
+            calendarMessage = "No active reminders to add."
+            isAddingToCalendar = false
+            return
+        }
+        let ok = await NotificationService.shared.addToCalendar(active)
+        calendarMessage = ok
+            ? "Added \(active.count) reminder\(active.count == 1 ? "" : "s") to your calendar."
+            : "Couldn't add to your calendar. Enable calendar access in Settings."
+        isAddingToCalendar = false
     }
 
     func toggleActive(_ reminder: Reminder) async {

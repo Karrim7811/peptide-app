@@ -45,6 +45,10 @@
 	<string>Peptide Cortex needs camera access to scan your bloodwork reports.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Peptide Cortex needs photo library access to import your bloodwork reports.</string>
+	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
+	<string>Peptide Cortex adds your dosing reminders to your calendar so it can alert you at each scheduled time.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Peptide Cortex adds your dosing reminders to your calendar so it can alert you at each scheduled time.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
