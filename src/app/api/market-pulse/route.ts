@@ -20,7 +20,9 @@ export async function GET(request: NextRequest) {
   try {
     const message = await anthropic.messages.create({
       model: 'claude-opus-4-5',
-      max_tokens: 1024,
+      // 5-7 headlines + 3-5 FDA items + trending list overruns 1024 tokens and
+      // truncates the JSON mid-array, which then fails to parse. Give it room.
+      max_tokens: 2048,
       system: `You are a peptide industry analyst with knowledge up to early 2026.
 Provide a concise market pulse update covering recent developments in the peptide research space.
 Respond ONLY with a JSON object in this exact format:
@@ -53,15 +55,29 @@ Include 5-7 headlines and 3-5 FDA watch items. Focus on BPC-157, TB-500, CJC-129
       ],
     })
 
-    const text = message.content[0].type === 'text' ? message.content[0].text : ''
+    let text = message.content[0].type === 'text' ? message.content[0].text : ''
+    // Strip markdown fences and trailing commas before parsing.
+    text = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '')
     const jsonMatch = text.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) {
-      return NextResponse.json({ error: 'Failed to parse response' }, { status: 500 })
+
+    let result: unknown = null
+    if (jsonMatch) {
+      const cleaned = jsonMatch[0].replace(/,\s*([}\]])/g, '$1')
+      try {
+        result = JSON.parse(cleaned)
+      } catch (parseErr) {
+        console.error('Market pulse JSON parse failed:', parseErr)
+      }
     }
-    const result = JSON.parse(jsonMatch[0])
+
+    // Degrade gracefully to an empty feed rather than 500 — this is a
+    // non-critical news surface on the dashboard.
+    if (!result || typeof result !== 'object') {
+      return NextResponse.json({ lastUpdated: '', headlines: [], fdaWatch: [], trendingPeptides: [] })
+    }
     return NextResponse.json(result)
   } catch (err) {
     console.error('Market pulse error:', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ lastUpdated: '', headlines: [], fdaWatch: [], trendingPeptides: [] })
   }
 }
