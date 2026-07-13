@@ -13,6 +13,8 @@ struct ProtocolPlannerView: View {
         } else {
             ScrollView {
                 VStack(spacing: 16) {
+                    DisclaimerBanner()
+
                     // Progress dots
                     HStack(spacing: 8) {
                         ForEach(0..<5, id: \.self) { i in
@@ -58,14 +60,14 @@ struct ProtocolPlannerView: View {
 
     var welcomeStep: some View {
         VStack(spacing: 20) {
-            aiBubble("Welcome! I'm Cortex AI. I'll help you build a personalized peptide protocol tailored to your body and goals.")
+            aiBubble("Welcome! I'm Cortex AI. I'll help you assemble an educational reference protocol based on your goals.")
 
             Image(systemName: "wand.and.stars")
                 .font(.system(size: 48))
                 .foregroundColor(.cxTeal)
                 .padding()
 
-            aiBubble("Would you like me to create an optimized dosing plan? I'll check interactions, calculate doses, and set up reminders.")
+            aiBubble("Would you like me to put together a reference plan? I'll note common interactions, typical research-reported ranges, and help you set reminders.")
 
             Button {
                 vm.currentStep = 1

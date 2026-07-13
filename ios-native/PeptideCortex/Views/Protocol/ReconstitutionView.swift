@@ -6,9 +6,11 @@ struct ReconstitutionView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                // Manual calculator
+                DisclaimerBanner()
+
+                // Solution concentration reference
                 VStack(alignment: .leading, spacing: 14) {
-                    Text("MANUAL CALCULATOR")
+                    Text("SOLUTION CONCENTRATION")
                         .font(.system(size: 11, weight: .semibold))
                         .tracking(2)
                         .foregroundColor(.cxStone)

@@ -134,7 +134,7 @@ struct LoginView: View {
 
                         // Footer
                         HStack(spacing: 8) {
-                            Text("HIPAA-compliant")
+                            Text("Encrypted")
                             Text("•").foregroundColor(.cxStone)
                             Text("Secure")
                             Text("•").foregroundColor(.cxStone)

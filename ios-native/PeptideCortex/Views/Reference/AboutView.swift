@@ -91,7 +91,7 @@ struct AboutView: View {
                         UpdateItem(icon: "sparkles", text: "Cortex AI — your peptide intelligence assistant")
                         UpdateItem(icon: "shield.fill", text: "Interaction Checker — verify compound safety")
                         UpdateItem(icon: "square.stack.3d.up.fill", text: "Stack Finder — AI-powered recommendations")
-                        UpdateItem(icon: "flask.fill", text: "Auto Reconstitution Calculator")
+                        UpdateItem(icon: "flask.fill", text: "Reconstitution concentration reference")
                         UpdateItem(icon: "books.vertical.fill", text: "Peptide Bible — 58+ peptides with full details")
                         UpdateItem(icon: "bell.fill", text: "Dose logging, reminders & inventory tracking")
                         UpdateItem(icon: "newspaper.fill", text: "Peptide news & FDA update feed")

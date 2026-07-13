@@ -42,7 +42,7 @@ struct PricingView: View {
                         .foregroundColor(.cxStone)
 
                     let freeFeatures = [
-                        "Peptide Bible", "Dosing Calculator", "Reconstitution Calculator",
+                        "Peptide Bible", "Dosing Reference", "Reconstitution Reference",
                         "Injection Sites", "Popular Stacks", "Legal & Regulatory",
                         "Top Vendors", "My Stack", "Dose Log", "Reminders",
                         "Fridge Inventory", "Side Effects", "Research Notes", "Cycle Tracker"

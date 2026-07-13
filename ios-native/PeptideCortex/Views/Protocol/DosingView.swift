@@ -6,7 +6,9 @@ struct DosingView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-                SearchBar(text: $vm.searchText, placeholder: "Search peptide for dosing info...")
+                DisclaimerBanner()
+
+                SearchBar(text: $vm.searchText, placeholder: "Search peptide for reference info...")
 
                 if let peptide = vm.selectedPeptide {
                     DosingDetailCard(peptide: peptide)

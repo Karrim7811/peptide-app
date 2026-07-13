@@ -143,7 +143,7 @@ struct DashboardView: View {
                         QuickActionRow(icon: "shield.fill", label: "Check Interaction", color: .orange) {
                             selectedTab = .checker
                         }
-                        QuickActionRow(icon: "flask.fill", label: "Reconstitution Calculator", color: .green) {
+                        QuickActionRow(icon: "flask.fill", label: "Reconstitution Reference", color: .green) {
                             selectedTab = .reconstitution
                         }
                         QuickActionRow(icon: "heart.text.square", label: "Analyze Bloodwork", color: .red) {

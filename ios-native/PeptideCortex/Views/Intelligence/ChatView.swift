@@ -9,6 +9,10 @@ struct ChatView: View {
             ProGateView(featureName: "Cortex AI")
         } else {
         VStack(spacing: 0) {
+            DisclaimerBanner()
+                .padding(.horizontal)
+                .padding(.top, 10)
+
             // Messages
             ScrollViewReader { proxy in
                 ScrollView {
