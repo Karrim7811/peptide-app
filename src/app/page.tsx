@@ -247,7 +247,7 @@ export default function LandingPage() {
           </div>
           <div className="nav-actions">
             <button className="btn-ghost" onClick={() => router.push('/login')}>Sign In</button>
-            <button className="btn-primary" onClick={() => scrollTo('pricing')}>Get Started</button>
+            <button className="btn-primary" onClick={() => router.push('/signup')}>Sign Up</button>
           </div>
         </nav>
 
