@@ -1,0 +1,363 @@
+'use client'
+
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
+import {
+  ArrowLeft,
+  Send,
+  Bot,
+  User,
+  Loader2,
+  FlaskConical,
+  Sparkles,
+  RotateCcw,
+} from 'lucide-react'
+import { useAiConsent } from '@/components/AiConsentProvider'
+
+type Message = {
+  role: 'user' | 'assistant'
+  content: string
+}
+
+const SUGGESTED_QUESTIONS = [
+  "What's the best time of day to inject BPC-157?",
+  'How do I reconstitute a 5mg vial of TB-500?',
+  "What's a good beginner peptide stack for recovery?",
+  'Can I stack Ipamorelin with CJC-1295?',
+  'How long should I cycle on/off peptides?',
+]
+
+const WELCOME_MESSAGE =
+  "Hi! I'm **PeptideAI** — your expert assistant for peptide protocols, dosing, reconstitution, and stack advice.\n\nI can see your active stack and tailor answers to what you're running. Ask me anything, or try one of the questions below."
+
+export default function AiChatPage() {
+  const router = useRouter()
+  const [messages, setMessages] = useState<Message[]>([])
+  const [input, setInput] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [stackContext, setStackContext] = useState('')
+  const [stackNames, setStackNames] = useState<string[]>([])
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const { requireConsent } = useAiConsent()
+
+  // Fetch user's active stack on mount
+  useEffect(() => {
+    async function fetchStack() {
+      const supabase = createClient()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      if (!user) return
+
+      const { data } = await supabase
+        .from('stack_items')
+        .select('name, type, dose, unit')
+        .eq('user_id', user.id)
+        .eq('active', true)
+        .order('created_at', { ascending: true })
+
+      if (data && data.length > 0) {
+        const contextLines = data.map(
+          (item: { name: string; type: string; dose?: string; unit?: string }) => {
+            const dosePart = item.dose ? ` ${item.dose}${item.unit ? ' ' + item.unit : ''}` : ''
+            return `- ${item.name}${dosePart} (${item.type})`
+          }
+        )
+        setStackContext(contextLines.join('\n'))
+        setStackNames(data.map((item: { name: string }) => item.name))
+      }
+    }
+    fetchStack()
+  }, [])
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages, loading])
+
+  // Auto-resize textarea
+  useEffect(() => {
+    const ta = textareaRef.current
+    if (!ta) return
+    ta.style.height = 'auto'
+    const maxH = 96 // ~3 rows
+    ta.style.height = Math.min(ta.scrollHeight, maxH) + 'px'
+  }, [input])
+
+  const handleSend = useCallback(
+    async (overrideInput?: string) => {
+      const text = (overrideInput ?? input).trim()
+      if (!text || loading) return
+
+      const consented = await requireConsent()
+      if (!consented) return
+
+      const userMsg: Message = { role: 'user', content: text }
+      const updatedMessages = [...messages, userMsg]
+      setMessages(updatedMessages)
+      setInput('')
+      setLoading(true)
+
+      // Reset textarea height
+      if (textareaRef.current) {
+        textareaRef.current.style.height = 'auto'
+      }
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: updatedMessages, stackContext }),
+        })
+
+        const data = await res.json()
+
+        if (!res.ok || data.error) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: 'assistant',
+              content: data.error ?? 'Something went wrong. Please try again.',
+            },
+          ])
+        } else {
+          setMessages((prev) => [...prev, { role: 'assistant', content: data.reply }])
+        }
+      } catch {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: 'Network error. Please check your connection and try again.',
+          },
+        ])
+      } finally {
+        setLoading(false)
+      }
+    },
+    [input, loading, messages, stackContext]
+  )
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSend()
+    }
+  }
+
+  function handleSuggestion(question: string) {
+    if (loading) return
+    handleSend(question)
+  }
+
+  function handleClear() {
+    setMessages([])
+    setInput('')
+  }
+
+  // Render assistant content — bold **text** handling
+  function renderContent(text: string) {
+    // Simple bold markdown replacement
+    const parts = text.split(/(\*\*[^*]+\*\*)/g)
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return (
+          <strong key={i} className="font-semibold text-[#1A1915]">
+            {part.slice(2, -2)}
+          </strong>
+        )
+      }
+      return <span key={i}>{part}</span>
+    })
+  }
+
+  return (
+    <div className="flex flex-col" style={{ height: 'calc(100vh - 130px)' }}>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4 shrink-0">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => router.back()}
+            className="p-1.5 text-[#B0AAA0] hover:text-[#1A1915] hover:bg-[#F2F0ED] rounded-lg transition-colors"
+            title="Go back"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div className="flex items-center gap-2.5">
+            <div className="bg-[#1A8A9E]/12 p-2 rounded-xl">
+              <Bot className="w-5 h-5 text-[#1A8A9E]" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-[#1A1915] leading-none">PeptideAI</h1>
+              <p className="text-xs text-[#B0AAA0] mt-0.5">Expert peptide assistant</p>
+            </div>
+          </div>
+        </div>
+
+        {messages.length > 0 && (
+          <button
+            onClick={handleClear}
+            className="flex items-center gap-1.5 text-sm text-[#B0AAA0] hover:text-[#1A1915] hover:bg-[#F2F0ED] px-3 py-1.5 rounded-lg transition-colors"
+            title="Clear conversation"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            Clear
+          </button>
+        )}
+      </div>
+
+      {/* Stack context banner */}
+      {stackNames.length > 0 && (
+        <div className="flex items-start gap-2.5 bg-[#1A8A9E]/8 border border-[#1A8A9E]/25 rounded-xl px-4 py-3 mb-4 shrink-0">
+          <FlaskConical className="w-4 h-4 text-[#1A8A9E] shrink-0 mt-0.5" />
+          <p className="text-sm text-[#1A8A9E]">
+            <span className="font-medium text-[#1A1915]">Your active stack detected:</span>{' '}
+            <span className="text-[#1A8A9E]/80">{stackNames.join(', ')}</span>
+          </p>
+        </div>
+      )}
+
+      {/* Messages area */}
+      <div className="flex-1 overflow-y-auto rounded-xl bg-white/50 border border-[#E8E5E0] flex flex-col">
+        <div className="flex-1 px-4 py-4 space-y-4">
+          {messages.length === 0 ? (
+            /* Welcome state */
+            <div className="flex flex-col h-full">
+              {/* Welcome bubble */}
+              <div className="flex items-start gap-3">
+                <div className="shrink-0 w-8 h-8 rounded-full bg-[#1A8A9E]/12 border border-[#1A8A9E]/30 flex items-center justify-center mt-0.5">
+                  <Bot className="w-4 h-4 text-[#1A8A9E]" />
+                </div>
+                <div className="bg-white text-[#1A8A9E] rounded-2xl rounded-tl-sm px-4 py-3 max-w-[80%] border border-[#E8E5E0]">
+                  <p className="text-sm whitespace-pre-wrap leading-relaxed">
+                    {renderContent(WELCOME_MESSAGE)}
+                  </p>
+                </div>
+              </div>
+
+              {/* Suggested questions */}
+              <div className="mt-5 space-y-2">
+                <div className="flex items-center gap-2 px-1">
+                  <Sparkles className="w-3.5 h-3.5 text-[#B0AAA0]" />
+                  <p className="text-xs text-[#B0AAA0] font-medium uppercase tracking-wider">
+                    Suggested questions
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {SUGGESTED_QUESTIONS.map((q) => (
+                    <button
+                      key={q}
+                      onClick={() => handleSuggestion(q)}
+                      disabled={loading}
+                      className="text-sm bg-[#F2F0ED]/60 hover:bg-[#1A8A9E]/15 border border-[#D0CCC6] hover:border-[#1A8A9E]/50 text-[#3A3730] hover:text-indigo-200 px-3 py-2 rounded-xl transition-all duration-150 text-left disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* Message list */
+            <>
+              {messages.map((msg, idx) => (
+                <div
+                  key={idx}
+                  className={`flex items-start gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
+                >
+                  {/* Avatar */}
+                  <div
+                    className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center mt-0.5 ${
+                      msg.role === 'user'
+                        ? 'bg-[#1A8A9E]/15 border border-[#1A8A9E]/40'
+                        : 'bg-[#F2F0ED] border border-[#D0CCC6]'
+                    }`}
+                  >
+                    {msg.role === 'user' ? (
+                      <User className="w-4 h-4 text-[#1A8A9E]" />
+                    ) : (
+                      <Bot className="w-4 h-4 text-[#3A3730]" />
+                    )}
+                  </div>
+
+                  {/* Bubble */}
+                  <div
+                    className={`px-4 py-3 max-w-[80%] text-sm leading-relaxed whitespace-pre-wrap ${
+                      msg.role === 'user'
+                        ? 'bg-[#1A8A9E] text-[#1A1915] rounded-2xl rounded-tr-sm'
+                        : 'bg-white text-[#1A8A9E] rounded-2xl rounded-tl-sm border border-[#E8E5E0]'
+                    }`}
+                  >
+                    {msg.role === 'assistant' ? renderContent(msg.content) : msg.content}
+                  </div>
+                </div>
+              ))}
+
+              {/* Typing indicator */}
+              {loading && (
+                <div className="flex items-start gap-3">
+                  <div className="shrink-0 w-8 h-8 rounded-full bg-[#F2F0ED] border border-[#D0CCC6] flex items-center justify-center mt-0.5">
+                    <Bot className="w-4 h-4 text-[#3A3730]" />
+                  </div>
+                  <div className="bg-white border border-[#E8E5E0] rounded-2xl rounded-tl-sm px-4 py-3">
+                    <div className="flex items-center gap-1.5">
+                      <span
+                        className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
+                        style={{ animationDelay: '0ms' }}
+                      />
+                      <span
+                        className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
+                        style={{ animationDelay: '150ms' }}
+                      />
+                      <span
+                        className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
+                        style={{ animationDelay: '300ms' }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Input area — pinned inside the scrollable card */}
+        <div className="shrink-0 border-t border-[#E8E5E0] bg-white/80 px-4 py-3 rounded-b-xl">
+          <div className="flex items-end gap-3">
+            <textarea
+              ref={textareaRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Ask about dosing, protocols, stacking…"
+              rows={1}
+              disabled={loading}
+              className="flex-1 resize-none bg-[#F2F0ED] border border-[#D0CCC6] focus:border-[#1A8A9E] focus:ring-1 focus:ring-[#1A8A9E]/50 rounded-xl px-4 py-2.5 text-sm text-[#1A1915] placeholder-slate-400 outline-none transition-colors disabled:opacity-50 min-h-[42px] max-h-24 leading-relaxed"
+              style={{ overflow: 'hidden' }}
+            />
+            <button
+              onClick={() => handleSend()}
+              disabled={loading || !input.trim()}
+              className="shrink-0 w-10 h-10 flex items-center justify-center bg-[#1A8A9E] hover:bg-[#1A8A9E] disabled:bg-[#F2F0ED] disabled:text-[#B0AAA0] text-[#1A1915] rounded-xl transition-colors disabled:cursor-not-allowed"
+              title="Send message"
+            >
+              {loading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Send className="w-4 h-4" />
+              )}
+            </button>
+          </div>
+          <p className="text-xs text-[#B0AAA0] mt-2 text-center">
+            Press <kbd className="bg-[#F2F0ED] text-[#B0AAA0] px-1 py-0.5 rounded text-[10px]">Enter</kbd> to send
+            &nbsp;·&nbsp;
+            <kbd className="bg-[#F2F0ED] text-[#B0AAA0] px-1 py-0.5 rounded text-[10px]">Shift+Enter</kbd> for newline
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}

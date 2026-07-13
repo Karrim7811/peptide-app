@@ -48,13 +48,16 @@ export function createServiceClient() {
   )
 }
 
-// Helper to get authenticated user from either cookies or Bearer token
-export async function getAuthenticatedUser(request: Request) {
+// Resolve both the authenticated user AND an auth-scoped Supabase client from
+// either a Bearer token (mobile app) or session cookies (web). The returned
+// client is bound to the caller's identity, so RLS-scoped self-reads (e.g.
+// reading one's own profile tier) and inserts work regardless of auth method.
+export async function getAuthenticatedContext(request: Request) {
   // Try Bearer token first (mobile app)
   const authHeader = request.headers.get('Authorization')
   if (authHeader?.startsWith('Bearer ')) {
     const token = authHeader.slice(7)
-    const client = createJsClient(
+    const supabase = createJsClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
@@ -65,16 +68,22 @@ export async function getAuthenticatedUser(request: Request) {
         },
       }
     )
-    const { data: { user } } = await client.auth.getUser(token)
-    return user
+    const { data: { user } } = await supabase.auth.getUser(token)
+    return { user, supabase }
   }
 
   // Fall back to cookie-based auth (web)
+  const supabase = createClient()
   try {
-    const client = createClient()
-    const { data: { user } } = await client.auth.getUser()
-    return user
+    const { data: { user } } = await supabase.auth.getUser()
+    return { user, supabase }
   } catch {
-    return null
+    return { user: null, supabase }
   }
+}
+
+// Helper to get just the authenticated user from either cookies or Bearer token
+export async function getAuthenticatedUser(request: Request) {
+  const { user } = await getAuthenticatedContext(request)
+  return user
 }

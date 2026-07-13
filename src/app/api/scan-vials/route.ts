@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { getAuthenticatedUser } from '@/lib/supabase/server'
 import { requireAiConsent } from '@/lib/ai-consent'
+import { requirePro } from '@/lib/subscription'
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
@@ -14,6 +15,9 @@ export async function POST(request: NextRequest) {
 
     const consentError = requireAiConsent(user)
     if (consentError) return consentError
+
+    const proError = await requirePro(request)
+    if (proError) return proError
 
     const { image, mimeType } = await request.json()
 

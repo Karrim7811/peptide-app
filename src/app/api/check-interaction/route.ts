@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { findPeptide } from '@/lib/peptide-knowledge'
-import { getAuthenticatedUser } from '@/lib/supabase/server'
+import { getAuthenticatedContext } from '@/lib/supabase/server'
 import { requireAiConsent } from '@/lib/ai-consent'
+import { resolveTier, isProTier, FREE_LIMITS } from '@/lib/subscription'
 
 const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -10,13 +11,39 @@ const client = new Anthropic({
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getAuthenticatedUser(request)
+    const { user, supabase } = await getAuthenticatedContext(request)
     if (!user) {
       return NextResponse.json({ error: 'Please sign in.', code: 'AUTH_REQUIRED' }, { status: 401 })
     }
 
     const consentError = requireAiConsent(user)
     if (consentError) return consentError
+
+    // Free tier: limited to N checks/day. Pro & lifetime: unlimited.
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('subscription_tier, subscription_expires_at')
+      .eq('id', user.id)
+      .single()
+    const isPro = isProTier(resolveTier(profile))
+    if (!isPro) {
+      const startOfDay = new Date()
+      startOfDay.setHours(0, 0, 0, 0)
+      const { count } = await supabase
+        .from('interaction_checks')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .gte('created_at', startOfDay.toISOString())
+      if ((count ?? 0) >= FREE_LIMITS.interactionChecksPerDay) {
+        return NextResponse.json(
+          {
+            error: `Free tier is limited to ${FREE_LIMITS.interactionChecksPerDay} interaction checks per day. Upgrade to Pro for unlimited checks.`,
+            code: 'RATE_LIMIT',
+          },
+          { status: 429 }
+        )
+      }
+    }
 
     const body = await request.json()
     const { itemA, itemB } = body
@@ -74,6 +101,14 @@ Respond ONLY with the JSON object, no additional text.`,
     }
 
     const result = JSON.parse(jsonText)
+
+    // Record the check in the daily rate-limit ledger (best-effort — a failed
+    // insert must not fail an otherwise-successful check).
+    await supabase.from('interaction_checks').insert({
+      user_id: user.id,
+      item_a: String(itemA).slice(0, 200),
+      item_b: String(itemB).slice(0, 200),
+    })
 
     return NextResponse.json(result)
   } catch (error) {
