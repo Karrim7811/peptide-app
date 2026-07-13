@@ -29,6 +29,25 @@ export function createClient() {
   )
 }
 
+// Service-role client — bypasses RLS. SERVER-ONLY, never expose to the browser
+// or a client component. Used by flows that must write on behalf of a user who
+// has no active session in the request context (e.g. the Stripe webhook, which
+// carries a Stripe signature, not a Supabase cookie). Without this, profile
+// UPDATEs run as the anon role and are silently denied by RLS.
+export function createServiceClient() {
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!serviceKey) {
+    throw new Error(
+      'SUPABASE_SERVICE_ROLE_KEY is not set — service-role operations (e.g. Stripe webhook profile updates) cannot run'
+    )
+  }
+  return createJsClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    serviceKey,
+    { auth: { persistSession: false, autoRefreshToken: false } }
+  )
+}
+
 // Helper to get authenticated user from either cookies or Bearer token
 export async function getAuthenticatedUser(request: Request) {
   // Try Bearer token first (mobile app)

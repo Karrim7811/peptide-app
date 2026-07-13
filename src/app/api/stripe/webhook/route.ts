@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStripeClient } from '@/lib/stripe'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
 import type Stripe from 'stripe'
 
 export const dynamic = 'force-dynamic'
@@ -22,7 +22,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
-  const supabase = createClient()
+  // Service-role client: the webhook has no user session, so anon/RLS would
+  // silently deny every profiles UPDATE. Service role bypasses RLS.
+  const supabase = createServiceClient()
 
   switch (event.type) {
     case 'checkout.session.completed': {
