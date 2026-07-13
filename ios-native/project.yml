@@ -34,6 +34,10 @@ targets:
         INFOPLIST_FILE: PeptideCortex/Resources/Info.plist
         PRODUCT_BUNDLE_IDENTIFIER: ai.peptidecortex.app
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        # iPhone-only (v1 decision, 2026-07-13): iPad users are served by
+        # peptidecortex.com; universal support can be added in a later version
+        # but can never be removed once shipped.
+        TARGETED_DEVICE_FAMILY: "1"
     dependencies:
       - package: Supabase
         product: Supabase
