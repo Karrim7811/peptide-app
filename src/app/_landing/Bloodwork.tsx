@@ -39,19 +39,29 @@ type Phase = 'idle' | 'scanning' | 'done'
 export default function Bloodwork() {
   const [started, setStarted] = useState(false)
   const [phase, setPhase] = useState<Phase>('idle')
+  const [reduced, setReduced] = useState(false)
   const gridRef = useRef<HTMLDivElement>(null)
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>()
+
+  // Read the real prefers-reduced-motion value only after mount, so the
+  // server render and the first client render agree (both `false`). See
+  // CLAUDE.md / task-9: calling prefersReducedMotion() during render caused
+  // a hydration mismatch because it's `false` on the server (no `window`)
+  // but may be `true` on a client with the OS setting enabled.
+  useEffect(() => {
+    setReduced(prefersReducedMotion())
+  }, [])
 
   const run = useCallback(() => {
     setStarted(true)
     if (timeoutRef.current) clearTimeout(timeoutRef.current)
-    if (prefersReducedMotion()) {
+    if (reduced) {
       setPhase('done')
       return
     }
     setPhase('scanning')
     timeoutRef.current = setTimeout(() => setPhase('done'), 1150)
-  }, [])
+  }, [reduced])
 
   // Auto-run once the panel scrolls into view.
   useEffect(() => {
@@ -201,7 +211,7 @@ export default function Bloodwork() {
                       height: '100%',
                       width: started ? `${level * 100}%` : '0%',
                       background: color,
-                      transition: prefersReducedMotion() ? 'none' : 'width 1s cubic-bezier(.2,.7,.2,1)',
+                      transition: reduced ? 'none' : 'width 1s cubic-bezier(.2,.7,.2,1)',
                     }}
                   />
                 </div>
