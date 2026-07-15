@@ -127,7 +127,7 @@ export default function Synthesis() {
                     justifyContent: 'space-between',
                     gap: 16,
                     opacity: lit ? 1 : 0.25,
-                    boxShadow: lit ? `0 0 24px ${color}` : 'none',
+                    boxShadow: lit ? `0 0 24px ${color}44` : 'none',
                     transition: 'all .5s',
                   }}
                 >

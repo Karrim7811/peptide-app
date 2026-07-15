@@ -24,6 +24,15 @@ export default function LandingPage() {
   useReveal()
   return (
     <div style={{ position: 'relative', background: '#050505', minHeight: '100vh' }}>
+      {/* V4 dark scrollbar + cyan selection, scoped to the landing route while mounted
+          (matches the prototype; leaves the still-light internal routes untouched). */}
+      <style>{`
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #09111F; }
+        ::-webkit-scrollbar-thumb { background: #00E5FF; }
+        ::-webkit-scrollbar-thumb:hover { background: #00E5FF; }
+        ::selection { background: rgba(0,229,255,0.25); }
+      `}</style>
       <ParticleNetwork mode={mode} />
       <div
         aria-hidden
