@@ -174,9 +174,17 @@ content z-2. Clean up rAF + listeners on unmount.
 - Respect `prefers-reduced-motion` for canvas, paper-feed cycle, pipeline, typewriter,
   reveals (reveals resolve to visible immediately).
 - Canvas is decorative: `aria-hidden`, `pointer-events:none`.
-- Every medical-adjacent section keeps its educational-use disclaimer **verbatim**
-  (disclaimer parity, `CLAUDE.md` working principles). No "your dose" phrasing anywhere.
-  Sample/illustrative surfaces stay labeled "ILLUSTRATIVE" / "sample".
+- Every medical-adjacent section keeps its educational-use disclaimer **verbatim** from the
+  prototype (disclaimer parity, `CLAUDE.md` working principles) — copy the exact strings from
+  the `.dc.html`, do not paraphrase. No "your dose" phrasing anywhere. Sample/illustrative
+  surfaces stay labeled "ILLUSTRATIVE" / "sample".
+- **AI-consent routing:** any surface that fires a real Claude-backed request MUST call
+  `useAiConsent().requireConsent()` (from `@/components/AiConsentProvider`) and get `true`
+  before the fetch. The landing page makes **no** live AI call (checker → local map;
+  chat/bloodwork → canned demos), so the gate isn't triggered on the anonymous page; its
+  "Run the full checker →" / "Open in app →" CTAs route to `/checker`, `/ai-chat`,
+  `/bloodwork`, which already enforce consent. If any landing widget is later switched to a
+  live call, the `requireConsent()` gate is a hard requirement, not optional.
 - Email inputs use `type="email" required`; forms navigate rather than silently swap so
   behavior is truthful (no fake "you're on the waitlist").
 
