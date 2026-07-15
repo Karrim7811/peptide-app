@@ -13,8 +13,10 @@ import Checker from './_landing/Checker'
 import Stacks from './_landing/Stacks'
 import Bloodwork from './_landing/Bloodwork'
 import Chat from './_landing/Chat'
+import Trust from './_landing/Trust'
+import Pricing from './_landing/Pricing'
+import FinalCta from './_landing/FinalCta'
 import Footer from './_landing/Footer'
-// (Task 8 imports added as those sections land)
 
 export default function LandingPage() {
   const mode = useSceneMode()
@@ -43,7 +45,9 @@ export default function LandingPage() {
       <Stacks />
       <Bloodwork />
       <Chat />
-      {/* Task 8: <Trust/> <Pricing/> <FinalCta/> */}
+      <Trust />
+      <Pricing />
+      <FinalCta />
       <Footer />
     </div>
   )
