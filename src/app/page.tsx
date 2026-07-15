@@ -10,8 +10,11 @@ import PeptideNodes from './_landing/PeptideNodes'
 import Synthesis from './_landing/Synthesis'
 import Terminal from './_landing/Terminal'
 import Checker from './_landing/Checker'
+import Stacks from './_landing/Stacks'
+import Bloodwork from './_landing/Bloodwork'
+import Chat from './_landing/Chat'
 import Footer from './_landing/Footer'
-// (Task 7–8 imports added as those sections land)
+// (Task 8 imports added as those sections land)
 
 export default function LandingPage() {
   const mode = useSceneMode()
@@ -37,7 +40,9 @@ export default function LandingPage() {
       <Synthesis />
       <Terminal />
       <Checker />
-      {/* Task 7: <Stacks/> <Bloodwork/> <Chat/> */}
+      <Stacks />
+      <Bloodwork />
+      <Chat />
       {/* Task 8: <Trust/> <Pricing/> <FinalCta/> */}
       <Footer />
     </div>
