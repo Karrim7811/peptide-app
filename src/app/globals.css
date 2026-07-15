@@ -102,3 +102,30 @@ button, a {
 .font-display {
   font-family: 'Cormorant Garamond', Georgia, serif;
 }
+
+/* ─── V4 dark-landing keyframes ──────────────────────────────────────────────────
+   Ported verbatim from design_handoff_peptide_cortex_v4/Peptide Cortex v4.dc.html
+   (lines 26-30). Namespaced `v2*` so they never collide with the light-theme
+   `rise` keyframe used elsewhere in this file. Consumed by src/app/_landing/*. */
+@keyframes v2rise {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes v2pulse {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.35); }
+}
+@keyframes v2scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(2400%); }
+}
+@keyframes v2bar {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes v2scanline {
+  0% { top: 0; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
