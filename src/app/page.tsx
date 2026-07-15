@@ -23,7 +23,7 @@ export default function LandingPage() {
   const mode = useSceneMode()
   useReveal()
   return (
-    <div style={{ position: 'relative', background: '#050505', minHeight: '100vh' }}>
+    <div style={{ position: 'relative', background: '#050505', color: '#FFFFFF', minHeight: '100vh' }}>
       {/* V4 dark scrollbar + cyan selection, scoped to the landing route while mounted
           (matches the prototype; leaves the still-light internal routes untouched). */}
       <style>{`
