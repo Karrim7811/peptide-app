@@ -4,8 +4,13 @@ import { useReveal } from './_landing/_lib/useReveal'
 import ParticleNetwork from './_landing/_lib/ParticleNetwork'
 import Nav from './_landing/Nav'
 import Hero from './_landing/Hero'
+import Corpus from './_landing/Corpus'
+import Mechanisms from './_landing/Mechanisms'
+import PeptideNodes from './_landing/PeptideNodes'
+import Synthesis from './_landing/Synthesis'
+import Terminal from './_landing/Terminal'
 import Footer from './_landing/Footer'
-// (Task 5–8 imports added as those sections land)
+// (Task 6–8 imports added as those sections land)
 
 export default function LandingPage() {
   const mode = useSceneMode()
@@ -25,7 +30,11 @@ export default function LandingPage() {
       />
       <Nav mode={mode} />
       <Hero />
-      {/* Task 5: <Corpus/> <Mechanisms/> <PeptideNodes/> <Synthesis/> <Terminal/> */}
+      <Corpus />
+      <Mechanisms />
+      <PeptideNodes />
+      <Synthesis />
+      <Terminal />
       {/* Task 6: <Checker/> */}
       {/* Task 7: <Stacks/> <Bloodwork/> <Chat/> */}
       {/* Task 8: <Trust/> <Pricing/> <FinalCta/> */}
