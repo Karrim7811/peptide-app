@@ -4,6 +4,7 @@ import { useReveal } from './_landing/_lib/useReveal'
 import ParticleNetwork from './_landing/_lib/ParticleNetwork'
 import Nav from './_landing/Nav'
 import Hero from './_landing/Hero'
+import ProductProof from './_landing/ProductProof'
 import Corpus from './_landing/Corpus'
 import Mechanisms from './_landing/Mechanisms'
 import PeptideNodes from './_landing/PeptideNodes'
@@ -36,6 +37,7 @@ export default function LandingPage() {
       />
       <Nav mode={mode} />
       <Hero />
+      <ProductProof />
       <Corpus />
       <Mechanisms />
       <PeptideNodes />
