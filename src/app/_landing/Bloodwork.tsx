@@ -201,7 +201,7 @@ export default function Bloodwork() {
                       height: '100%',
                       width: started ? `${level * 100}%` : '0%',
                       background: color,
-                      transition: 'width 1s cubic-bezier(.2,.7,.2,1)',
+                      transition: prefersReducedMotion() ? 'none' : 'width 1s cubic-bezier(.2,.7,.2,1)',
                     }}
                   />
                 </div>
