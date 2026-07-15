@@ -27,8 +27,15 @@ export function modeColor(m: number): string {
 }
 
 export function prefersReducedMotion(): boolean {
-  return (
-    typeof window !== 'undefined' &&
-    window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true
-  )
+  if (typeof window === 'undefined') return false
+  // Dev-only preview override: `?motion=1` forces animations ON, `?motion=0`
+  // forces the reduced-motion (static) path — handy for previewing on a machine
+  // whose OS has "reduce motion" enabled. Never active in a production build, so
+  // it can't override a real visitor's accessibility preference.
+  if (process.env.NODE_ENV !== 'production') {
+    const m = new URLSearchParams(window.location.search).get('motion')
+    if (m === '1' || m === 'on') return false
+    if (m === '0' || m === 'off') return true
+  }
+  return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true
 }
