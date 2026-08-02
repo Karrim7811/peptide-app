@@ -42,7 +42,7 @@ struct PricingView: View {
                         .foregroundColor(.cxStone)
 
                     let freeFeatures = [
-                        "Peptide Bible", "Dosing Reference", "Reconstitution Reference",
+                        "Peptide Bible", "Dosing Reference",
                         "Injection Sites", "Popular Stacks", "Legal & Regulatory",
                         "Top Vendors", "My Stack", "Dose Log", "Reminders",
                         "Fridge Inventory", "Side Effects", "Research Notes", "Cycle Tracker"
@@ -73,8 +73,7 @@ struct PricingView: View {
                     let proFeatures = [
                         ("brain.head.profile", "Cortex AI Chat"),
                         ("arrow.triangle.2.circlepath", "Interaction Checker"),
-                        ("square.stack.3d.up", "Stack Finder"),
-                        ("heart.text.square", "Bloodwork Reference")
+                        ("square.stack.3d.up", "Stack Finder")
                     ]
                     ForEach(proFeatures, id: \.1) { icon, feature in
                         HStack(spacing: 8) {
@@ -119,20 +118,20 @@ struct PricingView: View {
                                         Spacer()
                                         if isPurchasing {
                                             ProgressView()
-                                                .progressViewStyle(CircularProgressViewStyle(tint: product.id == "pro_yearly" ? .white : .cxTeal))
+                                                .progressViewStyle(CircularProgressViewStyle(tint: product.id == "pro_lifetime" ? .white : .cxTeal))
                                         } else {
                                             Text(product.displayPrice)
                                                 .font(.system(size: 16, weight: .bold))
                                         }
                                     }
-                                    .foregroundColor(product.id == "pro_yearly" ? .white : .cxTeal)
+                                    .foregroundColor(product.id == "pro_lifetime" ? .white : .cxTeal)
                                     .padding(16)
                                     .frame(maxWidth: .infinity)
-                                    .background(product.id == "pro_yearly" ? Color.cxTeal : Color.white)
+                                    .background(product.id == "pro_lifetime" ? Color.cxTeal : Color.white)
                                     .cornerRadius(14)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 14)
-                                            .stroke(Color.cxTeal, lineWidth: product.id == "pro_yearly" ? 0 : 2)
+                                            .stroke(Color.cxTeal, lineWidth: product.id == "pro_lifetime" ? 0 : 2)
                                     )
                                 }
                                 .disabled(isPurchasing)

@@ -23,7 +23,6 @@ class DashboardViewModel: ObservableObject {
     @Published var newsLoading = false
     @Published var newsError: String?
     @Published var activeStackItems: [StackItem] = []
-    @Published var reconResults: [UUID: ReconstitutionResult] = [:]
     @Published var todayReminders: [TodayReminder] = []
     @Published var supplyAlerts: [SupplyAlert] = []
 
@@ -90,26 +89,8 @@ class DashboardViewModel: ObservableObject {
         }
         isLoading = false
 
-        // Load reconstitution for peptide items that have a dose in mg
-        await loadReconstitution()
-
         // Load news
         await loadNews()
-    }
-
-    func loadReconstitution() async {
-        for item in activeStackItems where item.type == "peptide" {
-            // Parse mg amount from dose string
-            let doseStr = item.dose.lowercased().replacingOccurrences(of: "mg", with: "").trimmingCharacters(in: .whitespaces)
-            guard let mg = Double(doseStr), mg > 0 else { continue }
-
-            do {
-                let result = try await APIService.shared.getReconstitution(peptideName: item.name, amountMg: mg)
-                reconResults[item.id] = result
-            } catch {
-                print("Recon error for \(item.name): \(error)")
-            }
-        }
     }
 
     func removeFromStack(_ item: StackItem) async {

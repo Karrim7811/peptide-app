@@ -18,34 +18,6 @@ struct DashboardView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                // Protocol Planner CTA
-                Button {
-                    selectedTab = .protocolPlanner
-                } label: {
-                    HStack(spacing: 12) {
-                        Image(systemName: "wand.and.stars")
-                            .font(.system(size: 24))
-                            .foregroundColor(.white)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Plan My Protocol")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundColor(.white)
-                            Text("Let Cortex AI build your personalized dosing plan")
-                                .font(.system(size: 12))
-                                .foregroundColor(.white.opacity(0.85))
-                        }
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .foregroundColor(.white.opacity(0.7))
-                    }
-                    .padding(16)
-                    .background(
-                        LinearGradient(colors: [Color.cxTeal, Color.cxTeal.opacity(0.8)], startPoint: .leading, endPoint: .trailing)
-                    )
-                    .cornerRadius(14)
-                }
-                .buttonStyle(.plain)
-
                 // Stat cards grid
                 if vm.isLoading {
                     LoadingView()
@@ -70,7 +42,6 @@ struct DashboardView: View {
                 if !vm.todayReminders.isEmpty {
                     VialTrayView(
                         reminders: vm.todayReminders,
-                        reconResults: vm.reconResults,
                         onTake: { reminder in
                             await vm.quickLogDose(reminder: reminder)
                         }
@@ -81,7 +52,6 @@ struct DashboardView: View {
                 if !vm.activeStackItems.isEmpty {
                     VialStackView(
                         items: vm.activeStackItems,
-                        reconResults: vm.reconResults,
                         onTap: { selectedTab = .stack },
                         onRemove: { item in
                             Task { await vm.removeFromStack(item) }
@@ -142,12 +112,6 @@ struct DashboardView: View {
                         }
                         QuickActionRow(icon: "shield.fill", label: "Check Interaction", color: .orange) {
                             selectedTab = .checker
-                        }
-                        QuickActionRow(icon: "flask.fill", label: "Reconstitution Reference", color: .green) {
-                            selectedTab = .reconstitution
-                        }
-                        QuickActionRow(icon: "heart.text.square", label: "Analyze Bloodwork", color: .red) {
-                            selectedTab = .bloodwork
                         }
                         QuickActionRow(icon: "books.vertical.fill", label: "Browse Peptide Bible", color: .purple) {
                             selectedTab = .reference
@@ -346,68 +310,3 @@ struct QuickActionRow: View {
     }
 }
 
-struct StackItemRow: View {
-    let item: StackItem
-    let recon: ReconstitutionResult?
-    let onTap: () -> Void
-
-    var body: some View {
-        Button(action: onTap) {
-            HStack(spacing: 12) {
-                Image(systemName: iconForType(item.type))
-                    .font(.system(size: 18))
-                    .foregroundColor(colorForType(item.type))
-                    .frame(width: 36, height: 36)
-                    .background(colorForType(item.type).opacity(0.1))
-                    .cornerRadius(10)
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(item.name.capitalized)
-                        .font(.system(size: 15, weight: .medium))
-                        .foregroundColor(.cxBlack)
-
-                    if !item.dose.isEmpty {
-                        Text("\(item.dose)\(item.unit.isEmpty ? "" : " \(item.unit)")")
-                            .font(.system(size: 12))
-                            .foregroundColor(.cxTeal)
-                    }
-
-                    if let recon = recon {
-                        Text("BAC: \(String(format: "%.1f", recon.recommendedBacWaterMl)) mL · \(String(format: "%.0f", recon.concentrationMcgPerMl)) mcg/mL")
-                            .font(.system(size: 11))
-                            .foregroundColor(.cxStone)
-                    }
-                }
-
-                Spacer()
-
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12))
-                    .foregroundColor(.cxStone)
-            }
-            .padding(14)
-            .background(Color.white)
-            .cornerRadius(12)
-            .shadow(color: Color.black.opacity(0.03), radius: 4, x: 0, y: 1)
-        }
-        .buttonStyle(.plain)
-    }
-
-    func iconForType(_ type: String) -> String {
-        switch type {
-        case "peptide": return "syringe"
-        case "medication": return "pills"
-        case "supplement": return "leaf"
-        default: return "square.stack.3d.up"
-        }
-    }
-
-    func colorForType(_ type: String) -> Color {
-        switch type {
-        case "peptide": return .cxTeal
-        case "medication": return .blue
-        case "supplement": return .green
-        default: return .cxStone
-        }
-    }
-}

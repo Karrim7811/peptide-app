@@ -3,7 +3,7 @@ import StoreKit
 
 @MainActor
 class StoreService: ObservableObject {
-    static let productIDs: Set<String> = ["pro_monthly", "pro_yearly"]
+    static let productIDs: Set<String> = ["pro_monthly", "pro_lifetime"]
 
     @Published var products: [Product] = []
     @Published var purchasedProductIDs: Set<String> = []

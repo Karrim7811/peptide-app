@@ -1,8 +1,8 @@
 import SwiftUI
 
 enum NavDestination: String, CaseIterable {
-    case dashboard, aiChat, checker, stackFinder, bloodwork, protocolPlanner
-    case stack, reconstitution, dosing, cycle, sites
+    case dashboard, aiChat, checker, stackFinder
+    case stack, dosing, cycle, sites
     case log, reminders, inventory, sideEffects, notes
     case reference, popularStacks, regulatory, vendors
     case pricing, about
@@ -13,10 +13,7 @@ enum NavDestination: String, CaseIterable {
         case .aiChat: return "Cortex AI"
         case .checker: return "Interaction Checker"
         case .stackFinder: return "Stack Finder"
-        case .bloodwork: return "Bloodwork Reference"
-        case .protocolPlanner: return "Protocol Planner"
         case .stack: return "My Stack"
-        case .reconstitution: return "Reconstitution"
         case .dosing: return "Dosing Reference"
         case .cycle: return "Cycle Tracker"
         case .sites: return "Injection Sites"
@@ -40,10 +37,7 @@ enum NavDestination: String, CaseIterable {
         case .aiChat: return "Ask anything about peptides"
         case .checker: return "Research peptide interaction information"
         case .stackFinder: return "Find peptides that complement your stack"
-        case .bloodwork: return "AI-powered educational lab reference"
-        case .protocolPlanner: return "AI-powered protocol reference"
         case .stack: return "Add your peptides, meds & supplements"
-        case .reconstitution: return "BAC water reference and unit converter"
         case .dosing: return "Research-based dosing reference info"
         case .cycle: return "Track your on/off cycling schedule"
         case .sites: return "Rotate injection sites to avoid irritation"
@@ -52,7 +46,7 @@ enum NavDestination: String, CaseIterable {
         case .inventory: return "Track what's in your fridge & expiry dates"
         case .sideEffects: return "Record side effects by peptide & severity"
         case .notes: return "Save research notes & links by peptide"
-        case .reference: return "Browse 58+ peptides with full details"
+        case .reference: return "Browse 81+ peptides with full details"
         case .popularStacks: return "Curated stacks for common goals"
         case .regulatory: return "FDA status & legal info by country"
         case .vendors: return "Trusted sources for peptides"
@@ -67,10 +61,7 @@ enum NavDestination: String, CaseIterable {
         case .aiChat: return "message"
         case .checker: return "shield"
         case .stackFinder: return "sparkles"
-        case .bloodwork: return "heart.text.square"
-        case .protocolPlanner: return "wand.and.stars"
         case .stack: return "square.stack.3d.up"
-        case .reconstitution: return "flask"
         case .dosing: return "function"
         case .cycle: return "arrow.triangle.2.circlepath"
         case .sites: return "mappin.and.ellipse"
@@ -90,8 +81,8 @@ enum NavDestination: String, CaseIterable {
 
     static var sections: [(label: String, items: [NavDestination])] {
         [
-            ("Intelligence", [.dashboard, .aiChat, .checker, .stackFinder, .bloodwork, .protocolPlanner]),
-            ("My Protocol", [.stack, .reconstitution, .dosing, .cycle, .sites]),
+            ("Intelligence", [.dashboard, .aiChat, .checker, .stackFinder]),
+            ("My Protocol", [.stack, .dosing, .cycle, .sites]),
             ("Tracking", [.log, .reminders, .inventory, .sideEffects, .notes]),
             ("Reference", [.reference, .popularStacks, .regulatory, .vendors]),
             ("Settings", [.about]),
