@@ -44,15 +44,29 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--cx-light); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--cx-stone); }
 
-/* ─── Form inputs ────────────────────────────────────────────────────────────── */
-input[type='text'],
-input[type='email'],
-input[type='password'],
-input[type='number'],
-input[type='time'],
-input[type='datetime-local'],
-select,
-textarea {
+/* ─── Form inputs — LEGACY LIGHT-THEME ROUTES ONLY ───────────────────────────
+   These predate the redesign and style inputs for the light surfaces: white
+   fill, near-black text, teal focus ring, rounded corners, Gill Sans.
+
+   Every selector is excluded from `.cx-surface`, and that exclusion is
+   load-bearing. `input[type='email']` has specificity (0,1,1), which BEATS
+   Tailwind's `.text-ink` at (0,1,0) — so on the dark surfaces these rules were
+   winning, painting near-black text into every email, password and text field
+   while `input[type='date']` (absent from the list) rendered correctly white.
+   That mismatch is exactly how the bug presented.
+
+   They were also forcing a white background, a 0.5rem radius — against the
+   design's no-radius rule — and Gill Sans over the Jost/JetBrains stack.
+
+   Do not remove the `:not()` guards without also deleting these rules. */
+input[type='text']:not(.cx-surface *),
+input[type='email']:not(.cx-surface *),
+input[type='password']:not(.cx-surface *),
+input[type='number']:not(.cx-surface *),
+input[type='time']:not(.cx-surface *),
+input[type='datetime-local']:not(.cx-surface *),
+select:not(.cx-surface *),
+textarea:not(.cx-surface *) {
   background-color: #fff;
   border: 1px solid var(--cx-light);
   color: var(--cx-black);
@@ -64,9 +78,9 @@ textarea {
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, sans-serif;
 }
 
-input:focus,
-select:focus,
-textarea:focus {
+input:focus:not(.cx-surface *),
+select:focus:not(.cx-surface *),
+textarea:focus:not(.cx-surface *) {
   border-color: var(--cx-teal);
   box-shadow: 0 0 0 2px rgba(26,138,158,0.12);
 }
@@ -74,6 +88,23 @@ textarea:focus {
 input::placeholder,
 textarea::placeholder {
   color: var(--cx-stone);
+}
+
+/* ─── Form inputs — REDESIGNED DARK SURFACES ────────────────────────────────
+   The components carry their own Tailwind styling; this only guarantees the
+   two things the legacy block was overriding and that a utility class cannot
+   reliably win: the text colour and the typeface. */
+.cx-surface input,
+.cx-surface select,
+.cx-surface textarea {
+  color: var(--ink);
+  font-family: inherit;
+}
+
+.cx-surface input::placeholder,
+.cx-surface textarea::placeholder {
+  color: var(--faint);
+  opacity: 1;
 }
 
 select option {
@@ -189,25 +220,45 @@ button, a {
    transition delay stops the yellow flash on first fill.
 
    Uses var(--ink)/var(--panel) rather than literal white so this stays correct
-   on the Daylight ground, where "white text" would be invisible. */
+   on the Daylight ground, where "white text" would be invisible.
+
+   `!important` is required, not stylistic: Chrome's autofill colour is applied
+   as a UA-level style that ordinary declarations lose to.
+
+   The `:-internal-autofill-*` selectors cover the PREVIEW state — the greyed
+   value Chrome paints while a suggestion is merely highlighted, before it is
+   committed. That state is styled separately from `:-webkit-autofill`, so
+   without it the field still reads dim until the user actually picks the
+   suggestion. Chrome ignores selectors it does not recognise, and other
+   engines drop the whole rule if one selector in a list is invalid — so these
+   are kept in their own block. */
 .cx-surface input:-webkit-autofill,
 .cx-surface input:-webkit-autofill:hover,
 .cx-surface input:-webkit-autofill:focus,
 .cx-surface input:-webkit-autofill:active,
 .cx-surface textarea:-webkit-autofill,
 .cx-surface select:-webkit-autofill {
-  -webkit-text-fill-color: var(--ink);
-  caret-color: var(--ink);
-  -webkit-box-shadow: 0 0 0 1000px var(--panel) inset;
-  box-shadow: 0 0 0 1000px var(--panel) inset;
+  -webkit-text-fill-color: var(--ink) !important;
+  caret-color: var(--ink) !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--panel) inset !important;
+  box-shadow: 0 0 0 1000px var(--panel) inset !important;
   transition: background-color 9999s ease-in-out 0s;
+}
+
+/* Autofill PREVIEW — kept separate so an unrecognised selector cannot
+   invalidate the rule above. */
+.cx-surface input:-internal-autofill-selected,
+.cx-surface input:-internal-autofill-previewed {
+  -webkit-text-fill-color: var(--ink) !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--panel) inset !important;
+  box-shadow: 0 0 0 1000px var(--panel) inset !important;
 }
 
 /* Firefox uses its own selector and does not need the shadow trick. */
 .cx-surface input:autofill,
 .cx-surface textarea:autofill {
-  color: var(--ink);
-  background-color: var(--panel);
+  color: var(--ink) !important;
+  background-color: var(--panel) !important;
 }
 
 /* The date input's own chrome (the picker glyph) renders black-on-black in

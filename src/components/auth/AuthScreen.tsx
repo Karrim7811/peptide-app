@@ -12,7 +12,9 @@ import { createClient } from '@/lib/supabase/client'
 //   src/app/login/page.tsx  — email + password, signInWithPassword → /dashboard
 //   src/app/signup/page.tsx — email + dob + password + confirm, 18+ gate,
 //                             password >= 6, signUp({options:{data:{dob}}}),
-//                             then a "check your email" state (does not log in).
+//                             then EITHER a straight sign-in or a "check your
+//                             email" state, depending on whether Supabase
+//                             returned a session — see the signUp call below.
 // No OAuth, no AI-consent checkbox — both deliberate (see handoff README).
 
 const MIN_AGE_YEARS = 18
@@ -130,7 +132,7 @@ export default function AuthScreen({ mode: initialMode }: AuthScreenProps) {
     const supabase = createClient()
 
     if (isSignup) {
-      const { error: authError } = await supabase.auth.signUp({
+      const { data, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -142,6 +144,19 @@ export default function AuthScreen({ mode: initialMode }: AuthScreenProps) {
       if (authError) {
         setError(authError.message)
         setLoading(false)
+        return
+      }
+
+      // Supabase returns a live session ONLY when email confirmation is turned
+      // off for the project — which is its current setting, so signups are
+      // auto-confirmed and no email is sent. Showing "check your email" then
+      // is a dead end: nothing arrives, and the account already works.
+      //
+      // Branch on what the server actually returned rather than assuming
+      // either way, so this stays correct if confirmation is switched on later.
+      if (data.session) {
+        router.push('/dashboard')
+        router.refresh()
         return
       }
 
