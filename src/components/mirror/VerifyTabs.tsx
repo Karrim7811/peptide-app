@@ -31,6 +31,7 @@ import { COMPOUNDS, type Compound, type StackEntry } from '@/lib/catalog'
 import type { Entitlements } from '@/lib/entitlement'
 import { hueVar } from '@/lib/design/grounds'
 import type { VerifyTab } from '@/lib/mirror/useMirrorNav'
+import CycleControl from '@/components/mirror/CycleControl'
 
 export interface VerifyTabsProps {
   tab: VerifyTab
@@ -355,6 +356,11 @@ function CycleTab({ ent }: { ent: Entitlements }) {
       <div className="flex max-w-[660px] flex-col gap-5">
         <TabLabel>CYCLE</TabLabel>
         <Headline>No cycle on record yet.</Headline>
+        <p className="max-w-[520px] text-[14px] leading-[1.75] text-dim">
+          A cycle is what the day count, the washout date and adherence are all measured against.
+          Start one and the rest of this tab fills in.
+        </p>
+        <CycleControl />
       </div>
     )
   }

@@ -79,8 +79,14 @@ const INITIAL: MirrorNavState = {
   orbit: 0,
 }
 
-export function useMirrorNav(targets: MirrorNavTargets): MirrorNav {
-  const [state, setState] = useState<MirrorNavState>(INITIAL)
+export function useMirrorNav(
+  targets: MirrorNavTargets,
+  initial?: Partial<MirrorNavState>,
+): MirrorNav {
+  // Deep links from the superseded routes land here — /log opens the Ledger,
+  // /cycle opens the CYCLE tab, and so on. Applied as the initial state rather
+  // than as an effect so the surface never flashes layer 1 first.
+  const [state, setState] = useState<MirrorNavState>({ ...INITIAL, ...initial })
 
   // Kept in refs so the wheel handler stays referentially stable and does not
   // re-subscribe the key listener on every state change.

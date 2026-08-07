@@ -29,7 +29,11 @@ import AskBar from '@/components/mirror/AskBar'
 import Ledger from '@/components/ledger/Ledger'
 import BloodworkOverlay from '@/components/bloodwork/BloodworkOverlay'
 import { useGround } from '@/components/GroundProvider'
-import { useMirrorNav, type VerifyTab } from '@/lib/mirror/useMirrorNav'
+import {
+  useMirrorNav,
+  type MirrorNavState,
+  type VerifyTab,
+} from '@/lib/mirror/useMirrorNav'
 import { buildRegionLayer, buildWholeLayer, type GeometryPalette } from '@/lib/mirror/geometry'
 import { createEntitlements } from '@/lib/entitlement'
 import { GROUND_DEFINITIONS } from '@/lib/design/grounds'
@@ -37,7 +41,28 @@ import { CATEGORIES, CATEGORY_BY_ID, COMPOUNDS, SITES } from '@/lib/catalog'
 import { isProTier } from '@/lib/tier'
 import type { MirrorData } from '@/lib/mirror/load'
 
-export default function MirrorClient({ data }: { data: MirrorData }) {
+/**
+ * Where a deep link from a superseded route lands.
+ *
+ * `math` and `record` are per-compound tabs and have nothing to show without
+ * one, so they are deliberately absent: /reconstitution lands on the field,
+ * where picking a compound is the next thing you do anyway.
+ */
+function initialNavFrom(params: Record<string, string>): Partial<MirrorNavState> {
+  if (params.ledger === '1') return { ledgerOpen: true }
+  if (params.bloodwork === '1') return { bloodworkOpen: true }
+  if (params.tab === 'cycle') return { layer: 4, verifyTab: 'cycle' }
+  if (params.tab === 'rotation') return { layer: 4, verifyTab: 'rotation' }
+  return {}
+}
+
+export default function MirrorClient({
+  data,
+  params = {},
+}: {
+  data: MirrorData
+  params?: Record<string, string>
+}) {
   const { ground } = useGround()
 
   // A Pro user may preview the free surface; a free user may NOT toggle to Pro.
@@ -63,6 +88,8 @@ export default function MirrorClient({ data }: { data: MirrorData }) {
     [tier, data.stack, data.doseLog, data.cycle, data.hasLabs],
   )
 
+  const [initialNav] = useState(() => initialNavFrom(params))
+
   const nav = useMirrorNav({
     tensionRegionId: useCallback(() => ent.tensionCatId(), [ent]),
     leadCompoundId: useCallback(
@@ -75,7 +102,7 @@ export default function MirrorClient({ data }: { data: MirrorData }) {
       },
       [ent],
     ),
-  })
+  }, initialNav)
 
   const palette: GeometryPalette = useMemo(() => {
     const definition = GROUND_DEFINITIONS[ground]

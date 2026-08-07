@@ -32,6 +32,7 @@ import { hueVar } from '@/lib/design/grounds'
 import { money, MONTHLY_PRICE } from '@/lib/pricing'
 import type { MirrorLayer, VerifyTab } from '@/lib/mirror/useMirrorNav'
 import LogDoseButton from '@/components/mirror/LogDoseButton'
+import StackControl from '@/components/mirror/StackControl'
 import InteractionCheck from '@/components/mirror/InteractionCheck'
 import RemindersTool from '@/components/mirror/tools/RemindersTool'
 import NotesTool from '@/components/mirror/tools/NotesTool'
@@ -577,6 +578,8 @@ function LayerCompound({
             {edgeRows.length === 0 && <span className="text-[13px] text-faint">No stacking partners on record.</span>}
           </div>
         </div>
+
+        <StackControl compound={compound} entry={ent.ownedEntry(compound.id)} />
 
         {/* The old routes, arrived at as contextual tools. Each is the user's
             own record and therefore tier-blind — side effects especially: a
