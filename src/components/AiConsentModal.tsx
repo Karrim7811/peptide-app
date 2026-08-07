@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import {
   ShieldCheck,
   FileText,
@@ -38,9 +39,26 @@ export default function AiConsentModal({ onAccept, onDecline }: Props) {
     setSaving(true)
     setError('')
     try {
+      // Send the access token explicitly. The browser is the one place the
+      // session is reliably available — server-side the route could validate
+      // the cookie with getUser() but could not get a *session* out of it, so
+      // the write failed with "Auth session missing!" while auth itself looked
+      // fine. This puts web on the same known-good path the iOS app uses.
+      const supabase = createClient()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
+      if (!session?.access_token) {
+        throw new Error('Please sign in again to continue.')
+      }
+
       const res = await fetch('/api/ai-consent', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
       })
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
