@@ -211,6 +211,153 @@ export async function setInventory(input: {
   return OK
 }
 
+/**
+ * Schedule a compound.
+ *
+ * Cadence is what supply-days arithmetic reads, so a reminder is not merely a
+ * notification — it is the input that makes "4 days left" mean anything.
+ */
+export async function setReminder(input: {
+  compoundId: string
+  time: string
+  daysOfWeek: number[]
+  dose?: string
+}): Promise<ActionResult> {
+  const { supabase, user } = await authed()
+  if (!user) return fail('Please sign in.')
+  if (!/^\d{2}:\d{2}/.test(input.time)) return fail('Give the reminder a time.')
+  if (!input.daysOfWeek.length) return fail('Pick at least one day.')
+  if (input.daysOfWeek.some((day) => day < 0 || day > 6)) return fail('Invalid day.')
+
+  const { data: rows } = await supabase
+    .from('stack_items')
+    .select('id, name')
+    .eq('user_id', user.id)
+    .eq('active', true)
+
+  const match = (rows ?? []).find((row) => resolveCompoundId(row.name) === input.compoundId)
+  if (!match) return fail('Add it to your stack first.')
+
+  const { error } = await supabase.from('reminders').insert({
+    user_id: user.id,
+    stack_item_id: match.id,
+    time: input.time,
+    days_of_week: input.daysOfWeek,
+    dose: input.dose ?? '',
+    active: true,
+  })
+  if (error) return fail(error.message)
+
+  revalidatePath('/dashboard')
+  return OK
+}
+
+export async function removeReminder(reminderId: string): Promise<ActionResult> {
+  const { supabase, user } = await authed()
+  if (!user) return fail('Please sign in.')
+
+  const { error } = await supabase
+    .from('reminders')
+    .delete()
+    .eq('id', reminderId)
+    .eq('user_id', user.id)
+  if (error) return fail(error.message)
+
+  revalidatePath('/dashboard')
+  return OK
+}
+
+/** A research note against a compound. Never gated — it is the user's own writing. */
+export async function addNote(input: {
+  compoundId: string
+  note: string
+  url?: string
+}): Promise<ActionResult> {
+  const { supabase, user } = await authed()
+  if (!user) return fail('Please sign in.')
+
+  const compound = COMPOUNDS[input.compoundId]
+  if (!compound) return fail('Unknown compound.')
+  if (!input.note.trim()) return fail('Write something first.')
+
+  const { error } = await supabase.from('research_notes').insert({
+    user_id: user.id,
+    peptide_name: compound.name,
+    note: input.note.trim(),
+    url: input.url?.trim() ?? '',
+  })
+  if (error) return fail(error.message)
+
+  revalidatePath('/dashboard')
+  return OK
+}
+
+export async function removeNote(noteId: string): Promise<ActionResult> {
+  const { supabase, user } = await authed()
+  if (!user) return fail('Please sign in.')
+
+  const { error } = await supabase
+    .from('research_notes')
+    .delete()
+    .eq('id', noteId)
+    .eq('user_id', user.id)
+  if (error) return fail(error.message)
+
+  revalidatePath('/dashboard')
+  return OK
+}
+
+/**
+ * Record a side effect.
+ *
+ * Explicitly NOT tier-gated, and never will be. Withholding a safety signal
+ * behind a paywall is the one thing this product must not do — the pricing page
+ * commits to cautions and contraindications staying open at every tier, and a
+ * user's own adverse-event record is squarely inside that promise.
+ */
+export async function logSideEffect(input: {
+  compoundId: string
+  effect: string
+  severity: number
+  notes?: string
+}): Promise<ActionResult> {
+  const { supabase, user } = await authed()
+  if (!user) return fail('Please sign in.')
+
+  const compound = COMPOUNDS[input.compoundId]
+  if (!compound) return fail('Unknown compound.')
+  if (!input.effect.trim()) return fail('Describe what happened.')
+
+  const severity = Math.max(1, Math.min(5, Math.round(input.severity)))
+
+  const { error } = await supabase.from('side_effects').insert({
+    user_id: user.id,
+    peptide_name: compound.name,
+    effect: input.effect.trim(),
+    severity,
+    notes: input.notes?.trim() ?? '',
+  })
+  if (error) return fail(error.message)
+
+  revalidatePath('/dashboard')
+  return OK
+}
+
+export async function removeSideEffect(id: string): Promise<ActionResult> {
+  const { supabase, user } = await authed()
+  if (!user) return fail('Please sign in.')
+
+  const { error } = await supabase
+    .from('side_effects')
+    .delete()
+    .eq('id', id)
+    .eq('user_id', user.id)
+  if (error) return fail(error.message)
+
+  revalidatePath('/dashboard')
+  return OK
+}
+
 /** Start a cycle. Day, length and washout are all derived from these fields. */
 export async function startCycle(input: {
   name: string

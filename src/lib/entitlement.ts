@@ -89,6 +89,8 @@ export interface Entitlements {
   ownedEntry(id: string): StackEntry | null
   /** Owned but withheld by tier — a third state, not "not yours". */
   lockedEntry(id: string): StackEntry | null
+  /** The user's whole stack, tier-blind. Ownership, not resolution. */
+  owned(): StackEntry[]
   /** Every stack entry in a category, tier-blind. Region membership is ownership. */
   ownedIn(catId: string): StackEntry[]
   /** Resolved stack entries in a category. For comparison/tension maths only. */
@@ -99,6 +101,17 @@ export interface Entitlements {
   resolvedCount: number
   lockedCount: number
   stackCount: number
+
+  /**
+   * The user's dose history, optionally for one compound.
+   *
+   * TIER-BLIND, deliberately. History is an ownership-facing surface, and the
+   * tier withholds resolution rather than ownership — the pricing page lists
+   * "dose log and injection-site record" as open on Free. Only the maths BUILT
+   * on the history (rotation, supply comparison) filters by tier; see
+   * siteUsage(), which does.
+   */
+  history(compoundId?: string): DoseLogEntry[]
 
   /** Bloodwork readable: attached AND Pro. */
   labsOn: boolean
@@ -140,6 +153,10 @@ export function createEntitlements(input: EntitlementInput): Entitlements {
     return entry && !held(id) ? entry : null
   }
 
+  function owned(): StackEntry[] {
+    return stack
+  }
+
   function ownedIn(catId: string): StackEntry[] {
     return stack.filter((entry) => compounds[entry.id]?.catId === catId)
   }
@@ -157,6 +174,10 @@ export function createEntitlements(input: EntitlementInput): Entitlements {
   // the moment the allowance changes.
   const resolvedCount = stack.filter((entry) => held(entry.id)).length
   const lockedCount = isFree ? stack.length - resolvedCount : 0
+
+  function history(compoundId?: string): DoseLogEntry[] {
+    return compoundId ? doseLog.filter((row) => row.id === compoundId) : doseLog
+  }
 
   const labsOn = hasLabs && !isFree
 
@@ -210,12 +231,14 @@ export function createEntitlements(input: EntitlementInput): Entitlements {
     held,
     ownedEntry,
     lockedEntry,
+    owned,
     ownedIn,
     resolvedIn,
     lockedIn,
     resolvedCount,
     lockedCount,
     stackCount: stack.length,
+    history,
     labsOn,
     markers,
     siteUsage,

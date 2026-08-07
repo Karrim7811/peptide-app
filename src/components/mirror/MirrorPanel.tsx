@@ -32,12 +32,22 @@ import { hueVar } from '@/lib/design/grounds'
 import { money, MONTHLY_PRICE } from '@/lib/pricing'
 import type { MirrorLayer, VerifyTab } from '@/lib/mirror/useMirrorNav'
 import LogDoseButton from '@/components/mirror/LogDoseButton'
+import InteractionCheck from '@/components/mirror/InteractionCheck'
+import RemindersTool from '@/components/mirror/tools/RemindersTool'
+import NotesTool from '@/components/mirror/tools/NotesTool'
+import SideEffectsTool from '@/components/mirror/tools/SideEffectsTool'
+import type { CompoundRecords } from '@/lib/mirror/load'
+
+const NO_RECORDS: CompoundRecords = { reminders: [], notes: [], sideEffects: [] }
 
 export interface MirrorPanelProps {
   layer: MirrorLayer
   regionId: string | null
   compoundId: string | null
   ent: Entitlements
+  /** The user's own records for the focused compound. Tier-blind. */
+  records?: CompoundRecords
+  onOpenBloodwork?: () => void
   onSelectCompound: (id: string) => void
   onOpenVerify: (tab: VerifyTab) => void
   /**
@@ -121,7 +131,15 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 // ── Layer 1 — WHOLE ───────────────────────────────────────────────────────
 
-function LayerWhole({ ent, onSelectRegion }: { ent: Entitlements; onSelectRegion?: (id: string) => void }) {
+function LayerWhole({
+  ent,
+  onSelectRegion,
+  onOpenBloodwork,
+}: {
+  ent: Entitlements
+  onSelectRegion?: (id: string) => void
+  onOpenBloodwork?: () => void
+}) {
   const owned = CATEGORIES.filter((c) => ent.ownedIn(c.id).length > 0).sort((a, b) => a.order - b.order)
   const empties = CATEGORIES.filter((c) => ent.ownedIn(c.id).length === 0 && compoundsInCategory(c.id).length > 0)
 
@@ -236,6 +254,15 @@ function LayerWhole({ ent, onSelectRegion }: { ent: Entitlements; onSelectRegion
               Eight markers re-tune the whole form. Regions brighten or thin against your real values instead of
               producing a separate report.
             </p>
+            {onOpenBloodwork && (
+              <button
+                type="button"
+                onClick={onOpenBloodwork}
+                className="mt-1 flex min-h-[44px] items-center justify-center bg-panelHi font-mono text-[9.5px] tracking-[0.14em] text-dim hover:text-ink"
+              >
+                ATTACH BLOODWORK →
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -393,7 +420,17 @@ function Stat({ value, label, color }: { value: string; label: string; color?: s
 
 // ── Layer 3 — COMPOUND ───────────────────────────────────────────────────
 
-function LayerCompound({ ent, compoundId, onOpenVerify }: { ent: Entitlements; compoundId: string | null; onOpenVerify: (tab: VerifyTab) => void }) {
+function LayerCompound({
+  ent,
+  compoundId,
+  records,
+  onOpenVerify,
+}: {
+  ent: Entitlements
+  compoundId: string | null
+  records: CompoundRecords
+  onOpenVerify: (tab: VerifyTab) => void
+}) {
   const compound = compoundId ? COMPOUNDS[compoundId] : null
 
   if (!compound) {
@@ -541,6 +578,21 @@ function LayerCompound({ ent, compoundId, onOpenVerify }: { ent: Entitlements; c
           </div>
         </div>
 
+        {/* The old routes, arrived at as contextual tools. Each is the user's
+            own record and therefore tier-blind — side effects especially: a
+            safety signal is never withheld behind a paywall. */}
+        <div className="flex flex-col gap-px bg-hair">
+          <RemindersTool
+            compoundId={compound.id}
+            reminders={records.reminders}
+            inStack={Boolean(ent.ownedEntry(compound.id))}
+          />
+          <NotesTool compoundId={compound.id} notes={records.notes} />
+          <SideEffectsTool compoundId={compound.id} sideEffects={records.sideEffects} />
+        </div>
+
+        <InteractionCheck compoundId={compound.id} ent={ent} />
+
         <div className="flex flex-col gap-[10px]">
           <SectionLabel>TOOLS THIS COMPOUND MAKES RELEVANT</SectionLabel>
           <div className="flex flex-wrap gap-px bg-hair">
@@ -586,6 +638,8 @@ export default function MirrorPanel({
   regionId,
   compoundId,
   ent,
+  records = NO_RECORDS,
+  onOpenBloodwork,
   onSelectCompound,
   onOpenVerify,
   onSelectRegion,
@@ -601,14 +655,24 @@ export default function MirrorPanel({
         ? `Your labs are attached, and ${offMarkers.length} markers sit outside range. Those regions have thinned; the rest of the form is steady.`
         : `Your ${mine.length} active regions are holding. One is pulling against the rest.`
 
+    // Read the cycle through its accessor, never the sample constant: it is
+    // live data now, and cycleReport() is the single owner of how the cycle is
+    // reported at each tier.
+    const report = ent.cycleReport()
     const meta = ent.isFree
       ? `FREE · ${ent.resolvedCount} OF ${ent.stackCount} RESOLVED · ${COUNTS.compounds} IN LIBRARY, ALL READABLE`
-      : `${CYCLE.day} DAYS · ${ent.stackCount} COMPOUNDS · ${CYCLE.adherence}% LOGGED · ${COUNTS.compounds} IN LIBRARY`
+      : [
+          report ? `${report.day} DAYS` : null,
+          `${ent.stackCount} COMPOUNDS`,
+          `${COUNTS.compounds} IN LIBRARY`,
+        ]
+          .filter(Boolean)
+          .join(' · ')
 
     return (
       <div className="flex flex-col">
         <NarrationHeader label="CORTEX · NARRATING" text={narration} meta={meta} />
-        <LayerWhole ent={ent} onSelectRegion={onSelectRegion} />
+        <LayerWhole ent={ent} onSelectRegion={onSelectRegion} onOpenBloodwork={onOpenBloodwork} />
       </div>
     )
   }
@@ -618,7 +682,14 @@ export default function MirrorPanel({
   }
 
   if (layer === 3) {
-    return <LayerCompound ent={ent} compoundId={compoundId} onOpenVerify={onOpenVerify} />
+    return (
+      <LayerCompound
+        ent={ent}
+        compoundId={compoundId}
+        records={records}
+        onOpenVerify={onOpenVerify}
+      />
+    )
   }
 
   return null

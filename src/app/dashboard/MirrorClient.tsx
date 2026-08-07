@@ -27,6 +27,7 @@ import MirrorPanel from '@/components/mirror/MirrorPanel'
 import VerifyTabs from '@/components/mirror/VerifyTabs'
 import AskBar from '@/components/mirror/AskBar'
 import Ledger from '@/components/ledger/Ledger'
+import BloodworkOverlay from '@/components/bloodwork/BloodworkOverlay'
 import { useGround } from '@/components/GroundProvider'
 import { useMirrorNav, type VerifyTab } from '@/lib/mirror/useMirrorNav'
 import { buildRegionLayer, buildWholeLayer, type GeometryPalette } from '@/lib/mirror/geometry'
@@ -179,6 +180,8 @@ export default function MirrorClient({ data }: { data: MirrorData }) {
             regionId={nav.regionId}
             compoundId={nav.compoundId}
             ent={ent}
+            records={nav.compoundId ? data.records[nav.compoundId] : undefined}
+            onOpenBloodwork={() => nav.setBloodworkOpen(true)}
             onSelectCompound={nav.openCompound}
             onSelectRegion={nav.openRegion}
             onOpenVerify={nav.openVerify}
@@ -186,7 +189,15 @@ export default function MirrorClient({ data }: { data: MirrorData }) {
         )
       }
       footer={<AskBar ent={ent} onNavigate={handleNavigate} />}
-      ledger={nav.ledgerOpen ? <Ledger ent={ent} onClose={() => nav.setLedgerOpen(false)} /> : null}
+      onOpenBloodwork={() => nav.setBloodworkOpen(true)}
+      ledger={
+        <>
+          {nav.ledgerOpen && <Ledger ent={ent} onClose={() => nav.setLedgerOpen(false)} />}
+          {nav.bloodworkOpen && (
+            <BloodworkOverlay ent={ent} onClose={() => nav.setBloodworkOpen(false)} />
+          )}
+        </>
+      }
     />
   )
 }

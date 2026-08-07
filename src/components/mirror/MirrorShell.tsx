@@ -34,6 +34,7 @@ interface MirrorShellProps {
   canPreviewFree: boolean
   onToggleTier: () => void
   onOpenLedger: () => void
+  onOpenBloodwork: () => void
   field: ReactNode
   panel: ReactNode
   footer: ReactNode
@@ -80,6 +81,7 @@ export default function MirrorShell({
   canPreviewFree,
   onToggleTier,
   onOpenLedger,
+  onOpenBloodwork,
   field,
   panel,
   footer,
@@ -146,6 +148,13 @@ export default function MirrorShell({
           ) : (
             <span className="font-mono text-[10px] tracking-[0.12em] text-faintest">FREE</span>
           )}
+          <button
+            type="button"
+            onClick={onOpenBloodwork}
+            className="min-h-[44px] px-3 font-mono text-[10px] tracking-[0.12em] text-dim hover:text-ink"
+          >
+            BLOODWORK
+          </button>
           <button
             type="button"
             onClick={onOpenLedger}

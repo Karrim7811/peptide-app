@@ -86,6 +86,30 @@ describe('locked is not the same as not-owned', () => {
   })
 })
 
+describe('history is ownership-facing, not resolution-facing', () => {
+  // The handoff is explicit: "Ownership-facing surfaces (history,
+  // reconstitution maths, region membership) must be tier-blind." The pricing
+  // page also lists the dose log as open on Free. Only the maths BUILT on the
+  // history filters by tier.
+  it('shows the whole dose log at every tier', () => {
+    expect(free().history()).toHaveLength(DOSE_LOG.length)
+    expect(pro().history()).toHaveLength(DOSE_LOG.length)
+  })
+
+  it('shows a locked compound its own history', () => {
+    const lockedHistory = free().history(LOCKED_ID)
+    const expected = DOSE_LOG.filter((row) => row.id === LOCKED_ID)
+    expect(lockedHistory).toHaveLength(expected.length)
+    expect(lockedHistory.length).toBeGreaterThan(0)
+  })
+
+  it('still withholds the maths built on that history', () => {
+    // History is open; rotation counts are not. These two must not converge.
+    const freeSites = free().siteUsage().reduce((sum, s) => sum + s.uses, 0)
+    expect(freeSites).toBeLessThan(free().history().length)
+  })
+})
+
 describe('site usage is derived, not stored', () => {
   // The documented leak: a stored `uses` count cannot respond to a tier filter,
   // so the free tier printed a locked compound's injection history.

@@ -37,6 +37,7 @@ export interface MirrorNavState {
   compoundId: string | null
   verifyTab: VerifyTab
   ledgerOpen: boolean
+  bloodworkOpen: boolean
   /** Orbit rotation in radians, layer 3 only. */
   orbit: number
 }
@@ -54,6 +55,7 @@ export interface MirrorNav extends MirrorNavState {
   openVerify(tab: VerifyTab): void
   setVerifyTab(tab: VerifyTab): void
   setLedgerOpen(open: boolean): void
+  setBloodworkOpen(open: boolean): void
   zoomIn(): void
   zoomOut(): void
   /** Bind to the field element. */
@@ -73,6 +75,7 @@ const INITIAL: MirrorNavState = {
   compoundId: null,
   verifyTab: 'math',
   ledgerOpen: false,
+  bloodworkOpen: false,
   orbit: 0,
 }
 
@@ -103,7 +106,11 @@ export function useMirrorNav(targets: MirrorNavTargets): MirrorNav {
   }, [])
 
   const setLedgerOpen = useCallback((open: boolean) => {
-    setState((prev) => ({ ...prev, ledgerOpen: open }))
+    setState((prev) => ({ ...prev, ledgerOpen: open, bloodworkOpen: false }))
+  }, [])
+
+  const setBloodworkOpen = useCallback((open: boolean) => {
+    setState((prev) => ({ ...prev, bloodworkOpen: open, ledgerOpen: false }))
   }, [])
 
   const zoomIn = useCallback(() => {
@@ -135,6 +142,8 @@ export function useMirrorNav(targets: MirrorNavTargets): MirrorNav {
     function onKeyDown(event: KeyboardEvent) {
       if (event.key !== 'Escape') return
       setState((prev) => {
+        // Overlays close before the layer walks out.
+        if (prev.bloodworkOpen) return { ...prev, bloodworkOpen: false }
         if (prev.ledgerOpen) return { ...prev, ledgerOpen: false }
         if (prev.layer === 4) return { ...prev, layer: 3 }
         if (prev.layer === 3) return { ...prev, layer: 2, compoundId: null }
@@ -203,6 +212,7 @@ export function useMirrorNav(targets: MirrorNavTargets): MirrorNav {
     openVerify,
     setVerifyTab,
     setLedgerOpen,
+    setBloodworkOpen,
     zoomIn,
     zoomOut,
     fieldHandlers,

@@ -2,14 +2,10 @@ import { NextResponse } from 'next/server'
 import { createClient, getAuthenticatedContext } from '@/lib/supabase/server'
 import type { SubscriptionTier } from '@/types'
 
-export const FREE_LIMITS = {
-  interactionChecksPerDay: 3,
-} as const
-
-// Pure predicates live in tier.ts so client code can import them without
-// dragging next/server along. Re-exported here to keep existing call sites.
-import { resolveTier, isProTier } from '@/lib/tier'
-export { resolveTier, isProTier }
+// Pure predicates and limits live in tier.ts so client code can import them
+// without dragging next/headers along. Re-exported here for existing callers.
+import { resolveTier, isProTier, FREE_LIMITS } from '@/lib/tier'
+export { resolveTier, isProTier, FREE_LIMITS }
 
 // Pro gate for API routes. Reads the caller's own tier via their auth-scoped
 // client (works for web cookies and mobile Bearer alike). Returns null to

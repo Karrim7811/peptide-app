@@ -26,7 +26,8 @@
 // THE MATH is never gated, for locked compounds too — it reads
 // `ent.ownedEntry()`, which is tier-blind, never `ent.held()`.
 
-import { COMPOUNDS, DOSE_LOG, type Compound, type StackEntry } from '@/lib/catalog'
+import { useState } from 'react'
+import { COMPOUNDS, type Compound, type StackEntry } from '@/lib/catalog'
 import type { Entitlements } from '@/lib/entitlement'
 import { hueVar } from '@/lib/design/grounds'
 import type { VerifyTab } from '@/lib/mirror/useMirrorNav'
@@ -52,6 +53,143 @@ function Headline({ children }: { children: React.ReactNode }) {
 // ── THE MATH ──────────────────────────────────────────────────────────────
 // Reconstitution arithmetic. NEVER gated — `entry` comes from `ownedEntry()`,
 // which answers regardless of tier, so a locked compound's math still shows.
+//
+// ── Framing is load-bearing, not cosmetic ─────────────────────────────────
+// Apple rejected the iOS app under Guideline 1.4.2 for a dose calculator, and
+// the same exposure applies on the web under US law: a specific dose
+// calculation directed at an individual is materially different from
+// describing the chemistry of a solution. Per the resolved product decision
+// (CLAUDE.md §16.9) the maths stays and the framing changes:
+//
+//   * ASK for the concentration being prepared, not "your dose".
+//   * DESCRIBE what the resulting solution contains per unit on a U-100
+//     syringe — a property of the liquid, not an instruction to a person.
+//   * CARRY the disclaimer banner above the arithmetic, always.
+//
+// Do not reword these toward second-person dosing language ("draw X for your
+// dose"). That is the exact edit that recreates the legal exposure.
+
+const MATH_DISCLAIMER =
+  'For research and reference purposes only. Not intended as dosing instructions for ' +
+  'human or animal use. Consult a licensed physician before any medical decisions.'
+
+function SolutionMath({ compound, entry }: { compound: Compound; entry: StackEntry }) {
+  // Seeded from the stored volume when one exists; otherwise blank, so the
+  // surface asks rather than invents.
+  const [waterMl, setWaterMl] = useState<string>(entry.waterMl > 0 ? String(entry.waterMl) : '')
+
+  const volume = Number.parseFloat(waterMl)
+  const hasVolume = Number.isFinite(volume) && volume > 0
+  const concentration = hasVolume ? entry.vialMg / volume : 0
+
+  // The reference amount is what the user records for this compound. It is
+  // described as a quantity of solution, never prescribed.
+  const referenceMg = entry.doseMcg / 1000
+  const perUnitMcg = hasVolume ? (concentration * 1000) / 100 : 0
+  const volumeForReference = hasVolume && concentration > 0 ? referenceMg / concentration : 0
+  const units = Math.round(volumeForReference * 100)
+  const fitsSyringe = hasVolume && units > 0 && units <= 100
+  const referenceLabel =
+    entry.doseMcg >= 1000 ? `${entry.doseMcg / 1000} mg` : `${entry.doseMcg} mcg`
+
+  return (
+    <div className="flex max-w-[640px] flex-col gap-5">
+      <div className="border-l-2 border-gold bg-panelHot px-[18px] py-[15px]">
+        <p className="font-mono text-[10px] leading-[1.9] tracking-[0.08em] text-gold">
+          {MATH_DISCLAIMER.toUpperCase()}
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <TabLabel color="var(--gold)">SOLUTION CHEMISTRY · WORKING SHOWN</TabLabel>
+        <Headline>
+          {hasVolume
+            ? `${concentration.toFixed(2)} mg per mL of solution`
+            : `What volume are you preparing ${compound.name} at?`}
+        </Headline>
+      </div>
+
+      <label className="flex flex-col gap-2">
+        <span className="font-mono text-[10px] tracking-[0.16em] text-faint">
+          BACTERIOSTATIC WATER ADDED TO THE VIAL · mL
+        </span>
+        <input
+          inputMode="decimal"
+          value={waterMl}
+          onChange={(event) => setWaterMl(event.target.value)}
+          placeholder="e.g. 2"
+          className="min-h-[44px] border border-hair bg-panelHi px-3 font-mono text-[14px] text-ink outline-none focus:border-accent"
+        />
+      </label>
+
+      {!hasVolume ? (
+        <span className="font-mono text-[10px] leading-[1.9] tracking-[0.06em] text-faint">
+          NOTHING IN YOUR RECORD STORES THE MIXING VOLUME · ENTER IT TO SEE THE CONCENTRATION
+        </span>
+      ) : (
+        <>
+          <div className="flex flex-col gap-px bg-hair">
+            <Row k="VIAL CONTENTS" v={`${entry.vialMg} mg`} />
+            <Row k="WATER ADDED" v={`${volume} mL`} />
+            <Row
+              k={`CONCENTRATION · ${entry.vialMg} mg ÷ ${volume} mL`}
+              v={`${concentration.toFixed(2)} mg / mL`}
+            />
+            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-[6px] border-l-2 border-gold bg-panelHot px-[18px] py-[17px]">
+              <span className="font-mono text-[11px] tracking-[0.08em] text-gold">
+                EACH UNIT ON A U-100 SYRINGE CONTAINS
+              </span>
+              <span className="whitespace-nowrap font-mono text-[19px] text-gold">
+                {perUnitMcg.toFixed(1)} mcg
+              </span>
+            </div>
+          </div>
+
+          {entry.doseMcg > 0 && (
+            <div className="flex flex-col gap-[10px]">
+              <span className="font-mono text-[10px] tracking-[0.22em] text-faint">
+                THE {referenceLabel.toUpperCase()} YOU RECORD FOR THIS COMPOUND CORRESPONDS TO
+              </span>
+              <span className="font-mono text-[14px] text-dim">
+                {volumeForReference.toFixed(2)} mL of this solution
+                {fitsSyringe ? ` · ${units} units` : ''}
+              </span>
+              {fitsSyringe && (
+                <div className="flex h-[44px] items-stretch border border-hair">
+                  <div
+                    className="border-r-2 border-gold"
+                    style={{
+                      width: `${Math.min(100, units)}%`,
+                      backgroundColor: hueVar('go'),
+                      opacity: 0.28,
+                    }}
+                  />
+                  <div className="flex-1" />
+                </div>
+              )}
+              {!fitsSyringe && units > 100 && (
+                <span className="font-mono text-[10px] tracking-[0.08em] text-gold">
+                  EXCEEDS ONE U-100 SYRINGE AT THIS CONCENTRATION
+                </span>
+              )}
+            </div>
+          )}
+        </>
+      )}
+
+      <div className="flex flex-col gap-1">
+        <span className="font-mono text-[10px] leading-[1.9] tracking-[0.06em] text-faint">
+          CHECK AGAINST YOUR VIAL LABEL · RESEARCH-GRADE COMPOUNDS ONLY · NOT A PRESCRIPTION
+        </span>
+        {compound.dosage && (
+          <span className="font-mono text-[10px] leading-[1.9] tracking-[0.06em] text-faintest">
+            LIBRARY DOSAGE FIELD · {compound.dosage.toUpperCase()}
+          </span>
+        )}
+      </div>
+    </div>
+  )
+}
 
 function MathTab({ compound, entry }: { compound: Compound; entry: StackEntry | null }) {
   if (!entry) {
@@ -72,54 +210,10 @@ function MathTab({ compound, entry }: { compound: Compound; entry: StackEntry | 
     )
   }
 
-  const conc = entry.vialMg / entry.waterMl
-  const doseMg = entry.doseMcg / 1000
-  const draw = doseMg / conc
-  const units = Math.round(draw * 100)
-  const doseLabel = entry.doseMcg >= 1000 ? `${entry.doseMcg / 1000} mg` : `${entry.doseMcg} mcg`
-  const hasSyringe = units <= 100
-
-  return (
-    <div className="flex max-w-[640px] flex-col gap-5">
-      <div className="flex flex-col gap-2">
-        <TabLabel color="var(--gold)">RECONSTITUTION · WORKING SHOWN</TabLabel>
-        <Headline>
-          {draw.toFixed(2)} mL per {doseLabel} dose
-        </Headline>
-      </div>
-
-      <div className="flex flex-col gap-px bg-hair">
-        <Row k="VIAL CONTENTS" v={`${entry.vialMg} mg`} />
-        <Row k="BACTERIOSTATIC WATER ADDED" v={`${entry.waterMl} mL`} />
-        <Row k={`CONCENTRATION · ${entry.vialMg} mg ÷ ${entry.waterMl} mL`} v={`${conc} mg / mL`} />
-        <Row k="TARGET DOSE · AS YOU LOG IT" v={`${doseLabel} = ${doseMg} mg`} />
-        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-[6px] border-l-2 border-gold bg-panelHot px-[18px] py-[17px]">
-          <span className="font-mono text-[11px] tracking-[0.08em] text-gold">
-            DRAW · {doseMg} mg ÷ {conc} mg/mL
-          </span>
-          <span className="whitespace-nowrap font-mono text-[19px] text-gold">{draw.toFixed(2)} mL</span>
-        </div>
-      </div>
-
-      {hasSyringe && (
-        <div className="flex flex-col gap-[10px]">
-          <span className="font-mono text-[10px] tracking-[0.22em] text-faint">ON A U-100 SYRINGE</span>
-          <div className="flex h-[44px] items-stretch border border-hair">
-            <div
-              className="border-r-2 border-gold"
-              style={{ width: `${Math.min(100, units)}%`, backgroundColor: hueVar('go'), opacity: 0.28 }}
-            />
-            <div className="flex-1" />
-          </div>
-          <span className="font-mono text-[10.5px] tracking-[0.08em] text-dim">= {units} UNITS</span>
-        </div>
-      )}
-
-      <span className="font-mono text-[10px] leading-[1.9] tracking-[0.06em] text-faint">
-        CHECK AGAINST YOUR VIAL LABEL BEFORE DRAWING · RESEARCH-GRADE COMPOUNDS ONLY · NOT A PRESCRIPTION
-      </span>
-    </div>
-  )
+  // Reconstitution volume is not stored anywhere — nothing in the schema
+  // records how much water went into a vial — so it is ASKED FOR rather than
+  // assumed. A default here would print a concentration the user never mixed.
+  return <SolutionMath compound={compound} entry={entry} />
 }
 
 function Row({ k, v }: { k: string; v: string }) {
@@ -136,8 +230,10 @@ function Row({ k, v }: { k: string; v: string }) {
 // resolution-facing — it stays visible for a locked compound too (README:
 // "the arithmetic and the record below stay open regardless").
 
-function RecordTab({ compound }: { compound: Compound }) {
-  const entries = DOSE_LOG.filter((row) => row.id === compound.id)
+function RecordTab({ compound, ent }: { compound: Compound; ent: Entitlements }) {
+  // The user's live history, read through the accessor. Tier-blind: this is
+  // the record of what they took, not a comparison the tier withholds.
+  const entries = ent.history(compound.id)
 
   return (
     <div className="flex max-w-[640px] flex-col gap-5">
@@ -309,5 +405,5 @@ export default function VerifyTabs({ tab, compoundId, ent }: VerifyTabsProps) {
   }
 
   if (tab === 'math') return <MathTab compound={compound} entry={ent.ownedEntry(compound.id)} />
-  return <RecordTab compound={compound} />
+  return <RecordTab compound={compound} ent={ent} />
 }

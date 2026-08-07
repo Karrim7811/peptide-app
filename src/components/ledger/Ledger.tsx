@@ -8,11 +8,15 @@
 // The Ledger is for proving. Records get no atmosphere, no motion and no
 // interpretation — they are searchable, sortable and boring on purpose."
 //
-// CRITICAL: this renders the SAME filtered dose log that `ent.siteUsage()`
-// counts from. Both read through the one sanctioned gate — `ent.held(id)` —
-// so a locked compound's rows can never appear on Free here while being
-// excluded from the rotation count, or vice versa. Never reimplement the
-// tier check locally; always gate through the entitlement accessor.
+// CRITICAL: the record itself is TIER-BLIND. History is an ownership-facing
+// surface — the tier withholds resolution, never ownership — and the pricing
+// page lists the dose log and injection-site record as open on Free. So this
+// reads `ent.history()`, not a `held()`-filtered log.
+//
+// What IS gated is the maths built on that history: rotation counts and supply
+// comparison, which filter through `ent.siteUsage()`. The two are supposed to
+// disagree — a free user sees every row they logged, and fewer rotation counts.
+// Never reimplement either check locally; always go through the accessor.
 //
 // Esc closes this overlay via the shell's nav hook (useMirrorNav), which
 // already listens for Escape and calls onClose through setLedgerOpen(false).
@@ -20,7 +24,7 @@
 // double-handle the same keystroke.
 
 import { useMemo, useState } from 'react'
-import { COMPOUNDS, DOSE_LOG, STACK } from '@/lib/catalog'
+import { COMPOUNDS } from '@/lib/catalog'
 import type { Entitlements } from '@/lib/entitlement'
 
 interface LedgerProps {
@@ -80,11 +84,12 @@ export default function Ledger({ ent, onClose }: LedgerProps) {
   const [sortKey, setSortKey] = useState<SortKey>('when')
   const [sortDir, setSortDir] = useState<SortDir>('desc')
 
-  // The one gate. `ent.held()` is the same accessor `siteUsage()` filters
-  // through, so this is provably the same filtered log rotation counts from —
-  // not a parallel computation that can drift from it.
+  // The user's live history, tier-blind. The Ledger is the record of what they
+  // took, and the tier withholds resolution rather than ownership — the pricing
+  // page lists the dose log as open on Free. Rotation and supply comparison are
+  // the surfaces that filter, and they do so through siteUsage().
   const rows = useMemo<Row[]>(() => {
-    return DOSE_LOG.filter((entry) => ent.held(entry.id)).map((entry) => ({
+    return ent.history().map((entry) => ({
       when: entry.when,
       name: COMPOUNDS[entry.id]?.name ?? entry.id,
       dose: entry.dose,
@@ -133,11 +138,11 @@ export default function Ledger({ ent, onClose }: LedgerProps) {
   }
 
   // Inventory feed — tier-blind ownership (Rule 2: ownership never hides
-  // behind the tier gate). STACK is the ground truth for what the user owns;
-  // `ent.held()` only decides whether a row's real numbers are readable or
-  // withheld as LOCKED, exactly as the design handoff's inventory panel does.
+  // behind the tier gate). `ent.owned()` is the ground truth for what the user
+  // owns; `ent.held()` only decides whether a row's real numbers are readable
+  // or withheld as LOCKED, exactly as the handoff's inventory panel does.
   const inventory = useMemo(() => {
-    return [...STACK]
+    return [...ent.owned()]
       .sort((a, b) => a.supplyDays - b.supplyDays)
       .map((entry) => {
         const compound = COMPOUNDS[entry.id]

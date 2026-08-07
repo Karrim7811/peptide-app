@@ -7,6 +7,18 @@
 
 import type { SubscriptionTier } from '@/types'
 
+/**
+ * Free-tier limits. Lives here rather than in subscription.ts because client
+ * components display them, and subscription.ts pulls next/headers through the
+ * Supabase server client — importing it from the browser breaks the build.
+ *
+ * These are DISPLAY values. Every one of them is also enforced server-side;
+ * nothing here is the gate.
+ */
+export const FREE_LIMITS = {
+  interactionChecksPerDay: 3,
+} as const
+
 type ProfileTierRow = {
   subscription_tier?: string | null
   subscription_expires_at?: string | null
