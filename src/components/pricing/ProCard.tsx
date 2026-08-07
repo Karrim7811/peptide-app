@@ -6,6 +6,8 @@ import { PRO_FEATURES } from './content'
 import {
   TRIAL_MONTHS,
   priceLabel,
+  priceUnit,
+  priceEquivalent,
   priceFootnote,
   proCta,
   saveLabel,
@@ -24,6 +26,7 @@ interface ProCardProps {
 
 export default function ProCard({ cycle, loading, onUpgrade }: ProCardProps) {
   const isAnnual = cycle === 'annual'
+  const equivalent = priceEquivalent(cycle)
 
   return (
     <div
@@ -47,12 +50,18 @@ export default function ProCard({ cycle, loading, onUpgrade }: ProCardProps) {
             </span>
           )}
         </div>
+        {/* The headline is the amount actually charged — see priceLabel(). On
+            annual that is $119.88/yr, with the monthly equivalent restated
+            below rather than standing in for it. */}
         <div className="flex flex-wrap items-baseline gap-2">
           <span className="font-sans text-[52px] font-extralight leading-none text-ink">
             {priceLabel(cycle)}
           </span>
-          <span className="font-mono text-[11px] text-faint">per month</span>
+          <span className="font-mono text-[11px] text-faint">{priceUnit(cycle)}</span>
         </div>
+        {equivalent && (
+          <span className="font-mono text-[11px] tracking-[0.08em] text-dim">{equivalent}</span>
+        )}
         <span className="font-mono text-[10px] tracking-[0.1em] text-faint">{priceFootnote(cycle)}</span>
         <span className="text-[14.5px] leading-[1.75] text-dim" style={{ textWrap: 'pretty' }}>
           Every compound resolved, weighed against each other, and read against your bloodwork.

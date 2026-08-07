@@ -44,8 +44,36 @@ export const annualSavingPct = fullYearPrice
 
 export const annualPerMonth = ANNUAL_PRICE / 12
 
+/**
+ * The headline price is ALWAYS the amount actually charged.
+ *
+ * This previously showed the annual plan as "$9.99 per month". That is the
+ * conventional SaaS pattern, but it means the headline number falls
+ * ($14.99 → $9.99) at the exact moment the amount charged rises
+ * ($14.99 → $119.88), and the real figure ends up as the smallest text on the
+ * card. It stopped the person who wrote the spec, so it will stop customers.
+ *
+ * It is also the weaker position under California's auto-renewal law
+ * (CLAUDE.md §16.12), which wants the charge amount and frequency clear before
+ * the Pay click. The equivalent monthly figure still appears — see
+ * `priceEquivalent` — it just no longer outranks the price.
+ */
 export function priceLabel(cycle: BillingCycle): string {
-  return money(cycle === 'annual' ? annualPerMonth : MONTHLY_PRICE)
+  return money(cycle === 'annual' ? ANNUAL_PRICE : MONTHLY_PRICE)
+}
+
+/** The unit the headline price is charged in. */
+export function priceUnit(cycle: BillingCycle): string {
+  return cycle === 'annual' ? 'per year' : 'per month'
+}
+
+/**
+ * The supporting line under an annual headline: what it works out to monthly,
+ * and how that compares. Null for monthly, where there is nothing to restate.
+ */
+export function priceEquivalent(cycle: BillingCycle): string | null {
+  if (cycle !== 'annual') return null
+  return `That's ${money(annualPerMonth)}/mo · ${annualSavingPct}% off monthly`
 }
 
 export const trialPhrase = TRIAL_MONTHS === 1 ? 'a month' : `${TRIAL_MONTHS} months`
