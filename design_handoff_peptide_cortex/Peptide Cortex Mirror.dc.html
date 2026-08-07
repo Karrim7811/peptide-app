@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400;500&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; height:100%; }
+  body { background:#030308; -webkit-font-smoothing:antialiased; overflow:hidden; }
+  * { box-sizing:border-box; }
+  a { color:#B06BE0; text-decoration:none; }
+  a:hover { color:#00E5FF; }
+  input { font:inherit; color:inherit; background:none; border:none; outline:none; }
+  ::-webkit-scrollbar { width:6px; height:6px; }
+  ::-webkit-scrollbar-thumb { background:rgba(140,140,160,0.35); }
+  @keyframes cxpulse { 0%,100%{opacity:.35;transform:scale(1)} 50%{opacity:1;transform:scale(1.4)} }
+  @keyframes cxbreathe { 0%,100%{transform:scale(1)} 50%{transform:scale(1.02)} }
+  @keyframes cxdriftA { from{background-position:0 0} to{background-position:26px -18px} }
+  @keyframes cxdriftB { from{background-position:0 0} to{background-position:-22px 20px} }
+  @keyframes cxthin { 0%,100%{opacity:.62} 50%{opacity:.3} }
+  @keyframes cxmarch { from{stroke-dashoffset:0} to{stroke-dashoffset:-30} }
+  @keyframes cxin { from{opacity:0; transform:scale(1.05)} to{opacity:1; transform:scale(1)} }
+  @keyframes cxup { from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:translateY(0)} }
+  @keyframes cxfade { from{opacity:0} to{opacity:1} }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important } }
+</style>
+</helmet>
+
+<div ref="{{ rootRef }}" style="height:100vh; display:flex; flex-direction:column; overflow:hidden; position:relative; background:var(--bg,#030308); color:var(--ink,#FFFFFF); font-family:'Jost',sans-serif; transition:background 420ms ease, color 420ms ease">
+
+  <div style="flex-shrink:0; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px 18px; padding:9px 14px; border-bottom:1px solid var(--hair,rgba(255,255,255,0.1))">
+    <div style="display:flex; align-items:center; gap:10px; min-width:0; flex-wrap:wrap">
+      <span style="width:6px; height:6px; border-radius:50%; background:var(--accent,#B06BE0); box-shadow:0 0 10px var(--accent,#B06BE0); animation:cxpulse 2.4s infinite; flex-shrink:0"></span>
+      <span onClick="{{ goWhole }}" style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.3em; color:var(--faint,#8A97AC); cursor:pointer; min-height:44px; display:flex; align-items:center; padding:0 2px" style-hover="color:var(--ink,#fff)">MIRROR</span>
+      <sc-for list="{{ crumbs }}" as="c" hint-placeholder-count="1">
+        <span style="display:flex; align-items:center; gap:10px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--faintest,#4A5568)">/</span>
+          <span onClick="{{ c.onClick }}" style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.2em; color:var(--accent,#B06BE0); cursor:pointer; white-space:nowrap; min-height:44px; display:flex; align-items:center; padding:0 2px" style-hover="color:var(--ink,#fff)">{{ c.label }}</span>
+        </span>
+      </sc-for>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:8px">
+      <div style="display:flex; align-items:center; gap:1px; background:var(--hair,rgba(255,255,255,0.12))">
+        <sc-if value="{{ isDay }}" hint-placeholder-val="{{ true }}"><span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.12em; padding:15px 12px; background:var(--ink,#fff); color:var(--bg,#030308); cursor:pointer">DAYLIGHT</span></sc-if>
+        <sc-if value="{{ notDay }}" hint-placeholder-val="{{ true }}"><span onClick="{{ setDay }}" style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.12em; padding:15px 12px; background:var(--panel,#0C0C14); color:var(--dim,#A8B0BC); cursor:pointer" style-hover="color:var(--ink,#fff)">DAYLIGHT</span></sc-if>
+        <sc-if value="{{ isDusk }}" hint-placeholder-val="{{ true }}"><span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.12em; padding:15px 12px; background:var(--ink,#fff); color:var(--bg,#030308); cursor:pointer">DUSK</span></sc-if>
+        <sc-if value="{{ notDusk }}" hint-placeholder-val="{{ true }}"><span onClick="{{ setDusk }}" style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.12em; padding:15px 12px; background:var(--panel,#0C0C14); color:var(--dim,#A8B0BC); cursor:pointer" style-hover="color:var(--ink,#fff)">DUSK</span></sc-if>
+        <sc-if value="{{ isNight }}" hint-placeholder-val="{{ true }}"><span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.12em; padding:15px 12px; background:var(--ink,#fff); color:var(--bg,#030308); cursor:pointer">MIDNIGHT</span></sc-if>
+        <sc-if value="{{ notNight }}" hint-placeholder-val="{{ true }}"><span onClick="{{ setNight }}" style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.12em; padding:15px 12px; background:var(--panel,#0C0C14); color:var(--dim,#A8B0BC); cursor:pointer" style-hover="color:var(--ink,#fff)">MIDNIGHT</span></sc-if>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:1px; background:var(--hair,rgba(255,255,255,0.12))">
+        <sc-if value="{{ isFreeTier }}" hint-placeholder-val="{{ true }}"><span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.12em; padding:15px 12px; background:var(--gold,#F7B731); color:var(--bg,#030308); cursor:pointer">FREE</span></sc-if>
+        <sc-if value="{{ isProTier }}" hint-placeholder-val="{{ false }}"><span onClick="{{ setFree }}" style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.12em; padding:15px 12px; background:var(--panel,#0C0C14); color:var(--dim,#A8B0BC); cursor:pointer" style-hover="color:var(--ink,#fff)">FREE</span></sc-if>
+        <sc-if value="{{ isProTier }}" hint-placeholder-val="{{ false }}"><span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.12em; padding:15px 12px; background:var(--ink,#fff); color:var(--bg,#030308); cursor:pointer">PRO</span></sc-if>
+        <sc-if value="{{ isFreeTier }}" hint-placeholder-val="{{ true }}"><span onClick="{{ setPro }}" style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.12em; padding:15px 12px; background:var(--panel,#0C0C14); color:var(--dim,#A8B0BC); cursor:pointer" style-hover="color:var(--ink,#fff)">PRO</span></sc-if>
+      </div>
+
+      <div onClick="{{ toggleLedger }}" style="height:44px; padding:0 14px; display:flex; align-items:center; gap:8px; border:1px solid var(--hair,rgba(255,255,255,0.14)); cursor:pointer" style-hover="border-color:var(--accent,#B06BE0)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--dim,#B8C5D6)"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.14em; color:var(--dim,#B8C5D6)">LEDGER</span>
+      </div>
+      <span style="width:34px; height:34px; border-radius:50%; border:1px solid var(--accent,#B06BE0); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent,#B06BE0); flex-shrink:0">KR</span>
+    </div>
+  </div>
+
+  <div ref="{{ stageRef }}" style="flex:1; min-height:0; display:flex; flex-wrap:wrap; align-items:flex-start; overflow:auto">
+
+    <div ref="{{ fieldRef }}" onWheel="{{ onWheel }}" onPointerDown="{{ onPointerDown }}" onPointerMove="{{ onPointerMove }}" onPointerUp="{{ onPointerUp }}" onPointerCancel="{{ onPointerUp }}" style="flex:1 1 480px; min-width:300px; height:100%; max-height:100%; min-height:260px; position:relative; overflow:hidden">
+      <sc-if value="{{ showField }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute; inset:0">
+          <div style="position:absolute; inset:0; background-image:radial-gradient(ellipse 58% 62% at 46% 44%, var(--glowA,rgba(124,58,237,0.18)), transparent 70%), radial-gradient(ellipse 40% 44% at 34% 34%, var(--glowB,rgba(0,229,255,0.16)), transparent 68%), radial-gradient(ellipse 26% 30% at 66% 64%, var(--glowC,rgba(247,183,49,0.14)), transparent 66%); animation:cxbreathe 11s ease-in-out infinite"></div>
+          <div style="position:absolute; inset:0; background-image:radial-gradient(var(--dotB,rgba(0,229,255,0.85)) 0.9px, transparent 1.1px); background-size:7px 7px; opacity:0.5; animation:cxdriftA 26s linear infinite alternate; mask-image:radial-gradient(ellipse 40% 44% at 36% 36%, #000 12%, rgba(0,0,0,0.5) 45%, transparent 78%); -webkit-mask-image:radial-gradient(ellipse 40% 44% at 36% 36%, #000 12%, rgba(0,0,0,0.5) 45%, transparent 78%)"></div>
+          <div style="position:absolute; inset:0; background-image:radial-gradient(var(--dotA,rgba(176,107,224,0.9)) 0.9px, transparent 1.1px); background-size:9px 9px; opacity:0.45; animation:cxdriftB 34s linear infinite alternate; mask-image:radial-gradient(ellipse 50% 54% at 54% 50%, #000 8%, rgba(0,0,0,0.45) 42%, transparent 76%); -webkit-mask-image:radial-gradient(ellipse 50% 54% at 54% 50%, #000 8%, rgba(0,0,0,0.45) 42%, transparent 76%)"></div>
+          <div style="position:absolute; inset:0; background-image:radial-gradient(var(--dotC,rgba(247,183,49,1)) 1.1px, transparent 1.3px); background-size:6px 6px; opacity:0.55; animation:cxdriftB 30s linear infinite alternate, cxthin 3.4s ease-in-out infinite; mask-image:radial-gradient(ellipse 16% 18% at 66% 64%, #000 4%, rgba(0,0,0,0.55) 40%, transparent 74%); -webkit-mask-image:radial-gradient(ellipse 16% 18% at 66% 64%, #000 4%, rgba(0,0,0,0.55) 40%, transparent 74%)"></div>
+        </div>
+
+        <svg width="{{ fw }}" height="{{ fh }}" viewBox="{{ viewBox }}" style="position:absolute; top:0; left:0; animation:cxin 480ms cubic-bezier(.2,.7,.2,1) both">
+          <sc-for list="{{ edges }}" as="e" hint-placeholder-count="2">
+            <line x1="{{ e.x1 }}" y1="{{ e.y1 }}" x2="{{ e.x2 }}" y2="{{ e.y2 }}" stroke="{{ e.stroke }}" stroke-width="{{ e.width }}" stroke-opacity="{{ e.opacity }}" stroke-dasharray="{{ e.dash }}" style="animation:cxmarch 1.5s linear infinite"></line>
+          </sc-for>
+          <sc-for list="{{ molecule }}" as="m" hint-placeholder-count="0">
+            <line x1="{{ m.x1 }}" y1="{{ m.y1 }}" x2="{{ m.x2 }}" y2="{{ m.y2 }}" stroke="{{ m.stroke }}" stroke-width="1.2"></line>
+          </sc-for>
+          <sc-for list="{{ nodes }}" as="n" hint-placeholder-count="3">
+            <g onClick="{{ n.onClick }}" style="cursor:pointer">
+              <circle cx="{{ n.x }}" cy="{{ n.y }}" r="{{ n.r }}" fill="{{ n.color }}" fill-opacity="{{ n.fillOpacity }}" stroke="{{ n.color }}" stroke-width="{{ n.strokeWidth }}" stroke-opacity="{{ n.strokeOpacity }}"></circle>
+              <circle cx="{{ n.x }}" cy="{{ n.y }}" r="{{ n.ringR }}" fill="none" stroke="{{ n.color }}" stroke-opacity="{{ n.ringOpacity }}" stroke-width="1" stroke-dasharray="{{ n.ringDash }}" style="animation:cxmarch 1.5s linear infinite"></circle>
+            </g>
+          </sc-for>
+          <sc-for list="{{ atoms }}" as="a" hint-placeholder-count="0">
+            <circle cx="{{ a.x }}" cy="{{ a.y }}" r="{{ a.r }}" fill="{{ a.fill }}"></circle>
+          </sc-for>
+        </svg>
+
+        <sc-for list="{{ labels }}" as="l" hint-placeholder-count="3">
+          <div style="{{ l.pos }}">
+            <span style="{{ l.titleStyle }}">{{ l.label }}</span>
+            <span style="{{ l.subStyle }}">{{ l.sub }}</span>
+          </div>
+        </sc-for>
+
+        <div style="position:absolute; left:14px; bottom:12px; display:flex; flex-direction:column; gap:5px; pointer-events:none">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.14em; color:var(--faint,#8A97AC)">{{ fieldFoot }}</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.1em; color:var(--faintest,#4A5568)">{{ fieldFootSub }}</span>
+        </div>
+
+        <div style="position:absolute; right:14px; top:0; bottom:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; pointer-events:none">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.18em; color:var(--faint,#8A97AC); writing-mode:vertical-rl">WHOLE</span>
+          <div style="width:1px; flex:0 0 70px; background:linear-gradient(180deg,var(--faint,#8A97AC),transparent)"></div>
+          <sc-for list="{{ axisTicks }}" as="t" hint-placeholder-count="4">
+            <span style="display:flex; align-items:center; justify-content:center; width:16px; height:16px">
+              <sc-if value="{{ t.on }}" hint-placeholder-val="{{ true }}"><span style="width:9px; height:9px; background:var(--accent,#B06BE0); transform:rotate(45deg); box-shadow:0 0 10px var(--accent,#B06BE0)"></span></sc-if>
+              <sc-if value="{{ t.off }}" hint-placeholder-val="{{ true }}"><span style="width:6px; height:6px; border:1px solid var(--faintest,#4A5568); transform:rotate(45deg)"></span></sc-if>
+            </span>
+          </sc-for>
+          <div style="width:1px; flex:0 0 70px; background:linear-gradient(180deg,transparent,var(--faint,#8A97AC))"></div>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.18em; color:var(--faint,#8A97AC); writing-mode:vertical-rl">MOLECULE</span>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isLayer4 }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute; inset:0; overflow-y:auto; overflow-x:hidden; padding:26px 28px; display:flex; flex-direction:column; gap:22px; animation:cxin 420ms cubic-bezier(.2,.7,.2,1) both">
+          <div style="display:flex; flex-wrap:wrap; gap:1px; background:var(--hair,rgba(255,255,255,0.1)); align-self:flex-start">
+            <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+              <span onClick="{{ t.onClick }}" style="{{ t.style }}">{{ t.label }}</span>
+            </sc-for>
+          </div>
+
+          <sc-if value="{{ tabMath }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex; flex-direction:column; gap:20px; max-width:640px">
+              <div style="display:flex; flex-direction:column; gap:8px">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:0.28em; color:var(--gold,#F7B731)">RECONSTITUTION · WORKING SHOWN</span>
+                <span style="font-family:'Cormorant Garamond',serif; font-weight:300; font-size:36px; line-height:1.15">{{ math.headline }}</span>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:1px; background:var(--hair,rgba(255,255,255,0.1))">
+                <sc-for list="{{ math.rows }}" as="r" hint-placeholder-count="4">
+                  <div style="background:var(--panel,#0C0C14); padding:15px 18px; display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:6px 16px">
+                    <span style="font-family:'JetBrains Mono',monospace; font-size:11px; line-height:1.6; letter-spacing:0.08em; color:var(--dim,#B8C5D6); min-width:0">{{ r.k }}</span>
+                    <span style="font-family:'JetBrains Mono',monospace; font-size:15px; color:var(--ink,#fff); white-space:nowrap">{{ r.v }}</span>
+                  </div>
+                </sc-for>
+                <div style="background:var(--panelHot,#12120A); padding:17px 18px; display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:6px 16px; border-left:2px solid var(--gold,#F7B731)">
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.08em; color:var(--gold,#F7B731)">{{ math.divide }}</span>
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:19px; color:var(--gold,#F7B731); white-space:nowrap">{{ math.draw }}</span>
+                </div>
+              </div>
+              <sc-if value="{{ math.hasSyringe }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex; flex-direction:column; gap:10px">
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.22em; color:var(--faint,#8A97AC)">ON A U-100 SYRINGE</span>
+                  <div style="height:44px; border:1px solid var(--hair,rgba(255,255,255,0.18)); display:flex; align-items:stretch">
+                    <div style="{{ math.barStyle }}"></div>
+                    <div style="flex:1"></div>
+                  </div>
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.08em; color:var(--dim,#B8C5D6)">= {{ math.units }} UNITS</span>
+                </div>
+              </sc-if>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10px; line-height:1.9; letter-spacing:0.06em; color:var(--faint,#8A97AC); text-wrap:pretty">CHECK AGAINST YOUR VIAL LABEL BEFORE DRAWING · RESEARCH-GRADE COMPOUNDS ONLY · NOT A PRESCRIPTION</span>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ tabSource }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:18px; max-width:680px">
+              <div style="display:flex; flex-direction:column; gap:10px">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:0.28em; color:var(--accent,#B06BE0)">WHAT THE GRADE RESTS ON</span>
+                <span style="font-family:'Cormorant Garamond',serif; font-weight:300; font-size:28px; line-height:1.3">“{{ compound.bottomLine }}”</span>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.12em; color:var(--faint,#8A97AC)">{{ compound.evidence }} · EVIDENCE {{ compound.grade }}</span>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:1px; background:var(--hair,rgba(255,255,255,0.1))">
+                <sc-for list="{{ compound.record }}" as="r" hint-placeholder-count="4">
+                  <div style="background:var(--panel,#0C0C14); padding:17px 18px; display:flex; flex-direction:column; gap:7px; border-left:2px solid var(--accent,#B06BE0)">
+                    <span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:0.16em; color:var(--accent,#B06BE0)">{{ r.k }}</span>
+                    <span style="font-size:14.5px; line-height:1.7; color:var(--dim,#B8C5D6); text-wrap:pretty">{{ r.v }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10px; line-height:1.9; letter-spacing:0.06em; color:var(--faint,#8A97AC); text-wrap:pretty">EVERY LINE ABOVE IS THE REFERENCE LIBRARY'S OWN WORDING, UNEDITED · CORTEX DOES NOT PARAPHRASE EVIDENCE</span>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ tabRotation }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:20px; max-width:640px">
+              <div style="display:flex; flex-direction:column; gap:8px">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:0.28em; color:var(--accent,#B06BE0)">ROTATION · LAST SEVEN INJECTIONS</span>
+                <span style="font-family:'Cormorant Garamond',serif; font-weight:300; font-size:30px; line-height:1.25">{{ rotation.headline }}</span>
+              </div>
+              <div style="display:flex; flex-wrap:wrap; gap:18px; align-items:flex-start">
+                <div style="position:relative; width:220px; height:300px; border:1px solid var(--hair,rgba(255,255,255,0.12)); flex-shrink:0">
+                  <sc-for list="{{ rotation.map }}" as="m" hint-placeholder-count="6">
+                    <span style="{{ m.style }}">{{ m.uses }}</span>
+                  </sc-for>
+                  <span style="position:absolute; left:8px; bottom:6px; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.14em; color:var(--faintest,#4A5568)">SITE MAP</span>
+                </div>
+                <div style="flex:1 1 260px; min-width:240px; display:flex; flex-direction:column; gap:1px; background:var(--hair,rgba(255,255,255,0.1))">
+                  <sc-for list="{{ rotation.rows }}" as="r" hint-placeholder-count="6">
+                    <div style="background:var(--panel,#0C0C14); padding:13px 15px; display:flex; align-items:center; gap:12px; min-height:44px">
+                      <span style="flex:1; min-width:0; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.1em; color:var(--dim,#B8C5D6)">{{ r.label }}</span>
+                      <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:{{ r.color }}; white-space:nowrap">{{ r.uses }}×</span>
+                      <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--faint,#8A97AC); width:58px; text-align:right; flex-shrink:0">{{ r.last }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <span style="font-size:14.5px; line-height:1.8; color:var(--dim,#B8C5D6); text-wrap:pretty">{{ rotation.note }}</span>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ tabCycle }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:22px; max-width:660px">
+              <div style="display:flex; flex-direction:column; gap:8px">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:0.28em; color:var(--accent,#B06BE0)">CYCLE · {{ cycle.start }} → {{ cycle.washout }}</span>
+                <span style="font-family:'Cormorant Garamond',serif; font-weight:300; font-size:36px; line-height:1.15">Day {{ cycle.day }} of {{ cycle.length }}</span>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:10px">
+                <div style="height:12px; background:var(--hair,rgba(255,255,255,0.12)); display:flex">
+                  <div style="{{ cycle.barStyle }}"></div>
+                </div>
+                <div style="display:flex; justify-content:space-between">
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.12em; color:var(--faint,#8A97AC)">{{ cycle.start }}</span>
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.12em; color:var(--gold,#F7B731)">WASHOUT {{ cycle.washout }}</span>
+                </div>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:1px; background:var(--hair,rgba(255,255,255,0.1))">
+                <sc-for list="{{ cycle.rows }}" as="r" hint-placeholder-count="6">
+                  <div style="background:var(--panel,#0C0C14); padding:14px 16px; display:flex; align-items:center; gap:12px; min-height:44px">
+                    <span style="flex:1; min-width:0; font-size:14.5px">{{ r.name }}</span>
+                    <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--faint,#8A97AC); white-space:nowrap">{{ r.schedule }}</span>
+                    <div style="width:70px; height:4px; background:var(--hair,rgba(255,255,255,0.12)); flex-shrink:0"><div style="{{ r.barStyle }}"></div></div>
+                    <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:{{ r.color }}; width:62px; text-align:right; flex-shrink:0">{{ r.left }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <span style="font-size:14.5px; line-height:1.8; color:var(--dim,#B8C5D6); text-wrap:pretty">{{ cycle.note }}</span>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+    </div>
+
+    <div style="flex:1 1 360px; max-width:520px; min-width:300px; height:100%; max-height:100%; min-height:0; border-left:1px solid var(--hair,rgba(255,255,255,0.1)); display:flex; flex-direction:column; overflow:auto">
+
+      <div style="padding:22px 22px 20px; border-bottom:1px solid var(--hair,rgba(255,255,255,0.1)); display:flex; flex-direction:column; gap:12px; animation:cxfade 500ms ease both">
+        <div style="display:flex; align-items:center; gap:9px">
+          <span style="width:6px; height:6px; border-radius:50%; background:var(--accent,#B06BE0); box-shadow:0 0 10px var(--accent,#B06BE0); animation:cxpulse 2.4s infinite"></span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.3em; color:var(--accent,#B06BE0)">{{ narrationLabel }}</span>
+        </div>
+        <span style="font-family:'Cormorant Garamond',serif; font-weight:300; font-size:29px; line-height:1.26; text-wrap:pretty">{{ narration }}</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; line-height:1.9; letter-spacing:0.08em; color:var(--faint,#8A97AC)">{{ narrationMeta }}</span>
+      </div>
+
+      <sc-if value="{{ hasAnswer }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:20px 22px; border-bottom:1px solid var(--hair,rgba(255,255,255,0.1)); display:flex; flex-direction:column; gap:10px; background:var(--panel,#0C0C14); animation:cxup 380ms cubic-bezier(.2,.7,.2,1) both">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:12px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.24em; color:var(--accent,#B06BE0)">CORTEX ANSWERED</span>
+            <span onClick="{{ clearAnswer }}" style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.12em; color:var(--faint,#8A97AC); cursor:pointer" style-hover="color:var(--ink,#fff)">DISMISS</span>
+          </div>
+          <span style="font-size:15px; line-height:1.75; color:var(--ink,#fff); text-wrap:pretty">{{ answer.text }}</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; line-height:1.7; letter-spacing:0.1em; color:var(--faint,#8A97AC)">{{ answer.cite }}</span>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isLayer1 }}" hint-placeholder-val="{{ true }}">
+        <div style="padding:20px 22px; display:flex; flex-direction:column; gap:20px">
+          <div style="display:flex; flex-direction:column; gap:12px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.26em; color:var(--faint,#8A97AC)">YOUR REGIONS · CLICK OR SCROLL TO ENTER</span>
+            <div style="display:flex; flex-direction:column; gap:1px; background:var(--hair,rgba(255,255,255,0.1))">
+              <sc-for list="{{ regionRows }}" as="r" hint-placeholder-count="4">
+                <div onClick="{{ r.onClick }}" style="background:var(--panel,#0C0C14); padding:15px 16px; display:flex; align-items:center; gap:14px; cursor:pointer; min-height:44px" style-hover="background:var(--panelHi,#14141E)">
+                  <span style="{{ r.dotStyle }}"></span>
+                  <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:3px">
+                    <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.16em; color:var(--ink,#fff)">{{ r.label }}</span>
+                    <span style="font-size:13px; line-height:1.5; color:var(--faint,#8A97AC)">{{ r.sub }}</span>
+                  </div>
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.1em; color:{{ r.stateColor }}; white-space:nowrap">{{ r.state }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:12px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.26em; color:var(--faint,#8A97AC)">LABS · AN INPUT, NOT A PAGE</span>
+            <sc-if value="{{ labsLocked }}" hint-placeholder-val="{{ false }}">
+              <div style="border:1px solid var(--hair,rgba(255,255,255,0.14)); padding:18px; display:flex; flex-direction:column; gap:9px">
+                <div style="display:flex; align-items:center; gap:9px">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint,#8A97AC); flex-shrink:0"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.16em; color:var(--faint,#8A97AC)">BLOODWORK · PRO</span>
+                </div>
+                <span style="font-size:13.5px; line-height:1.75; color:var(--dim,#B8C5D6); text-wrap:pretty">{{ labsLockedNote }}</span>
+              </div>
+            </sc-if>
+            <sc-if value="{{ noLabs }}" hint-placeholder-val="{{ true }}">
+              <div onClick="{{ attachLabs }}" style="border:1px dashed var(--hair,rgba(255,255,255,0.2)); padding:18px; display:flex; flex-direction:column; gap:9px; cursor:pointer; min-height:44px" style-hover="border-color:var(--accent,#B06BE0)">
+                <span style="font-size:14.5px; line-height:1.6">Attach bloodwork · bloodpanel_may_2026.pdf</span>
+                <span style="font-size:13px; line-height:1.7; color:var(--faint,#8A97AC); text-wrap:pretty">Eight markers re-tune the whole form. Regions brighten or thin against your real values instead of producing a separate report.</span>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.12em; color:var(--accent,#B06BE0)">RE-TUNE THE FORM →</span>
+              </div>
+            </sc-if>
+            <sc-if value="{{ hasLabs }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; flex-direction:column; gap:12px">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:12px">
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.12em; color:var(--accent,#B06BE0)">8 MARKERS · FORM RE-TUNED</span>
+                  <span onClick="{{ clearLabs }}" style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.12em; color:var(--faint,#8A97AC); cursor:pointer; min-height:44px; display:flex; align-items:center" style-hover="color:var(--ink,#fff)">DETACH</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:1px; background:var(--hair,rgba(255,255,255,0.1))">
+                  <sc-for list="{{ markers }}" as="m" hint-placeholder-count="8">
+                    <div style="background:var(--panel,#0C0C14); padding:12px 15px; display:flex; align-items:center; gap:12px">
+                      <span style="flex:1; min-width:0; font-size:14px">{{ m.label }}</span>
+                      <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--ink,#fff); white-space:nowrap">{{ m.value }}</span>
+                      <div style="width:56px; height:4px; background:var(--hair,rgba(255,255,255,0.12)); flex-shrink:0"><div style="{{ m.barStyle }}"></div></div>
+                      <span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:0.08em; color:{{ m.color }}; width:64px; text-align:right; flex-shrink:0">{{ m.state }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:10px; line-height:1.9; letter-spacing:0.06em; color:var(--faint,#8A97AC); text-wrap:pretty">REVIEW ALL BLOODWORK WITH A LICENSED PHYSICIAN · CORTEX DESCRIBES, IT DOES NOT DIAGNOSE</span>
+              </div>
+            </sc-if>
+          </div>
+
+          <sc-if value="{{ isFreeTier }}" hint-placeholder-val="{{ true }}">
+            <div style="border-left:2px solid var(--gold,#F7B731); background:var(--panelHot,#12120A); padding:17px 18px; display:flex; flex-direction:column; gap:11px">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:0.2em; color:var(--gold,#F7B731)">{{ upgradeHead }}</span>
+              <span style="font-size:14px; line-height:1.75; color:var(--dim,#B8C5D6); text-wrap:pretty">{{ upgradeBody }}</span>
+              <span onClick="{{ setPro }}" style="min-height:44px; display:flex; align-items:center; justify-content:center; background:var(--gold,#F7B731); color:var(--bg,#030308); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.16em; cursor:pointer">{{ upgradeCta }}</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:10px; line-height:1.9; letter-spacing:0.06em; color:var(--faint,#8A97AC); text-wrap:pretty">RECONSTITUTION MATH, CAUTIONS AND INTERACTION TEXT STAY FREE AT EVERY TIER</span>
+            </div>
+          </sc-if>
+
+          <div style="display:flex; flex-direction:column; gap:10px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.26em; color:var(--faint,#8A97AC)">THE REST OF THE FIELD</span>
+            <span style="font-size:14px; line-height:1.8; color:var(--dim,#B8C5D6); text-wrap:pretty">{{ unmappedNote }}</span>
+            <div style="display:flex; flex-wrap:wrap; gap:1px; background:var(--hair,rgba(255,255,255,0.1))">
+              <sc-for list="{{ unmappedRows }}" as="u" hint-placeholder-count="6">
+                <div onClick="{{ u.onClick }}" style="flex:1 1 150px; background:var(--panel,#0C0C14); padding:12px 14px; display:flex; align-items:center; justify-content:space-between; gap:10px; min-height:44px; cursor:pointer" style-hover="background:var(--panelHi,#14141E)">
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.1em; color:var(--dim,#B8C5D6)">{{ u.label }}</span>
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--faintest,#4A5568)">{{ u.count }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isLayer2 }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:20px 22px; display:flex; flex-direction:column; gap:20px">
+          <div style="display:flex; flex-direction:column; gap:11px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.26em; color:var(--faint,#8A97AC)">REGION STATE</span>
+            <div style="display:flex; flex-wrap:wrap; gap:20px">
+              <div style="display:flex; flex-direction:column; gap:3px"><span style="font-family:'Jost',sans-serif; font-weight:200; font-size:32px; line-height:1; color:var(--accent,#B06BE0)">{{ region.grade }}</span><span style="font-family:'JetBrains Mono',monospace; font-size:8.5px; letter-spacing:0.14em; color:var(--faint,#8A97AC)">BEST EVIDENCE</span></div>
+              <div style="display:flex; flex-direction:column; gap:3px"><span style="font-family:'Jost',sans-serif; font-weight:200; font-size:32px; line-height:1">{{ region.total }}</span><span style="font-family:'JetBrains Mono',monospace; font-size:8.5px; letter-spacing:0.14em; color:var(--faint,#8A97AC)">IN CATALOG</span></div>
+              <div style="display:flex; flex-direction:column; gap:3px"><span style="font-family:'Jost',sans-serif; font-weight:200; font-size:32px; line-height:1; color:{{ region.mineColor }}">{{ region.mine }}</span><span style="font-family:'JetBrains Mono',monospace; font-size:8.5px; letter-spacing:0.14em; color:var(--faint,#8A97AC)">{{ region.mineCaption }}</span></div>
+              <div style="display:flex; flex-direction:column; gap:3px"><span style="font-family:'Jost',sans-serif; font-weight:200; font-size:32px; line-height:1; color:{{ region.supplyColor }}">{{ region.supplyDays }}</span><span style="font-family:'JetBrains Mono',monospace; font-size:8.5px; letter-spacing:0.14em; color:var(--faint,#8A97AC)">DAYS OF SUPPLY</span></div>
+            </div>
+          </div>
+          <sc-if value="{{ region.hasMarkers }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:10px; border-left:2px solid var(--gold,#F7B731); padding-left:14px">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.24em; color:var(--gold,#F7B731)">YOUR LABS TOUCH THIS REGION</span>
+              <sc-for list="{{ region.markerRows }}" as="m" hint-placeholder-count="2">
+                <span style="font-size:14px; line-height:1.7; color:var(--dim,#B8C5D6)">{{ m }}</span>
+              </sc-for>
+            </div>
+          </sc-if>
+          <div style="display:flex; flex-direction:column; gap:10px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.26em; color:var(--faint,#8A97AC)">COMPOUNDS · CLICK TO RESOLVE</span>
+            <div style="display:flex; flex-direction:column; gap:1px; background:var(--hair,rgba(255,255,255,0.1))">
+              <sc-for list="{{ region.rows }}" as="c" hint-placeholder-count="4">
+                <div onClick="{{ c.onClick }}" style="background:var(--panel,#0C0C14); padding:14px 16px; display:flex; align-items:center; gap:12px; cursor:pointer; min-height:44px" style-hover="background:var(--panelHi,#14141E)">
+                  <span style="{{ c.dotStyle }}"></span>
+                  <span style="flex:1; min-width:0; font-size:15px">{{ c.name }}</span>
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.1em; color:var(--faint,#8A97AC); white-space:nowrap">{{ c.grade }}</span>
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:0.08em; color:{{ c.tagColor }}; width:56px; text-align:right; flex-shrink:0">{{ c.tag }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isLayer3 }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:20px 22px; display:flex; flex-direction:column; gap:20px">
+          <div style="display:flex; flex-direction:column; gap:7px">
+            <span style="font-family:'Cormorant Garamond',serif; font-weight:300; font-size:36px; line-height:1.05">{{ compound.name }}</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:0.14em; color:var(--faint,#8A97AC)">{{ compound.purpose }}</span>
+          </div>
+          <span style="font-size:15px; line-height:1.8; color:var(--dim,#B8C5D6); text-wrap:pretty">{{ compound.action }}</span>
+          <div style="display:flex; flex-wrap:wrap; gap:26px">
+            <div style="display:flex; flex-direction:column; gap:7px; min-width:140px">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.22em; color:var(--faint,#8A97AC)">EVIDENCE</span>
+              <div style="display:flex; align-items:baseline; gap:8px"><span style="font-family:'Jost',sans-serif; font-weight:200; font-size:36px; line-height:1; color:var(--gold,#F7B731)">{{ compound.grade }}</span><span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; line-height:1.5; color:var(--faint,#8A97AC)">{{ compound.evidence }}</span></div>
+              <div style="display:flex; gap:3px">
+                <sc-for list="{{ compound.bars }}" as="b" hint-placeholder-count="4">
+                  <span style="{{ b }}"></span>
+                </sc-for>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:7px; min-width:140px">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.22em; color:var(--faint,#8A97AC)">{{ compound.historyLabel }}</span>
+              <div style="display:flex; align-items:baseline; gap:8px"><span style="font-family:'Jost',sans-serif; font-weight:200; font-size:36px; line-height:1">{{ compound.historyValue }}</span><span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--faint,#8A97AC)">{{ compound.historyUnit }}</span></div>
+              <span style="font-size:13px; line-height:1.6; color:var(--faint,#8A97AC)">{{ compound.historyNote }}</span>
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:10px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.26em; color:var(--faint,#8A97AC)">WHAT THE LIBRARY SAYS</span>
+            <div style="display:flex; flex-direction:column; gap:12px">
+              <sc-for list="{{ compound.facts }}" as="f" hint-placeholder-count="3">
+                <div style="display:flex; flex-direction:column; gap:5px">
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.16em; color:var(--faintest,#4A5568)">{{ f.k }}</span>
+                  <span style="font-size:14px; line-height:1.75; color:var(--dim,#B8C5D6); text-wrap:pretty">{{ f.v }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:10px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.26em; color:var(--faint,#8A97AC)">EDGES · {{ compound.edgeCount }} STACKING RELATIONSHIPS</span>
+            <div style="display:flex; flex-direction:column; gap:9px">
+              <sc-for list="{{ compound.edgeRows }}" as="e" hint-placeholder-count="3">
+                <div onClick="{{ e.onClick }}" style="display:flex; align-items:center; gap:11px; min-height:44px; cursor:pointer">
+                  <span style="{{ e.lineStyle }}"></span>
+                  <span style="flex:1; min-width:0; font-size:14px">{{ e.label }}</span>
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:0.1em; color:{{ e.color }}; white-space:nowrap">{{ e.kind }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:10px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.26em; color:var(--faint,#8A97AC)">TOOLS THIS COMPOUND MAKES RELEVANT</span>
+            <div style="display:flex; flex-wrap:wrap; gap:1px; background:var(--hair,rgba(255,255,255,0.1))">
+              <sc-for list="{{ compound.tools }}" as="t" hint-placeholder-count="4">
+                <div onClick="{{ t.onClick }}" style="{{ t.style }}">{{ t.label }}</div>
+              </sc-for>
+            </div>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; line-height:1.9; letter-spacing:0.06em; color:var(--faint,#8A97AC); text-wrap:pretty">EDUCATIONAL REFERENCE ONLY · CORTEX DESCRIBES HOW COMPOUNDS ARE STUDIED · IT DOES NOT DIAGNOSE, TREAT OR PRESCRIBE</span>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isLayer4 }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:20px 22px; display:flex; flex-direction:column; gap:16px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.26em; color:var(--faint,#8A97AC)">LAYER 04 · VERIFY MODE</span>
+          <span style="font-size:15px; line-height:1.8; color:var(--dim,#B8C5D6); text-wrap:pretty">The deepest layer drops the atmosphere on purpose. No particles, no motion — the arithmetic, the record, your rotation and your cycle, so you can check them against the vial in your hand.</span>
+          <div onClick="{{ zoomOut }}" style="min-height:44px; border:1px solid var(--hair,rgba(255,255,255,0.16)); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.14em; color:var(--dim,#B8C5D6); cursor:pointer" style-hover="border-color:var(--accent,#B06BE0)">← BACK TO {{ compound.name }}</div>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+
+  <div style="flex-shrink:0; display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; padding:12px 14px; border-top:1px solid var(--hair,rgba(255,255,255,0.1))">
+    <div style="flex:1 1 420px; min-width:260px; height:48px; display:flex; align-items:center; gap:12px; padding:0 16px; border:1px solid var(--accentDim,rgba(176,107,224,0.35)); background:var(--accentWash,rgba(124,58,237,0.06))">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent,#B06BE0)">›</span>
+      <input value="{{ ask }}" onChange="{{ onAsk }}" onKeyDown="{{ onAskKey }}" placeholder="Ask, or search 58 compounds" style="flex:1; min-width:0; font-size:15px; color:var(--ink,#fff)">
+      <span onClick="{{ submitAsk }}" style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.14em; color:var(--accent,#B06BE0); cursor:pointer; white-space:nowrap; min-height:44px; display:flex; align-items:center; padding:0 6px; margin-right:-6px">ASK →</span>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:8px">
+      <sc-for list="{{ suggestions }}" as="s" hint-placeholder-count="3">
+        <span onClick="{{ s.onClick }}" style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.08em; color:var(--dim,#B8C5D6); border:1px solid var(--hair,rgba(255,255,255,0.14)); min-height:44px; display:flex; align-items:center; padding:0 14px; cursor:pointer; white-space:nowrap" style-hover="color:var(--ink,#fff)">{{ s.label }}</span>
+      </sc-for>
+    </div>
+    <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.12em; color:var(--faint,#8A97AC); white-space:nowrap">SCROLL OVER THE FORM = ZOOM · ESC = OUT</span>
+  </div>
+
+  <sc-if value="{{ ledger }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute; inset:0; z-index:20; background:var(--bg,#030308); display:flex; flex-direction:column; animation:cxup 340ms cubic-bezier(.2,.7,.2,1) both">
+      <div style="flex-shrink:0; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px 14px; border-bottom:1px solid var(--hair,rgba(255,255,255,0.1))">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.24em">LEDGER</span>
+        <div onClick="{{ toggleLedger }}" style="height:44px; padding:0 16px; display:flex; align-items:center; border:1px solid var(--hair,rgba(255,255,255,0.16)); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.14em; color:var(--dim,#B8C5D6); cursor:pointer" style-hover="border-color:var(--accent,#B06BE0)">CLOSE · ESC</div>
+      </div>
+      <div style="flex:1; min-height:0; display:flex; flex-wrap:wrap; overflow:auto">
+        <div style="flex:1 1 380px; min-width:300px; padding:24px; display:flex; flex-direction:column; gap:16px">
+          <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px">
+            <span style="font-family:'Cormorant Garamond',serif; font-weight:300; font-size:30px; line-height:1">Dose log</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.12em; color:var(--faint,#8A97AC)">{{ logCount }} ENTRIES</span>
+          </div>
+          <div style="display:flex; flex-direction:column">
+            <sc-for list="{{ doseLog }}" as="d" hint-placeholder-count="6">
+              <div onClick="{{ d.onClick }}" style="display:flex; align-items:center; gap:14px; padding:13px 0; border-bottom:1px solid var(--hair,rgba(255,255,255,0.07)); cursor:pointer; min-height:44px">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--faint,#8A97AC); width:92px; flex-shrink:0">{{ d.when }}</span>
+                <span style="flex:1; min-width:0; font-size:15px">{{ d.name }}</span>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--dim,#B8C5D6); white-space:nowrap">{{ d.dose }}</span>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--faintest,#4A5568); width:64px; text-align:right; flex-shrink:0">{{ d.site }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.1em; color:var(--faint,#8A97AC)">EVERY ROW IS ALSO A NODE — CLICK ONE TO ZOOM BACK INTO THE FORM</span>
+        </div>
+        <div style="flex:1 1 340px; min-width:300px; padding:24px; border-left:1px solid var(--hair,rgba(255,255,255,0.1)); display:flex; flex-direction:column; gap:24px">
+          <div style="display:flex; flex-direction:column; gap:12px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.24em; color:var(--faint,#8A97AC)">INVENTORY · WHAT FEEDS THE TENSION</span>
+            <div style="display:flex; flex-direction:column; gap:1px; background:var(--hair,rgba(255,255,255,0.08))">
+              <sc-for list="{{ inventory }}" as="i" hint-placeholder-count="6">
+                <div style="background:var(--panel,#0C0C14); padding:14px 15px; display:flex; align-items:center; gap:12px; min-height:44px">
+                  <span style="flex:1; min-width:0; font-size:14.5px">{{ i.name }}</span>
+                  <div style="width:78px; height:4px; background:var(--hair,rgba(255,255,255,0.12)); flex-shrink:0"><div style="{{ i.barStyle }}"></div></div>
+                  <span style="font-family:'JetBrains Mono',monospace; font-size:10.5px; color:{{ i.color }}; width:62px; text-align:right; flex-shrink:0">{{ i.left }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:11px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.24em; color:var(--faint,#8A97AC)">WHY THE LEDGER IS PLAIN</span>
+            <span style="font-size:14.5px; line-height:1.8; color:var(--dim,#B8C5D6); text-wrap:pretty">The form is for understanding. The Ledger is for proving. Records get no atmosphere, no motion and no interpretation — they are searchable, sortable and boring on purpose.</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:10px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.24em; color:var(--faint,#8A97AC)">WHERE THIS DATA LIVES</span>
+            <div style="display:flex; flex-wrap:wrap; gap:6px">
+              <sc-for list="{{ ledgerRoutes }}" as="r" hint-placeholder-count="6">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.08em; color:var(--dim,#B8C5D6); border:1px solid var(--hair,rgba(255,255,255,0.14)); padding:9px 10px">{{ r }}</span>
+              </sc-for>
+            </div>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; line-height:1.9; letter-spacing:0.06em; color:var(--faint,#8A97AC); text-wrap:pretty">{{ dataNote }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;daylight&quot;,&quot;dusk&quot;,&quot;midnight&quot;],&quot;default&quot;:&quot;midnight&quot;,&quot;tsType&quot;:&quot;'daylight' | 'dusk' | 'midnight'&quot;,&quot;section&quot;:&quot;Ground&quot;},&quot;tier&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;free&quot;,&quot;pro&quot;],&quot;default&quot;:&quot;free&quot;,&quot;tsType&quot;:&quot;'free' | 'pro'&quot;,&quot;section&quot;:&quot;Account&quot;}}">
+const STORE = 'cortex-mirror-v2';
+
+const THEMES = {
+  daylight: {
+    hues: { cy:'#127080', pu:'#5B3F97', gr:'#1B8055', go:'#B8860B' },
+    vars: {
+      '--bg':'#F7F4EE', '--panel':'#FFFFFF', '--panelHi':'#F1EDE4', '--panelHot':'#FBF3DF',
+      '--hair':'rgba(26,25,21,0.14)', '--ink':'#1A1915', '--dim':'#4A473F', '--faint':'#615C54', '--faintest':'#6E6960',
+      '--accent':'#6B4FA8', '--accentDim':'rgba(107,79,168,0.4)', '--accentWash':'rgba(107,79,168,0.06)',
+      '--gold':'#B8860B',
+      '--glowA':'rgba(107,79,168,0.14)', '--glowB':'rgba(26,138,158,0.16)', '--glowC':'rgba(184,134,11,0.14)',
+      '--dotA':'rgba(107,79,168,0.8)', '--dotB':'rgba(26,138,158,0.85)', '--dotC':'rgba(184,134,11,0.95)'
+    }
+  },
+  dusk: {
+    hues: { cy:'#78E6F5', pu:'#AF91EB', gr:'#5FCF9B', go:'#F0BE5A' },
+    vars: {
+      '--bg':'#1C2430', '--panel':'#243040', '--panelHi':'#2B3848', '--panelHot':'#2E2E20',
+      '--hair':'rgba(255,255,255,0.12)', '--ink':'#F4F8FC', '--dim':'#B4C0CE', '--faint':'#A4B0BE', '--faintest':'#94A2B2',
+      '--accent':'#AF91EB', '--accentDim':'rgba(175,145,235,0.4)', '--accentWash':'rgba(175,145,235,0.08)',
+      '--gold':'#F0BE5A',
+      '--glowA':'rgba(150,120,215,0.2)', '--glowB':'rgba(70,200,220,0.2)', '--glowC':'rgba(230,175,70,0.18)',
+      '--dotA':'rgba(175,145,235,0.9)', '--dotB':'rgba(120,230,245,0.9)', '--dotC':'rgba(240,190,90,1)'
+    }
+  },
+  midnight: {
+    hues: { cy:'#00E5FF', pu:'#B06BE0', gr:'#22A06B', go:'#F7B731' },
+    vars: {
+      '--bg':'#030308', '--panel':'#0C0C14', '--panelHi':'#14141E', '--panelHot':'#12120A',
+      '--hair':'rgba(255,255,255,0.1)', '--ink':'#FFFFFF', '--dim':'#B8C5D6', '--faint':'#8A97AC', '--faintest':'#7A879A',
+      '--accent':'#B06BE0', '--accentDim':'rgba(176,107,224,0.35)', '--accentWash':'rgba(124,58,237,0.06)',
+      '--gold':'#F7B731',
+      '--glowA':'rgba(124,58,237,0.18)', '--glowB':'rgba(0,229,255,0.16)', '--glowC':'rgba(247,183,49,0.14)',
+      '--dotA':'rgba(176,107,224,0.9)', '--dotB':'rgba(0,229,255,0.85)', '--dotC':'rgba(247,183,49,1)'
+    }
+  }
+};
+
+// Mirrors the library's five evidenceLevel values exactly — see catalog.js.
+// '—' is Physiology/diagnostic target: not a therapy, so a therapeutic grade
+// does not apply and it sorts last rather than pretending to be weak evidence.
+const GRADE_ORDER = ['A', 'B', 'C', 'D', '\u2014'];
+
+class Component extends DCLogic {
+  state = {
+    theme: null, layer: 1, regionId: null, compoundId: null, tab: 'math',
+    ledger: false, ask: '', answer: null, labs: false, logged: {},
+    fw: 0, fh: 0, data: null, tier: null, orbit: 0
+  };
+
+  // Free holds one compound. The limit is enforced in exactly one place —
+  // `held()` — so every derived view (nodes, edges, supply, cycle, ledger)
+  // narrows consistently and nothing can leak a paid value through a side door.
+  // Safety surfaces are deliberately NOT gated: reconstitution arithmetic,
+  // cautions and interaction text stay readable at every tier.
+  get tier() {
+    const t = this.state.tier || this.props.tier || 'free';
+    return t === 'pro' ? 'pro' : 'free';
+  }
+  get isFree() { return this.tier === 'free'; }
+  held(id) {
+    const d = this.state.data;
+    if (!d) return false;
+    if (!this.isFree) return true;
+    return d.STACK.length > 0 && d.STACK[0].id === id;
+  }
+  /** Tier-blind ownership. Anything that answers "is this yours?" must use THIS —
+   *  the tier withholds resolution, it never revokes ownership. `stackEntry()` stays
+   *  tier-filtered and is only for comparison/tension math across resolved compounds. */
+  ownedEntry(id) {
+    const d = this.state.data;
+    return d ? d.STACK.find(x => x.id === id) : null;
+  }
+  ownedIn(catId) {
+    const d = this.state.data;
+    if (!d) return [];
+    return d.STACK.filter(x => d.COMPOUNDS[x.id] && d.COMPOUNDS[x.id].catId === catId);
+  }
+  /** In the user's stack but withheld by tier — a third state, not "not yours". */
+  lockedEntry(id) {
+    const d = this.state.data;
+    if (!d || !this.isFree) return null;
+    const e = d.STACK.find(x => x.id === id);
+    return e && !this.held(id) ? e : null;
+  }
+  /** Derived, never hardcoded — the free allowance is a rule in held(), and any copy
+   *  that writes "1 of 6" by hand becomes a lie the moment that rule changes. */
+  get resolvedCount() {
+    const d = this.state.data;
+    if (!d) return 0;
+    return d.STACK.filter(x => this.held(x.id)).length;
+  }
+  get lockedCount() {
+    const d = this.state.data;
+    if (!d || !this.isFree) return 0;
+    return d.STACK.filter(x => !this.held(x.id)).length;
+  }
+
+  // ── lifecycle ──────────────────────────────────────────────────────────
+  componentDidMount() {
+    this.applyTheme();
+    import('./catalog.js').then(mod => {
+      this.setState({ data: mod });
+    }).catch(err => { console.error('catalog load failed', err); });
+
+    try {
+      const raw = window.localStorage.getItem(STORE);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        this.setState({
+          theme: saved.theme || null, labs: !!saved.labs, logged: saved.logged || {},
+          layer: saved.layer || 1, regionId: saved.regionId || null, compoundId: saved.compoundId || null,
+          tier: saved.tier || null
+        });
+      }
+    } catch (e) { /* private mode — run unpersisted */ }
+
+    this.onKey = (e) => {
+      if (e.key !== 'Escape') return;
+      if (this.state.ledger) this.setState({ ledger: false }); else this.zoomOut();
+    };
+    document.addEventListener('keydown', this.onKey);
+    this.onResize = () => this.measure();
+    window.addEventListener('resize', this.onResize);
+    this.measure();
+  }
+  componentDidUpdate() {
+    this.applyTheme();
+    this.persist();
+    // Set imperatively rather than through a style hole — a hole here would delay the
+    // pane's first paint for a value that only matters once the user is interacting.
+    if (this.field) this.field.style.cursor = this.state.layer === 3 ? 'grab' : 'auto';
+    // The cached field size drives every label coordinate, so it must not be allowed to
+    // drift: a stale value silently pushes the SVG's bottom edge past the visible pane
+    // and the layout engine then places labels over chrome it thinks is elsewhere.
+    // measure() is a no-op when nothing changed, so this converges in one frame.
+    this.measure();
+  }
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.onKey);
+    window.removeEventListener('resize', this.onResize);
+    if (this._ro) this._ro.disconnect();
+  }
+
+  persist() {
+    const s = this.state;
+    try {
+      window.localStorage.setItem(STORE, JSON.stringify({
+        theme: s.theme, labs: s.labs, logged: s.logged, tier: s.tier,
+        layer: s.layer, regionId: s.regionId, compoundId: s.compoundId
+      }));
+    } catch (e) { /* ignore */ }
+  }
+
+  measure() {
+    if (!this.field) return;
+    const r = this.field.getBoundingClientRect();
+    const fw = Math.round(r.width), fh = Math.round(r.height);
+    if (fw !== this.state.fw || fh !== this.state.fh) this.setState({ fw: fw, fh: fh });
+  }
+
+  get theme() {
+    const t = this.state.theme || this.props.theme || 'midnight';
+    return THEMES[t] ? t : 'midnight';
+  }
+  get pal() { return THEMES[this.theme]; }
+  applyTheme() {
+    if (!this.root) return;
+    const v = this.pal.vars;
+    Object.keys(v).forEach(k => this.root.style.setProperty(k, v[k]));
+  }
+
+  // ── data helpers ───────────────────────────────────────────────────────
+  hue(catId) {
+    const d = this.state.data;
+    if (!d) return this.pal.hues.pu;
+    const cat = d.CATEGORIES.find(c => c.id === catId);
+    return this.pal.hues[cat ? cat.hue : 'pu'];
+  }
+  stackEntry(id) {
+    const d = this.state.data;
+    if (!d || !this.held(id)) return null;
+    return d.STACK.find(s => s.id === id);
+  }
+  mineIn(catId) {
+    const d = this.state.data;
+    if (!d) return [];
+    return d.STACK.filter(s => d.COMPOUNDS[s.id] && d.COMPOUNDS[s.id].catId === catId && this.held(s.id));
+  }
+  lockedIn(catId) {
+    const d = this.state.data;
+    if (!d) return [];
+    return d.STACK.filter(s => d.COMPOUNDS[s.id] && d.COMPOUNDS[s.id].catId === catId && !this.held(s.id));
+  }
+  catalogIn(catId) {
+    const d = this.state.data;
+    if (!d) return [];
+    return Object.keys(d.COMPOUNDS).map(k => d.COMPOUNDS[k]).filter(c => c.catId === catId);
+  }
+  bestGrade(list) {
+    let best = null;
+    list.forEach(c => {
+      const i = GRADE_ORDER.indexOf(c.grade);
+      if (best === null || i < best) best = i;
+    });
+    return best === null ? '—' : GRADE_ORDER[best];
+  }
+  /** Bloodwork is a Pro capability. This is the ONLY place the question "are labs
+   *  readable?" is answered — display sites must never re-derive it, or a consumer
+   *  that forgets the tier check reads real markers on Free. */
+  get labsOn() { return !!this.state.labs && !this.isFree; }
+  markersFor(catId) {
+    const d = this.state.data;
+    if (!d || !this.labsOn) return [];
+    return d.MARKERS.filter(m => m.catId === catId);
+  }
+  markerState(m) {
+    if (m.value < m.low) return { label: 'LOW', off: true };
+    if (m.value > m.high) return { label: 'ELEVATED', off: true };
+    return { label: 'IN RANGE', off: false };
+  }
+  /** Regions the user's own stack occupies, ordered by category order. */
+  myRegions() {
+    const d = this.state.data;
+    if (!d) return [];
+    return d.CATEGORIES
+      .filter(c => this.mineIn(c.id).length > 0)
+      .sort((a, b) => a.order - b.order);
+  }
+  emptyRegions() {
+    const d = this.state.data;
+    if (!d) return [];
+    // "I hold nothing here" is an OWNERSHIP question, so it must be tier-blind — using
+    // the resolution-filtered mineIn() made Free deny owning its own locked regions.
+    return d.CATEGORIES.filter(c => this.ownedIn(c.id).length === 0 && this.catalogIn(c.id).length > 0);
+  }
+  /** Site usage DERIVED from the same filtered dose log the Ledger renders — SITES
+   *  contributes only the list and map coordinates. A pre-aggregated `uses` count can
+   *  never respect a tier, so rotation and the Ledger are now one computation. */
+  siteUsage() {
+    const d = this.state.data;
+    if (!d) return [];
+    const norm = (s) => String(s).replace(/^ABD\b/, 'ABDOMEN').trim();
+    const log = d.DOSE_LOG.filter(x => this.held(x.id));
+    return d.SITES.map(s => {
+      const hits = log.filter(x => norm(x.site) === s.label);
+      return {
+        id: s.id, label: s.label, x: s.x, y: s.y,
+        uses: hits.length,
+        last: hits.length ? hits[0].when.replace(/\s+\d{1,2}:\d{2}$/, '') : '—'
+      };
+    });
+  }
+  /** THE single source for how the cycle is reported. Every surface that mentions the
+   *  cycle reads this — the tab and the ask bar previously derived the adherence claim
+   *  separately, which is exactly how one came to print what the other withheld. */
+  cycleReport() {
+    const d = this.state.data;
+    if (!d) return null;
+    const c = d.CYCLE;
+    return {
+      day: c.day, length: c.length, start: c.start, washout: c.washout,
+      daysLeft: c.length - c.day,
+      adherenceLine: this.isFree
+        ? 'Adherence is measured across your whole stack, so I am withholding it while ' + this.lockedCount + ' compounds are locked.'
+        : c.adherence + '% adherence with ' + c.onTime + ' doses on time.'
+    };
+  }
+  tensionCat() {
+    const d = this.state.data;
+    if (!d) return null;
+    const pool = d.STACK.filter(x => this.held(x.id));
+    const low = (pool.length ? pool : d.STACK).slice().sort((a, b) => a.supplyDays - b.supplyDays)[0];
+    return low ? d.COMPOUNDS[low.id].catId : null;
+  }
+
+  // ── navigation ─────────────────────────────────────────────────────────
+  openRegion(id) { this.setState({ layer: 2, regionId: id, compoundId: null, ledger: false }); }
+  openCompound(id) {
+    const d = this.state.data;
+    if (!d || !d.COMPOUNDS[id]) return;
+    this.setState({ layer: 3, regionId: d.COMPOUNDS[id].catId, compoundId: id, ledger: false });
+  }
+  zoomIn() {
+    const s = this.state;
+    if (s.layer === 1) { const t = this.tensionCat(); if (t) this.openRegion(t); return; }
+    if (s.layer === 2) {
+      const mine = this.mineIn(s.regionId);
+      const list = mine.length ? mine.slice().sort((a, b) => a.supplyDays - b.supplyDays) : this.catalogIn(s.regionId);
+      if (list[0]) this.openCompound(list[0].id);
+      return;
+    }
+    if (s.layer === 3) this.setState({ layer: 4 });
+  }
+  zoomOut() {
+    const s = this.state;
+    if (s.layer === 4) return this.setState({ layer: 3 });
+    if (s.layer === 3) return this.setState({ layer: 2, compoundId: null });
+    if (s.layer === 2) return this.setState({ layer: 1, regionId: null });
+  }
+  /** Drag-to-rotate, live only on layer 3 where there is an orbit to turn. The footer
+   *  advertises this, so it has to exist — and the cursor has to say so. */
+  onPointerDown = (e) => {
+    if (this.state.layer !== 3) return;
+    this._drag = { x: e.clientX, start: this.state.orbit || 0 };
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) { /* older engines */ }
+  };
+  onPointerMove = (e) => {
+    if (!this._drag) return;
+    this.setState({ orbit: this._drag.start + (e.clientX - this._drag.x) * 0.009 });
+  };
+  onPointerUp = () => { this._drag = null; };
+
+  /** The library's evidenceLevel is a taxonomy label, not a sentence — never
+   *  concatenate it into prose. Matched by pattern so a reworded enum still lands. */
+  evidenceProse(ev) {
+    const e = String(ev || '');
+    if (/FDA-approved/.test(e)) return 'it carries an approved label';
+    if (/Region-specific/.test(e)) return 'it is approved in some regions and not others';
+    if (/Mixed\/unclear/.test(e)) return 'its regulatory standing is unsettled';
+    if (/Physiology\/diagnostic/.test(e)) return 'it is studied diagnostically rather than therapeutically';
+    return 'nothing behind it carries an approved indication';
+  }
+
+  onWheel = (e) => {
+    const now = Date.now();
+    if (this._wheelAt && now - this._wheelAt < 480) return;
+    if (Math.abs(e.deltaY) < 12) return;
+    this._wheelAt = now;
+    if (e.deltaY < 0) this.zoomIn(); else this.zoomOut();
+  };
+
+  // ── ask ────────────────────────────────────────────────────────────────
+  answerFor(q) {
+    const d = this.state.data;
+    const s = (q || '').trim().toLowerCase();
+    if (!s || !d) return null;
+
+    // direct catalog search first — the ask bar is also the search field
+    const hit = Object.keys(d.COMPOUNDS).map(k => d.COMPOUNDS[k])
+      .find(c => c.name.toLowerCase() === s || c.name.toLowerCase().indexOf(s) === 0);
+    if (hit) {
+      this.openCompound(hit.id);
+      return { text: hit.name + ' — ' + hit.action + ' The library grades it ' + hit.grade + ' (' + hit.evidence + ').', cite: hit.bottomLine };
+    }
+    if (s.indexOf('supply') >= 0 || s.indexOf('decision') >= 0 || s.indexOf('run out') >= 0 || s.indexOf('reorder') >= 0) {
+      if (this.isFree) {
+        return {
+          text: 'I can only weigh supply across compounds I can resolve, and right now that is ' + (this.resolvedCount === 1 ? 'one' : this.resolvedCount) + '. ' + this.lockedCount + ' more are on your field but locked — the comparison that finds the real decision needs all of them.',
+          cite: 'FREE TIER · ' + this.resolvedCount + ' OF ' + d.COUNTS.stack + ' RESOLVED'
+        };
+      }
+      const low = d.STACK.filter(x => this.held(x.id)).slice().sort((a, b) => a.supplyDays - b.supplyDays)[0];
+      const c = d.COMPOUNDS[low.id];
+      this.openRegion(c.catId);
+      return {
+        text: c.name + ' has about ' + low.supplyDays + ' days left at your logged rate, against ' + (d.CYCLE.length - d.CYCLE.day) + ' days remaining in the cycle. Everything else in your stack has more than a fortnight.',
+        cite: 'FROM YOUR INVENTORY AND DOSE LOG · NOT A DOSING INSTRUCTION'
+      };
+    }
+    if (s.indexOf('together') >= 0 || s.indexOf('interaction') >= 0 || s.indexOf('safe') >= 0 || s.indexOf('stack') >= 0) {
+      // Interaction text is a safety surface — readable at every tier, even for locked
+      // compounds. Only the cross-stack synthesis is gated.
+      const pool = d.STACK.filter(x => this.held(x.id));
+      if (this.isFree) {
+        return {
+          text: 'Every compound\u2019s own interaction and caution text stays readable, locked or not — open any node to see it. What I cannot do on Free is weigh them against each other, because that needs the whole stack resolved.',
+          cite: 'SAFETY TEXT IS NEVER GATED · VERIFY AGAINST PRIMARY LITERATURE AND A PHYSICIAN'
+        };
+      }
+      const pairs = (pool.length * (pool.length - 1)) / 2;
+      const flagged = pool.filter(x => (d.COMPOUNDS[x.id].interactions || '').toLowerCase().indexOf('no well-') < 0);
+      return {
+        text: pairs + ' pairs across your ' + pool.length + ' compounds. ' + flagged.length + ' of them carry documented interaction notes in the library — read each on its own node rather than trusting a single verdict.',
+        cite: 'INTERACTION TEXT IS THE LIBRARY\u2019S OWN · VERIFY AGAINST PRIMARY LITERATURE AND A PHYSICIAN'
+      };
+    }
+    if (s.indexOf('lab') >= 0 || s.indexOf('blood') >= 0 || s.indexOf('marker') >= 0) {
+      if (this.isFree) {
+        return {
+          text: 'Bloodwork is a Pro capability. It re-tunes the whole form against your real values, and that only means something once every compound is resolved — right now ' + this.lockedCount + ' of yours are locked.',
+          cite: 'FREE TIER · BLOODWORK NOT ATTACHED'
+        };
+      }
+      if (!this.state.labs) { this.setState({ labs: true }); }
+      const off = d.MARKERS.filter(m => this.markerState(m).off);
+      return {
+        text: 'Eight markers attached. ' + off.length + ' sit outside range — ' + off.map(m => m.label).join(', ') + '. Those regions have been re-tuned on the form; the rest are unchanged.',
+        cite: 'MARKER KEYS AND UNITS AS DEFINED IN THE APP\u2019S OWN MARKER CATALOG · NOT A DIAGNOSIS'
+      };
+    }
+    if (s.indexOf('cycle') >= 0 || s.indexOf('washout') >= 0) {
+      const rep = this.cycleReport();
+      return {
+        text: 'Day ' + rep.day + ' of ' + rep.length + ', started ' + rep.start + '. Washout opens ' + rep.washout + '. ' + rep.adherenceLine,
+        cite: this.isFree ? 'FROM YOUR CYCLE RECORD · FREE TIER' : 'FROM YOUR CYCLE RECORD'
+      };
+    }
+    return {
+      text: 'I answer from what is on your field: ' + d.COUNTS.compounds + ' compounds in the library, ' + d.COUNTS.stack + ' in your stack, ' + d.COUNTS.categories + ' regions. Name a compound, or ask about supply, labs, the cycle, or how things sit together.',
+      cite: 'CORTEX ANSWERS FROM YOUR OWN DATA AND THE REFERENCED LIBRARY'
+    };
+  }
+  submit = () => { this.setState({ answer: this.answerFor(this.state.ask) }); };
+
+  // ── render values ──────────────────────────────────────────────────────
+  renderVals() {
+    const s = this.state;
+    const d = s.data;
+    const P = this.pal.vars;
+    const H = this.pal.hues;
+    const fw = s.fw || 0, fh = s.fh || 0;
+
+    const mono = (size, ls, color) => ({ fontFamily: "'JetBrains Mono', monospace", fontSize: size + 'px', letterSpacing: ls + 'em', color: color, lineHeight: 1 });
+    const tabStyle = (on) => Object.assign(mono(10, 0.14, on ? P['--bg'] : P['--dim']), {
+      minHeight: '44px', padding: '0 16px', display: 'flex', alignItems: 'center',
+      background: on ? P['--ink'] : P['--panel'], cursor: 'pointer'
+    });
+    const bar = (pct, color) => ({ width: pct + '%', height: '100%', background: color });
+    const dot = (color) => ({ width: '8px', height: '8px', borderRadius: '50%', background: color, flexShrink: 0 });
+    // one source of truth for the held-compound count, so no site can drift to "1 YOURS"
+    const heldLabel = (n) => n === 1 ? '1 OF YOURS' : n + ' OF YOURS';
+    const isAre = (n) => n === 1 ? 'is' : 'are';
+
+    const base = {
+      rootRef: (el) => { this.root = el; this.applyTheme(); },
+      stageRef: (el) => { this.stage = el; },
+      fieldRef: (el) => {
+        if (!el || el === this.field) return;
+        this.field = el; this.measure();
+        if (window.ResizeObserver) {
+          if (this._ro) this._ro.disconnect();
+          this._ro = new ResizeObserver(() => this.measure());
+          this._ro.observe(el);
+        }
+      },
+      onWheel: this.onWheel,
+      onPointerDown: this.onPointerDown,
+      onPointerMove: this.onPointerMove,
+      onPointerUp: this.onPointerUp,
+      fw: fw, fh: fh, viewBox: '0 0 ' + fw + ' ' + fh,
+      isDay: this.theme === 'daylight', notDay: this.theme !== 'daylight',
+      isDusk: this.theme === 'dusk', notDusk: this.theme !== 'dusk',
+      isNight: this.theme === 'midnight', notNight: this.theme !== 'midnight',
+      setDay: () => this.setState({ theme: 'daylight' }),
+      setDusk: () => this.setState({ theme: 'dusk' }),
+      setNight: () => this.setState({ theme: 'midnight' }),
+      goWhole: () => this.setState({ layer: 1, regionId: null, compoundId: null, ledger: false }),
+      zoomOut: () => this.zoomOut(),
+      ledger: s.ledger,
+      toggleLedger: () => this.setState({ ledger: !s.ledger }),
+      ask: s.ask,
+      onAsk: (e) => this.setState({ ask: e.target.value }),
+      onAskKey: (e) => { if (e.key === 'Enter') this.submit(); },
+      submitAsk: this.submit,
+      hasAnswer: !!s.answer,
+      answer: s.answer || { text: '', cite: '' },
+      clearAnswer: () => this.setState({ answer: null }),
+      axisTicks: [1, 2, 3, 4].map(n => ({ on: s.layer === n, off: s.layer !== n })),
+      isLayer1: s.layer === 1, isLayer2: s.layer === 2, isLayer3: s.layer === 3, isLayer4: s.layer === 4,
+      showField: s.layer !== 4,
+      tabMath: s.tab === 'math', tabSource: s.tab === 'source', tabRotation: s.tab === 'rotation', tabCycle: s.tab === 'cycle',
+      nodes: [], edges: [], molecule: [], atoms: [], labels: [],
+      crumbs: [], regionRows: [], unmappedRows: [], markers: [], suggestions: [], doseLog: [], inventory: [], tabs: [],
+      noLabs: !this.labsOn && !this.isFree, hasLabs: this.labsOn,
+      labsLocked: this.isFree,
+      attachLabs: () => { if (!this.isFree) this.setState({ labs: true, answer: this.answerFor('labs') }); },
+      clearLabs: () => this.setState({ labs: false, answer: null }),
+      isFreeTier: this.isFree, isProTier: !this.isFree,
+      setFree: () => this.setState({ tier: 'free', labs: false, answer: null }),
+      setPro: () => this.setState({ tier: 'pro', answer: null }),
+      lockedCount: this.lockedCount,
+      upgradeHead: '', upgradeBody: '', upgradeCta: '', labsLockedNote: '',
+      ledgerRoutes: ['/log', '/reminders', '/inventory', '/side-effects', '/notes', '/cycle', '/sites', '/bloodwork'],
+      dataNote: 'STACK → stack_items · LOG → dose_logs · LABS → bloodwork_results · CYCLE → cycles · SITES → injection_sites',
+      logCount: 0, fieldFoot: 'ASSEMBLING', fieldFootSub: 'READING THE REFERENCE LIBRARY',
+      // Real first-paint copy, not empty strings — the template streams before the
+      // catalog resolves, and a blank narration reads as a broken panel.
+      narrationLabel: 'CORTEX · LISTENING',
+      narration: 'Assembling your field.',
+      narrationMeta: 'READING THE REFERENCE LIBRARY…',
+      unmappedNote: 'Mapping the regions you have not filled yet.',
+      region: { grade: '—', total: 0, mine: 0, mineCaption: 'IN YOUR STACK', mineColor: P['--ink'], supplyDays: '—', supplyColor: P['--ink'], rows: [], hasMarkers: false, markerRows: [] },
+      compound: { name: '—', purpose: '', action: '', grade: '', cv: 0, cvNotes: '', bars: [], facts: [], edgeRows: [], edgeCount: 0, tools: [], record: [], bottomLine: '', evidence: '', historyLabel: '', historyValue: '', historyUnit: '', historyNote: '' },
+      math: { headline: '', rows: [], divide: '', draw: '', units: 0, hasSyringe: false, barStyle: {} },
+      rotation: { headline: '', rows: [], map: [], note: '' },
+      cycle: { day: 0, length: 0, start: '', washout: '', rows: [], note: '', barStyle: {} }
+    };
+
+    if (!d) {
+      base.narration = 'Assembling the field from 58 compounds…';
+      base.narrationLabel = 'CORTEX · LOADING';
+      return base;
+    }
+
+    // ── field geometry ───────────────────────────────────────────────────
+    const nodes = [], edges = [], molecule = [], atoms = [], labels = [];
+    // Labels are queued with the geometry they annotate, then placed by `layoutLabels`
+    // once every node is known — a fixed offset cannot avoid a neighbour it hasn't
+    // seen yet, which is why the earlier attempts kept overprinting circles.
+    const reqs = [];
+    const queueLabel = (x, y, ring, label, sub, color, subColor, size, maxW, ux, uy) => {
+      // The title is nowrap, so the reserved box can never be narrower than the title —
+      // capping it there would make the placer trust a box the text overflows. Only the
+      // sub line wraps, inside whatever width the title already demands.
+      const titleW = Math.round(String(label).length * (size * 0.78));
+      const subW = Math.round(String(sub).length * (9.5 * 0.78));
+      const cap = maxW || 0;
+      const boxW = Math.max(titleW, cap ? Math.min(subW, cap) : subW);
+      const subLines = boxW > 0 ? Math.ceil(subW / boxW) : 1;
+      const boxH = Math.round(size * 1.3) + subLines * Math.round(9.5 * 1.3) + 3;
+      reqs.push({
+        x: x, y: y, ring: ring, label: label, sub: sub, color: color, subColor: subColor,
+        size: size, maxW: cap, w: boxW, h: boxH,
+        ux: ux === undefined ? 0 : ux, uy: uy === undefined ? 1 : uy
+      });
+    };
+
+    const layoutLabels = () => {
+      // Every occupied region of the pane is an obstacle — not just the nodes. The two
+      // absolutely-positioned overlays live in the same box, so they get real rects
+      // instead of ad-hoc clamps (the earlier `fw - 34` hack only covered the rail).
+      // Node rings are soft (grazing one is survivable); the overlays are hard chrome —
+      // printing over them is always wrong, so they carry a heavier weight.
+      const obstacles = nodes.map(n => ({
+        left: n.x - n.ringR, right: n.x + n.ringR, top: n.y - n.ringR, bottom: n.y + n.ringR, w: 1
+      }));
+      // The footer's width tracks its own copy, so guessing it is how a label slips onto
+      // it. Reserve the whole bottom strip — cheap, and it cannot be wrong.
+      obstacles.push({ left: fw - 34, right: fw, top: 0, bottom: fh, w: 6 });   // zoom-axis rail
+      obstacles.push({ left: 0, right: fw, top: fh - 48, bottom: fh, w: 6 });   // field footer
+      const placed = [];
+      const area = (a, b) => Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) *
+                             Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+
+      reqs.forEach(q => {
+        // four sides at two distances — a denser ring needs the option to stand further off
+        const cands = [];
+        [10, 30].forEach(g => {
+          cands.push({ k: 'right', left: q.x + q.ring + g, top: q.y - q.h / 2, align: 'flex-start', ta: 'left', far: g > 10 });
+          cands.push({ k: 'left', left: q.x - q.ring - g - q.w, top: q.y - q.h / 2, align: 'flex-end', ta: 'right', far: g > 10 });
+          cands.push({ k: 'below', left: q.x - q.w / 2, top: q.y + q.ring + g, align: 'center', ta: 'center', far: g > 10 });
+          cands.push({ k: 'above', left: q.x - q.w / 2, top: q.y - q.ring - g - q.h, align: 'center', ta: 'center', far: g > 10 });
+          // diagonals break ties on a dense ring where all four sides graze a neighbour
+          const d = (q.ring + g) * 0.72;
+          cands.push({ k: 'right', left: q.x + d, top: q.y + d, align: 'flex-start', ta: 'left', far: true });
+          cands.push({ k: 'right', left: q.x + d, top: q.y - d - q.h, align: 'flex-start', ta: 'left', far: true });
+          cands.push({ k: 'left', left: q.x - d - q.w, top: q.y + d, align: 'flex-end', ta: 'right', far: true });
+          cands.push({ k: 'left', left: q.x - d - q.w, top: q.y - d - q.h, align: 'flex-end', ta: 'right', far: true });
+        });
+        // prefer the direction pointing away from the field's centre
+        const order = Math.abs(q.ux) > Math.abs(q.uy)
+          ? (q.ux > 0 ? ['right', 'below', 'above', 'left'] : ['left', 'below', 'above', 'right'])
+          : (q.uy >= 0 ? ['below', 'right', 'left', 'above'] : ['above', 'right', 'left', 'below']);
+
+        let best = null;
+        cands.forEach((c) => {
+          const rank = order.indexOf(c.k);
+          // clamp BEFORE scoring, so the score describes the position actually used —
+          // clamping afterwards could shove a label back onto a circle it had avoided
+          const cl = Math.max(2, Math.min(c.left, fw - q.w - 2));
+          const ct = Math.max(2, Math.min(c.top, fh - q.h - 2));
+          c.left = cl; c.top = ct;
+          const box = { left: cl, right: cl + q.w, top: ct, bottom: ct + q.h };
+          let cost = rank * 0.5 + (c.far ? 3 : 0);
+          obstacles.forEach(o => { cost += area(box, o) * (o.w || 1); });
+          placed.forEach(o => { cost += area(box, o) * 1.5; });
+          if (box.left < 2) cost += (2 - box.left) * 30;
+          if (box.right > fw - 2) cost += (box.right - (fw - 2)) * 30;
+          if (box.top < 2) cost += (2 - box.top) * 30;
+          if (box.bottom > fh - 2) cost += (box.bottom - (fh - 2)) * 30;
+          if (!best || cost < best.cost) best = { cost: cost, c: c, box: box };
+        });
+
+        const left = best.box.left, top = best.box.top;
+        placed.push({ left: left, right: left + q.w, top: top, bottom: top + q.h });
+
+        const pos = {
+          position: 'absolute', left: left + 'px', top: top + 'px',
+          display: 'flex', flexDirection: 'column', gap: '3px', pointerEvents: 'none',
+          alignItems: best.c.align, textAlign: best.c.ta
+        };
+        if (q.maxW) pos.width = q.w + 'px'; else pos.whiteSpace = 'nowrap';
+        labels.push({
+          label: q.label, sub: q.sub, pos: pos,
+          titleStyle: Object.assign(mono(q.size, 0.18, q.color), { lineHeight: 1.25, whiteSpace: 'nowrap' }),
+          subStyle: Object.assign(mono(9.5, 0.12, q.subColor), { lineHeight: 1.3 })
+        });
+      });
+    };
+
+    const mine = this.myRegions();
+    const region = d.CATEGORIES.find(c => c.id === s.regionId) || mine[0] || d.CATEGORIES[0];
+    const compound = d.COMPOUNDS[s.compoundId] || null;
+    const acc = this.hue(region.id);
+
+    if (fw > 80 && fh > 80) {
+      const cx = fw * 0.5, cy = fh * 0.44;
+      const m = Math.min(fw, fh);
+
+      if (s.layer === 1) {
+        // Locked regions still occupy the field. An empty map would misrepresent the
+        // product; a dimmed one shows the shape of what the tier is withholding.
+        const lockedRegions = this.isFree
+          ? d.CATEGORIES.filter(c => this.lockedIn(c.id).length > 0 && this.mineIn(c.id).length === 0)
+              .sort((a, b) => a.order - b.order)
+          : [];
+        const ordered = mine.map(c => ({ c: c, locked: false })).concat(lockedRegions.map(c => ({ c: c, locked: true })));
+        const n = ordered.length || 1;
+        const rr = Math.max(22, Math.min(fw * 0.07, fh * 0.14, 54));
+        const ring = Math.max(rr * 2.2, Math.min(fw * 0.28, m * 0.4));
+        ordered.forEach((o, i) => {
+          const c = o.c;
+          const list = o.locked ? this.lockedIn(c.id) : this.mineIn(c.id);
+          const worst = list.slice().sort((a, b) => a.supplyDays - b.supplyDays)[0];
+          const tense = !o.locked && worst && worst.supplyDays <= 7;
+          const marks = o.locked ? [] : this.markersFor(c.id);
+          const off = marks.filter(mk => this.markerState(mk).off).length;
+          const col = tense ? H.go : this.hue(c.id);
+          const ang = -Math.PI / 2 + i * (2 * Math.PI / n);
+          const x = n === 1 ? cx : cx + Math.cos(ang) * ring;
+          const y = n === 1 ? cy : cy + Math.sin(ang) * ring * 0.62;
+          const scale = 0.7 + Math.min(list.length, 4) * 0.12 - (off ? 0.12 : 0);
+          const r = rr * scale;
+          nodes.push({
+            x: x, y: y, r: r, color: col,
+            fillOpacity: o.locked ? 0.03 : (off ? 0.08 : 0.15),
+            strokeWidth: o.locked ? 1 : 1.5, strokeOpacity: o.locked ? 0.34 : 1,
+            ringR: r + 11,
+            ringOpacity: o.locked ? 0.2 : (tense ? 0.55 : (off ? 0.4 : 0.14)),
+            ringDash: (o.locked || tense || off) ? '8 7' : '0',
+            onClick: () => this.openRegion(c.id)
+          });
+          // A region can hold BOTH resolved and locked compounds — disclose the locked
+          // ones here too, or a mixed region silently hides part of the user's stack.
+          const alsoLocked = o.locked ? 0 : this.lockedIn(c.id).length;
+          const lbl = o.locked ? list.length + ' LOCKED' : heldLabel(list.length);
+          const sub = o.locked ? lbl
+            : (tense ? lbl + ' · ' + worst.supplyDays + ' DAYS'
+              : (off ? lbl + ' · ' + off + ' MARKER' + (off > 1 ? 'S' : '') + ' OFF'
+                : (alsoLocked ? lbl + ' · ' + alsoLocked + ' LOCKED' : lbl + ' · STEADY')));
+          queueLabel(x, y, r + 11, c.label, sub, o.locked ? P['--faint'] : col,
+            (tense || off) ? col : P['--faint'], 12, 0,
+            n === 1 ? 0 : Math.cos(ang), n === 1 ? 1 : Math.sin(ang) * 0.62);
+        });
+        for (let i = 1; i < nodes.length; i++) {
+          const lk = ordered[i] && ordered[i].locked;
+          edges.push({
+            x1: nodes[0].x, y1: nodes[0].y, x2: nodes[i].x, y2: nodes[i].y,
+            stroke: P['--faintest'], width: 1, opacity: lk ? 0.3 : 0.7, dash: lk ? '6 6' : '0'
+          });
+        }
+      } else if (s.layer === 2 || s.layer === 3) {
+        const pos = {};
+        if (s.layer === 3 && compound) {
+          const rr = Math.max(24, Math.min(m * 0.11, 50));
+          pos[compound.id] = { x: cx, y: cy, r: rr, c: compound };
+          const others = compound.stacksWith.map(id => d.COMPOUNDS[id]).filter(Boolean).slice(0, 5);
+          const orb = Math.max(rr * 3, Math.min(fw * 0.27, m * 0.44));
+          others.forEach((o, i) => {
+            const ang = (s.orbit || 0) + i * (2 * Math.PI / Math.max(others.length, 1));
+            pos[o.id] = {
+              x: cx + Math.cos(ang) * orb, y: cy + Math.sin(ang) * orb * 0.58,
+              r: Math.max(14, rr * 0.5), c: o,
+              ux: Math.cos(ang), uy: Math.sin(ang) * 0.58
+            };
+          });
+          const R = rr * 0.62, pts = [];
+          for (let i = 0; i < 7; i++) { const a = -Math.PI / 2 + i * (2 * Math.PI / 7); pts.push({ x: cx + Math.cos(a) * R, y: cy + Math.sin(a) * R }); }
+          pts.forEach((p, i) => {
+            molecule.push({ x1: p.x, y1: p.y, x2: pts[(i + 1) % 7].x, y2: pts[(i + 1) % 7].y, stroke: acc });
+            molecule.push({ x1: p.x, y1: p.y, x2: pts[(i + 3) % 7].x, y2: pts[(i + 3) % 7].y, stroke: P['--faintest'] });
+            atoms.push({ x: p.x, y: p.y, r: i % 2 ? 3 : 4.4, fill: i % 3 === 2 ? P['--faint'] : acc });
+          });
+        } else {
+          const list = this.catalogIn(region.id).slice(0, 12);
+          const n = list.length;
+          const rr = Math.max(15, Math.min(fw * 0.05, fh * 0.1, 34));
+          if (n <= 3) {
+            const gap = Math.min(fw / (n + 0.6), rr * 4.6);
+            list.forEach((c, i) => { pos[c.id] = { x: cx + (i - (n - 1) / 2) * gap, y: cy + (i % 2 ? rr * 0.9 : -rr * 0.5), r: rr, c: c }; });
+          } else {
+            const orb = Math.max(rr * 2.6, Math.min(fw * 0.3, m * 0.44));
+            // Beyond eight compounds a single ring leaves no radial room for labels, so
+            // the region resolves onto two rings instead of one crowded one.
+            const twoRing = n > 8;
+            const inner = twoRing ? Math.ceil(n / 2) : n;
+            list.forEach((c, i) => {
+              const onInner = !twoRing || i < inner;
+              const count = onInner ? inner : (n - inner);
+              const idx = onInner ? i : i - inner;
+              const ang = -Math.PI / 2 + idx * (2 * Math.PI / Math.max(count, 1)) + (onInner ? 0 : Math.PI / Math.max(count, 1));
+              const rad = onInner ? orb * (twoRing ? 0.56 : 1) : orb * 1.04;
+              pos[c.id] = {
+                x: cx + Math.cos(ang) * rad, y: cy + Math.sin(ang) * rad * 0.6,
+                r: twoRing ? rr * 0.82 : rr, c: c,
+                ux: Math.cos(ang), uy: Math.sin(ang) * 0.6
+              };
+            });
+          }
+        }
+        Object.keys(pos).forEach(id => {
+          const p = pos[id], c = p.c;
+          const entry = this.stackEntry(id);
+          const lockedE = this.lockedEntry(id);
+          const tense = entry && entry.supplyDays <= 7;
+          const focused = s.layer === 3 && compound && id === compound.id;
+          const col = tense ? H.go : this.hue(c.catId);
+          nodes.push({
+            x: p.x, y: p.y, r: p.r, color: col,
+            fillOpacity: focused ? 0.05 : (entry ? 0.14 : (lockedE ? 0.05 : 0.04)),
+            strokeWidth: focused ? 2 : 1.4,
+            strokeOpacity: entry ? 1 : (lockedE ? 0.55 : 0.4),
+            ringR: p.r + 10,
+            ringOpacity: tense ? 0.6 : (lockedE ? 0.3 : (focused ? 0.28 : 0)),
+            ringDash: (tense || lockedE) ? '8 7' : '0',
+            onClick: () => this.openCompound(id)
+          });
+          // Label the nodes that carry meaning; a dozen labels on one ring is noise,
+          // so unheld compounds stay as dots and are named in the panel list instead.
+          // "crowded" is about room, not headcount: a 384×260 phone field cannot host
+          // six 104px label boxes however few nodes there are.
+          const room = (fw * fh) / Math.max(Object.keys(pos).length, 1);
+          const crowded = Object.keys(pos).length > 6 || room < 20000;
+          if (entry || lockedE || focused || !crowded) {
+            const sub = tense ? entry.supply + '% · ' + entry.supplyDays + ' DAYS LEFT'
+              : (entry ? c.grade + ' · ' + entry.supply + '%'
+                : (lockedE ? c.grade + ' · LOCKED' : c.grade + ' · NOT YOURS'));
+            // The focused node sits inside its own orbit — lift its label above it.
+            // Orbit siblings wrap inside a width budget instead of running sideways.
+            const isL3 = s.layer === 3;
+            // At layer 3 the focused compound is already the panel's 36px heading —
+            // a second label on the canvas would sit inside its own orbit, so skip it.
+            if (!(isL3 && focused)) {
+              const len = p.ux !== undefined ? (Math.sqrt(p.ux * p.ux + p.uy * p.uy) || 1) : 1;
+              // A ring of ten nodes has no room for full catalog names, so layer 2 uses
+              // the app's own short-name rule (strip the parenthetical, cap at 10) and a
+              // one-token sub. Full names are right there in the panel list.
+              // Long catalog names are truncated on BOTH ring layers — a nowrap title
+              // sets the reserved box width, so an untruncated one crowds its neighbours.
+              const trim = (str, max) => {
+                let stem = str.split(' (')[0];
+                if (stem.length <= max) return stem;
+                const cut = stem.lastIndexOf(' ', max);
+                return (cut > 5 ? stem.slice(0, cut) : stem.slice(0, max)) + '…';
+              };
+              const isL2 = s.layer === 2;
+              const short = trim(c.name, 12).toUpperCase();
+              const focusName = trim(c.name, 16).toUpperCase();
+              queueLabel(
+                p.x, p.y, p.r + 10,
+                isL2 ? short : focusName,
+                isL2 ? (tense ? entry.supplyDays + 'D LEFT' : (lockedE ? 'LOCKED' : c.grade)) : sub,
+                entry ? col : P['--faint'], tense ? col : P['--faint'],
+                10.5, isL2 ? 104 : 104,
+                p.ux !== undefined ? p.ux / len : 0,
+                p.uy !== undefined ? p.uy / len : 1
+              );
+            }
+          }
+        });
+        const seen = {};
+        Object.keys(pos).forEach(id => {
+          (d.COMPOUNDS[id].stacksWith || []).forEach(to => {
+            if (!pos[to]) return;
+            const key = [id, to].sort().join('-');
+            if (seen[key]) return;
+            seen[key] = 1;
+            const e1 = this.stackEntry(id), e2 = this.stackEntry(to);
+            const both = e1 && e2;
+            const tense = (e1 && e1.supplyDays <= 7) || (e2 && e2.supplyDays <= 7);
+            edges.push({
+              x1: pos[id].x, y1: pos[id].y, x2: pos[to].x, y2: pos[to].y,
+              stroke: tense ? H.go : acc, width: both ? 2 : 1,
+              opacity: both ? 0.85 : 0.3, dash: tense ? '8 7' : '0'
+            });
+          });
+        });
+      }
+    }
+
+    layoutLabels();
+
+    // ── narration ────────────────────────────────────────────────────────
+    const visibleStack = d.STACK.filter(x => this.held(x.id));
+    const lowest = (visibleStack.length ? visibleStack : d.STACK).slice().sort((a, b) => a.supplyDays - b.supplyDays)[0];
+    const lowestC = d.COMPOUNDS[lowest.id];
+    const offMarkers = this.labsOn ? d.MARKERS.filter(mk => this.markerState(mk).off) : [];
+    let nLabel = 'CORTEX · NARRATING', nText = '', nMeta = '';
+
+    if (s.layer === 1) {
+      nText = this.isFree
+        ? (this.resolvedCount === 1 ? 'One compound resolved, ' : this.resolvedCount + ' compounds resolved, ') + this.lockedCount + ' held back. The dashed regions are yours — I can see them pulling, I just cannot read them for you yet.'
+        : (this.labsOn
+          ? 'Your labs are attached, and ' + offMarkers.length + ' markers sit outside range. Those regions have thinned; the rest of the form is steady.'
+          : 'Your ' + mine.length + ' active regions are holding. One is pulling against the rest.');
+      nMeta = this.isFree
+        ? 'FREE · ' + this.resolvedCount + ' OF ' + d.COUNTS.stack + ' RESOLVED · ' + d.COUNTS.compounds + ' IN LIBRARY, ALL READABLE'
+        : d.CYCLE.day + ' DAYS · ' + d.COUNTS.stack + ' COMPOUNDS · ' + d.CYCLE.adherence + '% LOGGED · ' + d.COUNTS.compounds + ' IN LIBRARY';
+    } else if (s.layer === 2) {
+      const mineHere = this.mineIn(region.id);
+      const lockedHere = this.lockedIn(region.id);
+      const ownedHere = this.ownedIn(region.id);
+      const worst = mineHere.slice().sort((a, b) => a.supplyDays - b.supplyDays)[0];
+      nLabel = 'CORTEX · REGION ' + region.label;
+      nText = worst && worst.supplyDays <= 7
+        ? d.COMPOUNDS[worst.id].name + ' runs this region down in ' + worst.supplyDays + ' days. Everything else here is steady.'
+        : (mineHere.length
+          ? 'This region is steady. ' + mineHere.length + ' of the library\u2019s ' + this.catalogIn(region.id).length + ' compounds here ' + isAre(mineHere.length) + ' yours.'
+          : (lockedHere.length
+            ? lockedHere.length + ' compounds here ' + isAre(lockedHere.length) + ' yours, ' + (lockedHere.length === 1 ? 'and it is' : 'and they are') + ' locked. I can list them and read each one — I cannot weigh them against each other yet.'
+            : 'You hold nothing in this region yet. ' + this.catalogIn(region.id).length + ' compounds sit here in the library.'));
+      nMeta = this.catalogIn(region.id).length + ' IN CATALOG · '
+        + (lockedHere.length
+          ? mineHere.length + ' RESOLVED · ' + lockedHere.length + ' LOCKED'
+          : heldLabel(ownedHere.length))
+        + ' · BEST GRADE ' + this.bestGrade(this.catalogIn(region.id));
+    } else if (s.layer === 3 && compound) {
+      const entry = this.stackEntry(compound.id);
+      const ownedE = this.ownedEntry(compound.id);
+      const lockedE = this.lockedEntry(compound.id);
+      nLabel = 'CORTEX · ' + compound.name.toUpperCase();
+      nText = entry && entry.supplyDays <= 7
+        ? 'This is the thinning node — ' + entry.supplyDays + ' days of supply against ' + (d.CYCLE.length - d.CYCLE.day) + ' days left in the cycle.'
+        : (entry
+          ? 'This node is stable — ' + entry.supplyDays + ' days of supply against ' + entry.days + ' days logged. On the evidence, ' + this.evidenceProse(compound.evidence) + '.'
+          : (lockedE
+            ? 'This one is yours — ' + lockedE.days + ' days logged — but Free will not resolve it. The arithmetic and the record below stay open regardless.'
+            : 'Not in your stack. ' + compound.name + ' sits adjacent to what you already hold.'));
+      nMeta = 'EVIDENCE ' + compound.grade + ' · '
+        + (entry ? entry.supply + '% REMAINING' : (ownedE ? 'IN YOUR STACK · LOCKED' : 'NOT IN YOUR STACK'));
+    } else if (s.layer === 4 && compound) {
+      nLabel = 'CORTEX · QUIET';
+      nText = 'Verify mode. I have stopped interpreting — the arithmetic and the record are below.';
+      nMeta = compound.name.toUpperCase() + ' · ' + compound.grade;
+    }
+
+    // ── reconstitution arithmetic (only where a real vial is recorded) ────
+    // Reconstitution arithmetic is a promised-free safety surface: it computes from the
+    // real vial whether or not the tier has resolved the compound.
+    const entry = compound ? this.ownedEntry(compound.id) : null;
+    let math = base.math;
+    if (entry) {
+      const conc = entry.vialMg / entry.waterMl;
+      const doseMg = entry.doseMcg / 1000;
+      const draw = doseMg / conc;
+      const units = Math.round(draw * 100);
+      const doseLabel = entry.doseMcg >= 1000 ? (entry.doseMcg / 1000) + ' mg' : entry.doseMcg + ' mcg';
+      math = {
+        headline: draw.toFixed(2) + ' mL per ' + doseLabel + ' dose',
+        rows: [
+          { k: 'VIAL CONTENTS', v: entry.vialMg + ' mg' },
+          { k: 'BACTERIOSTATIC WATER ADDED', v: entry.waterMl + ' mL' },
+          { k: 'CONCENTRATION · ' + entry.vialMg + ' mg ÷ ' + entry.waterMl + ' mL', v: conc + ' mg / mL' },
+          { k: 'TARGET DOSE · AS YOU LOG IT', v: doseLabel + ' = ' + doseMg + ' mg' }
+        ],
+        divide: 'DRAW · ' + doseMg + ' mg ÷ ' + conc + ' mg/mL',
+        draw: draw.toFixed(2) + ' mL',
+        units: units,
+        hasSyringe: units <= 100,
+        barStyle: { width: Math.min(100, units) + '%', background: 'var(--gold)', opacity: 0.28, borderRight: '2px solid var(--gold)' }
+      };
+    } else if (compound) {
+      math = {
+        headline: 'No vial recorded for ' + compound.name,
+        note: '',
+        rows: [
+          { k: 'IN YOUR STACK', v: 'no' },
+          { k: 'LIBRARY DOSAGE FIELD', v: compound.dosage || 'N/A' }
+        ],
+        divide: 'ADD IT TO YOUR STACK TO SEE THE ARITHMETIC',
+        draw: '—', units: 0, hasSyringe: false, barStyle: { width: '0%' }
+      };
+    }
+
+    // ── rotation ─────────────────────────────────────────────────────────
+    const usage = this.siteUsage();
+    const totalInj = usage.reduce((n, x) => n + x.uses, 0);
+    const sortedSites = usage.slice().sort((a, b) => b.uses - a.uses);
+    const hot = sortedSites[0], cold = sortedSites[sortedSites.length - 1];
+    const rotation = {
+      headline: totalInj === 0
+        ? 'No injections logged for the compounds I can resolve.'
+        : hot.label + ' has taken ' + hot.uses + ' of your last ' + totalInj + ' logged injection' + (totalInj === 1 ? '' : 's') + '.',
+      rows: sortedSites.map(x => ({ label: x.label, uses: x.uses, last: x.last, color: x.uses >= 3 ? H.go : (x.uses === 0 ? P['--faint'] : P['--ink']) })),
+      map: usage.map(x => ({
+        uses: x.uses,
+        style: {
+          position: 'absolute', left: x.x + '%', top: x.y + '%', transform: 'translate(-50%,-50%)',
+          width: '38px', height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          borderRadius: '50%', border: '1px solid ' + (x.uses >= 3 ? H.go : P['--hair']),
+          background: x.uses ? 'rgba(255,255,255,0.04)' : 'transparent',
+          fontFamily: "'JetBrains Mono', monospace", fontSize: '11px',
+          color: x.uses >= 3 ? H.go : (x.uses ? P['--dim'] : P['--faintest'])
+        }
+      })),
+      note: totalInj === 0
+        ? 'Rotation is drawn from your dose log. Nothing here yet for the compounds this tier resolves.'
+        : 'Cortex suggests ' + cold.label + ' next — it has taken ' + cold.uses + ' of the last ' + totalInj + '.'
+          + (this.isFree ? ' Counted from your ' + totalInj + ' resolved injection' + (totalInj === 1 ? '' : 's') + ' only; locked compounds are not included.' : '')
+          + ' Rotation is your record, not a prescription.'
+    };
+
+    // ── cycle ────────────────────────────────────────────────────────────
+    const cyc = d.CYCLE;
+    const cycle = {
+      day: cyc.day, length: cyc.length, start: cyc.start, washout: cyc.washout,
+      barStyle: { width: Math.round((cyc.day / cyc.length) * 100) + '%', height: '100%', background: 'var(--accent)' },
+      rows: d.STACK.filter(x => this.held(x.id)).map(x => ({
+        name: d.COMPOUNDS[x.id].name, schedule: x.schedule, left: x.supplyDays + ' DAYS',
+        color: x.supplyDays <= 7 ? H.go : P['--faint'],
+        barStyle: bar(x.supply, x.supplyDays <= 7 ? H.go : P['--faint'])
+      })).concat(this.isFree ? d.STACK.filter(x => !this.held(x.id)).map(x => ({
+        name: d.COMPOUNDS[x.id].name, schedule: 'locked', left: 'PRO',
+        color: P['--faint'], barStyle: { width: '0%', height: '100%' }
+      })) : []),
+      note: this.cycleReport().adherenceLine + ' '
+        + lowestC.name + ' runs out ' + (cyc.length - cyc.day - lowest.supplyDays > 0 ? (cyc.length - cyc.day - lowest.supplyDays) + ' days before' : 'after') + ' the washout window opens.'
+    };
+
+    // ── panel: layer 1 ───────────────────────────────────────────────────
+    // ONE mapper over every region the user owns something in — a fully-locked region
+    // and a mixed one are the same case with different counts, so they cannot drift
+    // apart in wording the way two separate branches did.
+    const regionRows = d.CATEGORIES
+      .filter(c => this.ownedIn(c.id).length > 0)
+      .sort((a, b) => a.order - b.order)
+      .map(c => {
+        const resolved = this.mineIn(c.id);
+        const locked = this.lockedIn(c.id);
+        const worst = resolved.slice().sort((a, b) => a.supplyDays - b.supplyDays)[0];
+        const marks = this.markersFor(c.id).filter(mk => this.markerState(mk).off);
+        const tense = worst && worst.supplyDays <= 7;
+        return {
+          label: c.label,
+          sub: resolved.map(x => d.COMPOUNDS[x.id].name)
+            .concat(locked.map(x => d.COMPOUNDS[x.id].name + ' (locked)')).join(' · '),
+          state: tense ? 'THINNING'
+            : (locked.length ? locked.length + ' LOCKED'
+              : (marks.length ? 'RE-TUNED' : 'STEADY')),
+          stateColor: tense ? H.go
+            : (locked.length ? P['--faint'] : (marks.length ? this.pal.hues.pu : P['--faint'])),
+          dotStyle: Object.assign(dot(tense ? H.go : this.hue(c.id)),
+            resolved.length ? {} : { opacity: 0.35 }),
+          onClick: () => this.openRegion(c.id)
+        };
+      });
+
+    const empties = this.emptyRegions();
+    const unmappedRows = empties.map(c => ({
+      label: c.label, count: this.catalogIn(c.id).length,
+      onClick: () => this.openRegion(c.id)
+    }));
+
+    // ── panel: layer 2 ───────────────────────────────────────────────────
+    const catalogHere = this.catalogIn(region.id);
+    const mineHere = this.mineIn(region.id);
+    const ownedHere = this.ownedIn(region.id);
+    const lockedHere = this.lockedIn(region.id);
+    const marksHere = this.markersFor(region.id);
+    const worstHere = mineHere.slice().sort((a, b) => a.supplyDays - b.supplyDays)[0];
+    const regionVal = {
+      grade: this.bestGrade(catalogHere),
+      total: catalogHere.length,
+      mine: ownedHere.length,
+      mineCaption: lockedHere.length
+        ? 'YOURS · ' + lockedHere.length + ' LOCKED'
+        : 'IN YOUR STACK',
+      mineColor: ownedHere.length ? P['--ink'] : P['--faint'],
+      supplyDays: worstHere ? worstHere.supplyDays : (lockedHere.length ? 'PRO' : '—'),
+      supplyColor: worstHere && worstHere.supplyDays <= 7 ? H.go : P['--ink'],
+      hasMarkers: marksHere.length > 0,
+      markerRows: marksHere.map(mk => mk.label + ' · ' + mk.value + ' ' + mk.unit + ' · ' + this.markerState(mk).label + ' (range ' + mk.low + '–' + mk.high + ')'),
+      rows: catalogHere.map(c => {
+        const e = this.stackEntry(c.id);
+        const lk = this.lockedEntry(c.id);
+        const tense = e && e.supplyDays <= 7;
+        return {
+          name: c.name, grade: c.grade,
+          tag: tense ? e.supplyDays + 'D' : (e ? 'YOURS' : (lk ? 'LOCKED' : '—')),
+          tagColor: tense ? H.go : (e ? this.hue(c.catId) : (lk ? P['--faint'] : P['--faintest'])),
+          dotStyle: Object.assign(
+            dot((e || lk) ? (tense ? H.go : this.hue(c.catId)) : P['--faintest']),
+            { width: '6px', height: '6px', opacity: e ? 1 : (lk ? 0.45 : 0.5) }
+          ),
+          onClick: () => this.openCompound(c.id)
+        };
+      })
+    };
+
+    // ── panel: layer 3 ───────────────────────────────────────────────────
+    let compoundVal = base.compound;
+    if (compound) {
+      const e = entry;                        // owned — may be locked
+      const eLocked = !!this.lockedEntry(compound.id);
+      const barStyles = [];
+      for (let i = 0; i < 4; i++) barStyles.push({ width: '26px', height: '5px', background: i < compound.bars ? 'var(--gold)' : 'var(--hair)' });
+      const logged = !!s.logged[compound.id];
+      compoundVal = {
+        name: compound.name, purpose: compound.purpose, action: compound.action,
+        grade: compound.grade, cv: compound.cv, cvNotes: compound.cvNotes, bars: barStyles,
+        bottomLine: compound.bottomLine, evidence: compound.evidence,
+        historyLabel: e ? (eLocked ? 'YOUR HISTORY · LOCKED' : 'YOUR HISTORY') : 'IN THE LIBRARY',
+        historyValue: e ? e.days : compound.stacksWith.length,
+        historyUnit: e ? 'days' : 'links',
+        historyNote: e
+          ? (eLocked
+            ? e.schedule + ' · ' + e.site + ' most often. Logged and yours — Free just will not resolve it on the form.'
+            : e.schedule + ' · ' + e.site + ' most often')
+          : 'Not in your stack. Adjacent to ' + compound.stacksWith.length + ' compounds you hold or could.',
+        facts: [
+          (function () {
+            const pw = (compound.purpose || '').toLowerCase().replace(/[^a-z]+/g, ' ').split(' ').filter(Boolean);
+            const cw = (compound.category || '').toLowerCase().replace(/[^a-z]+/g, ' ').split(' ').filter(Boolean);
+            const shares = pw.some(w => w.length > 2 && cw.indexOf(w) >= 0);
+            return shares ? null : {
+              k: 'FLAGGED · LIBRARY DISAGREES WITH ITSELF',
+              v: 'Filed under ' + compound.category + ', but its stated purpose is ' + compound.purpose + '. The effect text below is the ' + compound.category + ' boilerplate. Cortex shows the record as written rather than guessing which field is right — worth a look at the source spreadsheet.'
+            };
+          })(),
+          { k: 'KEY EFFECTS', v: compound.effects },
+          { k: 'DOSAGE FIELD · LIBRARY WORDING, UNEDITED', v: compound.dosage || 'N/A' },
+          { k: 'CAUTIONS', v: compound.cautions },
+          { k: 'DOCUMENTED INTERACTIONS', v: compound.interactions }
+        ].filter(f => f && f.v && f.v !== ''),
+        edgeCount: compound.stacksWith.length,
+        edgeRows: compound.stacksWith.map(id => d.COMPOUNDS[id]).filter(Boolean).slice(0, 6).map(o => {
+          const oe = this.stackEntry(o.id);
+          const ol = this.lockedEntry(o.id);
+          const tense = oe && oe.supplyDays <= 7;
+          const col = tense ? H.go : (oe ? this.hue(o.catId) : P['--faint']);
+          return {
+            label: o.name + ' — ' + (oe ? 'in your stack' : (ol ? 'in your stack, locked' : o.category.toLowerCase())),
+            kind: tense ? 'TENSION' : (oe ? 'BOTH YOURS' : (ol ? 'LOCKED' : 'ADJACENT')),
+            color: col,
+            lineStyle: { width: '20px', height: oe ? '2px' : '1px', background: col, flexShrink: 0 },
+            onClick: () => this.openCompound(o.id)
+          };
+        }),
+        record: [
+          { k: 'PRIMARY PURPOSE', v: compound.purpose },
+          { k: 'WHAT IT DOES', v: compound.action },
+          { k: 'EVIDENCE LEVEL', v: compound.evidence },
+          { k: 'KEY EFFECTS', v: compound.effects },
+          // The library's own cardiovascular column, kept whole and labelled as itself.
+          // It scores CV outcome data only and says nothing about evidence generally.
+          { k: 'CARDIOVASCULAR · ' + compound.cv + '/5 ON THE LIBRARY\u2019S CV SCALE', v: compound.cvNotes },
+          { k: 'CAUTIONS', v: compound.cautions },
+          { k: 'INTERACTIONS', v: compound.interactions }
+        ].filter(r => r.v && r.v !== ''),
+        tools: [
+          { label: 'RECONSTITUTE', onClick: () => this.setState({ layer: 4, tab: 'math' }), style: Object.assign(mono(9.5, 0.1, 'var(--gold)'), { flex: '1 1 130px', minHeight: '44px', background: P['--panel'], display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }) },
+          { label: logged ? '✓ DOSE LOGGED' : 'LOG A DOSE', onClick: () => this.setState({ logged: Object.assign({}, s.logged, { [compound.id]: true }) }), style: Object.assign(mono(9.5, 0.1, logged ? this.hue(compound.catId) : P['--dim']), { flex: '1 1 130px', minHeight: '44px', background: P['--panel'], display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }) },
+          { label: 'ROTATION', onClick: () => this.setState({ layer: 4, tab: 'rotation' }), style: Object.assign(mono(9.5, 0.1, P['--dim']), { flex: '1 1 130px', minHeight: '44px', background: P['--panel'], display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }) },
+          { label: 'THE RECORD', onClick: () => this.setState({ layer: 4, tab: 'source' }), style: Object.assign(mono(9.5, 0.1, P['--dim']), { flex: '1 1 130px', minHeight: '44px', background: P['--panel'], display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }) }
+        ]
+      };
+    }
+
+    return Object.assign(base, {
+      nodes: nodes, edges: edges, molecule: molecule, atoms: atoms, labels: labels,
+      crumbs: (() => {
+        const out = [];
+        if (s.layer >= 2) out.push({ label: region.label, onClick: () => this.openRegion(region.id) });
+        if (s.layer >= 3 && compound) out.push({ label: compound.name.toUpperCase(), onClick: () => this.openCompound(compound.id) });
+        if (s.layer >= 4) out.push({ label: s.tab.toUpperCase(), onClick: () => this.setState({ layer: 4 }) });
+        return out;
+      })(),
+      narrationLabel: nLabel, narration: nText, narrationMeta: nMeta,
+      fieldFoot: s.layer === 1
+        ? (this.isFree
+          ? mine.length + ' OF YOUR ' + d.CATEGORIES.filter(c => this.ownedIn(c.id).length > 0).length + ' REGIONS RESOLVED'
+          : mine.length + ' OF ' + d.COUNTS.categories + ' REGIONS ACTIVE')
+        : (s.layer === 2 ? region.label + ' · ' + catalogHere.length + ' COMPOUNDS' : (compound ? compound.name.toUpperCase() : '')),
+      fieldFootSub: s.layer === 1
+        ? (this.isFree
+          ? this.resolvedCount + ' RESOLVED · ' + this.lockedCount + ' LOCKED · ' + d.COUNTS.compounds + ' READABLE IN THE LIBRARY'
+          : d.COUNTS.stack + ' OF ' + d.COUNTS.compounds + ' COMPOUNDS ARE YOURS')
+        : (s.layer === 2
+          ? (lockedHere.length
+            ? mineHere.length + ' RESOLVED · ' + lockedHere.length + ' LOCKED · FAINT NODES ARE UNHELD'
+            : heldLabel(mineHere.length) + ' · FAINT NODES ARE UNHELD')
+          : 'DRAG TO ROTATE · COLOUR IS EVIDENCE, NOT STRUCTURE'),
+      regionRows: regionRows,
+      unmappedRows: unmappedRows,
+      upgradeHead: this.lockedCount + ' of your compounds are locked',
+      upgradeBody: 'Free holds one. The rest of your stack is still drawn on the form — dashed, dimmed, and still pulling edges toward what you hold — so you can see the shape of what you are not seeing. Unlock to resolve them.',
+      upgradeCta: 'UNLOCK EVERYTHING · $14.99/MO →',
+      labsLockedNote: 'Bloodwork re-tunes the whole form against your real values. It needs the full stack to be worth reading, so it unlocks with Pro.',
+      unmappedNote: empties.length + ' of the library\u2019s ' + d.COUNTS.categories + ' regions hold nothing of yours yet — ' + (d.COUNTS.compounds - d.COUNTS.stack) + ' compounds you have not mapped. They stay faint on the form until you do.',
+      markers: (this.labsOn ? d.MARKERS : []).map(mk => {
+        const st = this.markerState(mk);
+        const span = mk.high - mk.low || 1;
+        const pct = Math.max(4, Math.min(100, Math.round(((mk.value - mk.low) / span) * 100)));
+        return {
+          label: mk.label, value: mk.value + ' ' + mk.unit, state: st.label,
+          color: st.off ? H.go : P['--faint'],
+          barStyle: bar(pct, st.off ? H.go : this.pal.hues.gr)
+        };
+      }),
+      region: regionVal,
+      compound: compoundVal,
+      math: math, rotation: rotation, cycle: cycle,
+      tabs: [
+        { label: 'THE MATH', onClick: () => this.setState({ tab: 'math' }), style: tabStyle(s.tab === 'math') },
+        { label: 'THE RECORD', onClick: () => this.setState({ tab: 'source' }), style: tabStyle(s.tab === 'source') },
+        { label: 'ROTATION', onClick: () => this.setState({ tab: 'rotation' }), style: tabStyle(s.tab === 'rotation') },
+        { label: 'CYCLE', onClick: () => this.setState({ tab: 'cycle' }), style: tabStyle(s.tab === 'cycle') }
+      ],
+      suggestions: [
+        { label: 'NEEDS A DECISION?', onClick: () => this.setState({ ask: 'What needs a decision?', answer: this.answerFor('supply') }) },
+        { label: 'SIT WELL TOGETHER?', onClick: () => this.setState({ ask: 'Do these sit well together?', answer: this.answerFor('together') }) },
+        { label: 'READ MY LABS', onClick: () => this.setState({ ask: 'Read my labs', labs: !this.isFree, answer: this.answerFor('labs') }) },
+        { label: 'WHERE IS THE CYCLE?', onClick: () => this.setState({ ask: 'Where is the cycle?', answer: this.answerFor('cycle') }) }
+      ],
+      logCount: d.DOSE_LOG.filter(x => this.held(x.id)).length * 23,
+      doseLog: d.DOSE_LOG.filter(x => this.held(x.id)).map(x => ({
+        when: x.when, name: d.COMPOUNDS[x.id] ? d.COMPOUNDS[x.id].name : x.id, dose: x.dose, site: x.site,
+        onClick: () => this.openCompound(x.id)
+      })),
+      inventory: d.STACK.slice().sort((a, b) => a.supplyDays - b.supplyDays).map(x => {
+        const lk = !this.held(x.id);
+        return {
+          name: d.COMPOUNDS[x.id].name + ' ' + x.vialMg + ' mg',
+          left: lk ? 'LOCKED' : x.supplyDays + ' DAYS',
+          color: lk ? P['--faint'] : (x.supplyDays <= 7 ? H.go : P['--faint']),
+          barStyle: lk ? { width: '0%', height: '100%' } : bar(x.supply, x.supplyDays <= 7 ? H.go : P['--faint'])
+        };
+      })
+    });
+  }
+}
+</script>
+</body>
+</html>

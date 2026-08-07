@@ -129,3 +129,64 @@ button, a {
   90% { opacity: 1; }
   100% { top: 100%; opacity: 0; }
 }
+
+/* ─── Mirror keyframes ───────────────────────────────────────────────────────────
+   Ported verbatim from design_handoff_peptide_cortex/Peptide Cortex Mirror.dc.html
+   (lines 23-31). Namespaced `cx*` per the prototype. Durations carry meaning —
+   see the motion table in that bundle's README:
+     cxbreathe 11s    the field is alive
+     cxdriftA  26s    particle layer A
+     cxdriftB  34s    particle layer B, drifting in opposition to A
+     cxthin    3.4s   supply running out — fastest, because it needs attention
+     cxmarch   1.5s   dashed edge = interrupted relationship
+     cxpulse   2.4s   Cortex is listening
+   Entrances run 340-560ms on cubic-bezier(.2,.7,.2,1). */
+@keyframes cxpulse {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.4); }
+}
+@keyframes cxbreathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+@keyframes cxdriftA {
+  from { background-position: 0 0; }
+  to { background-position: 26px -18px; }
+}
+@keyframes cxdriftB {
+  from { background-position: 0 0; }
+  to { background-position: -22px 20px; }
+}
+@keyframes cxthin {
+  0%, 100% { opacity: 0.62; }
+  50% { opacity: 0.3; }
+}
+@keyframes cxmarch {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -30; }
+}
+@keyframes cxin {
+  from { opacity: 0; transform: scale(1.05); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes cxup {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes cxfade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* The prototype suppresses all motion under prefers-reduced-motion. Scoped to
+   `.cx-surface` — which the redesigned pages carry — so it does not silently
+   disable transitions on the legacy light-theme routes still in the app. */
+@media (prefers-reduced-motion: reduce) {
+  .cx-surface,
+  .cx-surface *,
+  .cx-surface *::before,
+  .cx-surface *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

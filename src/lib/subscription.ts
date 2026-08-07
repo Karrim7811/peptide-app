@@ -6,23 +6,10 @@ export const FREE_LIMITS = {
   interactionChecksPerDay: 3,
 } as const
 
-type ProfileTierRow = {
-  subscription_tier?: string | null
-  subscription_expires_at?: string | null
-} | null
-
-// Collapse a profiles row to an effective tier, treating an expired pro as free.
-export function resolveTier(profile: ProfileTierRow): SubscriptionTier {
-  if (!profile) return 'free'
-  if (profile.subscription_tier === 'pro' && profile.subscription_expires_at) {
-    if (new Date(profile.subscription_expires_at) < new Date()) return 'free'
-  }
-  return (profile.subscription_tier as SubscriptionTier) ?? 'free'
-}
-
-export function isProTier(tier: SubscriptionTier): boolean {
-  return tier === 'pro' || tier === 'lifetime'
-}
+// Pure predicates live in tier.ts so client code can import them without
+// dragging next/server along. Re-exported here to keep existing call sites.
+import { resolveTier, isProTier } from '@/lib/tier'
+export { resolveTier, isProTier }
 
 // Pro gate for API routes. Reads the caller's own tier via their auth-scoped
 // client (works for web cookies and mobile Bearer alike). Returns null to

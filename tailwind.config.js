@@ -13,6 +13,34 @@ module.exports = {
           cy: '#00E5FF', pu: '#7C3AED', go: '#F7B731', cymid: '#3BA7F0', pumid: '#B06BE0',
           dim: '#B8C5D6', muted: '#8A97AC', faint: '#6B7688', faintest: '#4A5568',
         },
+
+        // Mirror ground tokens. These resolve to whichever of the three grounds
+        // (midnight / dusk / daylight) GroundProvider has written onto the root,
+        // so components stay ground-agnostic — no `dark:` variants, no branching.
+        // Definitions live in src/lib/design/grounds.ts.
+        ground:   'var(--bg)',
+        panel:    'var(--panel)',
+        panelHi:  'var(--panelHi)',
+        panelHot: 'var(--panelHot)',
+        hair:     'var(--hair)',
+        ink:      'var(--ink)',
+        dim:      'var(--dim)',
+        faint:    'var(--faint)',
+        faintest: 'var(--faintest)',
+        accent:   'var(--accent)',
+        accentDim:  'var(--accentDim)',
+        accentWash: 'var(--accentWash)',
+        gold:     'var(--gold)',
+
+        // Category hue families. `go` is also the tension colour — use
+        // tensionHue()/hueVar() from grounds.ts rather than hard-coding `go`
+        // where tension is meant.
+        hue: {
+          cy: 'var(--hue-cy)',
+          pu: 'var(--hue-pu)',
+          gr: 'var(--hue-gr)',
+          go: 'var(--hue-go)',
+        },
       },
       fontFamily: {
         display: ['Cormorant Garamond', 'Georgia', 'serif'],

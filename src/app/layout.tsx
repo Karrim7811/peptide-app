@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from 'next'
+import type { CSSProperties } from 'react'
 import './globals.css'
 import AiConsentProvider from '@/components/AiConsentProvider'
+import GroundProvider from '@/components/GroundProvider'
+import { DEFAULT_GROUND, groundVars } from '@/lib/design/grounds'
 
 export const metadata: Metadata = {
   title: 'Peptide Cortex',
@@ -40,7 +43,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    // Midnight is server-rendered inline so the first paint is already correct;
+    // GroundProvider only takes over on hydration. Legacy light-theme routes are
+    // unaffected — they read the separate --cx-* variables in globals.css.
+    <html lang="en" style={groundVars(DEFAULT_GROUND) as CSSProperties}>
       <head>
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.svg" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -59,9 +65,11 @@ export default function RootLayout({
         />
       </head>
       <body style={{ background: '#FAFAF8', color: '#1A1915' }}>
-        <AiConsentProvider>
-          {children}
-        </AiConsentProvider>
+        <GroundProvider>
+          <AiConsentProvider>
+            {children}
+          </AiConsentProvider>
+        </GroundProvider>
       </body>
     </html>
   )
