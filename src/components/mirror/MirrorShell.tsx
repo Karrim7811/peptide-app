@@ -26,6 +26,12 @@ interface MirrorShellProps {
   verifyTab: VerifyTab
   onSelectVerifyTab: (tab: VerifyTab) => void
   isFree: boolean
+  /**
+   * Whether to offer the tier switch at all. Only a Pro user may preview the
+   * free surface — offering a free user a switch to Pro would advertise a
+   * bypass, even though the real gate is server-side.
+   */
+  canPreviewFree: boolean
   onToggleTier: () => void
   onOpenLedger: () => void
   field: ReactNode
@@ -71,6 +77,7 @@ export default function MirrorShell({
   verifyTab,
   onSelectVerifyTab,
   isFree,
+  canPreviewFree,
   onToggleTier,
   onOpenLedger,
   field,
@@ -112,28 +119,33 @@ export default function MirrorShell({
 
         <div className="flex flex-wrap items-center gap-[10px]">
           <GroundToggle />
-          <div className="flex">
-            <button
-              type="button"
-              onClick={onToggleTier}
-              aria-pressed={isFree}
-              className={`min-h-[44px] px-3 font-mono text-[10px] tracking-[0.12em] ${
-                isFree ? 'bg-ink text-ground' : 'bg-panel text-dim hover:text-ink'
-              }`}
-            >
-              FREE
-            </button>
-            <button
-              type="button"
-              onClick={onToggleTier}
-              aria-pressed={!isFree}
-              className={`min-h-[44px] px-3 font-mono text-[10px] tracking-[0.12em] ${
-                !isFree ? 'bg-ink text-ground' : 'bg-panel text-dim hover:text-ink'
-              }`}
-            >
-              PRO
-            </button>
-          </div>
+          {canPreviewFree ? (
+            <div className="flex">
+              <button
+                type="button"
+                onClick={onToggleTier}
+                aria-pressed={isFree}
+                title="Preview the free surface"
+                className={`min-h-[44px] px-3 font-mono text-[10px] tracking-[0.12em] ${
+                  isFree ? 'bg-ink text-ground' : 'bg-panel text-dim hover:text-ink'
+                }`}
+              >
+                FREE
+              </button>
+              <button
+                type="button"
+                onClick={onToggleTier}
+                aria-pressed={!isFree}
+                className={`min-h-[44px] px-3 font-mono text-[10px] tracking-[0.12em] ${
+                  !isFree ? 'bg-ink text-ground' : 'bg-panel text-dim hover:text-ink'
+                }`}
+              >
+                PRO
+              </button>
+            </div>
+          ) : (
+            <span className="font-mono text-[10px] tracking-[0.12em] text-faintest">FREE</span>
+          )}
           <button
             type="button"
             onClick={onOpenLedger}

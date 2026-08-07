@@ -31,6 +31,7 @@ import type { Entitlements } from '@/lib/entitlement'
 import { hueVar } from '@/lib/design/grounds'
 import { money, MONTHLY_PRICE } from '@/lib/pricing'
 import type { MirrorLayer, VerifyTab } from '@/lib/mirror/useMirrorNav'
+import LogDoseButton from '@/components/mirror/LogDoseButton'
 
 export interface MirrorPanelProps {
   layer: MirrorLayer
@@ -550,12 +551,12 @@ function LayerCompound({ ent, compoundId, onOpenVerify }: { ent: Entitlements; c
             >
               RECONSTITUTE
             </button>
-            <Link
-              href="/log"
-              className="flex min-h-[44px] flex-1 basis-[130px] items-center justify-center bg-panel font-mono text-[9.5px] tracking-[0.1em] text-dim"
-            >
-              LOG A DOSE
-            </Link>
+            <LogDoseButton
+              compoundId={compound.id}
+              // ownedEntry, not held — a locked compound is still theirs, and
+              // recording what they took is not a paid feature.
+              entry={ent.ownedEntry(compound.id)}
+            />
             <button
               type="button"
               onClick={() => onOpenVerify('rotation')}
