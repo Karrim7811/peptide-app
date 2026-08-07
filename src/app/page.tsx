@@ -1,64 +1,27 @@
-'use client'
-import { useSceneMode } from './_landing/_lib/useSceneMode'
-import { useReveal } from './_landing/_lib/useReveal'
-import ParticleNetwork from './_landing/_lib/ParticleNetwork'
-import Nav from './_landing/Nav'
-import Hero from './_landing/Hero'
-import ProductProof from './_landing/ProductProof'
-import Corpus from './_landing/Corpus'
-import Mechanisms from './_landing/Mechanisms'
-import PeptideNodes from './_landing/PeptideNodes'
-import Synthesis from './_landing/Synthesis'
-import Terminal from './_landing/Terminal'
-import Checker from './_landing/Checker'
-import Stacks from './_landing/Stacks'
-import Bloodwork from './_landing/Bloodwork'
-import Chat from './_landing/Chat'
-import Trust from './_landing/Trust'
-import Pricing from './_landing/Pricing'
-import FinalCta from './_landing/FinalCta'
-import Footer from './_landing/Footer'
+import Nav from '@/components/home/Nav'
+import Hero from '@/components/home/Hero'
+import HowItWorks from '@/components/home/HowItWorks'
+import Library from '@/components/home/Library'
+import Trust from '@/components/home/Trust'
+import Pricing from '@/components/home/Pricing'
+import Footer from '@/components/home/Footer'
 
-export default function LandingPage() {
-  const mode = useSceneMode()
-  useReveal()
+// Marketing Home — "the Mirror" redesign.
+//
+// Replaces the old `_landing/` implementation (16 components, kept in the
+// tree for reference, no longer imported here). Source of truth:
+// design_handoff_peptide_cortex/Peptide Cortex Home.dc.html — read for exact
+// layout, colour, copy and motion, then rebuilt as idiomatic React/Tailwind
+// against the ground-token design system (src/lib/design/grounds.ts).
+export default function HomePage() {
   return (
-    <div style={{ position: 'relative', background: '#050505', color: '#FFFFFF', minHeight: '100vh' }}>
-      {/* V4 dark scrollbar + cyan selection, scoped to the landing route while mounted
-          (matches the prototype; leaves the still-light internal routes untouched). */}
-      <style>{`
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #09111F; }
-        ::-webkit-scrollbar-thumb { background: #00E5FF; }
-        ::-webkit-scrollbar-thumb:hover { background: #00E5FF; }
-        ::selection { background: rgba(0,229,255,0.25); }
-      `}</style>
-      <ParticleNetwork mode={mode} />
-      <div
-        aria-hidden
-        style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 1,
-          pointerEvents: 'none',
-          background: 'radial-gradient(circle at 50% 30%, transparent 55%, rgba(5,5,5,0.6) 100%)',
-        }}
-      />
-      <Nav mode={mode} />
+    <div className="cx-surface min-h-screen overflow-x-hidden bg-ground font-sans text-ink">
+      <Nav />
       <Hero />
-      <ProductProof />
-      <Corpus />
-      <Mechanisms />
-      <PeptideNodes />
-      <Synthesis />
-      <Terminal />
-      <Checker />
-      <Stacks />
-      <Bloodwork />
-      <Chat />
+      <HowItWorks />
+      <Library />
       <Trust />
       <Pricing />
-      <FinalCta />
       <Footer />
     </div>
   )

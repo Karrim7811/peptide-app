@@ -1,20 +1,7 @@
-import Sidebar from '@/components/Sidebar'
-import MobileNav from '@/components/MobileNav'
-import TopBar from '@/components/TopBar'
-import CortexStrip from '@/components/CortexStrip'
-
+// The Mirror-redesign Pricing screen (`src/app/pricing/page.tsx`) is a
+// full-bleed dark surface with its own nav bar and legal footer — it does not
+// sit inside the old light-theme dashboard chrome (Sidebar/TopBar/
+// CortexStrip) that this layout used to impose. Pass through unchanged.
 export default function PricingLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="min-h-screen bg-[#F5F0E8]">
-      <Sidebar />
-      <MobileNav />
-      <div className="md:ml-[256px]">
-        <div className="hidden md:block">
-          <TopBar />
-          <CortexStrip />
-        </div>
-        <main className="max-w-7xl mx-auto px-4 md:px-6 pt-20 md:pt-6 pb-8">{children}</main>
-      </div>
-    </div>
-  )
+  return <>{children}</>
 }
