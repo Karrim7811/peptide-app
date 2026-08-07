@@ -1,25 +1,20 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import Sidebar from '@/components/Sidebar'
-import MobileNav from '@/components/MobileNav'
-import TopBar from '@/components/TopBar'
-import CortexStrip from '@/components/CortexStrip'
 
+// The Mirror is a full-bleed, self-chroming surface: it owns its own header,
+// breadcrumb, ground toggle and footer, and sizes itself to exactly 100vh with
+// overflow hidden. The legacy Sidebar / TopBar / CortexStrip chrome this layout
+// used to wrap around /dashboard fought all of that — a light-theme sidebar,
+// a max-width container and page padding around a surface designed to fill the
+// viewport. That chrome still serves the legacy CRUD routes (/stack, /log,
+// /cycle …), which keep their own layouts; it just has no place here.
+//
+// The auth gate stays. It is the only thing this layout still needs to do.
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) redirect('/login')
-  return (
-    <div className="min-h-screen bg-[#F5F0E8]">
-      <Sidebar />
-      <MobileNav />
-      <div className="md:ml-[256px]">
-        <div className="hidden md:block">
-          <TopBar />
-          <CortexStrip />
-        </div>
-        <main className="max-w-7xl mx-auto px-4 md:px-6 pt-20 md:pt-6 pb-8">{children}</main>
-      </div>
-    </div>
-  )
+  return <>{children}</>
 }

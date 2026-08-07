@@ -1,241 +1,190 @@
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
-import Link from 'next/link'
-import { format } from 'date-fns'
-import { Layers, BookOpen, Shield, ChevronRight, Clock, FlaskConical } from 'lucide-react'
-import type { StackItem, Reminder, DoseLog } from '@/types'
-import MarketPulse from './MarketPulse'
-import Vial from '@/components/Vial'
-import { vialDisplayName } from '@/lib/peptide-display'
+'use client'
 
-const FONT = "'Gill Sans', 'Gill Sans MT', Calibri, sans-serif"
-const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+// The Mirror — one continuous field the user zooms into, where relationships
+// between compounds are the primary object and the old routes become
+// contextual tools that appear when a compound makes them relevant.
+//
+// ── Data source ─────────────────────────────────────────────────────────────
+// Currently reads the bundled sample stack from catalog.ts. Live Supabase reads
+// are a separate step, and they are not a drop-in: the live `cycles` table
+// stores none of the fields this surface displays (they must be derived from
+// start_date / on_weeks), and `injection_sites` is an injection LOG rather than
+// the site geometry the handoff describes. See
+// supabase/mirror_schema_reconciliation.sql for the mapping.
+//
+// ── Legacy routes ───────────────────────────────────────────────────────────
+// The handoff's build order ends with redirecting /stack, /log, /cycle, /sites,
+// /reconstitution, /checker and the rest into this surface. That step is NOT
+// done, deliberately: the Mirror is read-only today — it has no write path for
+// adding a stack item, logging a dose, or editing inventory. Redirecting those
+// routes now would delete the app's only data entry rather than replace it.
+// They stay reachable until the Mirror grows the corresponding writes.
 
-export default async function DashboardPage() {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+import { useCallback, useMemo, useState } from 'react'
+import MirrorShell, { type Crumb } from '@/components/mirror/MirrorShell'
+import MirrorField from '@/components/mirror/MirrorField'
+import MirrorPanel from '@/components/mirror/MirrorPanel'
+import VerifyTabs from '@/components/mirror/VerifyTabs'
+import AskBar from '@/components/mirror/AskBar'
+import Ledger from '@/components/ledger/Ledger'
+import { useGround } from '@/components/GroundProvider'
+import { useMirrorNav, type VerifyTab } from '@/lib/mirror/useMirrorNav'
+import { buildRegionLayer, buildWholeLayer, type GeometryPalette } from '@/lib/mirror/geometry'
+import { createEntitlements } from '@/lib/entitlement'
+import { GROUND_DEFINITIONS } from '@/lib/design/grounds'
+import {
+  CATEGORIES,
+  CATEGORY_BY_ID,
+  COMPOUNDS,
+  CYCLE,
+  DOSE_LOG,
+  SITES,
+  STACK,
+} from '@/lib/catalog'
+import type { SubscriptionTier } from '@/types'
 
-  const todayDow = new Date().getDay()
+export default function MirrorPage() {
+  const { ground } = useGround()
+  const [tier, setTier] = useState<SubscriptionTier>('free')
 
-  const { data: stackItems } = await supabase
-    .from('stack_items').select('*').eq('user_id', user.id).eq('active', true).order('created_at', { ascending: false })
+  const ent = useMemo(
+    () =>
+      createEntitlements({
+        tier,
+        stack: STACK,
+        doseLog: DOSE_LOG,
+        sites: SITES,
+        cycle: CYCLE,
+        compounds: COMPOUNDS,
+        hasLabs: true,
+      }),
+    [tier],
+  )
 
-  const { data: allReminders } = await supabase
-    .from('reminders').select('*, stack_item:stack_items(*)').eq('user_id', user.id).eq('active', true)
+  const nav = useMirrorNav({
+    tensionRegionId: useCallback(() => ent.tensionCatId(), [ent]),
+    leadCompoundId: useCallback(
+      (regionId: string | null) => {
+        if (!regionId) return null
+        const resolved = ent.resolvedIn(regionId)
+        const pool = resolved.length ? [...resolved].sort((a, b) => a.supplyDays - b.supplyDays) : null
+        if (pool?.[0]) return pool[0].id
+        return Object.values(COMPOUNDS).find((c) => c.catId === regionId)?.id ?? null
+      },
+      [ent],
+    ),
+  })
 
-  const { data: recentLogs } = await supabase
-    .from('dose_logs').select('*, stack_item:stack_items(*)').eq('user_id', user.id).order('taken_at', { ascending: false }).limit(7)
+  const palette: GeometryPalette = useMemo(() => {
+    const definition = GROUND_DEFINITIONS[ground]
+    return {
+      hueFor: (catId) => {
+        const family = CATEGORY_BY_ID[catId]?.hue
+        return family ? definition.hues[family] : definition.vars['--faint']!
+      },
+      tension: definition.hues.go,
+      faint: definition.vars['--faint']!,
+      faintest: definition.vars['--faintest']!,
+    }
+  }, [ground])
 
-  const activeStack: StackItem[] = stackItems ?? []
-  const todayReminders = ((allReminders ?? []) as Reminder[]).filter(r => r.days_of_week.includes(todayDow))
-  const logs: DoseLog[] = recentLogs ?? []
+  // The field measures itself, so geometry is rebuilt from the rendered size
+  // rather than a guess. MirrorField owns the measurement; it passes the size
+  // back in by re-rendering with a fresh geometry object each frame it changes.
+  const [fieldSize, setFieldSize] = useState({ width: 0, height: 0 })
 
-  const card = {
-    background: '#F2F0ED',
-    border: '0.5px solid rgba(176,170,160,0.30)',
-    borderRadius: 10,
-  }
+  const geometry = useMemo(() => {
+    const input = {
+      width: fieldSize.width,
+      height: fieldSize.height,
+      entitlements: ent,
+      categories: CATEGORIES,
+      compounds: COMPOUNDS,
+      palette,
+    }
+    if (nav.layer === 1) return buildWholeLayer(input)
+    const regionId = nav.regionId ?? ent.tensionCatId() ?? CATEGORIES[0]!.id
+    return buildRegionLayer(input, regionId, nav.layer >= 3 ? nav.compoundId : null, nav.orbit)
+  }, [fieldSize, ent, palette, nav.layer, nav.regionId, nav.compoundId, nav.orbit])
 
-  const cardHeader = {
-    fontFamily: FONT,
-    fontSize: 11,
-    fontWeight: 500,
-    letterSpacing: '0.11em',
-    textTransform: 'uppercase' as const,
-    color: '#3A3730',
-  }
+  const crumbs: Crumb[] = useMemo(() => {
+    const out: Crumb[] = [
+      { label: 'WHOLE', onClick: nav.layer > 1 ? () => nav.zoomOut() : undefined },
+    ]
+    if (nav.layer >= 2 && nav.regionId) {
+      out.push({
+        label: CATEGORY_BY_ID[nav.regionId]?.label ?? 'REGION',
+        onClick: nav.layer > 2 ? () => nav.openRegion(nav.regionId!) : undefined,
+      })
+    }
+    if (nav.layer >= 3 && nav.compoundId) {
+      out.push({
+        label: (COMPOUNDS[nav.compoundId]?.name ?? 'COMPOUND').toUpperCase(),
+        onClick: nav.layer > 3 ? () => nav.openCompound(nav.compoundId!) : undefined,
+      })
+    }
+    if (nav.layer === 4) out.push({ label: 'VERIFY' })
+    return out
+  }, [nav])
+
+  const onSelectNode = useCallback(
+    (id: string) => {
+      if (nav.layer === 1) nav.openRegion(id)
+      else nav.openCompound(id)
+    },
+    [nav],
+  )
+
+  const handleNavigate = useCallback(
+    (target: { compoundId?: string; regionId?: string }) => {
+      if (target.compoundId) nav.openCompound(target.compoundId)
+      else if (target.regionId) nav.openRegion(target.regionId)
+    },
+    [nav],
+  )
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-
-      {/* STAT CARDS ROW */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
-        {/* Active Stack */}
-        <Link href="/stack" style={{ ...card, borderTop: '2px solid #1A8A9E', padding: '18px 20px', textDecoration: 'none', display: 'block', position: 'relative' }}>
-          <div style={{ fontFamily: FONT, fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#B0AAA0', fontWeight: 500, marginBottom: 6 }}>Active Stack</div>
-          <div style={{ fontFamily: FONT, fontSize: 28, fontWeight: 300, color: '#1A1915', lineHeight: 1, marginBottom: 4 }}>{activeStack.length}</div>
-          <div style={{ fontFamily: FONT, fontSize: 11, color: '#B0AAA0' }}>compounds tracked</div>
-          <ChevronRight style={{ position: 'absolute', top: 16, right: 14, width: 14, height: 14, color: '#B0AAA0' }} />
-        </Link>
-        {/* Reminders Today */}
-        <Link href="/reminders" style={{ ...card, padding: '18px 20px', textDecoration: 'none', display: 'block', position: 'relative' }}>
-          <div style={{ fontFamily: FONT, fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#B0AAA0', fontWeight: 500, marginBottom: 6 }}>Reminders Today</div>
-          <div style={{ fontFamily: FONT, fontSize: 28, fontWeight: 300, color: '#1A1915', lineHeight: 1, marginBottom: 4 }}>{todayReminders.length}</div>
-          <div style={{ fontFamily: FONT, fontSize: 11, color: '#B0AAA0' }}>{todayReminders.length === 0 ? 'no pending doses' : 'scheduled today'}</div>
-          <ChevronRight style={{ position: 'absolute', top: 16, right: 14, width: 14, height: 14, color: '#B0AAA0' }} />
-        </Link>
-        {/* Logs This Week */}
-        <Link href="/log" style={{ ...card, padding: '18px 20px', textDecoration: 'none', display: 'block', position: 'relative' }}>
-          <div style={{ fontFamily: FONT, fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#B0AAA0', fontWeight: 500, marginBottom: 6 }}>Logs This Week</div>
-          <div style={{ fontFamily: FONT, fontSize: 28, fontWeight: 300, color: '#1A1915', lineHeight: 1, marginBottom: 4 }}>{logs.length}</div>
-          <div style={{ fontFamily: FONT, fontSize: 11, color: '#B0AAA0' }}>{logs.length === 0 ? 'start logging today' : 'doses recorded'}</div>
-          <ChevronRight style={{ position: 'absolute', top: 16, right: 14, width: 14, height: 14, color: '#B0AAA0' }} />
-        </Link>
-        {/* AI Analysis */}
-        <Link href="/checker" style={{ ...card, borderTop: '2px solid #1A8A9E', padding: '18px 20px', textDecoration: 'none', display: 'block', position: 'relative' }}>
-          <div style={{ fontFamily: FONT, fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#B0AAA0', fontWeight: 500, marginBottom: 6 }}>AI Analysis</div>
-          <div style={{ fontFamily: FONT, fontSize: 28, fontWeight: 300, color: '#1A8A9E', lineHeight: 1, marginBottom: 4 }}>AI</div>
-          <div style={{ fontFamily: FONT, fontSize: 11, color: '#B0AAA0' }}>Check Interactions</div>
-          <div style={{ position: 'absolute', top: 14, right: 12, background: 'rgba(26,138,158,0.11)', border: '0.5px solid rgba(26,138,158,0.3)', borderRadius: 6, padding: '2px 7px', fontSize: 9, fontFamily: FONT, color: '#1A8A9E', fontWeight: 500, letterSpacing: '0.05em' }}>AI</div>
-        </Link>
-      </div>
-
-      {/* WIDGET ROW */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
-        {/* Reminders widget */}
-        <div style={{ ...card, padding: '18px 20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#1A8A9E', flexShrink: 0 }} />
-              <span style={{ ...cardHeader }}>Reminders</span>
-            </div>
-            <Link href="/reminders" style={{ fontFamily: FONT, fontSize: 11, color: '#1A8A9E', textDecoration: 'none' }}>View all</Link>
-          </div>
-          {todayReminders.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '20px 0' }}>
-              <Clock style={{ width: 24, height: 24, color: 'rgba(176,170,160,0.25)', margin: '0 auto 8px' }} />
-              <div style={{ fontFamily: FONT, fontSize: 12, color: '#B0AAA0', marginBottom: 6 }}>No reminders today</div>
-              <Link href="/reminders" style={{ fontFamily: FONT, fontSize: 11, color: '#1A8A9E', textDecoration: 'none' }}>Add a reminder</Link>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {todayReminders.map((r: Reminder) => (
-                <div key={r.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderLeft: '3px solid #1A8A9E', paddingLeft: 10, paddingTop: 4, paddingBottom: 4 }}>
-                  <div>
-                    <div style={{ fontFamily: FONT, fontSize: 13, fontWeight: 500, color: '#1A1915' }}>{r.stack_item?.name ?? 'Unknown'}</div>
-                    <div style={{ fontFamily: FONT, fontSize: 11, color: '#B0AAA0' }}>{r.time}</div>
-                  </div>
-                  <Link href="/log" style={{ fontFamily: FONT, fontSize: 10, color: '#1A8A9E', background: 'rgba(26,138,158,0.11)', padding: '3px 10px', borderRadius: 6, textDecoration: 'none' }}>Log</Link>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Active Stack widget — vial rack */}
-        <div style={{ ...card, padding: '18px 20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#1A8A9E', flexShrink: 0 }} />
-              <span style={{ ...cardHeader }}>Active Stack</span>
-              <span style={{ background: '#1A8A9E', color: '#FAFAF8', fontSize: 9, fontFamily: FONT, fontWeight: 500, padding: '1px 7px', borderRadius: 10 }}>{activeStack.length}</span>
-            </div>
-            <Link href="/stack" style={{ fontFamily: FONT, fontSize: 11, color: '#1A8A9E', textDecoration: 'none' }}>Manage</Link>
-          </div>
-          {activeStack.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '20px 0' }}>
-              <FlaskConical style={{ width: 24, height: 24, color: 'rgba(176,170,160,0.25)', margin: '0 auto 8px' }} />
-              <div style={{ fontFamily: FONT, fontSize: 12, color: '#B0AAA0', marginBottom: 6 }}>No items in your stack</div>
-              <Link href="/stack" style={{ fontFamily: FONT, fontSize: 11, color: '#1A8A9E', textDecoration: 'none' }}>Add your first item</Link>
-            </div>
-          ) : (
-            <Link
-              href="/stack"
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 14,
-                rowGap: 16,
-                padding: '6px 2px 2px',
-                textDecoration: 'none',
-                alignItems: 'flex-end',
-              }}
-            >
-              {activeStack.slice(0, 6).map((item: StackItem) => (
-                <div key={item.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: 64 }}>
-                  <Vial name={item.name} dose={item.dose} unit={item.unit} size={1.1} />
-                  <div
-                    style={{
-                      fontFamily: FONT,
-                      fontSize: 10,
-                      color: '#3A3730',
-                      textAlign: 'center',
-                      lineHeight: 1.15,
-                      maxWidth: 64,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {vialDisplayName(item.name)}
-                  </div>
-                </div>
-              ))}
-              {activeStack.length > 6 && (
-                <div
-                  style={{
-                    width: 64,
-                    height: 88 * 1.1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontFamily: FONT,
-                    fontSize: 12,
-                    color: '#B0AAA0',
-                    border: '1px dashed rgba(176,170,160,0.5)',
-                    borderRadius: 8,
-                  }}
-                >
-                  +{activeStack.length - 6}
-                </div>
-              )}
-            </Link>
-          )}
-        </div>
-
-        {/* Recent Logs widget */}
-        <div style={{ ...card, padding: '18px 20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#1A8A9E', flexShrink: 0 }} />
-              <span style={{ ...cardHeader }}>Recent Logs</span>
-            </div>
-            <Link href="/log" style={{ fontFamily: FONT, fontSize: 11, color: '#1A8A9E', textDecoration: 'none' }}>View all</Link>
-          </div>
-          {logs.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '20px 0' }}>
-              <BookOpen style={{ width: 24, height: 24, color: 'rgba(176,170,160,0.25)', margin: '0 auto 8px' }} />
-              <div style={{ fontFamily: FONT, fontSize: 12, color: '#B0AAA0', marginBottom: 6 }}>No doses logged yet</div>
-              <Link href="/log" style={{ fontFamily: FONT, fontSize: 11, color: '#1A8A9E', textDecoration: 'none' }}>Log your first dose</Link>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {logs.slice(0, 4).map((log: DoseLog) => (
-                <div key={log.id} style={{ borderLeft: '3px solid #1A8A9E', paddingLeft: 10, paddingTop: 4, paddingBottom: 4 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ fontFamily: FONT, fontSize: 13, fontWeight: 500, color: '#1A1915' }}>{log.stack_item?.name ?? 'Unknown'}</div>
-                    <div style={{ fontFamily: FONT, fontSize: 11, color: '#B0AAA0' }}>{format(new Date(log.taken_at), 'MMM d')}</div>
-                  </div>
-                  <div style={{ fontFamily: FONT, fontSize: 11, color: '#B0AAA0' }}>{log.dose || 'No dose'} · {format(new Date(log.taken_at), 'h:mm a')}</div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* QUICK ACTIONS */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
-        {[
-          { href: '/checker', label: 'Check Interaction', sub: 'Run AI analysis', icon: Shield },
-          { href: '/log', label: 'Log a Dose', sub: 'Record administration', icon: BookOpen },
-          { href: '/stack', label: 'Update Stack', sub: 'Edit compounds', icon: Layers },
-        ].map(({ href, label, sub, icon: Icon }) => (
-          <Link key={href} href={href} style={{ ...card, padding: 16, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 12, transition: 'border-color 0.15s' }}>
-            <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(176,170,160,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <Icon style={{ width: 15, height: 15, color: '#3A3730' }} />
-            </div>
-            <div>
-              <div style={{ fontFamily: FONT, fontSize: 12, fontWeight: 500, color: '#3A3730', marginBottom: 2 }}>{label}</div>
-              <div style={{ fontFamily: FONT, fontSize: 10, color: '#B0AAA0' }}>{sub}</div>
-            </div>
-          </Link>
-        ))}
-      </div>
-
-      {/* MARKET PULSE */}
-      <MarketPulse />
-    </div>
+    <MirrorShell
+      crumbs={crumbs}
+      layer={nav.layer}
+      verifyTab={nav.verifyTab}
+      onSelectVerifyTab={(tab: VerifyTab) => nav.setVerifyTab(tab)}
+      isFree={ent.isFree}
+      onToggleTier={() => setTier((prev) => (prev === 'free' ? 'pro' : 'free'))}
+      onOpenLedger={() => nav.setLedgerOpen(true)}
+      field={
+        <MirrorField
+          geometry={geometry}
+          // Layer 4 deliberately drops all atmosphere. It is the verify surface.
+          atmosphere={nav.layer !== 4}
+          onSelectNode={onSelectNode}
+          handlers={nav.fieldHandlers}
+          onMeasure={setFieldSize}
+          footerNote={
+            ent.isFree
+              ? `FREE · ${ent.resolvedCount} OF ${ent.stackCount} RESOLVED · 58 IN LIBRARY, ALL READABLE`
+              : undefined
+          }
+          footerSub={nav.layer === 3 ? 'DRAG TO ROTATE · SCROLL TO ZOOM · ESC TO STEP OUT' : undefined}
+        />
+      }
+      panel={
+        nav.layer === 4 ? (
+          <VerifyTabs tab={nav.verifyTab} compoundId={nav.compoundId} ent={ent} />
+        ) : (
+          <MirrorPanel
+            layer={nav.layer}
+            regionId={nav.regionId}
+            compoundId={nav.compoundId}
+            ent={ent}
+            onSelectCompound={nav.openCompound}
+            onSelectRegion={nav.openRegion}
+            onOpenVerify={nav.openVerify}
+          />
+        )
+      }
+      footer={<AskBar ent={ent} onNavigate={handleNavigate} />}
+      ledger={nav.ledgerOpen ? <Ledger ent={ent} onClose={() => nav.setLedgerOpen(false)} /> : null}
+    />
   )
 }
