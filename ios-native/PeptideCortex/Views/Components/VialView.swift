@@ -323,7 +323,6 @@ struct TappableVial: View {
     let fillPercent: Double
     let isDueNow: Bool
     let usePhotoStyle: Bool
-    let recon: ReconstitutionResult?
     var showLabel: Bool = true
     var size: CGFloat = 1.0 // scale multiplier
 
@@ -358,7 +357,7 @@ struct TappableVial: View {
             }
         }
         .fullScreenCover(isPresented: $showDetail) {
-            VialDetailPopup(name: name, dose: dose, unit: unit, recon: recon, onClose: { showDetail = false })
+            VialDetailPopup(name: name, dose: dose, unit: unit, onClose: { showDetail = false })
         }
     }
 
@@ -378,7 +377,6 @@ struct VialDetailPopup: View {
     let name: String
     let dose: String
     let unit: String
-    let recon: ReconstitutionResult?
     let onClose: () -> Void
 
     var capColor: Color { vialCapColor(for: "", name: name) }
@@ -414,51 +412,6 @@ struct VialDetailPopup: View {
                         }
                     }
 
-                    if let recon = recon {
-                        Divider().padding(.horizontal, 20)
-
-                        VStack(spacing: 8) {
-                            HStack(spacing: 20) {
-                                VStack(spacing: 2) {
-                                    Image(systemName: "drop.fill")
-                                        .foregroundColor(.blue)
-                                        .font(.system(size: 18))
-                                    Text("BAC Water")
-                                        .font(.system(size: 9, weight: .medium))
-                                        .foregroundColor(.cxStone)
-                                    Text("\(String(format: "%.1f", recon.recommendedBacWaterMl)) mL")
-                                        .font(.system(size: 14, weight: .semibold))
-                                        .foregroundColor(.cxBlack)
-                                }
-
-                                VStack(spacing: 2) {
-                                    Image(systemName: "flask.fill")
-                                        .foregroundColor(.green)
-                                        .font(.system(size: 18))
-                                    Text("Concentration")
-                                        .font(.system(size: 9, weight: .medium))
-                                        .foregroundColor(.cxStone)
-                                    Text("\(String(format: "%.0f", recon.concentrationMcgPerMl)) mcg/mL")
-                                        .font(.system(size: 14, weight: .semibold))
-                                        .foregroundColor(.cxBlack)
-                                }
-
-                                VStack(spacing: 2) {
-                                    Image(systemName: "syringe")
-                                        .foregroundColor(.cxTeal)
-                                        .font(.system(size: 18))
-                                    Text("Reported Range")
-                                        .font(.system(size: 9, weight: .medium))
-                                        .foregroundColor(.cxStone)
-                                    Text(recon.tipicalDoseRange.isEmpty ? "—" : recon.tipicalDoseRange)
-                                        .font(.system(size: 12, weight: .medium))
-                                        .foregroundColor(.cxBlack)
-                                        .lineLimit(2)
-                                        .multilineTextAlignment(.center)
-                                }
-                            }
-                        }
-                    }
                 }
                 .padding(24)
                 .background(Color.white)
@@ -505,7 +458,6 @@ struct VialDetailPopup: View {
 
 struct VialTrayView: View {
     let reminders: [TodayReminder]
-    let reconResults: [UUID: ReconstitutionResult]
     let onTake: (Reminder) async -> Void
 
     @State private var appeared = false
@@ -528,8 +480,7 @@ struct VialTrayView: View {
                                     unit: "",
                                     fillPercent: item.taken ? 0.1 : 0.7,
                                     isDueNow: !item.taken,
-                                    usePhotoStyle: false,
-                                    recon: item.reminder.stackItem.flatMap { reconResults[$0.id] }
+                                    usePhotoStyle: false
                                 )
                                 .scaleEffect(appeared ? 1.0 : 0.3)
                                 .opacity(appeared ? 1 : 0)
@@ -582,7 +533,6 @@ struct VialTrayView: View {
 
 struct VialStackView: View {
     let items: [StackItem]
-    let reconResults: [UUID: ReconstitutionResult]
     let onTap: () -> Void
     var onRemove: ((StackItem) -> Void)? = nil
 
@@ -613,7 +563,6 @@ struct VialStackView: View {
                             fillPercent: 0.7,
                             isDueNow: false,
                             usePhotoStyle: true,
-                            recon: reconResults[item.id],
                             showLabel: false,
                             size: 1.6
                         )

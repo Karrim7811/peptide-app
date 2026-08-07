@@ -418,6 +418,8 @@ Eliminate every reference to `peptidecortex.ai` and `peptidetracker.app` from th
 ### 16.2 Primary accent teal → `#1A8A9E` (locked, intentional divergence)
 Peptide Cortex's deeper, clinical teal stays. The Tigris Tech Labs family Neural Teal `#00C9B1` is used in PRAIX, Jarvis, and alevant-app; Peptide Cortex is the deliberate exception because the deeper teal reads more "research/instrument" and less "consumer SaaS". Future sessions must not "fix" this back to family teal. See §6.
 
+**Update 2026-07-14 (Karim):** The light-brand lock above is superseded for the marketing/landing surface by the approved V4 dark direction — `cx.ink #050505` base with cyan `#00E5FF` / purple `#7C3AED` / gold `#F7B731`. The dark tokens are added alongside the light `cx.*` in tailwind.config.js; the app migrates to dark surface-by-surface starting with the landing page. The JetBrains-Mono-for-data (§16.3), two-SKU pricing (§16.4), and hard-edged conventions remain unchanged.
+
 ### 16.3 JetBrains Mono → adopt for data
 Render precise numeric content in JetBrains Mono: mg dosages, vial concentrations, lab values, dates, IDs, lab ranges. Two benefits: (a) instrument-panel feel matches the brand, (b) column-wise digit alignment is genuinely easier to scan in bloodwork results and dose logs. Roadmap item upgraded to High.
 

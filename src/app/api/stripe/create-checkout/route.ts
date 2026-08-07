@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuthenticatedUser } from '@/lib/supabase/server'
-import { createCheckoutSession, type ProPlan } from '@/lib/stripe'
+import { createCheckoutSession, isProPlan, planIsConfigured } from '@/lib/stripe'
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,9 +10,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { plan } = (await request.json()) as { plan: ProPlan }
-    if (plan !== 'monthly' && plan !== 'lifetime') {
+    const { plan } = (await request.json()) as { plan: unknown }
+    if (!isProPlan(plan)) {
       return NextResponse.json({ error: 'Invalid plan' }, { status: 400 })
+    }
+
+    // Fail closed. Checking out a plan whose price is not configured would
+    // otherwise charge the customer a price they did not select.
+    if (!planIsConfigured(plan)) {
+      console.error(`Checkout blocked: no Stripe price configured for plan "${plan}"`)
+      return NextResponse.json(
+        { error: 'That billing option is not available right now.', code: 'PLAN_UNAVAILABLE' },
+        { status: 503 }
+      )
     }
 
     const origin = request.headers.get('origin') ?? 'https://peptidecortex.com'

@@ -16,109 +16,8 @@ struct InteractionResult: Codable {
     let recommendations: [String]
 }
 
-struct ReconstitutionResult: Codable {
-    let recommendedBacWaterMl: Double
-    let concentrationMgPerMl: Double
-    let concentrationMcgPerMl: Double
-    let reasoning: String
-    let tipicalDoseRange: String
-    let storageNote: String
-}
-
 struct StackFinderResponse: Codable {
     let reply: String
-}
-
-struct BloodworkResponse: Codable {
-    let analysis: String
-    let recommendations: [BloodworkRecommendation]
-    let warnings: [String]
-}
-
-struct BloodworkRecommendation: Codable {
-    let peptide: String
-    let reason: String
-    let priority: String
-    /// Commonly-referenced vial size for this peptide (e.g. "5" or "10 mg").
-    /// Optional because older analyses saved to the database won't have it.
-    let suggestedVialMg: String?
-}
-
-// MARK: - Protocol Planner
-
-struct ProtocolPlan: Codable {
-    let weeklySchedule: [ScheduleDay]
-    let interactions: [PlanInteraction]
-    let warnings: [String]
-    let reconstitution: [ReconInfo]
-    let summary: String
-    let suggestedReminders: [SuggestedReminder]
-
-    struct ScheduleDay: Codable, Identifiable {
-        var id: String { day }
-        let day: String
-        let doses: [ScheduleDose]
-    }
-
-    struct ScheduleDose: Codable, Identifiable {
-        var id: String { "\(peptide)-\(time)" }
-        let peptide: String
-        let dose: String
-        let time: String
-        let route: String
-        let site: String
-        let notes: String
-    }
-
-    struct PlanInteraction: Codable, Identifiable {
-        var id: String { "\(peptideA)-\(peptideB)" }
-        let peptideA: String
-        let peptideB: String
-        let level: String
-        let note: String
-    }
-
-    struct ReconInfo: Codable, Identifiable {
-        var id: String { peptide }
-        let peptide: String
-        let vialSize: String
-        let bacWater: String
-        let concentration: String
-        let typicalDose: String
-    }
-
-    struct SuggestedReminder: Codable, Identifiable {
-        var id: String { "\(peptide)-\(time)" }
-        let peptide: String
-        let time: String
-        let days: [Int]
-        let dose: String
-    }
-}
-
-// MARK: - Protocol Consult (Conversational)
-
-struct CortexQA: Codable, Identifiable {
-    var id: String { question }
-    let question: String
-    var answer: String
-}
-
-struct ConsultResponse: Codable {
-    let type: String  // "questions" or "recommendation"
-    let questions: [String]?
-    let peptides: [String]?
-    let profile: ConsultProfile?
-    let summary: String?
-}
-
-struct ConsultProfile: Codable {
-    let age: String?
-    let weight: String?
-    let sex: String?
-    let experience: String?
-    let goals: [String]?
-    let conditions: [String]?
 }
 
 struct MarketPulseResponse: Codable {
@@ -151,13 +50,8 @@ class APIService {
     private static let aiPaths: Set<String> = [
         "/api/chat",
         "/api/check-interaction",
-        "/api/reconstitution-ai",
         "/api/stack-finder",
-        "/api/bloodwork-analyze",
-        "/api/bloodwork-ocr",
-        "/api/scan-vials",
-        "/api/protocol-plan",
-        "/api/protocol-consult"
+        "/api/scan-vials"
     ]
 
     private init() {}
@@ -238,15 +132,6 @@ class APIService {
         ])
     }
 
-    // MARK: - Reconstitution AI
-
-    func getReconstitution(peptideName: String, amountMg: Double) async throws -> ReconstitutionResult {
-        try await makeRequest(path: "/api/reconstitution-ai", body: [
-            "peptideName": peptideName,
-            "amountMg": amountMg
-        ])
-    }
-
     // MARK: - Stack Finder
 
     func findStacks(peptideName: String, goal: String? = nil) async throws -> StackFinderResponse {
@@ -259,45 +144,6 @@ class APIService {
 
     func getMarketPulse() async throws -> MarketPulseResponse {
         try await makeRequest(path: "/api/market-pulse", method: "GET")
-    }
-
-    // MARK: - Bloodwork Analyzer
-
-    /// `currentStack` is an array of structured entries, each with name and
-    /// optional vialMg / doseAmount / doseUnit / schedule fields. The
-    /// backend accepts either this shape or a legacy string[].
-    func analyzeBloodwork(markers: [[String: Any]], currentStack: [[String: Any]], goals: String) async throws -> BloodworkResponse {
-        try await makeRequest(path: "/api/bloodwork-analyze", body: [
-            "markers": markers,
-            "currentStack": currentStack,
-            "goals": goals
-        ])
-    }
-
-    // MARK: - Bloodwork OCR
-
-    struct BloodworkOCRResponse: Codable {
-        let markers: [String: Double?]?
-        let error: String?
-    }
-
-    func ocrBloodwork(imageBase64: String, mimeType: String) async throws -> [String: Double] {
-        let response: BloodworkOCRResponse = try await makeRequest(
-            path: "/api/bloodwork-ocr",
-            body: ["image": imageBase64, "mimeType": mimeType]
-        )
-        if let error = response.error {
-            throw NSError(domain: "API", code: 422, userInfo: [NSLocalizedDescriptionKey: error])
-        }
-        var result: [String: Double] = [:]
-        if let markers = response.markers {
-            for (key, value) in markers {
-                if let v = value {
-                    result[key] = v
-                }
-            }
-        }
-        return result
     }
 
     // MARK: - Vial Scanner
@@ -330,45 +176,6 @@ class APIService {
                 notes: item.notes ?? ""
             )
         }
-    }
-
-    // MARK: - Protocol Planner
-
-    func generateProtocolPlan(peptides: [String], profile: [String: Any], customInstructions: String? = nil) async throws -> ProtocolPlan {
-        var body: [String: Any] = [
-            "peptides": peptides,
-            "profile": profile
-        ]
-        if let ci = customInstructions, !ci.isEmpty {
-            body["customInstructions"] = ci
-        }
-        return try await makeRequest(path: "/api/protocol-plan", body: body)
-    }
-
-    func protocolConsult(message: String, history: [[String: String]]) async throws -> ConsultResponse {
-        try await makeRequest(path: "/api/protocol-consult", body: [
-            "message": message,
-            "history": history
-        ])
-    }
-
-    // MARK: - Stripe
-
-    func createCheckout(plan: String) async throws -> String {
-        struct CheckoutResponse: Codable { let url: String }
-        let response: CheckoutResponse = try await makeRequest(
-            path: "/api/stripe/create-checkout",
-            body: ["plan": plan]
-        )
-        return response.url
-    }
-
-    func getPortalURL() async throws -> String {
-        struct PortalResponse: Codable { let url: String }
-        let response: PortalResponse = try await makeRequest(
-            path: "/api/stripe/portal"
-        )
-        return response.url
     }
 
 }

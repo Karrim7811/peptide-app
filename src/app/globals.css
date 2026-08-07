@@ -44,15 +44,29 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--cx-light); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--cx-stone); }
 
-/* ─── Form inputs ────────────────────────────────────────────────────────────── */
-input[type='text'],
-input[type='email'],
-input[type='password'],
-input[type='number'],
-input[type='time'],
-input[type='datetime-local'],
-select,
-textarea {
+/* ─── Form inputs — LEGACY LIGHT-THEME ROUTES ONLY ───────────────────────────
+   These predate the redesign and style inputs for the light surfaces: white
+   fill, near-black text, teal focus ring, rounded corners, Gill Sans.
+
+   Every selector is excluded from `.cx-surface`, and that exclusion is
+   load-bearing. `input[type='email']` has specificity (0,1,1), which BEATS
+   Tailwind's `.text-ink` at (0,1,0) — so on the dark surfaces these rules were
+   winning, painting near-black text into every email, password and text field
+   while `input[type='date']` (absent from the list) rendered correctly white.
+   That mismatch is exactly how the bug presented.
+
+   They were also forcing a white background, a 0.5rem radius — against the
+   design's no-radius rule — and Gill Sans over the Jost/JetBrains stack.
+
+   Do not remove the `:not()` guards without also deleting these rules. */
+input[type='text']:not(.cx-surface *),
+input[type='email']:not(.cx-surface *),
+input[type='password']:not(.cx-surface *),
+input[type='number']:not(.cx-surface *),
+input[type='time']:not(.cx-surface *),
+input[type='datetime-local']:not(.cx-surface *),
+select:not(.cx-surface *),
+textarea:not(.cx-surface *) {
   background-color: #fff;
   border: 1px solid var(--cx-light);
   color: var(--cx-black);
@@ -64,9 +78,9 @@ textarea {
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, sans-serif;
 }
 
-input:focus,
-select:focus,
-textarea:focus {
+input:focus:not(.cx-surface *),
+select:focus:not(.cx-surface *),
+textarea:focus:not(.cx-surface *) {
   border-color: var(--cx-teal);
   box-shadow: 0 0 0 2px rgba(26,138,158,0.12);
 }
@@ -74,6 +88,23 @@ textarea:focus {
 input::placeholder,
 textarea::placeholder {
   color: var(--cx-stone);
+}
+
+/* ─── Form inputs — REDESIGNED DARK SURFACES ────────────────────────────────
+   The components carry their own Tailwind styling; this only guarantees the
+   two things the legacy block was overriding and that a utility class cannot
+   reliably win: the text colour and the typeface. */
+.cx-surface input,
+.cx-surface select,
+.cx-surface textarea {
+  color: var(--ink);
+  font-family: inherit;
+}
+
+.cx-surface input::placeholder,
+.cx-surface textarea::placeholder {
+  color: var(--faint);
+  opacity: 1;
 }
 
 select option {
@@ -101,4 +132,155 @@ button, a {
 /* ─── Cormorant display class ─────────────────────────────────────────────────── */
 .font-display {
   font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+/* ─── V4 dark-landing keyframes ──────────────────────────────────────────────────
+   Ported verbatim from design_handoff_peptide_cortex_v4/Peptide Cortex v4.dc.html
+   (lines 26-30). Namespaced `v2*` so they never collide with the light-theme
+   `rise` keyframe used elsewhere in this file. Consumed by src/app/_landing/*. */
+@keyframes v2rise {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes v2pulse {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.35); }
+}
+@keyframes v2scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(2400%); }
+}
+@keyframes v2bar {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes v2scanline {
+  0% { top: 0; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+/* ─── Mirror keyframes ───────────────────────────────────────────────────────────
+   Ported verbatim from design_handoff_peptide_cortex/Peptide Cortex Mirror.dc.html
+   (lines 23-31). Namespaced `cx*` per the prototype. Durations carry meaning —
+   see the motion table in that bundle's README:
+     cxbreathe 11s    the field is alive
+     cxdriftA  26s    particle layer A
+     cxdriftB  34s    particle layer B, drifting in opposition to A
+     cxthin    3.4s   supply running out — fastest, because it needs attention
+     cxmarch   1.5s   dashed edge = interrupted relationship
+     cxpulse   2.4s   Cortex is listening
+   Entrances run 340-560ms on cubic-bezier(.2,.7,.2,1). */
+@keyframes cxpulse {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.4); }
+}
+@keyframes cxbreathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+@keyframes cxdriftA {
+  from { background-position: 0 0; }
+  to { background-position: 26px -18px; }
+}
+@keyframes cxdriftB {
+  from { background-position: 0 0; }
+  to { background-position: -22px 20px; }
+}
+@keyframes cxthin {
+  0%, 100% { opacity: 0.62; }
+  50% { opacity: 0.3; }
+}
+@keyframes cxmarch {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -30; }
+}
+@keyframes cxin {
+  from { opacity: 0; transform: scale(1.05); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes cxup {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes cxfade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ─── Autofilled inputs on the dark surfaces ─────────────────────────────────
+   Chrome repaints autofilled fields with its own background and text colour,
+   and it beats any `color` rule — so an autofilled email or password rendered
+   dim-on-dark while the fields the user typed into stayed white. Tailwind's
+   text-ink cannot override this; only -webkit-text-fill-color can.
+
+   The inset box-shadow is the standard trick for the background: Chrome's own
+   fill sits behind it, so a 1000px inset shadow covers it entirely. The long
+   transition delay stops the yellow flash on first fill.
+
+   Uses var(--ink)/var(--panel) rather than literal white so this stays correct
+   on the Daylight ground, where "white text" would be invisible.
+
+   `!important` is required, not stylistic: Chrome's autofill colour is applied
+   as a UA-level style that ordinary declarations lose to.
+
+   The `:-internal-autofill-*` selectors cover the PREVIEW state — the greyed
+   value Chrome paints while a suggestion is merely highlighted, before it is
+   committed. That state is styled separately from `:-webkit-autofill`, so
+   without it the field still reads dim until the user actually picks the
+   suggestion. Chrome ignores selectors it does not recognise, and other
+   engines drop the whole rule if one selector in a list is invalid — so these
+   are kept in their own block. */
+.cx-surface input:-webkit-autofill,
+.cx-surface input:-webkit-autofill:hover,
+.cx-surface input:-webkit-autofill:focus,
+.cx-surface input:-webkit-autofill:active,
+.cx-surface textarea:-webkit-autofill,
+.cx-surface select:-webkit-autofill {
+  -webkit-text-fill-color: var(--ink) !important;
+  caret-color: var(--ink) !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--panel) inset !important;
+  box-shadow: 0 0 0 1000px var(--panel) inset !important;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* Autofill PREVIEW — kept separate so an unrecognised selector cannot
+   invalidate the rule above. */
+.cx-surface input:-internal-autofill-selected,
+.cx-surface input:-internal-autofill-previewed {
+  -webkit-text-fill-color: var(--ink) !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--panel) inset !important;
+  box-shadow: 0 0 0 1000px var(--panel) inset !important;
+}
+
+/* Firefox uses its own selector and does not need the shadow trick. */
+.cx-surface input:autofill,
+.cx-surface textarea:autofill {
+  color: var(--ink) !important;
+  background-color: var(--panel) !important;
+}
+
+/* The date input's own chrome (the picker glyph) renders black-on-black in
+   Chrome. Invert it on the dark grounds so it stays visible. */
+.cx-surface input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.55;
+  cursor: pointer;
+}
+:root[data-ground='daylight'] .cx-surface input[type='date']::-webkit-calendar-picker-indicator {
+  filter: none;
+}
+
+/* The prototype suppresses all motion under prefers-reduced-motion. Scoped to
+   `.cx-surface` — which the redesigned pages carry — so it does not silently
+   disable transitions on the legacy light-theme routes still in the app. */
+@media (prefers-reduced-motion: reduce) {
+  .cx-surface,
+  .cx-surface *,
+  .cx-surface *::before,
+  .cx-surface *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }

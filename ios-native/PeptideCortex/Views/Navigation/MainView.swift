@@ -106,14 +106,8 @@ struct MainView: View {
             CheckerView()
         case .stackFinder:
             StackFinderView()
-        case .bloodwork:
-            BloodworkView(selectedTab: $selectedTab)
-        case .protocolPlanner:
-            ProtocolPlannerView(selectedTab: $selectedTab)
         case .stack:
             StackView()
-        case .reconstitution:
-            ReconstitutionView()
         case .dosing:
             DosingView()
         case .cycle:

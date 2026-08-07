@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400;500&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:#050505;color:#fff;font-family:'Jost',sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased;}
+  a{color:#00E5FF;text-decoration:none;}
+  a:hover{color:#7C3AED;}
+</style>
+<script>window.OM_SCENES='[{"name":"Open","dur":5,"nat":6},{"name":"Problem","dur":5,"nat":8},{"name":"Corpus","dur":6,"nat":9},{"name":"Mechanisms","dur":6,"nat":9},{"name":"Nodes","dur":6,"nat":9},{"name":"Synthesis","dur":7,"nat":10},{"name":"Planner","dur":6,"nat":9},{"name":"Vial","dur":8,"nat":11},{"name":"Checker","dur":8,"nat":11},{"name":"Bloodwork","dur":7,"nat":10},{"name":"StackAlerts","dur":6,"nat":9},{"name":"Chat","dur":7,"nat":9},{"name":"Reference","dur":6,"nat":9},{"name":"Close","dur":7,"nat":9}]';</script>
+<script>window.OM_PLAYBACK='{"mode":"loop"}';</script>
+<script>window.WT_TWEAK_DEFAULTS=/*EDITMODE-BEGIN*/{"motionEditor":true,"reduceMotion":false}/*EDITMODE-END*/;</script>
+</helmet>
+
+<div style="position:relative;width:100vw;height:100vh;background:#050505;overflow:hidden;">
+  <x-import component-from-global-scope="Walkthrough" from="./animations-v2.jsx ./walkthrough.jsx" style="position:absolute;inset:0;" hint-size="100%,100%"></x-import>
+  <x-import component-from-global-scope="WalkthroughTweaks" from="./tweaks-panel.jsx ./walkthrough.jsx" hint-size="1px,1px"></x-import>
+</div>
+</x-dc>
+</body>
+</html>

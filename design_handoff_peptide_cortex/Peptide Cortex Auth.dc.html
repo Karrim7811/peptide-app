@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400;500&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; height:100%; }
+  body { background:#030308; color:#fff; -webkit-font-smoothing:antialiased; }
+  * { box-sizing:border-box; }
+  a { color:#B06BE0; text-decoration:none; }
+  a:hover { color:#00E5FF; }
+  input { font:inherit; color:inherit; background:none; border:none; outline:none; }
+  input::placeholder { color:#6B7688; }
+  @keyframes apulse { 0%,100%{opacity:.35;transform:scale(1)} 50%{opacity:1;transform:scale(1.4)} }
+  @keyframes abreathe { 0%,100%{transform:scale(1)} 50%{transform:scale(1.03)} }
+  @keyframes adriftA { from{background-position:0 0} to{background-position:26px -18px} }
+  @keyframes adriftB { from{background-position:0 0} to{background-position:-22px 20px} }
+  @keyframes amarch { from{stroke-dashoffset:0} to{stroke-dashoffset:-30} }
+  @keyframes arise { from{opacity:0; transform:translateY(18px)} to{opacity:1; transform:translateY(0)} }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important } }
+</style>
+</helmet>
+
+<div style="min-height:100vh; display:flex; flex-wrap:wrap; background:#030308; color:#fff; font-family:'Jost',sans-serif">
+
+  <div style="flex:1 1 460px; min-width:320px; position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:space-between; gap:40px; padding:26px 30px 34px; min-height:320px">
+    <div style="position:absolute; inset:0; background-image:radial-gradient(ellipse 56% 58% at 46% 44%, rgba(124,58,237,0.2), transparent 70%), radial-gradient(ellipse 40% 44% at 34% 34%, rgba(0,229,255,0.16), transparent 68%), radial-gradient(ellipse 22% 26% at 66% 64%, rgba(247,183,49,0.14), transparent 66%); animation:abreathe 11s ease-in-out infinite"></div>
+    <div style="position:absolute; inset:0; background-image:radial-gradient(rgba(0,229,255,0.85) 0.9px, transparent 1.1px); background-size:7px 7px; opacity:0.44; animation:adriftA 26s linear infinite alternate; mask-image:radial-gradient(ellipse 40% 44% at 36% 36%, #000 12%, rgba(0,0,0,0.5) 45%, transparent 78%); -webkit-mask-image:radial-gradient(ellipse 40% 44% at 36% 36%, #000 12%, rgba(0,0,0,0.5) 45%, transparent 78%)"></div>
+    <div style="position:absolute; inset:0; background-image:radial-gradient(rgba(176,107,224,0.9) 0.9px, transparent 1.1px); background-size:9px 9px; opacity:0.4; animation:adriftB 34s linear infinite alternate; mask-image:radial-gradient(ellipse 48% 52% at 54% 50%, #000 8%, rgba(0,0,0,0.45) 42%, transparent 76%); -webkit-mask-image:radial-gradient(ellipse 48% 52% at 54% 50%, #000 8%, rgba(0,0,0,0.45) 42%, transparent 76%)"></div>
+
+    <svg viewBox="0 0 600 520" preserveAspectRatio="xMidYMid slice" style="position:absolute; inset:0; width:100%; height:100%" xmlns="http://www.w3.org/2000/svg">
+      <line x1="210" y1="210" x2="330" y2="265" stroke="#00E5FF" stroke-width="2" stroke-opacity="0.5"></line>
+      <line x1="330" y1="265" x2="390" y2="370" stroke="#F7B731" stroke-width="1.8" stroke-opacity="0.5" stroke-dasharray="8 7" style="animation:amarch 1.5s linear infinite"></line>
+      <line x1="210" y1="210" x2="270" y2="370" stroke="rgba(184,197,214,0.22)" stroke-width="1.2"></line>
+      <circle cx="210" cy="210" r="30" fill="#00E5FF" fill-opacity="0.1" stroke="#00E5FF" stroke-width="1.5"></circle>
+      <circle cx="210" cy="210" r="41" fill="none" stroke="#00E5FF" stroke-opacity="0.18"></circle>
+      <circle cx="330" cy="265" r="23" fill="#B06BE0" fill-opacity="0.12" stroke="#B06BE0" stroke-width="1.5"></circle>
+      <circle cx="390" cy="370" r="19" fill="#F7B731" fill-opacity="0.1" stroke="#F7B731" stroke-width="1.5"></circle>
+      <circle cx="390" cy="370" r="29" fill="none" stroke="#F7B731" stroke-opacity="0.42" stroke-dasharray="8 7" style="animation:amarch 1.5s linear infinite"></circle>
+      <circle cx="270" cy="370" r="16" fill="rgba(34,160,107,0.12)" stroke="rgba(34,160,107,0.7)" stroke-width="1.3"></circle>
+    </svg>
+
+    <a href="Peptide Cortex Home.dc.html" style="position:relative; z-index:2; display:flex; align-items:center; gap:11px; min-height:44px; align-self:flex-start">
+      <span style="width:7px; height:7px; border-radius:50%; background:#B06BE0; box-shadow:0 0 12px #B06BE0; animation:apulse 2.4s infinite"></span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.32em; color:#fff">PEPTIDE CORTEX</span>
+    </a>
+
+    <div style="position:relative; z-index:2; display:flex; flex-direction:column; gap:14px; max-width:420px">
+      <span style="font-family:'Cormorant Garamond',serif; font-weight:300; font-size:clamp(28px,3.4vw,40px); line-height:1.2">{{ asideTitle }}</span>
+      <span style="font-size:15px; line-height:1.8; color:#B8C5D6; text-wrap:pretty">{{ asideBody }}</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:10px; line-height:1.9; letter-spacing:0.1em; color:#8A97AC">{{ asideMeta }}</span>
+    </div>
+  </div>
+
+  <div style="flex:1 1 460px; min-width:320px; border-left:1px solid rgba(255,255,255,0.09); display:flex; align-items:center; justify-content:center; padding:40px 26px">
+
+    <sc-if value="{{ sent }}" hint-placeholder-val="{{ false }}">
+      <div style="width:100%; max-width:420px; display:flex; flex-direction:column; gap:20px; animation:arise 460ms cubic-bezier(.2,.7,.2,1) both">
+        <span style="width:52px; height:52px; border:1px solid rgba(0,229,255,0.5); display:flex; align-items:center; justify-content:center">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+        </span>
+        <span style="font-family:'Cormorant Garamond',serif; font-weight:300; font-size:38px; line-height:1.1">Check your email.</span>
+        <span style="font-size:15px; line-height:1.8; color:#B8C5D6; text-wrap:pretty">We sent a confirmation link to <span style="color:#00E5FF">{{ email }}</span>. Click it to activate your account — your field is waiting on the other side.</span>
+        <span onClick="{{ showLogin }}" style="min-height:52px; display:flex; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,0.18); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.16em; color:#B8C5D6; cursor:pointer" style-hover="border-color:#B06BE0; color:#fff">BACK TO SIGN IN</span>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ notSent }}" hint-placeholder-val="{{ true }}">
+      <div style="width:100%; max-width:420px; display:flex; flex-direction:column; gap:22px; animation:arise 460ms cubic-bezier(.2,.7,.2,1) both">
+
+        <div style="display:flex; gap:1px; background:rgba(255,255,255,0.1)">
+          <span onClick="{{ showLogin }}" style="{{ tabLoginStyle }}">SIGN IN</span>
+          <span onClick="{{ showSignup }}" style="{{ tabSignupStyle }}">CREATE ACCOUNT</span>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:9px">
+          <span style="font-family:'Cormorant Garamond',serif; font-weight:300; font-size:38px; line-height:1.1">{{ heading }}</span>
+          <span style="font-size:15px; line-height:1.75; color:#B8C5D6; text-wrap:pretty">{{ subheading }}</span>
+        </div>
+
+        <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}">
+          <div style="border-left:2px solid #F7B731; background:rgba(247,183,49,0.07); padding:13px 15px; display:flex; flex-direction:column; gap:4px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:0.18em; color:#F7B731">CHECK THIS</span>
+            <span style="font-size:14px; line-height:1.6; color:#fff">{{ error }}</span>
+          </div>
+        </sc-if>
+
+        <div style="display:flex; flex-direction:column; gap:16px">
+          <label style="display:flex; flex-direction:column; gap:7px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:0.22em; color:#8A97AC">EMAIL ADDRESS</span>
+            <input value="{{ email }}" onChange="{{ onEmail }}" onKeyDown="{{ onKey }}" type="email" autocomplete="email" placeholder="you@example.com" style="{{ fieldStyle }}">
+          </label>
+
+          <sc-if value="{{ isSignup }}" hint-placeholder-val="{{ false }}">
+            <label style="display:flex; flex-direction:column; gap:7px">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:0.22em; color:#8A97AC">DATE OF BIRTH</span>
+              <input value="{{ dob }}" onChange="{{ onDob }}" onKeyDown="{{ onKey }}" type="date" max="{{ maxDob }}" autocomplete="bday" style="{{ fieldStyle }}">
+              <span style="font-size:13px; line-height:1.7; color:#8A97AC">You must be 18 or older.</span>
+            </label>
+          </sc-if>
+
+          <label style="display:flex; flex-direction:column; gap:7px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:0.22em; color:#8A97AC">PASSWORD</span>
+            <div style="position:relative; display:flex; align-items:center">
+              <input value="{{ password }}" onChange="{{ onPassword }}" onKeyDown="{{ onKey }}" type="{{ passwordType }}" autocomplete="{{ passwordAutocomplete }}" placeholder="{{ passwordPlaceholder }}" style="{{ fieldWithAffix }}">
+              <span onClick="{{ togglePassword }}" style="{{ eyeStyle }}">
+                <sc-if value="{{ passwordHidden }}" hint-placeholder-val="{{ true }}">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </sc-if>
+                <sc-if value="{{ passwordShown }}" hint-placeholder-val="{{ false }}">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"></path><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"></path><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"></path><path d="m2 2 20 20"></path></svg>
+                </sc-if>
+              </span>
+            </div>
+          </label>
+
+          <sc-if value="{{ isSignup }}" hint-placeholder-val="{{ false }}">
+            <label style="display:flex; flex-direction:column; gap:7px">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:0.22em; color:#8A97AC">CONFIRM PASSWORD</span>
+              <div style="position:relative; display:flex; align-items:center">
+                <input value="{{ confirm }}" onChange="{{ onConfirm }}" onKeyDown="{{ onKey }}" type="{{ confirmType }}" autocomplete="new-password" placeholder="Repeat password" style="{{ fieldWithAffix }}">
+                <span onClick="{{ toggleConfirm }}" style="{{ eyeStyle }}">
+                  <sc-if value="{{ confirmHidden }}" hint-placeholder-val="{{ true }}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  </sc-if>
+                  <sc-if value="{{ confirmShown }}" hint-placeholder-val="{{ false }}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"></path><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"></path><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"></path><path d="m2 2 20 20"></path></svg>
+                  </sc-if>
+                </span>
+              </div>
+            </label>
+          </sc-if>
+        </div>
+
+        <div onClick="{{ submit }}" style="{{ submitStyle }}">{{ submitLabel }}</div>
+
+        <sc-if value="{{ isSignup }}" hint-placeholder-val="{{ false }}">
+          <span style="font-size:13px; line-height:1.75; color:#8A97AC; text-wrap:pretty">By creating an account you agree to our <a href="#terms">Terms of Service</a> and <a href="#privacy">Privacy Policy</a>.</span>
+        </sc-if>
+
+        <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}">
+          <span onClick="{{ showSignup }}" style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#8A97AC; cursor:pointer; min-height:44px; display:flex; align-items:center" style-hover="color:#fff">NO ACCOUNT? CREATE ONE →</span>
+        </sc-if>
+        <sc-if value="{{ isSignup }}" hint-placeholder-val="{{ false }}">
+          <span onClick="{{ showLogin }}" style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#8A97AC; cursor:pointer; min-height:44px; display:flex; align-items:center" style-hover="color:#fff">ALREADY HAVE AN ACCOUNT? SIGN IN →</span>
+        </sc-if>
+
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; line-height:1.9; letter-spacing:0.08em; color:#8A97AC; text-wrap:pretty">{{ footNote }}</span>
+      </div>
+    </sc-if>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1200,&quot;height&quot;:820},&quot;mode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;login&quot;,&quot;signup&quot;],&quot;default&quot;:&quot;login&quot;,&quot;tsType&quot;:&quot;'login' | 'signup'&quot;,&quot;section&quot;:&quot;Screen&quot;}}">
+// Field list, validation rules and messages are reconciled with the real routes:
+//   peptide-app/src/app/login/page.tsx   — email + password, supabase.auth.signInWithPassword
+//   peptide-app/src/app/signup/page.tsx  — email + dob + password + confirm, 18+ gate,
+//                                          password min 6, signUp({options:{data:{dob}}}),
+//                                          then a "check your email" confirmation state.
+// No OAuth: the migration doc lists Google (#29) and Apple (#28) as absent on web.
+// No consent checkbox: AI consent is a separate first-call gate owned by AiConsentModal
+// (persists user_metadata.ai_consent_granted v1.0), not part of signup.
+const MIN_AGE_YEARS = 18;
+const MIN_PASSWORD = 6;
+
+class Component extends DCLogic {
+  state = { mode: null, email: '', password: '', confirm: '', dob: '', showPw: false, showConfirm: false, error: '', sent: false };
+
+  get mode() {
+    const m = this.state.mode || this.props.mode || 'login';
+    return m === 'signup' ? 'signup' : 'login';
+  }
+
+  computeAgeYears(dob) {
+    if (!dob) return null;
+    const birth = new Date(dob + 'T00:00:00');
+    if (isNaN(birth.getTime())) return null;
+    const today = new Date();
+    let years = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) years -= 1;
+    return years;
+  }
+
+  get maxDob() {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() - MIN_AGE_YEARS);
+    return d.toISOString().slice(0, 10);
+  }
+
+  validate() {
+    const s = this.state;
+    if (!s.email || s.email.indexOf('@') < 1) return 'Enter your email address.';
+    if (!s.password) return 'Enter your password.';
+    if (this.mode === 'login') return '';
+    if (s.password !== s.confirm) return 'Passwords do not match.';
+    if (s.password.length < MIN_PASSWORD) return 'Password must be at least ' + MIN_PASSWORD + ' characters.';
+    const age = this.computeAgeYears(s.dob);
+    if (age === null) return 'Please enter your date of birth.';
+    if (age < MIN_AGE_YEARS) return 'You must be ' + MIN_AGE_YEARS + ' or older to create an account.';
+    return '';
+  }
+
+  submit = () => {
+    const err = this.validate();
+    this.setState({ error: err });
+    if (err) return;
+    if (this.mode === 'signup') {
+      // supabase.auth.signUp({ email, password, options:{ data:{ dob }, emailRedirectTo } })
+      this.setState({ sent: true });
+      return;
+    }
+    // supabase.auth.signInWithPassword({ email, password })
+    window.location.href = 'Peptide Cortex Mirror.dc.html';
+  };
+
+  renderVals() {
+    const s = this.state;
+    const login = this.mode === 'login';
+    const mono = (size, ls, color) => ({ fontFamily: "'JetBrains Mono', monospace", fontSize: size + 'px', letterSpacing: ls + 'em', color: color });
+
+    const field = {
+      minHeight: '52px', padding: '0 15px', border: '1px solid rgba(255,255,255,0.16)',
+      background: 'rgba(255,255,255,0.02)', fontSize: '16px', color: '#FFFFFF', width: '100%'
+    };
+
+    return {
+      isLogin: login, isSignup: !login,
+      showLogin: () => this.setState({ mode: 'login', error: '', sent: false }),
+      showSignup: () => this.setState({ mode: 'signup', error: '', sent: false }),
+      tabLoginStyle: Object.assign(mono(10, 0.16, login ? '#030308' : '#B8C5D6'), {
+        flex: '1 1 auto', minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: login ? '#FFFFFF' : '#0C0C14', cursor: 'pointer'
+      }),
+      tabSignupStyle: Object.assign(mono(10, 0.16, !login ? '#030308' : '#B8C5D6'), {
+        flex: '1 1 auto', minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: !login ? '#FFFFFF' : '#0C0C14', cursor: 'pointer'
+      }),
+      fieldStyle: field,
+      fieldWithAffix: Object.assign({}, field, { paddingRight: '52px' }),
+      eyeStyle: {
+        position: 'absolute', right: 0, top: 0, bottom: 0, width: '48px',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        color: '#8A97AC', cursor: 'pointer'
+      },
+
+      heading: login ? 'Welcome back.' : 'Create your field.',
+      subheading: login
+        ? 'Your form is where you left it — same regions, same tension, updated against anything logged since.'
+        : 'Email, date of birth, password. Your stack becomes a surface you can read at a glance.',
+      submitLabel: login ? 'SIGN IN TO CORTEX →' : 'CREATE ACCOUNT →',
+      submitStyle: Object.assign(mono(11, 0.18, '#030308'), {
+        minHeight: '52px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: '#B06BE0', cursor: 'pointer'
+      }),
+
+      asideTitle: login ? 'Your field has been holding without you.' : 'Nothing to configure. It assembles itself.',
+      asideBody: login
+        ? 'Cortex keeps reading while you are away — new evidence strengthens an edge, a vial runs down, a marker drifts. It will tell you what changed in one sentence.'
+        : 'Add what you take. The regions form, the edges draw themselves from the reference library, and anything running low starts pulling against the rest.',
+      asideMeta: login ? 'RESEARCH USE ONLY · NOT MEDICAL ADVICE' : '58 COMPOUNDS · 12 REGIONS · ADULTS 18+',
+
+      email: s.email, password: s.password, confirm: s.confirm, dob: s.dob,
+      maxDob: this.maxDob,
+      passwordType: s.showPw ? 'text' : 'password',
+      confirmType: s.showConfirm ? 'text' : 'password',
+      passwordHidden: !s.showPw, passwordShown: s.showPw,
+      confirmHidden: !s.showConfirm, confirmShown: s.showConfirm,
+      passwordAutocomplete: login ? 'current-password' : 'new-password',
+      passwordPlaceholder: login ? '••••••••' : 'Min. ' + MIN_PASSWORD + ' characters',
+      togglePassword: () => this.setState({ showPw: !s.showPw }),
+      toggleConfirm: () => this.setState({ showConfirm: !s.showConfirm }),
+      onEmail: (e) => this.setState({ email: e.target.value, error: '' }),
+      onPassword: (e) => this.setState({ password: e.target.value, error: '' }),
+      onConfirm: (e) => this.setState({ confirm: e.target.value, error: '' }),
+      onDob: (e) => this.setState({ dob: e.target.value, error: '' }),
+      onKey: (e) => { if (e.key === 'Enter') this.submit(); },
+
+      hasError: !!s.error, error: s.error,
+      submit: this.submit,
+      sent: s.sent, notSent: !s.sent,
+      footNote: login
+        ? 'ROW-LEVEL ISOLATION PER ACCOUNT · YOUR DATA IS NEVER SOLD OR TRAINED ON'
+        : 'ADULTS 18+ · EDUCATIONAL RESEARCH REFERENCE · CORTEX DOES NOT DIAGNOSE, TREAT OR PRESCRIBE'
+    };
+  }
+}
+</script>
+</body>
+</html>

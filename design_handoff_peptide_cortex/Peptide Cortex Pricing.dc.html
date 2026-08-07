@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400;500&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; }
+  body { background:#030308; color:#fff; -webkit-font-smoothing:antialiased; }
+  * { box-sizing:border-box; }
+  a { color:#B06BE0; text-decoration:none; }
+  a:hover { color:#00E5FF; }
+  @keyframes ppulse { 0%,100%{opacity:.35;transform:scale(1)} 50%{opacity:1;transform:scale(1.4)} }
+  @keyframes pbreathe { 0%,100%{transform:scale(1)} 50%{transform:scale(1.025)} }
+  @keyframes pdriftA { from{background-position:0 0} to{background-position:26px -18px} }
+  @keyframes pdriftB { from{background-position:0 0} to{background-position:-22px 20px} }
+  @keyframes pmarch { from{stroke-dashoffset:0} to{stroke-dashoffset:-30} }
+  @keyframes prise { from{opacity:0; transform:translateY(16px)} to{opacity:1; transform:translateY(0)} }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important } }
+</style>
+</helmet>
+
+<div style="min-height:100vh; background:#030308; color:#fff; font-family:'Jost',sans-serif; display:flex; flex-direction:column">
+
+  <div style="flex-shrink:0; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px 18px; padding:9px 20px; border-bottom:1px solid rgba(255,255,255,0.09)">
+    <a href="Peptide Cortex Home.dc.html" style="display:flex; align-items:center; gap:10px; min-height:44px; color:#fff">
+      <span style="width:6px; height:6px; border-radius:50%; background:#B06BE0; box-shadow:0 0 10px #B06BE0; animation:ppulse 2.4s infinite"></span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.3em">PEPTIDE CORTEX</span>
+    </a>
+    <div style="display:flex; align-items:center; gap:8px">
+      <a href="Peptide Cortex Mirror.dc.html" style="min-height:44px; display:flex; align-items:center; padding:0 14px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#B8C5D6; white-space:nowrap">SEE THE FIELD</a>
+      <a href="Peptide Cortex Auth.dc.html" style="min-height:44px; display:flex; align-items:center; padding:0 16px; border:1px solid rgba(255,255,255,0.16); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#fff; white-space:nowrap">SIGN IN</a>
+    </div>
+  </div>
+
+  <div style="position:relative; overflow:hidden; padding:64px 20px 40px; display:flex; flex-direction:column; align-items:center; gap:26px; text-align:center">
+    <div style="position:absolute; inset:0; background-image:radial-gradient(ellipse 50% 60% at 50% 30%, rgba(124,58,237,0.18), transparent 70%), radial-gradient(ellipse 30% 40% at 32% 22%, rgba(0,229,255,0.12), transparent 68%); animation:pbreathe 11s ease-in-out infinite"></div>
+    <div style="position:absolute; inset:0; background-image:radial-gradient(rgba(176,107,224,0.85) 0.9px, transparent 1.1px); background-size:9px 9px; opacity:0.34; animation:pdriftB 34s linear infinite alternate; mask-image:radial-gradient(ellipse 46% 56% at 50% 28%, #000 6%, rgba(0,0,0,0.4) 40%, transparent 76%); -webkit-mask-image:radial-gradient(ellipse 46% 56% at 50% 28%, #000 6%, rgba(0,0,0,0.4) 40%, transparent 76%)"></div>
+
+    <span style="position:relative; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.32em; color:#B06BE0">PRICING</span>
+    <span style="position:relative; font-family:'Cormorant Garamond',serif; font-weight:300; font-size:clamp(34px,5vw,58px); line-height:1.1; max-width:760px; text-wrap:pretty">The library is free. Reading your own stack is what you pay for.</span>
+    <span style="position:relative; font-size:16px; line-height:1.8; color:#B8C5D6; max-width:580px; text-wrap:pretty">All {{ libraryCount }} compounds, every evidence grade and every source stay open at both tiers. Pro is for when the form has to weigh your compounds against each other.</span>
+
+    <div style="position:relative; display:flex; align-items:center; gap:1px; background:rgba(255,255,255,0.1); margin-top:6px">
+      <span onClick="{{ setMonthly }}" style="{{ tabMonthlyStyle }}">MONTHLY</span>
+      <span onClick="{{ setAnnual }}" style="{{ tabAnnualStyle }}">ANNUAL · SAVE {{ savePct }}%</span>
+    </div>
+  </div>
+
+  <div style="padding:0 20px 20px; display:flex; flex-wrap:wrap; gap:1px; background:rgba(255,255,255,0.09); max-width:1080px; width:100%; margin:0 auto; border:1px solid rgba(255,255,255,0.09)">
+
+    <div style="flex:1 1 320px; min-width:280px; background:#030308; padding:34px 30px; display:flex; flex-direction:column; gap:24px; animation:prise 460ms cubic-bezier(.2,.7,.2,1) both">
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.26em; color:#8A97AC">FREE</span>
+        <div style="display:flex; align-items:baseline; gap:8px">
+          <span style="font-family:'Jost',sans-serif; font-weight:200; font-size:52px; line-height:1">$0</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#8A97AC">forever</span>
+        </div>
+        <span style="font-size:14.5px; line-height:1.75; color:#B8C5D6; text-wrap:pretty">{{ freeSummary }}</span>
+      </div>
+
+      <a href="Peptide Cortex Auth.dc.html" style="min-height:52px; display:flex; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,0.2); font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.16em; color:#fff">START FREE →</a>
+
+      <div style="display:flex; flex-direction:column; gap:13px">
+        <sc-for list="{{ freeFeatures }}" as="f" hint-placeholder-count="6">
+          <div style="display:flex; align-items:flex-start; gap:11px">
+            <span style="{{ f.mark }}"></span>
+            <span style="{{ f.textStyle }}">{{ f.label }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="flex:1 1 320px; min-width:280px; background:#0A0812; padding:34px 30px; display:flex; flex-direction:column; gap:24px; border-top:2px solid #B06BE0; animation:prise 560ms cubic-bezier(.2,.7,.2,1) both">
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.26em; color:#B06BE0">PRO</span>
+          <sc-if value="{{ isAnnual }}" hint-placeholder-val="{{ false }}">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.14em; color:#F7B731; border:1px solid rgba(247,183,49,0.4); padding:5px 8px">{{ saveLabel }}</span>
+          </sc-if>
+        </div>
+        <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap">
+          <span style="font-family:'Jost',sans-serif; font-weight:200; font-size:52px; line-height:1; color:#fff">{{ priceLabel }}</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#8A97AC">{{ priceUnit }}</span>
+        </div>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.1em; color:#8A97AC">{{ priceFootnote }}</span>
+        <span style="font-size:14.5px; line-height:1.75; color:#B8C5D6; text-wrap:pretty">{{ proSummary }}</span>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <a href="Peptide Cortex Auth.dc.html" style="min-height:52px; display:flex; align-items:center; justify-content:center; background:#B06BE0; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.16em; color:#030308">{{ proCta }}</a>
+        <sc-if value="{{ hasTrial }}" hint-placeholder-val="{{ true }}">
+          <span style="font-size:13px; line-height:1.7; color:#8A97AC; text-wrap:pretty">{{ trialNote }}</span>
+        </sc-if>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:13px">
+        <sc-for list="{{ proFeatures }}" as="f" hint-placeholder-count="7">
+          <div style="display:flex; align-items:flex-start; gap:11px">
+            <span style="{{ f.mark }}"></span>
+            <span style="{{ f.textStyle }}">{{ f.label }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:56px 20px; display:flex; justify-content:center">
+    <div style="max-width:1080px; width:100%; display:flex; flex-wrap:wrap; gap:36px; align-items:center; border:1px solid rgba(255,255,255,0.09); padding:34px 30px">
+      <div style="flex:1 1 300px; min-width:280px; display:flex; flex-direction:column; gap:14px">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.26em; color:#00E5FF">WHAT ONE COMPOUND ACTUALLY SHOWS YOU</span>
+        <span style="font-family:'Cormorant Garamond',serif; font-weight:300; font-size:30px; line-height:1.25; text-wrap:pretty">A single compound is not a single dot.</span>
+        <span style="font-size:15px; line-height:1.8; color:#B8C5D6; text-wrap:pretty">Free resolves {{ freeCount }} of your compounds — but the form still draws every relationship that compound has, out into the ones you have not unlocked. You can see what sits adjacent to what you take, and where the tension would form, before you pay anything.</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; line-height:1.9; letter-spacing:0.1em; color:#8A97AC">SOLID = RESOLVED · DASHED = YOURS, LOCKED · FAINT = NOT YOURS</span>
+      </div>
+
+      <div style="flex:1 1 300px; min-width:280px; display:flex; justify-content:center">
+        <svg viewBox="0 0 340 240" style="width:100%; max-width:360px; height:auto" xmlns="http://www.w3.org/2000/svg">
+          <line x1="170" y1="120" x2="72" y2="62" stroke="#8A97AC" stroke-width="1" stroke-opacity="0.5" stroke-dasharray="6 6" style="animation:pmarch 1.5s linear infinite"></line>
+          <line x1="170" y1="120" x2="278" y2="70" stroke="#8A97AC" stroke-width="1" stroke-opacity="0.5" stroke-dasharray="6 6" style="animation:pmarch 1.5s linear infinite"></line>
+          <line x1="170" y1="120" x2="86" y2="188" stroke="#8A97AC" stroke-width="1" stroke-opacity="0.5" stroke-dasharray="6 6" style="animation:pmarch 1.5s linear infinite"></line>
+          <line x1="170" y1="120" x2="266" y2="184" stroke="#8A97AC" stroke-width="1" stroke-opacity="0.35"></line>
+          <circle cx="170" cy="120" r="30" fill="#00E5FF" fill-opacity="0.12" stroke="#00E5FF" stroke-width="1.6"></circle>
+          <text x="170" y="124" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="10" letter-spacing="1.4" fill="#00E5FF">YOURS</text>
+          <circle cx="72" cy="62" r="17" fill="#B06BE0" fill-opacity="0.05" stroke="#B06BE0" stroke-width="1" stroke-opacity="0.55" stroke-dasharray="7 6" style="animation:pmarch 1.5s linear infinite"></circle>
+          <circle cx="278" cy="70" r="17" fill="#B06BE0" fill-opacity="0.05" stroke="#B06BE0" stroke-width="1" stroke-opacity="0.55" stroke-dasharray="7 6" style="animation:pmarch 1.5s linear infinite"></circle>
+          <circle cx="86" cy="188" r="17" fill="#F7B731" fill-opacity="0.05" stroke="#F7B731" stroke-width="1" stroke-opacity="0.55" stroke-dasharray="7 6" style="animation:pmarch 1.5s linear infinite"></circle>
+          <circle cx="266" cy="184" r="13" fill="none" stroke="#4A5568" stroke-width="1"></circle>
+          <text x="72" y="94" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8.5" letter-spacing="1" fill="#8A97AC">LOCKED</text>
+          <text x="278" y="102" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8.5" letter-spacing="1" fill="#8A97AC">LOCKED</text>
+          <text x="86" y="220" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8.5" letter-spacing="1" fill="#8A97AC">LOCKED</text>
+          <text x="266" y="210" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8.5" letter-spacing="1" fill="#4A5568">LIBRARY</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:0 20px 56px; display:flex; justify-content:center">
+    <div style="max-width:1080px; width:100%; border-left:2px solid #F7B731; background:rgba(247,183,49,0.05); padding:28px 30px; display:flex; flex-direction:column; gap:12px">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.26em; color:#F7B731">NEVER BEHIND THE PAYWALL</span>
+      <span style="font-family:'Cormorant Garamond',serif; font-weight:300; font-size:26px; line-height:1.3; text-wrap:pretty">Anything that could hurt you if you got it wrong is free.</span>
+      <span style="font-size:15px; line-height:1.8; color:#B8C5D6; max-width:720px; text-wrap:pretty">Reconstitution arithmetic, cautions, contraindications and documented interactions stay readable at every tier — including for compounds your plan has not resolved. We will not put a dosing calculation behind a card form.</span>
+    </div>
+  </div>
+
+  <div style="padding:0 20px 64px; display:flex; justify-content:center">
+    <div style="max-width:1080px; width:100%; display:flex; flex-direction:column; gap:1px; background:rgba(255,255,255,0.09); border:1px solid rgba(255,255,255,0.09)">
+      <sc-for list="{{ faqs }}" as="q" hint-placeholder-count="4">
+        <div onClick="{{ q.onClick }}" style="background:#030308; padding:20px 24px; display:flex; flex-direction:column; gap:10px; cursor:pointer; min-height:44px">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:16px">
+            <span style="font-size:16px; line-height:1.5">{{ q.q }}</span>
+            <span style="{{ q.iconStyle }}">+</span>
+          </div>
+          <sc-if value="{{ q.open }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:14.5px; line-height:1.8; color:#B8C5D6; max-width:760px; text-wrap:pretty">{{ q.a }}</span>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="padding:0 20px 72px; display:flex; flex-direction:column; align-items:center; gap:18px; text-align:center">
+    <span style="font-family:'Cormorant Garamond',serif; font-weight:300; font-size:clamp(26px,3.4vw,38px); line-height:1.2; max-width:620px; text-wrap:pretty">Start with one compound. The form will show you the rest of the shape.</span>
+    <a href="Peptide Cortex Auth.dc.html" style="min-height:52px; display:flex; align-items:center; justify-content:center; padding:0 30px; background:#B06BE0; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.16em; color:#030308">CREATE YOUR FIELD →</a>
+  </div>
+
+  <div style="border-top:1px solid rgba(255,255,255,0.09); padding:26px 20px 40px; display:flex; flex-wrap:wrap; gap:14px 28px; align-items:center; justify-content:center; text-align:center">
+    <span style="font-family:'JetBrains Mono',monospace; font-size:10px; line-height:1.9; letter-spacing:0.08em; color:#8A97AC; max-width:760px; text-wrap:pretty">EDUCATIONAL RESEARCH REFERENCE · ADULTS 18+ · CORTEX DESCRIBES HOW COMPOUNDS ARE STUDIED; IT DOES NOT DIAGNOSE, TREAT OR PRESCRIBE · REVIEW EVERYTHING WITH A LICENSED PHYSICIAN</span>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900},&quot;monthlyPrice&quot;:{&quot;editor&quot;:&quot;float&quot;,&quot;default&quot;:14.99,&quot;min&quot;:0,&quot;max&quot;:99,&quot;step&quot;:1,&quot;unit&quot;:&quot;$&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Pricing&quot;},&quot;annualPrice&quot;:{&quot;editor&quot;:&quot;float&quot;,&quot;default&quot;:119.88,&quot;min&quot;:0,&quot;max&quot;:999,&quot;step&quot;:10,&quot;unit&quot;:&quot;$&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Pricing&quot;},&quot;annualDefault&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Pricing&quot;},&quot;trialMonths&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:1,&quot;min&quot;:0,&quot;max&quot;:3,&quot;step&quot;:1,&quot;unit&quot;:&quot;mo&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Offer&quot;}}">
+// Prices are props so they can be moved without touching copy — every string that
+// mentions a number derives from them, including the annual saving.
+const FREE_FEATURES = [
+  { on: true, label: 'The full library — all 58 compounds, browsable, with every evidence grade and the taxonomy behind it' },
+  { on: true, label: 'Reconstitution arithmetic, with the working shown' },
+  { on: true, label: 'Cautions, contraindications and documented interactions' },
+  { on: true, label: 'Dose log and injection-site record' },
+  { on: true, label: 'One resolved compound — its edges still draw out to everything adjacent' },
+  { on: false, label: 'Weighing compounds against each other' },
+  { on: false, label: 'Bloodwork, cycle planning and Cortex answers' }
+];
+
+const PRO_FEATURES = [
+  { on: true, label: 'Every compound in your stack resolved, with no limit' },
+  { on: true, label: 'Supply tension across the whole stack — what runs out, and when against your cycle' },
+  { on: true, label: 'Bloodwork attach: markers re-tune the form against your real values' },
+  { on: true, label: 'Cycle planning, washout windows and adherence' },
+  { on: true, label: 'Cortex answers that synthesise across your stack, not one compound at a time' },
+  { on: true, label: 'Rotation history and next-site suggestion' },
+  { on: true, label: 'Export a plain record to take to your physician' }
+];
+
+const FAQS = [
+  { q: 'Why only one compound on Free?',
+    a: 'Because a trial that expires would have been the easy answer, and we wanted Free to still be worth opening after one ended. One resolved compound still draws every relationship it has out into the ones you have not unlocked, so Free is not a crippled version of the map — it is the map, with most of it dimmed. The Pro trial sits on top of that: a month with everything resolved, after which Free is still there rather than a locked door.' },
+  { q: 'What happens to my data if I stop paying?',
+    a: 'Nothing is deleted. Your stack, log and bloodwork stay exactly as they were; the form stops resolving the compounds past your free allowance and shows them dashed instead. Resubscribe and they light up again with the history intact.' },
+  { q: 'Is any safety information behind the paywall?',
+    a: 'No. Reconstitution maths, cautions, contraindications and interaction text are readable at every tier, including for compounds your plan has not resolved. Gating those would be indefensible.' },
+  { q: 'Does Cortex tell me what to take?',
+    a: 'No, and it is built not to. It describes how compounds are studied, what your own log says, and where those two disagree. Every dosing figure is your own recorded protocol played back with the arithmetic shown, not a recommendation.' },
+  { q: 'Can I cancel whenever?',
+    a: 'Yes, from the account page. Cancel during the free month and you are never charged; cancel later and it runs to the end of the period you have paid for. Either way the account drops back to Free rather than closing — cycles run eight to twelve weeks, which is why annual works out cheaper than stopping and restarting around each washout.' }
+];
+
+class Component extends DCLogic {
+  state = { annual: null, open: 0 };
+
+  get monthly() { return Number(this.props.monthlyPrice ?? 14.99); }
+  // 119.88 divides to exactly $9.99/mo — an annual price should land on a clean
+  // monthly figure, since the monthly figure is what the card actually shows.
+  get annual() { return Number(this.props.annualPrice ?? 119.88); }
+  get saving() { return Math.max(0, this.monthly * 12 - this.annual); }
+  get isAnnual() {
+    const a = this.state.annual;
+    return a === null ? !!this.props.annualDefault : a;
+  }
+  get savePct() {
+    const full = this.monthly * 12;
+    if (!full) return 0;
+    return Math.round((1 - this.annual / full) * 100);
+  }
+  money(n) { return '$' + (Math.round(n * 100) / 100).toFixed(2).replace(/\.00$/, ''); }
+  get trial() { return Math.max(0, Number(this.props.trialMonths ?? 1)); }
+  get trialPhrase() { return this.trial === 1 ? 'a month' : this.trial + ' months'; }
+
+  renderVals() {
+    const s = this.state;
+    const annualOn = this.isAnnual;
+    const mono = (size, ls, color) => ({ fontFamily: "'JetBrains Mono', monospace", fontSize: size + 'px', letterSpacing: ls + 'em', color: color });
+    const tab = (on) => Object.assign(mono(10, 0.14, on ? '#030308' : '#B8C5D6'), {
+      minHeight: '44px', display: 'flex', alignItems: 'center', padding: '0 16px',
+      background: on ? '#FFFFFF' : '#0C0C14', cursor: 'pointer'
+    });
+    const feature = (f) => ({
+      label: f.label,
+      mark: {
+        width: '14px', height: '14px', flexShrink: 0, marginTop: '4px',
+        borderRadius: '50%', border: '1px solid ' + (f.on ? '#00E5FF' : 'rgba(255,255,255,0.18)'),
+        background: f.on ? 'rgba(0,229,255,0.18)' : 'transparent'
+      },
+      textStyle: { fontSize: '14.5px', lineHeight: 1.7, color: f.on ? '#E6EDF6' : '#6E7C8D' }
+    });
+
+    const perMonth = this.annual / 12;
+
+    return {
+      libraryCount: 58,
+      freeCount: 'one',
+
+      isAnnual: annualOn,
+      setMonthly: () => this.setState({ annual: false }),
+      setAnnual: () => this.setState({ annual: true }),
+      tabMonthlyStyle: tab(!annualOn),
+      tabAnnualStyle: tab(annualOn),
+      savePct: this.savePct,
+      // The discount is stated in MONEY, never in months. "Months free" belongs to the
+      // trial alone — expressing both in the same unit made the card unreadable.
+      saveLabel: 'SAVE ' + this.money(this.saving),
+
+      priceLabel: annualOn ? this.money(perMonth) : this.money(this.monthly),
+      priceUnit: 'per month',
+      // The trial leads, because it is the only number that changes what the user
+      // risks by clicking. Price follows it in the same sentence, never hidden.
+      priceFootnote: (this.trial ? 'FREE FOR ' + (this.trial === 1 ? 'ONE MONTH' : this.trial + ' MONTHS') + ', THEN ' : 'BILLED ')
+        + (annualOn
+          ? this.money(this.annual) + ' YEARLY · CANCEL ANY TIME'
+          : this.money(this.monthly) + ' MONTHLY · CANCEL ANY TIME'),
+      proCta: this.trial
+        ? 'START YOUR FREE MONTH →'
+        : (annualOn ? 'GO PRO · ' + this.money(this.annual) + '/YR →' : 'GO PRO · ' + this.money(this.monthly) + '/MO →'),
+      hasTrial: this.trial > 0,
+      trialNote: 'No card charged for ' + this.trialPhrase + '. Cancel before it ends and you pay nothing — your stack stays, it just goes back to one resolved compound.',
+
+      freeSummary: 'The whole reference library, one compound of your own resolved on the form.',
+      proSummary: 'Every compound resolved, weighed against each other, and read against your bloodwork.',
+
+      freeFeatures: FREE_FEATURES.map(feature),
+      proFeatures: PRO_FEATURES.map(feature),
+
+      faqs: FAQS.map((f, i) => ({
+        q: f.q, a: f.a, open: s.open === i,
+        iconStyle: Object.assign(mono(16, 0, s.open === i ? '#B06BE0' : '#8A97AC'), {
+          flexShrink: 0, transform: s.open === i ? 'rotate(45deg)' : 'none',
+          transition: 'transform 200ms ease', lineHeight: 1
+        }),
+        onClick: () => this.setState({ open: s.open === i ? -1 : i })
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

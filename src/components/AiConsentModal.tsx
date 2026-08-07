@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import {
   ShieldCheck,
   FileText,
@@ -12,6 +13,12 @@ import {
   Lock,
   ExternalLink,
 } from 'lucide-react'
+
+// Restyled onto the dark Mirror surface. EVERY USER-FACING STRING IS VERBATIM
+// from the light-theme original — the consent text, the data list, the handling
+// bullets and the decline wording are what the user is agreeing to, and
+// changing them is an explicit ask-first item (CLAUDE.md §15). This change is
+// presentation only.
 
 type Props = {
   onAccept: () => void
@@ -28,6 +35,22 @@ const DATA_ITEMS = [
   { icon: Camera, text: 'Vial photos for identification' },
 ]
 
+const HANDLING = [
+  <>Sent securely via encrypted HTTPS connection</>,
+  <>
+    Anthropic does <strong className="font-medium text-ink">not</strong> use API data to train
+    their models
+  </>,
+  <>Data is processed and not permanently stored by Anthropic</>,
+  <>Your data is never sold or shared for advertising</>,
+]
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="font-mono text-[9.5px] uppercase tracking-[0.26em] text-faint">{children}</span>
+  )
+}
+
 export default function AiConsentModal({ onAccept, onDecline }: Props) {
   const [checked, setChecked] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -38,9 +61,26 @@ export default function AiConsentModal({ onAccept, onDecline }: Props) {
     setSaving(true)
     setError('')
     try {
+      // Send the access token explicitly. The browser is the one place the
+      // session is reliably available — server-side the route could validate
+      // the cookie with getUser() but could not get a *session* out of it, so
+      // the write failed with "Auth session missing!" while auth itself looked
+      // fine. This puts web on the same known-good path the iOS app uses.
+      const supabase = createClient()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
+      if (!session?.access_token) {
+        throw new Error('Please sign in again to continue.')
+      }
+
       const res = await fetch('/api/ai-consent', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
       })
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
@@ -55,188 +95,67 @@ export default function AiConsentModal({ onAccept, onDecline }: Props) {
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 9999,
-        background: 'rgba(0, 0, 0, 0.4)',
-        backdropFilter: 'blur(4px)',
-        WebkitBackdropFilter: 'blur(4px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 16,
-      }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="ai-consent-heading"
+      className="cx-surface fixed inset-0 z-[9999] flex items-center justify-center p-4 font-sans"
+      style={{ background: 'rgba(0,0,0,0.62)', backdropFilter: 'blur(4px)' }}
     >
-      <div
-        style={{
-          background: '#FAFAF8',
-          borderRadius: 16,
-          maxWidth: 480,
-          width: '100%',
-          maxHeight: '90vh',
-          overflowY: 'auto',
-          boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
-        }}
-      >
+      <div className="flex max-h-[90vh] w-full max-w-[480px] flex-col overflow-y-auto border border-hair bg-ground">
         {/* Header */}
-        <div style={{ padding: '28px 24px 0', textAlign: 'center' }}>
-          <div
-            style={{
-              width: 56,
-              height: 56,
-              borderRadius: 14,
-              background: 'rgba(26, 138, 158, 0.1)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 16px',
-            }}
-          >
-            <Lock size={28} color="#1A8A9E" />
+        <div className="flex flex-col items-center gap-3 px-6 pt-7 text-center">
+          <div className="flex h-14 w-14 items-center justify-center border border-hair bg-panelHi">
+            <Lock size={26} strokeWidth={1.6} className="text-hue-cy" />
           </div>
           <h2
-            style={{
-              fontFamily: "'Cormorant Garamond', 'Georgia', serif",
-              fontSize: 26,
-              fontWeight: 600,
-              color: '#1A1915',
-              margin: '0 0 8px',
-            }}
+            id="ai-consent-heading"
+            className="font-display text-[30px] font-light leading-[1.15] text-ink"
           >
             AI Data Disclosure
           </h2>
-          <p
-            style={{
-              fontFamily: "'Gill Sans', 'Gill Sans MT', Calibri, sans-serif",
-              fontSize: 14,
-              color: '#3A3730',
-              lineHeight: 1.5,
-              margin: 0,
-            }}
-          >
+          <p className="text-[14px] leading-[1.7] text-dim" style={{ textWrap: 'pretty' }}>
             Peptide Cortex uses AI features powered by{' '}
-            <strong>Anthropic&apos;s Claude</strong> to analyze your data and
-            provide personalized insights. Before using these features, please
-            review what data is shared.
+            <strong className="font-medium text-ink">Anthropic&apos;s Claude</strong> to analyze
+            your data and provide personalized insights. Before using these features, please review
+            what data is shared.
           </p>
         </div>
 
-        {/* Data shared section */}
-        <div style={{ padding: '20px 24px 0' }}>
-          <div
-            style={{
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase' as const,
-              color: '#B0AAA0',
-              marginBottom: 10,
-              fontFamily: "'Jost', sans-serif",
-            }}
-          >
-            Data shared with Anthropic
-          </div>
-          <div
-            style={{
-              background: '#F2F0ED',
-              borderRadius: 12,
-              padding: '4px 0',
-            }}
-          >
-            {DATA_ITEMS.map((item, i) => (
-              <div
-                key={i}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  padding: '10px 16px',
-                  borderBottom:
-                    i < DATA_ITEMS.length - 1
-                      ? '1px solid rgba(176, 170, 160, 0.2)'
-                      : 'none',
-                }}
-              >
-                <item.icon size={16} color="#1A8A9E" style={{ flexShrink: 0 }} />
-                <span
-                  style={{
-                    fontFamily: "'Gill Sans', 'Gill Sans MT', Calibri, sans-serif",
-                    fontSize: 14,
-                    color: '#3A3730',
-                  }}
-                >
-                  {item.text}
-                </span>
+        {/* Data shared */}
+        <div className="flex flex-col gap-[10px] px-6 pt-6">
+          <SectionLabel>Data shared with Anthropic</SectionLabel>
+          <div className="flex flex-col gap-px bg-hair">
+            {DATA_ITEMS.map((item) => (
+              <div key={item.text} className="flex items-center gap-3 bg-panel px-4 py-[11px]">
+                <item.icon size={15} strokeWidth={1.7} className="flex-shrink-0 text-hue-cy" />
+                <span className="text-[14px] leading-[1.5] text-dim">{item.text}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* How data is handled */}
-        <div style={{ padding: '20px 24px 0' }}>
-          <div
-            style={{
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase' as const,
-              color: '#B0AAA0',
-              marginBottom: 10,
-              fontFamily: "'Jost', sans-serif",
-            }}
-          >
-            How your data is handled
-          </div>
-          <div
-            style={{
-              background: '#F2F0ED',
-              borderRadius: 12,
-              padding: '12px 16px',
-              fontFamily: "'Gill Sans', 'Gill Sans MT', Calibri, sans-serif",
-              fontSize: 13,
-              color: '#3A3730',
-              lineHeight: 1.6,
-            }}
-          >
-            <p style={{ margin: '0 0 6px' }}>
-              &bull; Sent securely via encrypted HTTPS connection
-            </p>
-            <p style={{ margin: '0 0 6px' }}>
-              &bull; Anthropic does <strong>not</strong> use API data to train
-              their models
-            </p>
-            <p style={{ margin: '0 0 6px' }}>
-              &bull; Data is processed and not permanently stored by Anthropic
-            </p>
-            <p style={{ margin: 0 }}>
-              &bull; Your data is never sold or shared for advertising
-            </p>
-          </div>
+        <div className="flex flex-col gap-[10px] px-6 pt-6">
+          <SectionLabel>How your data is handled</SectionLabel>
+          <ul className="flex flex-col gap-[7px] bg-panel px-4 py-[14px]">
+            {HANDLING.map((line, i) => (
+              <li key={i} className="flex gap-2 text-[13px] leading-[1.6] text-dim">
+                <span aria-hidden className="text-faintest">
+                  &bull;
+                </span>
+                <span>{line}</span>
+              </li>
+            ))}
+          </ul>
         </div>
 
         {/* Links */}
-        <div
-          style={{
-            padding: '16px 24px 0',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 8,
-          }}
-        >
+        <div className="flex flex-col gap-1 px-6 pt-5">
           <a
             href="/privacy"
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              fontFamily: "'Gill Sans', 'Gill Sans MT', Calibri, sans-serif",
-              fontSize: 13,
-              color: '#1A8A9E',
-              textDecoration: 'none',
-            }}
+            className="flex min-h-[44px] items-center gap-2 text-[13px] text-accent hover:text-ink"
           >
             <ExternalLink size={13} />
             Read our Privacy Policy
@@ -245,112 +164,59 @@ export default function AiConsentModal({ onAccept, onDecline }: Props) {
             href="https://www.anthropic.com/privacy"
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              fontFamily: "'Gill Sans', 'Gill Sans MT', Calibri, sans-serif",
-              fontSize: 13,
-              color: '#1A8A9E',
-              textDecoration: 'none',
-            }}
+            className="flex min-h-[44px] items-center gap-2 text-[13px] text-accent hover:text-ink"
           >
             <ExternalLink size={13} />
             Read Anthropic&apos;s Privacy Policy
           </a>
         </div>
 
-        {/* Checkbox + Actions */}
-        <div style={{ padding: '20px 24px 24px' }}>
+        {/* Consent + actions */}
+        <div className="flex flex-col gap-4 px-6 pb-6 pt-4">
           {error && (
             <div
-              style={{
-                background: '#FEF2F2',
-                border: '1px solid #FECACA',
-                borderRadius: 8,
-                padding: '10px 14px',
-                marginBottom: 12,
-                fontFamily: "'Gill Sans', 'Gill Sans MT', Calibri, sans-serif",
-                fontSize: 13,
-                color: '#DC2626',
-              }}
+              role="alert"
+              className="flex flex-col gap-[6px] border-l-2 border-gold bg-panelHot px-4 py-3"
             >
-              {error}
+              <span className="font-mono text-[9.5px] tracking-[0.18em] text-gold">CHECK THIS</span>
+              <span className="text-[13px] leading-[1.6] text-ink">{error}</span>
             </div>
           )}
-          <label
-            style={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: 10,
-              cursor: 'pointer',
-              marginBottom: 16,
-            }}
-          >
+
+          <label className="flex cursor-pointer items-start gap-3">
             <input
               type="checkbox"
               checked={checked}
               onChange={(e) => setChecked(e.target.checked)}
-              style={{
-                width: 18,
-                height: 18,
-                marginTop: 2,
-                accentColor: '#1A8A9E',
-                flexShrink: 0,
-              }}
+              className="mt-[2px] h-[18px] w-[18px] flex-shrink-0 cursor-pointer"
+              style={{ accentColor: 'var(--accent)' }}
             />
-            <span
-              style={{
-                fontFamily: "'Gill Sans', 'Gill Sans MT', Calibri, sans-serif",
-                fontSize: 13,
-                color: '#3A3730',
-                lineHeight: 1.5,
-              }}
-            >
-              I understand and consent to sharing my data with Anthropic for
-              AI-powered features
+            <span className="text-[13px] leading-[1.6] text-dim">
+              I understand and consent to sharing my data with Anthropic for AI-powered features
             </span>
           </label>
 
-          <button
-            onClick={handleAccept}
-            disabled={!checked || saving}
-            style={{
-              width: '100%',
-              padding: '14px 0',
-              borderRadius: 10,
-              border: 'none',
-              background: checked ? '#1A8A9E' : '#B0AAA0',
-              color: '#fff',
-              fontFamily: "'Gill Sans', 'Gill Sans MT', Calibri, sans-serif",
-              fontSize: 16,
-              fontWeight: 600,
-              cursor: checked ? 'pointer' : 'default',
-              opacity: saving ? 0.7 : 1,
-              transition: 'background 0.2s, opacity 0.2s',
-            }}
-          >
-            {saving ? 'Saving...' : 'Continue'}
-          </button>
-
-          <button
-            onClick={onDecline}
-            disabled={saving}
-            style={{
-              width: '100%',
-              padding: '12px 0',
-              marginTop: 8,
-              borderRadius: 10,
-              border: 'none',
-              background: 'transparent',
-              color: '#B0AAA0',
-              fontFamily: "'Gill Sans', 'Gill Sans MT', Calibri, sans-serif",
-              fontSize: 14,
-              cursor: 'pointer',
-            }}
-          >
-            Decline — I&apos;ll skip AI features
-          </button>
+          <div className="flex flex-col gap-px bg-hair">
+            <button
+              type="button"
+              onClick={handleAccept}
+              disabled={!checked || saving}
+              // Uppercased with CSS, not in the string. The label the user
+              // reads is the same text as the original, character for
+              // character — only its presentation changed.
+              className="flex min-h-[52px] items-center justify-center bg-accent font-mono text-[10px] uppercase tracking-[0.18em] text-ground transition-opacity disabled:cursor-default disabled:opacity-40"
+            >
+              {saving ? 'Saving...' : 'Continue'}
+            </button>
+            <button
+              type="button"
+              onClick={onDecline}
+              disabled={saving}
+              className="flex min-h-[48px] items-center justify-center bg-panel font-mono text-[10px] uppercase tracking-[0.14em] text-faint transition-colors hover:text-ink disabled:opacity-50"
+            >
+              Decline — I&apos;ll skip AI features
+            </button>
+          </div>
         </div>
       </div>
     </div>
