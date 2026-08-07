@@ -178,6 +178,49 @@ button, a {
   to { opacity: 1; }
 }
 
+/* ─── Autofilled inputs on the dark surfaces ─────────────────────────────────
+   Chrome repaints autofilled fields with its own background and text colour,
+   and it beats any `color` rule — so an autofilled email or password rendered
+   dim-on-dark while the fields the user typed into stayed white. Tailwind's
+   text-ink cannot override this; only -webkit-text-fill-color can.
+
+   The inset box-shadow is the standard trick for the background: Chrome's own
+   fill sits behind it, so a 1000px inset shadow covers it entirely. The long
+   transition delay stops the yellow flash on first fill.
+
+   Uses var(--ink)/var(--panel) rather than literal white so this stays correct
+   on the Daylight ground, where "white text" would be invisible. */
+.cx-surface input:-webkit-autofill,
+.cx-surface input:-webkit-autofill:hover,
+.cx-surface input:-webkit-autofill:focus,
+.cx-surface input:-webkit-autofill:active,
+.cx-surface textarea:-webkit-autofill,
+.cx-surface select:-webkit-autofill {
+  -webkit-text-fill-color: var(--ink);
+  caret-color: var(--ink);
+  -webkit-box-shadow: 0 0 0 1000px var(--panel) inset;
+  box-shadow: 0 0 0 1000px var(--panel) inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* Firefox uses its own selector and does not need the shadow trick. */
+.cx-surface input:autofill,
+.cx-surface textarea:autofill {
+  color: var(--ink);
+  background-color: var(--panel);
+}
+
+/* The date input's own chrome (the picker glyph) renders black-on-black in
+   Chrome. Invert it on the dark grounds so it stays visible. */
+.cx-surface input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.55;
+  cursor: pointer;
+}
+:root[data-ground='daylight'] .cx-surface input[type='date']::-webkit-calendar-picker-indicator {
+  filter: none;
+}
+
 /* The prototype suppresses all motion under prefers-reduced-motion. Scoped to
    `.cx-surface` — which the redesigned pages carry — so it does not silently
    disable transitions on the legacy light-theme routes still in the app. */

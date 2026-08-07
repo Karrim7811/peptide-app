@@ -52,6 +52,10 @@ export default function AuthScreen({ mode: initialMode }: AuthScreenProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [sent, setSent] = useState(false)
+  // Password recovery. Absent from the design prototype, but a sign-in form
+  // without it locks out anyone who forgets their password permanently.
+  const [recovering, setRecovering] = useState(false)
+  const [recoverySent, setRecoverySent] = useState(false)
 
   const isLogin = mode === 'login'
   const isSignup = !isLogin
@@ -60,12 +64,42 @@ export default function AuthScreen({ mode: initialMode }: AuthScreenProps) {
     setMode('login')
     setError('')
     setSent(false)
+    setRecovering(false)
+    setRecoverySent(false)
   }
 
   function showSignup() {
     setMode('signup')
     setError('')
     setSent(false)
+    setRecovering(false)
+    setRecoverySent(false)
+  }
+
+  async function handleRecovery(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setError('')
+
+    if (!email.trim()) {
+      setError('Enter the email address on your account.')
+      return
+    }
+
+    setLoading(true)
+    const supabase = createClient()
+    const { error: recoveryError } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: `${window.location.origin}/reset-password`,
+    })
+    setLoading(false)
+
+    // Deliberately does NOT distinguish "no such account" from success. Telling
+    // an anonymous visitor which addresses have accounts turns this form into
+    // an account-enumeration oracle.
+    if (recoveryError && recoveryError.status !== 400) {
+      setError(recoveryError.message)
+      return
+    }
+    setRecoverySent(true)
   }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -260,7 +294,90 @@ export default function AuthScreen({ mode: initialMode }: AuthScreenProps) {
 
       {/* RIGHT — form panel */}
       <div className="flex flex-1 basis-[460px] min-w-[320px] items-center justify-center border-l border-hair px-[26px] py-10">
-        {sent ? (
+        {recovering ? (
+          <div className="flex w-full max-w-[440px] flex-col gap-[22px]">
+            {recoverySent ? (
+              <>
+                <div className="flex h-[52px] w-[52px] items-center justify-center border border-hair">
+                  <Mail size={22} strokeWidth={1.8} className="text-hue-cy" />
+                </div>
+                <span className="font-display text-[38px] font-light leading-[1.1]">
+                  Check your email.
+                </span>
+                <span className="text-[15px] leading-[1.8] text-dim" style={{ textWrap: 'pretty' }}>
+                  If an account exists for <span className="text-hue-cy">{email}</span>, a reset
+                  link is on its way. It expires in an hour.
+                </span>
+                <button
+                  type="button"
+                  onClick={showLogin}
+                  className="flex min-h-[52px] items-center justify-center border border-hair font-mono text-[10px] tracking-[0.16em] text-dim transition-colors hover:border-accent hover:text-ink"
+                >
+                  BACK TO SIGN IN
+                </button>
+              </>
+            ) : (
+              <form onSubmit={handleRecovery} className="flex flex-col gap-[22px]">
+                <div className="flex flex-col gap-[10px]">
+                  <span className="font-display text-[38px] font-light leading-[1.1]">
+                    Reset your password.
+                  </span>
+                  <span
+                    className="text-[15px] leading-[1.75] text-dim"
+                    style={{ textWrap: 'pretty' }}
+                  >
+                    Tell us the address on your account and we will send a link to set a new
+                    password.
+                  </span>
+                </div>
+
+                {error && (
+                  <div className="flex flex-col gap-[6px] border-l-2 border-gold bg-panelHot px-[18px] py-[15px]">
+                    <span className="font-mono text-[9.5px] tracking-[0.18em] text-gold">
+                      CHECK THIS
+                    </span>
+                    <span className="text-sm leading-[1.6] text-ink">{error}</span>
+                  </div>
+                )}
+
+                <label className="flex flex-col gap-[7px]">
+                  <span className="font-mono text-[9.5px] tracking-[0.22em] text-faint">
+                    EMAIL ADDRESS
+                  </span>
+                  <input
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value)
+                      setError('')
+                    }}
+                    type="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    required
+                    className={fieldClass}
+                    style={fieldStyle}
+                  />
+                </label>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex min-h-[52px] items-center justify-center gap-3 bg-accent font-mono text-[10px] tracking-[0.18em] text-ground transition-opacity disabled:opacity-50"
+                >
+                  {loading ? 'SENDING…' : 'SEND RESET LINK →'}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={showLogin}
+                  className="self-start font-mono text-[9.5px] tracking-[0.16em] text-faint transition-colors hover:text-ink"
+                >
+                  ← BACK TO SIGN IN
+                </button>
+              </form>
+            )}
+          </div>
+        ) : sent ? (
           <div
             className="flex w-full max-w-[420px] flex-col gap-5"
             style={{ animation: 'cxup 460ms cubic-bezier(.2,.7,.2,1) both' }}
@@ -388,6 +505,18 @@ export default function AuthScreen({ mode: initialMode }: AuthScreenProps) {
                     {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
+                {isLogin && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRecovering(true)
+                      setError('')
+                    }}
+                    className="self-start font-mono text-[9.5px] tracking-[0.16em] text-faint transition-colors hover:text-ink"
+                  >
+                    FORGOT PASSWORD?
+                  </button>
+                )}
               </label>
 
               {isSignup && (
