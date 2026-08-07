@@ -179,7 +179,7 @@ export default function AuthScreen({ mode: initialMode }: AuthScreenProps) {
 
   const heading = isLogin ? 'Welcome back.' : 'Create your field.'
   const subheading = isLogin
-    ? 'Your form is where you left it — same regions, same tension, updated against anything logged since.'
+    ? 'Your form is where you left it — same goals, same tension, updated against anything logged since.'
     : 'Email, date of birth, password. Your stack becomes a surface you can read at a glance.'
   const submitLabel = isLogin ? 'SIGN IN TO CORTEX →' : 'CREATE ACCOUNT →'
   const submitLoadingLabel = isLogin ? 'SIGNING IN…' : 'CREATING ACCOUNT…'
@@ -188,8 +188,8 @@ export default function AuthScreen({ mode: initialMode }: AuthScreenProps) {
     : 'Nothing to configure. It assembles itself.'
   const asideBody = isLogin
     ? 'Cortex keeps reading while you are away — new evidence strengthens an edge, a vial runs down, a marker drifts. It will tell you what changed in one sentence.'
-    : 'Add what you take. The regions form, the edges draw themselves from the reference library, and anything running low starts pulling against the rest.'
-  const asideMeta = isLogin ? 'RESEARCH USE ONLY · NOT MEDICAL ADVICE' : '58 COMPOUNDS · 12 REGIONS · ADULTS 18+'
+    : 'Add what you take. The goals form, the edges draw themselves from the reference library, and anything running low starts pulling against the rest.'
+  const asideMeta = isLogin ? 'RESEARCH USE ONLY · NOT MEDICAL ADVICE' : '58 COMPOUNDS · 12 GOALS · ADULTS 18+'
   const footNote = isLogin
     ? 'ROW-LEVEL ISOLATION PER ACCOUNT · YOUR DATA IS NEVER SOLD OR TRAINED ON'
     : 'ADULTS 18+ · EDUCATIONAL RESEARCH REFERENCE · CORTEX DOES NOT DIAGNOSE, TREAT OR PRESCRIBE'

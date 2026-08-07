@@ -41,6 +41,26 @@ import type { CompoundRecords } from '@/lib/mirror/load'
 
 const NO_RECORDS: CompoundRecords = { reminders: [], notes: [], sideEffects: [] }
 
+/**
+ * Entry points offered when the stack is empty.
+ *
+ * The six broadest goals rather than all twelve — a wall of categories is the
+ * same dead end as a blank field, just noisier. Deliberately NOT ranked or
+ * recommended: these are doors into the library, not suggestions about what to
+ * take, which is a line this product does not cross (CLAUDE.md §16.9).
+ */
+const STARTING_GOAL_IDS = [
+  'healing-recovery',
+  'metabolic-weight',
+  'gh-axis',
+  'cognition-mood',
+  'sleep',
+  'longevity',
+]
+const STARTING_GOALS = STARTING_GOAL_IDS.map((id) =>
+  CATEGORIES.find((c) => c.id === id),
+).filter((c): c is (typeof CATEGORIES)[number] => Boolean(c))
+
 export interface MirrorPanelProps {
   layer: MirrorLayer
   regionId: string | null
@@ -173,7 +193,7 @@ function LayerWhole({
   return (
     <div className="flex flex-col gap-5 px-[22px] py-5">
       <div className="flex flex-col gap-3">
-        <SectionLabel>YOUR REGIONS · CLICK TO ENTER</SectionLabel>
+        <SectionLabel>YOUR GOALS · CLICK TO ENTER</SectionLabel>
         <div className="flex flex-col gap-px bg-hair">
           {regionRows.map((r) => (
             <button
@@ -197,7 +217,36 @@ function LayerWhole({
             </button>
           ))}
           {regionRows.length === 0 && (
-            <div className="bg-panel px-4 py-[15px] text-[13px] text-faint">Nothing mapped yet.</div>
+            // An empty stack previously dead-ended here: StackControl lives on
+            // the compound view, and the only way to a compound is the field —
+            // which is empty. These are the way in.
+            <div className="flex flex-col gap-[14px] bg-panel px-4 py-[18px]">
+              <p className="text-[14px] leading-[1.7] text-dim">
+                Nothing mapped yet. Open any compound in the library to add it to your stack — the
+                form draws itself from what you hold.
+              </p>
+              <div className="flex flex-col gap-px bg-hair">
+                {STARTING_GOALS.map((category) => (
+                  <button
+                    key={category.id}
+                    type="button"
+                    disabled={!onSelectRegion}
+                    onClick={() => onSelectRegion?.(category.id)}
+                    className="flex min-h-[44px] items-center justify-between gap-3 bg-panelHi px-4 text-left enabled:cursor-pointer enabled:hover:text-ink disabled:cursor-default"
+                  >
+                    <span className="font-mono text-[10px] tracking-[0.14em] text-dim">
+                      {category.label}
+                    </span>
+                    <span className="font-mono text-[10px] text-faintest">
+                      {compoundsInCategory(category.id).length}
+                    </span>
+                  </button>
+                ))}
+              </div>
+              <span className="font-mono text-[9px] leading-[1.8] tracking-[0.12em] text-faintest">
+                OR SEARCH ALL {COUNTS.compounds} COMPOUNDS IN THE BAR BELOW
+              </span>
+            </div>
           )}
         </div>
       </div>
@@ -268,10 +317,16 @@ function LayerWhole({
         )}
       </div>
 
-      {ent.isFree && (
+      {/* Only when something is ACTUALLY locked. Rendering this on `isFree`
+          alone showed "0 of your compounds are locked" above a paid upgrade
+          button to users with an empty stack — asking them to pay to unlock
+          nothing, as their first impression of the product. */}
+      {ent.isFree && ent.lockedCount > 0 && (
         <div className="flex flex-col gap-[11px] border-l-2 border-gold bg-panelHot px-[18px] py-[17px]">
           <span className="font-mono text-[9.5px] tracking-[0.2em] text-gold">
-            {ent.lockedCount} of your compounds are locked
+            {ent.lockedCount === 1
+              ? 'One of your compounds is locked'
+              : `${ent.lockedCount} of your compounds are locked`}
           </span>
           <p className="text-[14px] leading-[1.75] text-dim">
             Free holds one. The rest of your stack is still drawn on the form — dashed, dimmed, and still pulling
@@ -293,7 +348,7 @@ function LayerWhole({
       <div className="flex flex-col gap-[10px]">
         <SectionLabel>THE REST OF THE FIELD</SectionLabel>
         <p className="text-[14px] leading-[1.8] text-dim">
-          {empties.length} of the library&rsquo;s {COUNTS.categories} regions hold nothing of yours yet &mdash;{' '}
+          {empties.length} of the library&rsquo;s {COUNTS.categories} goals hold nothing of yours yet &mdash;{' '}
           {COUNTS.compounds - ent.stackCount} compounds you have not mapped. They stay faint on the form until you
           do.
         </p>
@@ -330,12 +385,12 @@ function LayerRegion({ ent, regionId, onSelectCompound }: { ent: Entitlements; r
   const worstHere = [...mineHere].sort((a, b) => a.supplyDays - b.supplyDays)[0]
 
   const narration = worstHere && worstHere.supplyDays <= 7
-    ? `${COMPOUNDS[worstHere.id]?.name ?? worstHere.id} runs this region down in ${worstHere.supplyDays} days. Everything else here is steady.`
+    ? `${COMPOUNDS[worstHere.id]?.name ?? worstHere.id} runs this goal down in ${worstHere.supplyDays} days. Everything else here is steady.`
     : mineHere.length
-      ? `This region is steady. ${mineHere.length} of the library’s ${catalogHere.length} compounds here ${isAre(mineHere.length)} yours.`
+      ? `This goal is steady. ${mineHere.length} of the library’s ${catalogHere.length} compounds here ${isAre(mineHere.length)} yours.`
       : lockedHere.length
         ? `${lockedHere.length} compounds here ${isAre(lockedHere.length)} yours, ${lockedHere.length === 1 ? 'and it is' : 'and they are'} locked. I can list them and read each one — I cannot weigh them against each other yet.`
-        : `You hold nothing in this region yet. ${catalogHere.length} compounds sit here in the library.`
+        : `You hold nothing in this goal yet. ${catalogHere.length} compounds sit here in the library.`
 
   const meta = `${catalogHere.length} IN CATALOG · ${
     lockedHere.length ? `${mineHere.length} RESOLVED · ${lockedHere.length} LOCKED` : heldLabel(ownedHere.length)
@@ -360,10 +415,10 @@ function LayerRegion({ ent, regionId, onSelectCompound }: { ent: Entitlements; r
 
   return (
     <div className="flex flex-col gap-5">
-      <NarrationHeader label={`CORTEX · REGION ${region.label}`} text={narration} meta={meta} />
+      <NarrationHeader label={`CORTEX · GOAL ${region.label}`} text={narration} meta={meta} />
       <div className="flex flex-col gap-5 px-[22px] pb-5">
         <div className="flex flex-col gap-[11px]">
-          <SectionLabel>REGION STATE</SectionLabel>
+          <SectionLabel>GOAL STATE</SectionLabel>
           <div className="flex flex-wrap gap-5">
             <Stat value={grade} label="BEST EVIDENCE" color="var(--accent)" />
             <Stat value={String(catalogHere.length)} label="IN CATALOG" />
@@ -374,7 +429,7 @@ function LayerRegion({ ent, regionId, onSelectCompound }: { ent: Entitlements; r
 
         {marksHere.length > 0 && (
           <div className="flex flex-col gap-[10px] border-l-2 border-gold pl-[14px]">
-            <span className="font-mono text-[9px] tracking-[0.24em] text-gold">YOUR LABS TOUCH THIS REGION</span>
+            <span className="font-mono text-[9px] tracking-[0.24em] text-gold">YOUR LABS TOUCH THIS GOAL</span>
             {marksHere.map((m) => (
               <span key={m.key} className="text-[14px] leading-[1.7] text-dim">
                 {m.label} · {m.value} {m.unit} · {markerLabel(m)} (range {m.low}–{m.high})
@@ -652,11 +707,17 @@ export default function MirrorPanel({
     const mine = CATEGORIES.filter((c) => ent.resolvedIn(c.id).length > 0)
     const offMarkers = ent.labsOn ? ent.markers(MARKERS).filter(markerOff) : []
 
-    const narration = ent.isFree
-      ? `${ent.resolvedCount === 1 ? 'One compound resolved, ' : `${ent.resolvedCount} compounds resolved, `}${ent.lockedCount} held back. The dashed regions are yours — I can see them pulling, I just cannot read them for you yet.`
-      : ent.labsOn
-        ? `Your labs are attached, and ${offMarkers.length} markers sit outside range. Those regions have thinned; the rest of the form is steady.`
-        : `Your ${mine.length} active regions are holding. One is pulling against the rest.`
+    // An empty stack has to be its own case. Every line below it describes a
+    // field that exists — dashed goals pulling, markers thinning — and read as
+    // nonsense against nothing at all.
+    const narration =
+      ent.stackCount === 0
+        ? 'Nothing on the form yet. Search the library below and open any compound to add it — the moment you do, this becomes a map of your own protocol rather than an empty one.'
+        : ent.isFree
+          ? `${ent.resolvedCount === 1 ? 'One compound resolved, ' : `${ent.resolvedCount} compounds resolved, `}${ent.lockedCount} held back. The dashed goals are yours — I can see them pulling, I just cannot read them for you yet.`
+          : ent.labsOn
+            ? `Your labs are attached, and ${offMarkers.length} markers sit outside range. Those goals have thinned; the rest of the form is steady.`
+            : `Your ${mine.length} active goals are holding. One is pulling against the rest.`
 
     // Read the cycle through its accessor, never the sample constant: it is
     // live data now, and cycleReport() is the single owner of how the cycle is

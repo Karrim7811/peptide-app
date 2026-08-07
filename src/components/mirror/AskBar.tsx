@@ -136,7 +136,7 @@ function answerFor(
     return {
       text:
         `${markers.length} markers attached. ${off.length} sit outside range` +
-        `${off.length ? ' — ' + off.map((m) => m.label).join(', ') : ''}. Those regions have been re-tuned on ` +
+        `${off.length ? ' — ' + off.map((m) => m.label).join(', ') : ''}. Those goals have been re-tuned on ` +
         `the form; the rest are unchanged.`,
       cite: `MARKER KEYS AND UNITS AS DEFINED IN THE APP’S OWN MARKER CATALOG · NOT A DIAGNOSIS`,
     }
@@ -154,7 +154,7 @@ function answerFor(
   return {
     text:
       `I answer from what is on your field: ${COUNTS.compounds} compounds in the library, ${ent.stackCount} in ` +
-      `your stack, ${CATEGORIES.length} regions. Name a compound, or ask about supply, labs, the cycle, or how ` +
+      `your stack,  goals. Name a compound, or ask about supply, labs, the cycle, or how ` +
       `things sit together.`,
     cite: 'CORTEX ANSWERS FROM YOUR OWN DATA AND THE REFERENCED LIBRARY',
   }

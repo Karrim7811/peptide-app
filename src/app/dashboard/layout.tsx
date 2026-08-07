@@ -9,12 +9,24 @@ import { createClient } from '@/lib/supabase/server'
 // viewport. That chrome still serves the legacy CRUD routes (/stack, /log,
 // /cycle …), which keep their own layouts; it just has no place here.
 //
-// The auth gate stays. It is the only thing this layout still needs to do.
+// The auth gate stays, plus one more: a user who has never finished
+// onboarding (profiles.onboarded_at IS NULL) is sent to /welcome first. That
+// flow is what seeds a real stack, so the field means something the first
+// time this layout's children ever render for them.
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('onboarded_at')
+    .eq('id', user.id)
+    .maybeSingle()
+
+  if (!profile?.onboarded_at) redirect('/welcome')
+
   return <>{children}</>
 }

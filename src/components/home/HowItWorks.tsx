@@ -14,7 +14,7 @@ const LAYERS = [
   },
   {
     n: '02',
-    tag: 'REGION',
+    tag: 'GOAL',
     hueClass: 'text-hue-cy',
     title: 'A system',
     body: 'Repair, GH axis, metabolic. Interactions live here as geometry, not as a form you fill in.',

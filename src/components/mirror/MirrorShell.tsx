@@ -43,7 +43,7 @@ interface MirrorShellProps {
 
 const LAYER_MARKS: ReadonlyArray<{ layer: MirrorLayer; label: string }> = [
   { layer: 1, label: 'WHOLE' },
-  { layer: 2, label: 'REGION' },
+  { layer: 2, label: 'GOAL' },
   { layer: 3, label: 'MOLECULE' },
   { layer: 4, label: 'VERIFY' },
 ]
