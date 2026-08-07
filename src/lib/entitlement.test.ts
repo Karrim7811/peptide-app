@@ -16,6 +16,7 @@ import {
   mismatchedCompounds,
   COMPOUND_LIST,
   CATEGORIES,
+  COUNTS,
   gradeFor,
 } from '@/lib/catalog'
 import type { SubscriptionTier } from '@/types'
@@ -210,8 +211,31 @@ describe('catalog integrity', () => {
   })
 
   it('carries the expected library shape', () => {
-    expect(COMPOUND_LIST).toHaveLength(58)
-    expect(CATEGORIES).toHaveLength(12)
+    // Derived, not hardcoded: the library grows whenever the source
+    // spreadsheet does, and a literal here would fail on every addition while
+    // proving nothing. What matters is that COUNTS stays in step with the
+    // catalog — that is the number the UI prints.
+    expect(COMPOUND_LIST.length).toBe(COUNTS.compounds)
+    expect(CATEGORIES).toHaveLength(COUNTS.categories)
+    expect(COMPOUND_LIST.length).toBeGreaterThanOrEqual(58)
+  })
+
+  it('gives every compound a unique id and a real category', () => {
+    const ids = new Set(COMPOUND_LIST.map((e) => e.id))
+    expect(ids.size).toBe(COMPOUND_LIST.length)
+    const categoryIds = new Set(CATEGORIES.map((c) => c.id))
+    for (const entry of COMPOUND_LIST) {
+      expect(categoryIds.has(entry.catId)).toBe(true)
+    }
+  })
+
+  it('never points a stacking edge at a compound that does not exist', () => {
+    const ids = new Set(COMPOUND_LIST.map((e) => e.id))
+    for (const entry of COMPOUND_LIST) {
+      for (const partner of entry.stacksWith) {
+        expect(ids.has(partner)).toBe(true)
+      }
+    }
   })
 
   it('derives grades only through gradeFor', () => {

@@ -229,7 +229,7 @@ export const CATEGORIES: Category[] = [
     "hue": "cy",
     "order": 11
   }
-];
+]
 
 export const COMPOUNDS: Record<string, Compound> = {
  "semaglutide": {
@@ -561,16 +561,16 @@ export const COMPOUNDS: Record<string, Compound> = {
   "cv": 3,
   "cvNotes": "Improves visceral fat in a specific indication; indirect cardiometabolic benefits; monitor glucose.",
   "stacksWith": [
+   "igf-1-lr3",
+   "octreotide",
+   "lanreotide",
    "semaglutide",
    "tirzepatide",
    "liraglutide",
    "exenatide",
    "dulaglutide",
    "pramlintide",
-   "cagrilintide",
-   "retatrutide",
-   "leptin-metreleptin",
-   "glucagon"
+   "cagrilintide"
   ]
  },
  "somatropin": {
@@ -592,16 +592,16 @@ export const COMPOUNDS: Record<string, Compound> = {
   "cv": 1,
   "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
   "stacksWith": [
+   "igf-1-lr3",
    "tb-500",
+   "mgf",
+   "follistatin-344",
+   "elamipretide",
+   "octreotide",
+   "lanreotide",
    "semaglutide",
    "tirzepatide",
-   "liraglutide",
-   "exenatide",
-   "dulaglutide",
-   "pramlintide",
-   "cagrilintide",
-   "retatrutide",
-   "leptin-metreleptin"
+   "liraglutide"
   ]
  },
  "sermorelin": {
@@ -623,16 +623,16 @@ export const COMPOUNDS: Record<string, Compound> = {
   "cv": 1,
   "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
   "stacksWith": [
+   "igf-1-lr3",
+   "octreotide",
+   "lanreotide",
    "semaglutide",
    "tirzepatide",
    "liraglutide",
    "exenatide",
    "dulaglutide",
    "pramlintide",
-   "cagrilintide",
-   "retatrutide",
-   "leptin-metreleptin",
-   "glucagon"
+   "cagrilintide"
   ]
  },
  "cjc-1295": {
@@ -654,16 +654,16 @@ export const COMPOUNDS: Record<string, Compound> = {
   "cv": 1,
   "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
   "stacksWith": [
+   "igf-1-lr3",
+   "octreotide",
+   "lanreotide",
    "semaglutide",
    "tirzepatide",
    "liraglutide",
    "exenatide",
    "dulaglutide",
    "pramlintide",
-   "cagrilintide",
-   "retatrutide",
-   "leptin-metreleptin",
-   "glucagon"
+   "cagrilintide"
   ]
  },
  "ipamorelin": {
@@ -687,14 +687,14 @@ export const COMPOUNDS: Record<string, Compound> = {
   "stacksWith": [
    "dsip",
    "epitalon-epithalon",
+   "igf-1-lr3",
+   "octreotide",
+   "lanreotide",
    "semaglutide",
    "tirzepatide",
    "liraglutide",
    "exenatide",
-   "dulaglutide",
-   "pramlintide",
-   "cagrilintide",
-   "retatrutide"
+   "dulaglutide"
   ]
  },
  "ghrp-2": {
@@ -716,16 +716,16 @@ export const COMPOUNDS: Record<string, Compound> = {
   "cv": 1,
   "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
   "stacksWith": [
+   "igf-1-lr3",
+   "octreotide",
+   "lanreotide",
    "semaglutide",
    "tirzepatide",
    "liraglutide",
    "exenatide",
    "dulaglutide",
    "pramlintide",
-   "cagrilintide",
-   "retatrutide",
-   "leptin-metreleptin",
-   "glucagon"
+   "cagrilintide"
   ]
  },
  "ghrp-6": {
@@ -747,16 +747,16 @@ export const COMPOUNDS: Record<string, Compound> = {
   "cv": 1,
   "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
   "stacksWith": [
+   "igf-1-lr3",
+   "octreotide",
+   "lanreotide",
    "semaglutide",
    "tirzepatide",
    "liraglutide",
    "exenatide",
    "dulaglutide",
    "pramlintide",
-   "cagrilintide",
-   "retatrutide",
-   "leptin-metreleptin",
-   "glucagon"
+   "cagrilintide"
   ]
  },
  "bpc-157": {
@@ -779,6 +779,7 @@ export const COMPOUNDS: Record<string, Compound> = {
   "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
   "stacksWith": [
    "ghk-cu-copper-peptide",
+   "mgf",
    "semaglutide",
    "tirzepatide",
    "liraglutide",
@@ -786,8 +787,7 @@ export const COMPOUNDS: Record<string, Compound> = {
    "dulaglutide",
    "pramlintide",
    "cagrilintide",
-   "retatrutide",
-   "leptin-metreleptin"
+   "retatrutide"
   ]
  },
  "tb-500": {
@@ -809,16 +809,16 @@ export const COMPOUNDS: Record<string, Compound> = {
   "cv": 1,
   "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
   "stacksWith": [
+   "mgf",
    "somatropin",
    "ghk-cu-copper-peptide",
+   "hexarelin",
+   "igf-1-lr3",
+   "follistatin-344",
+   "mk-677",
+   "elamipretide",
    "semaglutide",
-   "tirzepatide",
-   "liraglutide",
-   "exenatide",
-   "dulaglutide",
-   "pramlintide",
-   "cagrilintide",
-   "retatrutide"
+   "tirzepatide"
   ]
  },
  "thymosin-beta-4-t-4": {
@@ -841,6 +841,7 @@ export const COMPOUNDS: Record<string, Compound> = {
   "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
   "stacksWith": [
    "ghk-cu-copper-peptide",
+   "mgf",
    "semaglutide",
    "tirzepatide",
    "liraglutide",
@@ -848,8 +849,7 @@ export const COMPOUNDS: Record<string, Compound> = {
    "dulaglutide",
    "pramlintide",
    "cagrilintide",
-   "retatrutide",
-   "leptin-metreleptin"
+   "retatrutide"
   ]
  },
  "thymosin-alpha-1-thymalfasin": {
@@ -872,6 +872,7 @@ export const COMPOUNDS: Record<string, Compound> = {
   "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
   "stacksWith": [
    "vip-vip",
+   "ara-290",
    "semaglutide",
    "tirzepatide",
    "liraglutide",
@@ -879,8 +880,7 @@ export const COMPOUNDS: Record<string, Compound> = {
    "dulaglutide",
    "pramlintide",
    "cagrilintide",
-   "retatrutide",
-   "leptin-metreleptin"
+   "retatrutide"
   ]
  },
  "ll-37": {
@@ -903,6 +903,7 @@ export const COMPOUNDS: Record<string, Compound> = {
   "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
   "stacksWith": [
    "vip-vip",
+   "ara-290",
    "semaglutide",
    "tirzepatide",
    "liraglutide",
@@ -910,8 +911,7 @@ export const COMPOUNDS: Record<string, Compound> = {
    "dulaglutide",
    "pramlintide",
    "cagrilintide",
-   "retatrutide",
-   "leptin-metreleptin"
+   "retatrutide"
   ]
  },
  "vip-vip": {
@@ -942,7 +942,7 @@ export const COMPOUNDS: Record<string, Compound> = {
    "oxytocin",
    "defensins",
    "thymopentin",
-   "semaglutide"
+   "ara-290"
   ]
  },
  "kpv": {
@@ -1154,12 +1154,12 @@ export const COMPOUNDS: Record<string, Compound> = {
    "dsip",
    "mots-c",
    "ghk-cu-copper-peptide",
+   "5-amino-1mq",
+   "thymalin",
+   "pinealon",
    "semaglutide",
    "tirzepatide",
-   "liraglutide",
-   "exenatide",
-   "dulaglutide",
-   "pramlintide"
+   "liraglutide"
   ]
  },
  "nad": {
@@ -1183,14 +1183,14 @@ export const COMPOUNDS: Record<string, Compound> = {
   "stacksWith": [
    "mots-c",
    "ghk-cu-copper-peptide",
+   "5-amino-1mq",
+   "thymalin",
+   "pinealon",
    "semaglutide",
    "tirzepatide",
    "liraglutide",
    "exenatide",
-   "dulaglutide",
-   "pramlintide",
-   "cagrilintide",
-   "retatrutide"
+   "dulaglutide"
   ]
  },
  "mots-c": {
@@ -1216,12 +1216,12 @@ export const COMPOUNDS: Record<string, Compound> = {
    "nad",
    "humanin",
    "ghk-cu-copper-peptide",
+   "thymalin",
+   "pinealon",
+   "elamipretide",
    "glucagon",
    "tesamorelin",
-   "somatropin",
-   "sermorelin",
-   "cjc-1295",
-   "ipamorelin"
+   "somatropin"
   ]
  },
  "humanin": {
@@ -1245,14 +1245,14 @@ export const COMPOUNDS: Record<string, Compound> = {
   "stacksWith": [
    "mots-c",
    "ghk-cu-copper-peptide",
+   "5-amino-1mq",
+   "thymalin",
+   "pinealon",
    "semaglutide",
    "tirzepatide",
    "liraglutide",
    "exenatide",
-   "dulaglutide",
-   "pramlintide",
-   "cagrilintide",
-   "retatrutide"
+   "dulaglutide"
   ]
  },
  "ghk-cu-copper-peptide": {
@@ -1348,10 +1348,10 @@ export const COMPOUNDS: Record<string, Compound> = {
    "leptin-metreleptin"
   ]
  },
- "bremelanotide-vyleesi-pt-141-analog": {
-  "id": "bremelanotide-vyleesi-pt-141-analog",
-  "name": "Bremelanotide (Vyleesi; PT-141 analog)",
-  "fullName": "Bremelanotide (Vyleesi; PT-141 analog)",
+ "bremelanotide": {
+  "id": "bremelanotide",
+  "name": "Bremelanotide",
+  "fullName": "Bremelanotide (Vyleesi / PT-141)",
   "category": "Sexual Health",
   "catId": "sexual-health",
   "purpose": "Sexual health",
@@ -1430,15 +1430,15 @@ export const COMPOUNDS: Record<string, Compound> = {
   "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
   "stacksWith": [
    "vip-vip",
-   "bremelanotide-vyleesi-pt-141-analog",
+   "bremelanotide",
    "kisspeptin",
    "melanotan-ii",
+   "gonadorelin",
+   "leuprolide",
+   "triptorelin",
+   "degarelix",
    "semaglutide",
-   "tirzepatide",
-   "liraglutide",
-   "exenatide",
-   "dulaglutide",
-   "pramlintide"
+   "tirzepatide"
   ]
  },
  "hcg-not-a-peptide-glycoprotein-hormone": {
@@ -1492,6 +1492,7 @@ export const COMPOUNDS: Record<string, Compound> = {
   "cvNotes": "Key cardiovascular physiology/diagnostic relevance; not used as a self-therapy.",
   "stacksWith": [
    "apelin",
+   "degarelix",
    "semaglutide",
    "tirzepatide",
    "liraglutide",
@@ -1499,8 +1500,7 @@ export const COMPOUNDS: Record<string, Compound> = {
    "dulaglutide",
    "pramlintide",
    "cagrilintide",
-   "retatrutide",
-   "leptin-metreleptin"
+   "retatrutide"
   ]
  },
  "bnp-b-type-natriuretic-peptide": {
@@ -1523,6 +1523,7 @@ export const COMPOUNDS: Record<string, Compound> = {
   "cvNotes": "Key cardiovascular physiology/diagnostic relevance; not used as a self-therapy.",
   "stacksWith": [
    "apelin",
+   "degarelix",
    "semaglutide",
    "tirzepatide",
    "liraglutide",
@@ -1530,8 +1531,7 @@ export const COMPOUNDS: Record<string, Compound> = {
    "dulaglutide",
    "pramlintide",
    "cagrilintide",
-   "retatrutide",
-   "leptin-metreleptin"
+   "retatrutide"
   ]
  },
  "apelin": {
@@ -1559,10 +1559,10 @@ export const COMPOUNDS: Record<string, Compound> = {
    "vasopressin",
    "bivalirudin",
    "eptifibatide",
+   "degarelix",
    "glucagon",
    "tesamorelin",
-   "somatropin",
-   "sermorelin"
+   "somatropin"
   ]
  },
  "adrenomedullin": {
@@ -1585,6 +1585,7 @@ export const COMPOUNDS: Record<string, Compound> = {
   "cvNotes": "Promising mechanisms for cardiac/vascular function, but mainly research-stage.",
   "stacksWith": [
    "apelin",
+   "degarelix",
    "semaglutide",
    "tirzepatide",
    "liraglutide",
@@ -1592,8 +1593,7 @@ export const COMPOUNDS: Record<string, Compound> = {
    "dulaglutide",
    "pramlintide",
    "cagrilintide",
-   "retatrutide",
-   "leptin-metreleptin"
+   "retatrutide"
   ]
  },
  "glp-2-analog-teduglutide": {
@@ -1653,9 +1653,9 @@ export const COMPOUNDS: Record<string, Compound> = {
    "abaloparatide-tymlos",
    "cgrp-calcitonin-gene-related-peptide",
    "substance-p",
-   "tesamorelin",
-   "somatropin",
-   "sermorelin"
+   "larazotide",
+   "octreotide",
+   "lanreotide"
   ]
  },
  "calcitonin": {
@@ -1714,10 +1714,10 @@ export const COMPOUNDS: Record<string, Compound> = {
    "calcitonin",
    "cgrp-calcitonin-gene-related-peptide",
    "substance-p",
-   "semaglutide",
-   "tirzepatide",
-   "liraglutide",
-   "exenatide"
+   "larazotide",
+   "octreotide",
+   "lanreotide",
+   "linaclotide"
   ]
  },
  "abaloparatide-tymlos": {
@@ -1745,10 +1745,10 @@ export const COMPOUNDS: Record<string, Compound> = {
    "calcitonin",
    "cgrp-calcitonin-gene-related-peptide",
    "substance-p",
-   "semaglutide",
-   "tirzepatide",
-   "liraglutide",
-   "exenatide"
+   "larazotide",
+   "octreotide",
+   "lanreotide",
+   "linaclotide"
   ]
  },
  "vasopressin": {
@@ -1771,6 +1771,7 @@ export const COMPOUNDS: Record<string, Compound> = {
   "cvNotes": "Clinically important in acute care settings; not a chronic 'heart health' therapy.",
   "stacksWith": [
    "apelin",
+   "degarelix",
    "semaglutide",
    "tirzepatide",
    "liraglutide",
@@ -1778,8 +1779,7 @@ export const COMPOUNDS: Record<string, Compound> = {
    "dulaglutide",
    "pramlintide",
    "cagrilintide",
-   "retatrutide",
-   "leptin-metreleptin"
+   "retatrutide"
   ]
  },
  "cgrp-calcitonin-gene-related-peptide": {
@@ -1808,9 +1808,9 @@ export const COMPOUNDS: Record<string, Compound> = {
    "teriparatide-forteo",
    "abaloparatide-tymlos",
    "substance-p",
-   "semaglutide",
-   "tirzepatide",
-   "liraglutide"
+   "larazotide",
+   "octreotide",
+   "lanreotide"
   ]
  },
  "substance-p": {
@@ -1864,6 +1864,7 @@ export const COMPOUNDS: Record<string, Compound> = {
   "cvNotes": "Hospital cardiovascular use with strong clinical evidence for specific acute indications (not wellness).",
   "stacksWith": [
    "apelin",
+   "degarelix",
    "semaglutide",
    "tirzepatide",
    "liraglutide",
@@ -1871,8 +1872,7 @@ export const COMPOUNDS: Record<string, Compound> = {
    "dulaglutide",
    "pramlintide",
    "cagrilintide",
-   "retatrutide",
-   "leptin-metreleptin"
+   "retatrutide"
   ]
  },
  "eptifibatide": {
@@ -1895,6 +1895,7 @@ export const COMPOUNDS: Record<string, Compound> = {
   "cvNotes": "Hospital cardiovascular use with strong clinical evidence for specific acute indications (not wellness).",
   "stacksWith": [
    "apelin",
+   "degarelix",
    "semaglutide",
    "tirzepatide",
    "liraglutide",
@@ -1902,8 +1903,7 @@ export const COMPOUNDS: Record<string, Compound> = {
    "dulaglutide",
    "pramlintide",
    "cagrilintide",
-   "retatrutide",
-   "leptin-metreleptin"
+   "retatrutide"
   ]
  },
  "melanotan-ii": {
@@ -1926,15 +1926,15 @@ export const COMPOUNDS: Record<string, Compound> = {
   "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
   "stacksWith": [
    "ghk-cu-copper-peptide",
-   "bremelanotide-vyleesi-pt-141-analog",
+   "bremelanotide",
    "kisspeptin",
    "oxytocin",
+   "gonadorelin",
+   "leuprolide",
+   "triptorelin",
+   "degarelix",
    "semaglutide",
-   "tirzepatide",
-   "liraglutide",
-   "exenatide",
-   "dulaglutide",
-   "pramlintide"
+   "tirzepatide"
   ]
  },
  "msh-analogs": {
@@ -1988,6 +1988,7 @@ export const COMPOUNDS: Record<string, Compound> = {
   "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
   "stacksWith": [
    "vip-vip",
+   "ara-290",
    "semaglutide",
    "tirzepatide",
    "liraglutide",
@@ -1995,8 +1996,7 @@ export const COMPOUNDS: Record<string, Compound> = {
    "dulaglutide",
    "pramlintide",
    "cagrilintide",
-   "retatrutide",
-   "leptin-metreleptin"
+   "retatrutide"
   ]
  },
  "thymopentin": {
@@ -2019,6 +2019,254 @@ export const COMPOUNDS: Record<string, Compound> = {
   "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
   "stacksWith": [
    "vip-vip",
+   "ara-290",
+   "semaglutide",
+   "tirzepatide",
+   "liraglutide",
+   "exenatide",
+   "dulaglutide",
+   "pramlintide",
+   "cagrilintide",
+   "retatrutide"
+  ]
+ },
+ "aod-9604": {
+  "id": "aod-9604",
+  "name": "AOD-9604",
+  "fullName": "AOD-9604 (research)",
+  "category": "Metabolic/Weight",
+  "catId": "metabolic-weight",
+  "purpose": "Metabolic / Weight",
+  "action": "Synthetic C-terminal fragment of hGH (residues 176-191); stimulates lipolysis and inhibits lipogenesis without binding the GH receptor",
+  "effects": "Targets fat metabolism without raising IGF-1 or affecting blood sugar in trials to date",
+  "dosage": "N/A",
+  "cautions": "Not FDA-approved; avoid self-administration; unverified sourcing and purity",
+  "interactions": "No well-established interaction profile for non-approved peptides; avoid combining multiple research compounds; discuss meds with clinician.",
+  "bottomLine": "Popular in research/compounding; human safety/benefit not well-established.",
+  "evidence": "Research/compounded/adjunct (no established FDA indication)",
+  "grade": "D",
+  "bars": 1,
+  "cv": 1,
+  "cvNotes": "Six Phase I/II trials showed a clean safety profile in ~900 participants, but the Phase IIb weight-loss endpoint was not met and development stopped in 2007.",
+  "stacksWith": [
+   "glucagon",
+   "tesamorelin",
+   "somatropin",
+   "sermorelin",
+   "cjc-1295",
+   "ipamorelin",
+   "ghrp-2",
+   "ghrp-6",
+   "bpc-157",
+   "tb-500"
+  ]
+ },
+ "hexarelin": {
+  "id": "hexarelin",
+  "name": "Hexarelin",
+  "fullName": "Hexarelin (research)",
+  "category": "GH Axis",
+  "catId": "gh-axis",
+  "purpose": "GH axis",
+  "action": "Ghrelin receptor agonist (GHS); among the most potent GH-releasing peptides, with reported desensitisation over continued use",
+  "effects": "Signals the GH axis strongly; can affect body composition, fluid retention, cortisol and prolactin",
+  "dosage": "N/A",
+  "cautions": "Not FDA-approved; avoid self-administration; unverified sourcing and purity",
+  "interactions": "No well-established interaction profile for non-approved peptides; avoid combining multiple research compounds; discuss meds with clinician.",
+  "bottomLine": "Popular in research/compounding; human safety/benefit not well-established.",
+  "evidence": "Research/compounded/adjunct (no established FDA indication)",
+  "grade": "D",
+  "bars": 1,
+  "cv": 1,
+  "cvNotes": "Studied for cardiac effects independent of GH release, but no outcomes data; any benefit is unproven.",
+  "stacksWith": [
+   "igf-1-lr3",
+   "tb-500",
+   "mgf",
+   "follistatin-344",
+   "elamipretide",
+   "octreotide",
+   "lanreotide",
+   "semaglutide",
+   "tirzepatide",
+   "liraglutide"
+  ]
+ },
+ "cjc-1295-with-dac": {
+  "id": "cjc-1295-with-dac",
+  "name": "CJC-1295 with DAC",
+  "fullName": "CJC-1295 with DAC (research)",
+  "category": "GH Axis",
+  "catId": "gh-axis",
+  "purpose": "GH axis",
+  "action": "GHRH analog bound to a Drug Affinity Complex, extending half-life to roughly a week versus hours for the unmodified peptide",
+  "effects": "Signals the GH axis continuously rather than in pulses, which is a meaningfully different exposure profile from the no-DAC form",
+  "dosage": "N/A",
+  "cautions": "Not FDA-approved; avoid self-administration; unverified sourcing and purity",
+  "interactions": "No well-established interaction profile for non-approved peptides; avoid combining multiple research compounds; discuss meds with clinician.",
+  "bottomLine": "Popular in research/compounding; human safety/benefit not well-established.",
+  "evidence": "Research/compounded/adjunct (no established FDA indication)",
+  "grade": "D",
+  "bars": 1,
+  "cv": 1,
+  "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
+  "stacksWith": [
+   "igf-1-lr3",
+   "octreotide",
+   "lanreotide",
+   "semaglutide",
+   "tirzepatide",
+   "liraglutide",
+   "exenatide",
+   "dulaglutide",
+   "pramlintide",
+   "cagrilintide"
+  ]
+ },
+ "igf-1-lr3": {
+  "id": "igf-1-lr3",
+  "name": "IGF-1 LR3",
+  "fullName": "IGF-1 LR3 (research)",
+  "category": "Muscle/Performance",
+  "catId": "muscle-performance",
+  "purpose": "Muscle / Performance",
+  "action": "Long-acting IGF-1 analog with reduced binding-protein affinity, extending activity well beyond native IGF-1",
+  "effects": "Drives tissue growth signalling directly rather than via the GH axis; can affect blood sugar",
+  "dosage": "N/A",
+  "cautions": "Not FDA-approved; avoid self-administration; unverified sourcing and purity",
+  "interactions": "No well-established interaction profile for non-approved peptides; avoid combining multiple research compounds; discuss meds with clinician.",
+  "bottomLine": "Popular in research/compounding; human safety/benefit not well-established.",
+  "evidence": "Research/compounded/adjunct (no established FDA indication)",
+  "grade": "D",
+  "bars": 1,
+  "cv": 1,
+  "cvNotes": "No cardiovascular outcomes data; growth-factor signalling carries theoretical proliferative concerns.",
+  "stacksWith": [
+   "somatropin",
+   "hexarelin",
+   "mk-677",
+   "tesamorelin",
+   "sermorelin",
+   "cjc-1295",
+   "ipamorelin",
+   "ghrp-2",
+   "ghrp-6",
+   "tb-500"
+  ]
+ },
+ "mgf": {
+  "id": "mgf",
+  "name": "MGF",
+  "fullName": "MGF (Mechano Growth Factor, research)",
+  "category": "Muscle/Performance",
+  "catId": "muscle-performance",
+  "purpose": "Muscle / Performance",
+  "action": "Splice variant of IGF-1 expressed in muscle after mechanical loading; studied for satellite-cell activation",
+  "effects": "Studied for local repair signalling in muscle after damage",
+  "dosage": "N/A",
+  "cautions": "Not FDA-approved; avoid self-administration; unverified sourcing and purity",
+  "interactions": "No well-established interaction profile for non-approved peptides; avoid combining multiple research compounds; discuss meds with clinician.",
+  "bottomLine": "Popular in research/compounding; human safety/benefit not well-established.",
+  "evidence": "Research/compounded/adjunct (no established FDA indication)",
+  "grade": "D",
+  "bars": 1,
+  "cv": 1,
+  "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
+  "stacksWith": [
+   "tb-500",
+   "somatropin",
+   "bpc-157",
+   "thymosin-beta-4-t-4",
+   "ghk-cu-copper-peptide",
+   "hexarelin",
+   "ara-290",
+   "mk-677",
+   "elamipretide",
+   "semaglutide"
+  ]
+ },
+ "follistatin-344": {
+  "id": "follistatin-344",
+  "name": "Follistatin-344",
+  "fullName": "Follistatin-344 (research)",
+  "category": "Muscle/Performance",
+  "catId": "muscle-performance",
+  "purpose": "Muscle / Performance",
+  "action": "Glycoprotein that binds and neutralises myostatin and related TGF-beta proteins that limit muscle growth",
+  "effects": "Targets the natural brake on muscle growth rather than stimulating growth directly",
+  "dosage": "N/A",
+  "cautions": "Not FDA-approved; avoid self-administration; unverified sourcing and purity",
+  "interactions": "No well-established interaction profile for non-approved peptides; avoid combining multiple research compounds; discuss meds with clinician.",
+  "bottomLine": "Popular in research/compounding; human safety/benefit not well-established.",
+  "evidence": "Research/compounded/adjunct (no established FDA indication)",
+  "grade": "D",
+  "bars": 1,
+  "cv": 1,
+  "cvNotes": "No cardiovascular outcomes data; systemic myostatin inhibition has unclear long-term effects including on cardiac muscle.",
+  "stacksWith": [
+   "somatropin",
+   "tb-500",
+   "hexarelin",
+   "mk-677",
+   "elamipretide",
+   "semaglutide",
+   "tirzepatide",
+   "liraglutide",
+   "exenatide",
+   "dulaglutide"
+  ]
+ },
+ "ara-290": {
+  "id": "ara-290",
+  "name": "ARA-290",
+  "fullName": "ARA-290 (Cibinetide, research)",
+  "category": "Healing/Recovery",
+  "catId": "healing-recovery",
+  "purpose": "Healing / Recovery",
+  "action": "Non-erythropoietic EPO-derived peptide targeting the innate repair receptor; studied in small-fibre neuropathy",
+  "effects": "Studied for nerve repair and inflammatory signalling without the blood-thickening effects of EPO",
+  "dosage": "N/A",
+  "cautions": "Not FDA-approved; avoid self-administration; unverified sourcing and purity",
+  "interactions": "No well-established interaction profile for non-approved peptides; avoid combining multiple research compounds; discuss meds with clinician.",
+  "bottomLine": "Popular in research/compounding; human safety/benefit not well-established.",
+  "evidence": "Research/compounded/adjunct (no established FDA indication)",
+  "grade": "D",
+  "bars": 1,
+  "cv": 1,
+  "cvNotes": "Designed specifically to avoid EPO’s haematocrit and thrombotic effects, but no cardiovascular outcomes data exists.",
+  "stacksWith": [
+   "thymosin-alpha-1-thymalfasin",
+   "ll-37",
+   "vip-vip",
+   "ghk-cu-copper-peptide",
+   "defensins",
+   "thymopentin",
+   "mgf",
+   "thymalin",
+   "icatibant",
+   "enfuvirtide"
+  ]
+ },
+ "p-21": {
+  "id": "p-21",
+  "name": "P-21",
+  "fullName": "P-21 (research)",
+  "category": "Cognition/Mood",
+  "catId": "cognition-mood",
+  "purpose": "Cognition / Mood",
+  "action": "Synthetic peptide analog of ciliary neurotrophic factor; studied for neurogenesis in preclinical models",
+  "effects": "Studied for learning and memory signalling; human data is absent",
+  "dosage": "N/A",
+  "cautions": "Not FDA-approved; avoid self-administration; unverified sourcing and purity",
+  "interactions": "No well-established interaction profile for non-approved peptides; avoid combining multiple research compounds; discuss meds with clinician.",
+  "bottomLine": "Popular in research/compounding; human safety/benefit not well-established.",
+  "evidence": "Research/compounded/adjunct (no established FDA indication)",
+  "grade": "D",
+  "bars": 1,
+  "cv": 0,
+  "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
+  "stacksWith": [
+   "vip-vip",
    "semaglutide",
    "tirzepatide",
    "liraglutide",
@@ -2029,8 +2277,814 @@ export const COMPOUNDS: Record<string, Compound> = {
    "retatrutide",
    "leptin-metreleptin"
   ]
+ },
+ "larazotide": {
+  "id": "larazotide",
+  "name": "Larazotide",
+  "fullName": "Larazotide (research)",
+  "category": "GI/Bone/Other",
+  "catId": "gi-bone-other",
+  "purpose": "GI / Bone / Other",
+  "action": "Tight-junction regulator studied for intestinal permeability in coeliac disease",
+  "effects": "Studied for gut barrier integrity; failed its Phase 3 endpoint in coeliac disease in 2022",
+  "dosage": "N/A",
+  "cautions": "Not FDA-approved; avoid self-administration; unverified sourcing and purity",
+  "interactions": "No well-established interaction profile for non-approved peptides; avoid combining multiple research compounds; discuss meds with clinician.",
+  "bottomLine": "Popular in research/compounding; human safety/benefit not well-established.",
+  "evidence": "Research/compounded/adjunct (no established FDA indication)",
+  "grade": "D",
+  "bars": 1,
+  "cv": 0,
+  "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
+  "stacksWith": [
+   "desmopressin-ddavp",
+   "teriparatide-forteo",
+   "abaloparatide-tymlos",
+   "cgrp-calcitonin-gene-related-peptide",
+   "semaglutide",
+   "tirzepatide",
+   "liraglutide",
+   "exenatide",
+   "dulaglutide",
+   "pramlintide"
+  ]
+ },
+ "mk-677": {
+  "id": "mk-677",
+  "name": "MK-677",
+  "fullName": "MK-677 (Ibutamoren; not a peptide)",
+  "category": "GH Axis",
+  "catId": "gh-axis",
+  "purpose": "GH axis",
+  "action": "Orally active non-peptide ghrelin receptor agonist; included here because it is used interchangeably with GH secretagogue peptides",
+  "effects": "Raises GH and IGF-1 orally; commonly increases appetite, water retention and fasting glucose",
+  "dosage": "N/A",
+  "cautions": "Not FDA-approved; avoid self-administration; unverified sourcing and purity",
+  "interactions": "No well-established interaction profile for non-approved peptides; avoid combining multiple research compounds; discuss meds with clinician.",
+  "bottomLine": "Popular in research/compounding; human safety/benefit not well-established.",
+  "evidence": "Research/compounded/adjunct (no established FDA indication)",
+  "grade": "D",
+  "bars": 1,
+  "cv": 1,
+  "cvNotes": "Raises IGF-1 and can worsen insulin sensitivity and fluid retention; a heart-failure trial was stopped early.",
+  "stacksWith": [
+   "igf-1-lr3",
+   "tb-500",
+   "mgf",
+   "follistatin-344",
+   "elamipretide",
+   "octreotide",
+   "lanreotide",
+   "semaglutide",
+   "tirzepatide",
+   "liraglutide"
+  ]
+ },
+ "5-amino-1mq": {
+  "id": "5-amino-1mq",
+  "name": "5-Amino-1MQ",
+  "fullName": "5-Amino-1MQ (not a peptide)",
+  "category": "Metabolic/Weight",
+  "catId": "metabolic-weight",
+  "purpose": "Metabolic / Weight",
+  "action": "Small-molecule NNMT inhibitor; included here because it is used alongside metabolic peptides",
+  "effects": "Studied for fat-cell metabolism in preclinical models; no human trials",
+  "dosage": "N/A",
+  "cautions": "Not FDA-approved; avoid self-administration; unverified sourcing and purity",
+  "interactions": "No well-established interaction profile for non-approved peptides; avoid combining multiple research compounds; discuss meds with clinician.",
+  "bottomLine": "Popular in research/compounding; human safety/benefit not well-established.",
+  "evidence": "Research/compounded/adjunct (no established FDA indication)",
+  "grade": "D",
+  "bars": 1,
+  "cv": 0,
+  "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
+  "stacksWith": [
+   "epitalon-epithalon",
+   "nad",
+   "humanin",
+   "ghk-cu-copper-peptide",
+   "thymalin",
+   "pinealon",
+   "elamipretide",
+   "glucagon",
+   "tesamorelin",
+   "somatropin"
+  ]
+ },
+ "snap-8": {
+  "id": "snap-8",
+  "name": "Snap-8",
+  "fullName": "Snap-8 (Acetyl octapeptide-3)",
+  "category": "Skin/Hair",
+  "catId": "skin-hair",
+  "purpose": "Cosmetic",
+  "action": "Topical peptide that interferes with SNARE-complex formation, reducing muscle contraction at the skin surface",
+  "effects": "Topical only; studied for expression-line appearance",
+  "dosage": "Topical product-dependent",
+  "cautions": "Topical cosmetic use; systemic effects not established",
+  "interactions": "Topical use; no established systemic interaction profile.",
+  "bottomLine": "Cosmetic ingredient with limited independent efficacy data.",
+  "evidence": "Mixed/unclear regulatory status",
+  "grade": "C",
+  "bars": 2,
+  "cv": 0,
+  "cvNotes": "Topical cosmetic use; no systemic cardiovascular relevance.",
+  "stacksWith": [
+   "ghk-cu-copper-peptide",
+   "semaglutide",
+   "tirzepatide",
+   "liraglutide",
+   "exenatide",
+   "dulaglutide",
+   "pramlintide",
+   "cagrilintide",
+   "retatrutide",
+   "leptin-metreleptin"
+  ]
+ },
+ "thymalin": {
+  "id": "thymalin",
+  "name": "Thymalin",
+  "fullName": "Thymalin (region-specific)",
+  "category": "Immune/Anti-inf",
+  "catId": "immune-anti-inf",
+  "purpose": "Immune modulation",
+  "action": "Thymic peptide preparation used in Russia and some CIS states for immune restoration; part of the Khavinson peptide work",
+  "effects": "Studied for immune restoration in older adults; often paired with Epitalon in longevity protocols",
+  "dosage": "Per local prescribing information where approved",
+  "cautions": "Not FDA-approved; approval and quality standards vary by country",
+  "interactions": "Limited interaction data; discuss with a clinician, particularly alongside immunosuppressants.",
+  "bottomLine": "Approved in some jurisdictions; not FDA-reviewed, so US access is via unregulated channels.",
+  "evidence": "Region-specific approval (not US FDA)",
+  "grade": "B",
+  "bars": 3,
+  "cv": 1,
+  "cvNotes": "Long-term follow-up studies claim mortality benefit but are small and not independently replicated.",
+  "stacksWith": [
+   "vip-vip",
+   "epitalon-epithalon",
+   "nad",
+   "mots-c",
+   "humanin",
+   "ghk-cu-copper-peptide",
+   "ara-290",
+   "5-amino-1mq",
+   "pinealon",
+   "elamipretide"
+  ]
+ },
+ "pinealon": {
+  "id": "pinealon",
+  "name": "Pinealon",
+  "fullName": "Pinealon (region-specific)",
+  "category": "Cognition/Mood",
+  "catId": "cognition-mood",
+  "purpose": "Cognition / Mood",
+  "action": "Short peptide bioregulator from the Khavinson series, studied for neuronal protection",
+  "effects": "Studied for neuronal resilience; human evidence is limited and largely single-group",
+  "dosage": "Per local prescribing information where approved",
+  "cautions": "Not FDA-approved; approval and quality standards vary by country",
+  "interactions": "Limited interaction data; discuss with a clinician.",
+  "bottomLine": "Approved in some jurisdictions; not FDA-reviewed, so US access is via unregulated channels.",
+  "evidence": "Region-specific approval (not US FDA)",
+  "grade": "B",
+  "bars": 3,
+  "cv": 0,
+  "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
+  "stacksWith": [
+   "vip-vip",
+   "epitalon-epithalon",
+   "nad",
+   "mots-c",
+   "humanin",
+   "ghk-cu-copper-peptide",
+   "5-amino-1mq",
+   "thymalin",
+   "elamipretide",
+   "semaglutide"
+  ]
+ },
+ "elamipretide": {
+  "id": "elamipretide",
+  "name": "Elamipretide",
+  "fullName": "Elamipretide (Forzinity/SS-31)",
+  "category": "Longevity",
+  "catId": "longevity",
+  "purpose": "Longevity / Mitochondrial",
+  "action": "Mitochondria-targeting tetrapeptide that binds cardiolipin in the inner mitochondrial membrane, improving cristae structure and respiration",
+  "effects": "Restores mitochondrial membrane structure; the first mitochondria-targeted peptide to reach FDA approval (2025)",
+  "dosage": "40 mg SC once daily (per labelled indication)",
+  "cautions": "Injection-site reactions; approved only for Barth syndrome — longevity use is off-label and unstudied",
+  "interactions": "Limited published interaction data; follow the prescribing information and clinician guidance.",
+  "bottomLine": "Strongest data when used for its labeled indication under clinician guidance.",
+  "evidence": "FDA-approved Rx (labeled use)",
+  "grade": "A",
+  "bars": 4,
+  "cv": 2,
+  "cvNotes": "Cardiolipin is concentrated in cardiac tissue and heart-failure trials were run, but the approved indication is Barth syndrome, not cardiac disease.",
+  "stacksWith": [
+   "somatropin",
+   "tb-500",
+   "mots-c",
+   "ghk-cu-copper-peptide",
+   "hexarelin",
+   "igf-1-lr3",
+   "mgf",
+   "follistatin-344",
+   "mk-677",
+   "5-amino-1mq"
+  ]
+ },
+ "afamelanotide": {
+  "id": "afamelanotide",
+  "name": "Afamelanotide",
+  "fullName": "Afamelanotide (Scenesse / Melanotan I)",
+  "category": "Skin/Hair",
+  "catId": "skin-hair",
+  "purpose": "Skin / Photoprotection",
+  "action": "Melanocortin-1 receptor agonist; increases eumelanin to raise the skin’s tolerance of light",
+  "effects": "Raises light tolerance in a rare photosensitivity disorder; distinct from Melanotan II, which is unapproved",
+  "dosage": "16 mg subcutaneous implant every 2 months",
+  "cautions": "Implant-site reactions; darkening of skin and moles requires skin monitoring; not a tanning product",
+  "interactions": "Follow the prescribing information; regular full-body skin examination is required.",
+  "bottomLine": "Strongest data when used for its labeled indication under clinician guidance.",
+  "evidence": "FDA-approved Rx (labeled use)",
+  "grade": "A",
+  "bars": 4,
+  "cv": 1,
+  "cvNotes": "No meaningful cardiovascular signal at the labelled dose; unlike Melanotan II it is MC1R-selective.",
+  "stacksWith": [
+   "ghk-cu-copper-peptide",
+   "semaglutide",
+   "tirzepatide",
+   "liraglutide",
+   "exenatide",
+   "dulaglutide",
+   "pramlintide",
+   "cagrilintide",
+   "retatrutide",
+   "leptin-metreleptin"
+  ]
+ },
+ "gonadorelin": {
+  "id": "gonadorelin",
+  "name": "Gonadorelin",
+  "fullName": "Gonadorelin (GnRH)",
+  "category": "Sexual Health",
+  "catId": "sexual-health",
+  "purpose": "Reproductive axis",
+  "action": "Synthetic gonadotropin-releasing hormone; stimulates pituitary LH and FSH release",
+  "effects": "Stimulates the body’s own LH and FSH rather than replacing testosterone; commonly used alongside TRT to maintain testicular function",
+  "dosage": "Diagnostic: 100 mcg SC or IV; other regimens per prescribing information",
+  "cautions": "Pulsatile dosing matters — continuous exposure downregulates the axis and suppresses gonadotropins",
+  "interactions": "Effects are altered by sex-hormone therapies and other GnRH agents; coordinate with the prescribing clinician.",
+  "bottomLine": "Strongest data when used for its labeled indication under clinician guidance.",
+  "evidence": "FDA-approved Rx (labeled use)",
+  "grade": "A",
+  "bars": 4,
+  "cv": 1,
+  "cvNotes": "No direct cardiovascular outcomes data; effects are mediated through sex-hormone changes.",
+  "stacksWith": [
+   "oxytocin",
+   "melanotan-ii",
+   "semaglutide",
+   "tirzepatide",
+   "liraglutide",
+   "exenatide",
+   "dulaglutide",
+   "pramlintide",
+   "cagrilintide",
+   "retatrutide"
+  ]
+ },
+ "setmelanotide": {
+  "id": "setmelanotide",
+  "name": "Setmelanotide",
+  "fullName": "Setmelanotide (Imcivree)",
+  "category": "Metabolic/Weight",
+  "catId": "metabolic-weight",
+  "purpose": "Metabolic / Weight",
+  "action": "MC4R agonist restoring signalling in the melanocortin pathway for specific genetic obesity syndromes",
+  "effects": "Targets a specific inherited defect in appetite signalling; not a general weight-loss drug",
+  "dosage": "2-3 mg SC once daily following titration (per prescribing information)",
+  "cautions": "Skin hyperpigmentation; injection-site reactions; sexual adverse events including priapism; depression and suicidal ideation reported",
+  "interactions": "Monitor for depression and skin changes; follow the prescribing information.",
+  "bottomLine": "Strongest data when used for its labeled indication under clinician guidance.",
+  "evidence": "FDA-approved Rx (labeled use)",
+  "grade": "A",
+  "bars": 4,
+  "cv": 1,
+  "cvNotes": "Weight reduction in the labelled population is substantial, but no cardiovascular outcomes trials support broader use.",
+  "stacksWith": [
+   "glucagon",
+   "tesamorelin",
+   "somatropin",
+   "sermorelin",
+   "cjc-1295",
+   "ipamorelin",
+   "ghrp-2",
+   "ghrp-6",
+   "bpc-157",
+   "tb-500"
+  ]
+ },
+ "octreotide": {
+  "id": "octreotide",
+  "name": "Octreotide",
+  "fullName": "Octreotide (Sandostatin)",
+  "category": "GI/Bone/Other",
+  "catId": "gi-bone-other",
+  "purpose": "Endocrine / GI",
+  "action": "Somatostatin analog suppressing GH, insulin, glucagon and multiple GI hormones",
+  "effects": "Suppresses the GH axis rather than stimulating it — the mirror image of the secretagogue peptides",
+  "dosage": "Immediate release 50-100 mcg SC two to three times daily; LAR 20 mg IM every 4 weeks",
+  "cautions": "Gallstones with prolonged use; glucose dysregulation in both directions; bradycardia; GI upset",
+  "interactions": "Alters insulin and oral diabetes medication requirements; affects ciclosporin and bromocriptine levels; monitor thyroid function.",
+  "bottomLine": "Strongest data when used for its labeled indication under clinician guidance.",
+  "evidence": "FDA-approved Rx (labeled use)",
+  "grade": "A",
+  "bars": 4,
+  "cv": 2,
+  "cvNotes": "Can cause bradycardia and conduction changes; monitor in patients with existing cardiac disease.",
+  "stacksWith": [
+   "tesamorelin",
+   "somatropin",
+   "sermorelin",
+   "cjc-1295",
+   "ipamorelin",
+   "ghrp-2",
+   "ghrp-6",
+   "desmopressin-ddavp",
+   "teriparatide-forteo",
+   "abaloparatide-tymlos"
+  ]
+ },
+ "lanreotide": {
+  "id": "lanreotide",
+  "name": "Lanreotide",
+  "fullName": "Lanreotide (Somatuline Depot)",
+  "category": "GI/Bone/Other",
+  "catId": "gi-bone-other",
+  "purpose": "Endocrine / GI",
+  "action": "Long-acting somatostatin analog; suppresses GH and IGF-1 and slows neuroendocrine tumour progression",
+  "effects": "Same axis as octreotide with a longer dosing interval",
+  "dosage": "90-120 mg by deep subcutaneous injection every 4 weeks",
+  "cautions": "Gallstones; glucose dysregulation; bradycardia; injection-site reactions",
+  "interactions": "Alters insulin and oral diabetes medication requirements; affects ciclosporin levels.",
+  "bottomLine": "Strongest data when used for its labeled indication under clinician guidance.",
+  "evidence": "FDA-approved Rx (labeled use)",
+  "grade": "A",
+  "bars": 4,
+  "cv": 2,
+  "cvNotes": "Bradycardia and conduction effects are recognised; monitor in patients with existing cardiac disease.",
+  "stacksWith": [
+   "tesamorelin",
+   "somatropin",
+   "sermorelin",
+   "cjc-1295",
+   "ipamorelin",
+   "ghrp-2",
+   "ghrp-6",
+   "desmopressin-ddavp",
+   "teriparatide-forteo",
+   "abaloparatide-tymlos"
+  ]
+ },
+ "leuprolide": {
+  "id": "leuprolide",
+  "name": "Leuprolide",
+  "fullName": "Leuprolide (Lupron Depot)",
+  "category": "Sexual Health",
+  "catId": "sexual-health",
+  "purpose": "Reproductive axis",
+  "action": "GnRH agonist; after an initial flare it downregulates the pituitary and suppresses sex-hormone production",
+  "effects": "Shuts the reproductive axis down rather than stimulating it; the opposite direction to gonadorelin",
+  "dosage": "7.5 mg IM monthly (depot); other depot strengths per prescribing information",
+  "cautions": "Initial testosterone flare; bone-density loss with prolonged use; hot flushes; mood changes",
+  "interactions": "Additive effects with other hormone therapies; may prolong QT; review concurrent QT-prolonging drugs.",
+  "bottomLine": "Strongest data when used for its labeled indication under clinician guidance.",
+  "evidence": "FDA-approved Rx (labeled use)",
+  "grade": "A",
+  "bars": 4,
+  "cv": 2,
+  "cvNotes": "Androgen deprivation is associated with adverse cardiometabolic changes over time; monitor lipids and glucose.",
+  "stacksWith": [
+   "oxytocin",
+   "melanotan-ii",
+   "semaglutide",
+   "tirzepatide",
+   "liraglutide",
+   "exenatide",
+   "dulaglutide",
+   "pramlintide",
+   "cagrilintide",
+   "retatrutide"
+  ]
+ },
+ "triptorelin": {
+  "id": "triptorelin",
+  "name": "Triptorelin",
+  "fullName": "Triptorelin (Trelstar)",
+  "category": "Sexual Health",
+  "catId": "sexual-health",
+  "purpose": "Reproductive axis",
+  "action": "GnRH agonist producing sustained gonadotropin suppression after an initial flare",
+  "effects": "Same mechanism as leuprolide with a different depot profile",
+  "dosage": "3.75 mg IM monthly; longer-acting depots per prescribing information",
+  "cautions": "Initial hormone flare; bone-density loss; hot flushes; injection-site reactions",
+  "interactions": "Additive with other hormone therapies; may prolong QT.",
+  "bottomLine": "Strongest data when used for its labeled indication under clinician guidance.",
+  "evidence": "FDA-approved Rx (labeled use)",
+  "grade": "A",
+  "bars": 4,
+  "cv": 2,
+  "cvNotes": "Androgen deprivation carries recognised cardiometabolic risk over time.",
+  "stacksWith": [
+   "oxytocin",
+   "melanotan-ii",
+   "semaglutide",
+   "tirzepatide",
+   "liraglutide",
+   "exenatide",
+   "dulaglutide",
+   "pramlintide",
+   "cagrilintide",
+   "retatrutide"
+  ]
+ },
+ "degarelix": {
+  "id": "degarelix",
+  "name": "Degarelix",
+  "fullName": "Degarelix (Firmagon)",
+  "category": "Sexual Health",
+  "catId": "sexual-health",
+  "purpose": "Reproductive axis",
+  "action": "GnRH receptor antagonist; suppresses testosterone immediately with no initial flare",
+  "effects": "Blocks the receptor directly, avoiding the testosterone surge that agonists cause",
+  "dosage": "240 mg SC loading dose, then 80 mg SC every 28 days",
+  "cautions": "Injection-site reactions are common; hot flushes; transaminase elevations",
+  "interactions": "Additive with other hormone therapies; may prolong QT.",
+  "bottomLine": "Strongest data when used for its labeled indication under clinician guidance.",
+  "evidence": "FDA-approved Rx (labeled use)",
+  "grade": "A",
+  "bars": 4,
+  "cv": 2,
+  "cvNotes": "Some comparative data suggest fewer cardiovascular events than GnRH agonists in men with existing cardiac disease.",
+  "stacksWith": [
+   "oxytocin",
+   "anp-atrial-natriuretic-peptide",
+   "bnp-b-type-natriuretic-peptide",
+   "apelin",
+   "adrenomedullin",
+   "vasopressin",
+   "bivalirudin",
+   "eptifibatide",
+   "melanotan-ii",
+   "semaglutide"
+  ]
+ },
+ "linaclotide": {
+  "id": "linaclotide",
+  "name": "Linaclotide",
+  "fullName": "Linaclotide (Linzess)",
+  "category": "GI/Bone/Other",
+  "catId": "gi-bone-other",
+  "purpose": "GI",
+  "action": "Guanylate cyclase-C agonist; increases intestinal fluid secretion and accelerates transit",
+  "effects": "Acts locally in the gut with minimal systemic absorption",
+  "dosage": "72-290 mcg orally once daily depending on indication",
+  "cautions": "Diarrhoea is the most common adverse effect; contraindicated under 2 years of age",
+  "interactions": "Severe diarrhoea can affect absorption of other oral medicines and electrolyte balance.",
+  "bottomLine": "Strongest data when used for its labeled indication under clinician guidance.",
+  "evidence": "FDA-approved Rx (labeled use)",
+  "grade": "A",
+  "bars": 4,
+  "cv": 0,
+  "cvNotes": "Minimal systemic absorption; no meaningful cardiovascular signal.",
+  "stacksWith": [
+   "desmopressin-ddavp",
+   "teriparatide-forteo",
+   "abaloparatide-tymlos",
+   "cgrp-calcitonin-gene-related-peptide",
+   "semaglutide",
+   "tirzepatide",
+   "liraglutide",
+   "exenatide",
+   "dulaglutide",
+   "pramlintide"
+  ]
+ },
+ "plecanatide": {
+  "id": "plecanatide",
+  "name": "Plecanatide",
+  "fullName": "Plecanatide (Trulance)",
+  "category": "GI/Bone/Other",
+  "catId": "gi-bone-other",
+  "purpose": "GI",
+  "action": "Guanylate cyclase-C agonist structurally close to uroguanylin; increases intestinal fluid secretion",
+  "effects": "Same target as linaclotide with pH-dependent activity",
+  "dosage": "3 mg orally once daily; 6 mg for IBS-C per prescribing information",
+  "cautions": "Diarrhoea; contraindicated under 6 years of age and in known mechanical obstruction",
+  "interactions": "Severe diarrhoea can affect absorption of other oral medicines and electrolyte balance.",
+  "bottomLine": "Strongest data when used for its labeled indication under clinician guidance.",
+  "evidence": "FDA-approved Rx (labeled use)",
+  "grade": "A",
+  "bars": 4,
+  "cv": 0,
+  "cvNotes": "Minimal systemic absorption; no meaningful cardiovascular signal.",
+  "stacksWith": [
+   "desmopressin-ddavp",
+   "teriparatide-forteo",
+   "abaloparatide-tymlos",
+   "cgrp-calcitonin-gene-related-peptide",
+   "semaglutide",
+   "tirzepatide",
+   "liraglutide",
+   "exenatide",
+   "dulaglutide",
+   "pramlintide"
+  ]
+ },
+ "icatibant": {
+  "id": "icatibant",
+  "name": "Icatibant",
+  "fullName": "Icatibant (Firazyr)",
+  "category": "Immune/Anti-inf",
+  "catId": "immune-anti-inf",
+  "purpose": "Immune / Inflammatory",
+  "action": "Bradykinin B2 receptor antagonist; blocks the mediator driving hereditary angioedema attacks",
+  "effects": "Treats an attack in progress rather than preventing one",
+  "dosage": "30 mg SC as a single dose; may repeat per prescribing information",
+  "cautions": "Injection-site reactions are near-universal; laryngeal attacks still require emergency care",
+  "interactions": "May reduce the antihypertensive effect of ACE inhibitors; discuss with the prescribing clinician.",
+  "bottomLine": "Strongest data when used for its labeled indication under clinician guidance.",
+  "evidence": "FDA-approved Rx (labeled use)",
+  "grade": "A",
+  "bars": 4,
+  "cv": 1,
+  "cvNotes": "No adverse cardiovascular signal at labelled use; bradykinin blockade is theoretically relevant to ACE-inhibitor effects.",
+  "stacksWith": [
+   "vip-vip",
+   "ara-290",
+   "semaglutide",
+   "tirzepatide",
+   "liraglutide",
+   "exenatide",
+   "dulaglutide",
+   "pramlintide",
+   "cagrilintide",
+   "retatrutide"
+  ]
+ },
+ "enfuvirtide": {
+  "id": "enfuvirtide",
+  "name": "Enfuvirtide",
+  "fullName": "Enfuvirtide (Fuzeon)",
+  "category": "Immune/Anti-inf",
+  "catId": "immune-anti-inf",
+  "purpose": "Antiviral",
+  "action": "HIV-1 fusion inhibitor; binds gp41 and prevents viral entry into the cell",
+  "effects": "A peptide that works mechanically by blocking viral entry rather than by signalling",
+  "dosage": "90 mg SC twice daily",
+  "cautions": "Injection-site reactions are near-universal; hypersensitivity reactions; increased bacterial pneumonia risk",
+  "interactions": "No significant CYP-mediated interactions; coordinate within the full antiretroviral regimen.",
+  "bottomLine": "Strongest data when used for its labeled indication under clinician guidance.",
+  "evidence": "FDA-approved Rx (labeled use)",
+  "grade": "A",
+  "bars": 4,
+  "cv": 1,
+  "cvNotes": "No direct cardiovascular signal attributable to the drug itself.",
+  "stacksWith": [
+   "vip-vip",
+   "ara-290",
+   "semaglutide",
+   "tirzepatide",
+   "liraglutide",
+   "exenatide",
+   "dulaglutide",
+   "pramlintide",
+   "cagrilintide",
+   "retatrutide"
+  ]
+ },
+ "mazdutide": {
+  "id": "mazdutide",
+  "name": "Mazdutide",
+  "fullName": "Mazdutide (region-specific)",
+  "category": "Metabolic/Weight",
+  "catId": "metabolic-weight",
+  "purpose": "Metabolic / Weight",
+  "action": "Dual GLP-1 and glucagon receptor agonist; the glucagon arm adds energy expenditure to appetite suppression",
+  "effects": "Beat semaglutide 1 mg on both weight and glycaemic control in a head-to-head Phase 3 trial",
+  "dosage": "Per local prescribing information where approved",
+  "cautions": "Approved in China; not FDA-approved. GI effects typical of the incretin class.",
+  "interactions": "Delays gastric emptying, which affects absorption of oral medicines; hypoglycaemia risk with insulin or sulfonylureas.",
+  "bottomLine": "Approved in some jurisdictions; not FDA-reviewed, so US access is via unregulated channels.",
+  "evidence": "Region-specific approval (not US FDA)",
+  "grade": "B",
+  "bars": 3,
+  "cv": 3,
+  "cvNotes": "Strong metabolic and weight effects imply cardiometabolic benefit, but no dedicated cardiovascular outcomes trial has reported.",
+  "stacksWith": [
+   "glucagon",
+   "tesamorelin",
+   "somatropin",
+   "sermorelin",
+   "cjc-1295",
+   "ipamorelin",
+   "ghrp-2",
+   "ghrp-6",
+   "bpc-157",
+   "tb-500"
+  ]
+ },
+ "survodutide": {
+  "id": "survodutide",
+  "name": "Survodutide",
+  "fullName": "Survodutide (research)",
+  "category": "Metabolic/Weight",
+  "catId": "metabolic-weight",
+  "purpose": "Metabolic / Weight",
+  "action": "Dual GLP-1 and glucagon receptor agonist in Phase 3 development",
+  "effects": "Produced 16.6% weight loss at 76 weeks in Phase 3; also studied in MASH",
+  "dosage": "N/A",
+  "cautions": "Not FDA-approved; avoid self-administration; unverified sourcing and purity",
+  "interactions": "No well-established interaction profile for non-approved peptides; avoid combining multiple research compounds; discuss meds with clinician.",
+  "bottomLine": "Popular in research/compounding; human safety/benefit not well-established.",
+  "evidence": "Research/compounded/adjunct (no established FDA indication)",
+  "grade": "D",
+  "bars": 1,
+  "cv": 2,
+  "cvNotes": "Phase 3 weight and liver data are strong, but no cardiovascular outcomes trial has reported and it is not approved anywhere.",
+  "stacksWith": [
+   "glucagon",
+   "tesamorelin",
+   "somatropin",
+   "sermorelin",
+   "cjc-1295",
+   "ipamorelin",
+   "ghrp-2",
+   "ghrp-6",
+   "bpc-157",
+   "tb-500"
+  ]
+ },
+ "cagrisema": {
+  "id": "cagrisema",
+  "name": "CagriSema",
+  "fullName": "CagriSema (research)",
+  "category": "Metabolic/Weight",
+  "catId": "metabolic-weight",
+  "purpose": "Metabolic / Weight",
+  "action": "Fixed-dose combination of cagrilintide (amylin analog) and semaglutide (GLP-1 agonist)",
+  "effects": "Combines two established mechanisms; among the most-watched obesity candidates",
+  "dosage": "N/A",
+  "cautions": "Not FDA-approved; avoid self-administration; unverified sourcing and purity",
+  "interactions": "No well-established interaction profile for non-approved peptides; avoid combining multiple research compounds; discuss meds with clinician.",
+  "bottomLine": "Popular in research/compounding; human safety/benefit not well-established.",
+  "evidence": "Research/compounded/adjunct (no established FDA indication)",
+  "grade": "D",
+  "bars": 1,
+  "cv": 2,
+  "cvNotes": "Semaglutide has cardiovascular outcomes data on its own; the combination does not yet.",
+  "stacksWith": [
+   "glucagon",
+   "tesamorelin",
+   "somatropin",
+   "sermorelin",
+   "cjc-1295",
+   "ipamorelin",
+   "ghrp-2",
+   "ghrp-6",
+   "bpc-157",
+   "tb-500"
+  ]
+ },
+ "pemvidutide": {
+  "id": "pemvidutide",
+  "name": "Pemvidutide",
+  "fullName": "Pemvidutide (research)",
+  "category": "Metabolic/Weight",
+  "catId": "metabolic-weight",
+  "purpose": "Metabolic / Weight",
+  "action": "GLP-1 and glucagon dual agonist in development for obesity and MASH",
+  "effects": "Studied for weight loss with a stated emphasis on preserving lean mass",
+  "dosage": "N/A",
+  "cautions": "Not FDA-approved; avoid self-administration; unverified sourcing and purity",
+  "interactions": "No well-established interaction profile for non-approved peptides; avoid combining multiple research compounds; discuss meds with clinician.",
+  "bottomLine": "Popular in research/compounding; human safety/benefit not well-established.",
+  "evidence": "Research/compounded/adjunct (no established FDA indication)",
+  "grade": "D",
+  "bars": 1,
+  "cv": 1,
+  "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
+  "stacksWith": [
+   "glucagon",
+   "tesamorelin",
+   "somatropin",
+   "sermorelin",
+   "cjc-1295",
+   "ipamorelin",
+   "ghrp-2",
+   "ghrp-6",
+   "bpc-157",
+   "tb-500"
+  ]
+ },
+ "petrelintide": {
+  "id": "petrelintide",
+  "name": "Petrelintide",
+  "fullName": "Petrelintide (research)",
+  "category": "Metabolic/Weight",
+  "catId": "metabolic-weight",
+  "purpose": "Metabolic / Weight",
+  "action": "Long-acting amylin analog developed as a monotherapy and as an incretin combination partner",
+  "effects": "Targets satiety through the amylin pathway rather than GLP-1",
+  "dosage": "N/A",
+  "cautions": "Not FDA-approved; avoid self-administration; unverified sourcing and purity",
+  "interactions": "No well-established interaction profile for non-approved peptides; avoid combining multiple research compounds; discuss meds with clinician.",
+  "bottomLine": "Popular in research/compounding; human safety/benefit not well-established.",
+  "evidence": "Research/compounded/adjunct (no established FDA indication)",
+  "grade": "D",
+  "bars": 1,
+  "cv": 1,
+  "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
+  "stacksWith": [
+   "glucagon",
+   "tesamorelin",
+   "somatropin",
+   "sermorelin",
+   "cjc-1295",
+   "ipamorelin",
+   "ghrp-2",
+   "ghrp-6",
+   "bpc-157",
+   "tb-500"
+  ]
+ },
+ "maritide": {
+  "id": "maritide",
+  "name": "MariTide",
+  "fullName": "MariTide (maridebart cafraglutide, research)",
+  "category": "Metabolic/Weight",
+  "catId": "metabolic-weight",
+  "purpose": "Metabolic / Weight",
+  "action": "GLP-1 receptor agonist and GIP receptor antagonist antibody-peptide conjugate; dosed monthly or less often",
+  "effects": "Blocks GIP rather than agonising it — the opposite approach to tirzepatide",
+  "dosage": "N/A",
+  "cautions": "Not FDA-approved; avoid self-administration; unverified sourcing and purity",
+  "interactions": "No well-established interaction profile for non-approved peptides; avoid combining multiple research compounds; discuss meds with clinician.",
+  "bottomLine": "Popular in research/compounding; human safety/benefit not well-established.",
+  "evidence": "Research/compounded/adjunct (no established FDA indication)",
+  "grade": "D",
+  "bars": 1,
+  "cv": 1,
+  "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
+  "stacksWith": [
+   "glucagon",
+   "tesamorelin",
+   "somatropin",
+   "sermorelin",
+   "cjc-1295",
+   "ipamorelin",
+   "ghrp-2",
+   "ghrp-6",
+   "bpc-157",
+   "tb-500"
+  ]
+ },
+ "ecnoglutide": {
+  "id": "ecnoglutide",
+  "name": "Ecnoglutide",
+  "fullName": "Ecnoglutide (research)",
+  "category": "Metabolic/Weight",
+  "catId": "metabolic-weight",
+  "purpose": "Metabolic / Weight",
+  "action": "Long-acting GLP-1 receptor agonist engineered for cAMP-biased signalling",
+  "effects": "Phase 3 weight and glycaemic data reported; regulatory status outside the US varies",
+  "dosage": "N/A",
+  "cautions": "Not FDA-approved; avoid self-administration; unverified sourcing and purity",
+  "interactions": "No well-established interaction profile for non-approved peptides; avoid combining multiple research compounds; discuss meds with clinician.",
+  "bottomLine": "Popular in research/compounding; human safety/benefit not well-established.",
+  "evidence": "Research/compounded/adjunct (no established FDA indication)",
+  "grade": "D",
+  "bars": 1,
+  "cv": 1,
+  "cvNotes": "No solid direct cardiovascular outcomes evidence; any benefit is indirect or unproven.",
+  "stacksWith": [
+   "glucagon",
+   "tesamorelin",
+   "somatropin",
+   "sermorelin",
+   "cjc-1295",
+   "ipamorelin",
+   "ghrp-2",
+   "ghrp-6",
+   "bpc-157",
+   "tb-500"
+  ]
  }
-};
+}
 
 export const STACK: StackEntry[] = [
   {
@@ -2277,7 +3331,7 @@ export const SITES: Site[] = [
   }
 ];
 
-export const COUNTS: Counts = { compounds: 58, categories: 12, stack: 6 };
+export const COUNTS: Counts = { compounds: 92, categories: 12, stack: 6 };
 
 // ── Derived accessors ────────────────────────────────────────────────────────
 
@@ -2324,7 +3378,7 @@ export function taxonomyMismatch(entry: Compound): Category | null {
   // Only a real contradiction if the taxonomy HAS a home for the stated purpose
   // and the compound is filed somewhere else. Merely different vocabulary —
   // "Cardiovascular" vs the "Cardio/Vascular" category — is not a disagreement,
-  // and treating it as one flagged 31 of 58 compounds.
+  // and treating it as one flagged 40 of 92 compounds.
   if (matchesCategory(own, purpose)) return null
 
   return (
@@ -2345,7 +3399,7 @@ function matchesCategory(category: Category, normalisedPurpose: string): boolean
 
 /**
  * Compounds whose stated purpose names a category they are not filed under.
- * Three at time of porting: GHK-Cu, VIP and Apelin.
+ * Three at time of writing: GHK-Cu, VIP and Apelin.
  */
 export function mismatchedCompounds(): Compound[] {
   return COMPOUND_LIST.filter((entry) => taxonomyMismatch(entry) !== null)
