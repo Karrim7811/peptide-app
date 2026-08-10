@@ -25,6 +25,30 @@ export interface Payment {
   created_at: string
 }
 
+export type ServiceRequestStatus = 'open' | 'in_progress' | 'resolved' | 'cancelled'
+export type ServiceRequestCategory =
+  | 'plumbing'
+  | 'electrical'
+  | 'appliance'
+  | 'hvac'
+  | 'pest'
+  | 'general'
+
+export interface ServiceRequest {
+  id: string
+  tenant_id: string
+  category: ServiceRequestCategory
+  title: string
+  description: string
+  status: ServiceRequestStatus
+  created_at: string
+  updated_at: string
+}
+
+export interface AdminServiceRequestRow extends ServiceRequest {
+  tenants: Pick<Tenant, 'full_name' | 'unit' | 'email'> | null
+}
+
 export interface AdminTenantRow extends Tenant {
   current_period_status: PaymentStatus | 'unpaid'
 }

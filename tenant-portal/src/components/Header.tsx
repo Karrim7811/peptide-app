@@ -17,6 +17,11 @@ export default function Header({
           {portalName}
         </Link>
         <div className="flex items-center gap-4 text-sm">
+          {email && (
+            <Link href="/requests" className="text-tp-muted hover:text-tp-ink">
+              Requests
+            </Link>
+          )}
           {isAdmin && (
             <Link href="/admin" className="text-tp-accent hover:underline">
               Admin

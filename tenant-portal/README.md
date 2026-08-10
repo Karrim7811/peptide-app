@@ -13,8 +13,14 @@ Next.js app, its own Supabase project, its own Stripe account. Nothing in
 - **Tenant** creates an account at `/signup` using the email the landlord has
   on file. A database trigger links their auth user to their tenant record
   (in either order — signup-then-added or added-then-signup both work).
-- **Dashboard** shows the current month's rent, paid/processing/unpaid status,
-  a **Pay rent** button, and full payment history.
+- **Dashboard** has stat tiles (rent status, open service requests, unit),
+  quick actions (**Pay rent**, **Request service**), payment history, and
+  recent service requests.
+- **Service requests**: tenants file maintenance requests at `/requests`
+  (category, summary, details), track their status, and can cancel open ones.
+  The landlord updates statuses (open → in progress → resolved) from `/admin`.
+  Tenants write these rows directly under RLS scoped to their own tenant
+  record; status management goes through the service role.
 - **Payment** goes through Stripe Checkout (mode: one-time payment). The
   webhook records the payment. ACH/bank payments are supported: they show as
   "processing" until Stripe's `async_payment_succeeded` event settles them.

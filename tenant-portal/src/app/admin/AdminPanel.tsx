@@ -3,11 +3,18 @@
 import { useCallback, useEffect, useState } from 'react'
 import { CheckCircle2, Clock3, Plus, XCircle } from 'lucide-react'
 import { formatCents, periodLabel } from '@/lib/rent'
-import type { AdminPaymentRow, AdminTenantRow } from '@/types'
+import { CATEGORY_LABELS, STATUS_LABELS } from '@/lib/requests'
+import type {
+  AdminPaymentRow,
+  AdminServiceRequestRow,
+  AdminTenantRow,
+  ServiceRequestStatus,
+} from '@/types'
 
 export default function AdminPanel() {
   const [tenants, setTenants] = useState<AdminTenantRow[]>([])
   const [payments, setPayments] = useState<AdminPaymentRow[]>([])
+  const [requests, setRequests] = useState<AdminServiceRequestRow[]>([])
   const [period, setPeriod] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -27,17 +34,21 @@ export default function AdminPanel() {
   const load = useCallback(async () => {
     setError(null)
     try {
-      const [tRes, pRes] = await Promise.all([
+      const [tRes, pRes, rRes] = await Promise.all([
         fetch('/api/admin/tenants'),
         fetch('/api/admin/payments'),
+        fetch('/api/admin/requests'),
       ])
       const tData = await tRes.json()
       const pData = await pRes.json()
+      const rData = await rRes.json()
       if (!tRes.ok) throw new Error(tData.error || 'Failed to load tenants')
       if (!pRes.ok) throw new Error(pData.error || 'Failed to load payments')
+      if (!rRes.ok) throw new Error(rData.error || 'Failed to load requests')
       setTenants(tData.tenants)
       setPeriod(tData.period)
       setPayments(pData.payments)
+      setRequests(rData.requests)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load')
     } finally {
@@ -77,6 +88,15 @@ export default function AdminPanel() {
     }
     setForm({ email: '', full_name: '', unit: '', rent_dollars: '', rent_due_day: '1' })
     setShowForm(false)
+    load()
+  }
+
+  async function setRequestStatus(id: string, status: ServiceRequestStatus) {
+    await fetch('/api/admin/requests', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status }),
+    })
     load()
   }
 
@@ -233,6 +253,67 @@ export default function AdminPanel() {
                 <tr>
                   <td colSpan={6} className="py-4 text-center text-tp-muted">
                     No tenants yet — add your first one.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="rounded-xl border border-tp-border bg-tp-card p-6">
+        <h2 className="mb-4 text-lg font-semibold">Service requests</h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-tp-border text-left text-tp-muted">
+                <th className="py-2 pr-4 font-medium">Date</th>
+                <th className="py-2 pr-4 font-medium">Tenant</th>
+                <th className="py-2 pr-4 font-medium">Request</th>
+                <th className="py-2 font-medium">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {requests.map((r) => (
+                <tr key={r.id} className="border-b border-tp-border/60 last:border-0 align-top">
+                  <td className="py-2 pr-4 tabular-nums">
+                    {new Date(r.created_at).toLocaleDateString('en-US')}
+                  </td>
+                  <td className="py-2 pr-4">
+                    {r.tenants ? `${r.tenants.full_name} · ${r.tenants.unit}` : '—'}
+                  </td>
+                  <td className="py-2 pr-4">
+                    <div className="font-medium">{r.title}</div>
+                    <div className="text-xs text-tp-muted">
+                      {CATEGORY_LABELS[r.category] ?? r.category}
+                    </div>
+                    {r.description && (
+                      <div className="mt-1 max-w-md whitespace-pre-wrap text-xs text-tp-muted">
+                        {r.description}
+                      </div>
+                    )}
+                  </td>
+                  <td className="py-2">
+                    <select
+                      value={r.status}
+                      onChange={(e) =>
+                        setRequestStatus(r.id, e.target.value as ServiceRequestStatus)
+                      }
+                      className="rounded-md border border-tp-border bg-tp-card px-2 py-1 text-xs outline-none focus:border-tp-accent"
+                    >
+                      {Object.entries(STATUS_LABELS).map(([value, label]) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                </tr>
+              ))}
+              {requests.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="py-4 text-center text-tp-muted">
+                    No service requests yet.
                   </td>
                 </tr>
               )}

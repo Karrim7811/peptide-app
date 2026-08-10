@@ -101,3 +101,54 @@ drop trigger if exists on_tenant_created_link_user on public.tenants;
 create trigger on_tenant_created_link_user
   before insert on public.tenants
   for each row execute procedure public.link_user_on_tenant_insert();
+
+-- ---------------------------------------------------------------------------
+-- Service (maintenance) requests
+-- ---------------------------------------------------------------------------
+
+create table if not exists public.service_requests (
+  id uuid primary key default gen_random_uuid(),
+  tenant_id uuid not null references public.tenants(id) on delete cascade,
+  category text not null default 'general'
+    check (category in ('plumbing', 'electrical', 'appliance', 'hvac', 'pest', 'general')),
+  title text not null,
+  description text not null default '',
+  status text not null default 'open'
+    check (status in ('open', 'in_progress', 'resolved', 'cancelled')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists service_requests_tenant_created
+  on public.service_requests (tenant_id, created_at desc);
+
+alter table public.service_requests enable row level security;
+
+-- Unlike payments, tenants author these directly, so they get write policies
+-- scoped to their own tenant record. Status management by the landlord goes
+-- through the service role (/api/admin/requests).
+create policy "Tenants can view own service requests"
+  on public.service_requests for select
+  using (tenant_id in (select id from public.tenants where user_id = auth.uid()));
+
+create policy "Tenants can create own service requests"
+  on public.service_requests for insert
+  with check (tenant_id in (select id from public.tenants where user_id = auth.uid()));
+
+create policy "Tenants can update own service requests"
+  on public.service_requests for update
+  using (tenant_id in (select id from public.tenants where user_id = auth.uid()))
+  with check (tenant_id in (select id from public.tenants where user_id = auth.uid()));
+
+create or replace function public.touch_service_request()
+returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$ language plpgsql;
+
+drop trigger if exists on_service_request_updated on public.service_requests;
+create trigger on_service_request_updated
+  before update on public.service_requests
+  for each row execute procedure public.touch_service_request();
