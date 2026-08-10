@@ -58,7 +58,7 @@ Both directories share the name "peptide-app" but the iOS clone has the `-ios` s
 
 A single hybrid product across two surfaces (web + native iOS) sharing one Supabase backend and one set of Next.js API routes:
 
-**Reference layer** — the Peptide Bible: 81+ peptide entries (auto-generated from `Peptides_Master_List_FULL_Explainers_CV_Interactions_Dropdowns.xlsx` via `generate_knowledge.py`), each carrying primary purpose, mechanism, dosage range, risk cautions, evidence level, CV impact rating 0–5, drug interactions, goal category, and a curated list of compounds that stack well. Plus 24+ pre-defined named stacks (KLOW, GLOW, Wolverine Stack, Tri-Heal, etc.). Plus vendor directory, regulatory status tracker, and side-effect reference.
+**Reference layer** — the Peptide Bible: 92 peptide entries (auto-generated from `Peptides_Master_List_FULL_Explainers_CV_Interactions_Dropdowns.xlsx` via `generate_knowledge.py`), each carrying primary purpose, mechanism, dosage range, risk cautions, evidence level, CV impact rating 0–5, drug interactions, goal category, and a curated list of compounds that stack well. Plus 24+ pre-defined named stacks (KLOW, GLOW, Wolverine Stack, Tri-Heal, etc.). Plus vendor directory, regulatory status tracker, and side-effect reference.
 
 **Intelligence layer** — Anthropic Claude-powered tools:
 - **Interaction Checker** — checks any two compounds (peptide / Rx / supplement / OTC) for interaction (`/api/check-interaction`, model `claude-opus-4-5`).
@@ -187,7 +187,7 @@ src/
     TopBar.tsx                    Desktop topbar
   lib/
     ai-consent.ts                 hasAiConsent / requireAiConsent helpers
-    peptide-knowledge.ts          81+ peptide entries, generated from xlsx
+    peptide-knowledge.ts          92 peptide entries, generated from xlsx
     peptides.ts                   Smaller helper module
     stripe.ts                     Stripe client + checkout/portal helpers
     subscription.ts               getUserSubscription / isProUser / rate-limit count
@@ -359,7 +359,7 @@ The next 90 days of work are about getting `peptidecortex.com` to the polish lev
 
 1. **Schema/code drift** — `/cycle`, `/sites`, `/notes`, `/side-effects` pages exist but their tables are absent from `supabase/schema.sql`. Pages may be writing to tables only the Supabase remote knows about, or to `localStorage`. Need to introspect the live Supabase project and write missing migrations.
 2. **Middleware is a no-op** — `middleware.ts` matches `/_never_match_this_route_`. No route-level session refresh. Pages do per-render session reads. Acceptable but worth a deliberate decision.
-3. **Stripe webhook writes to `profiles` under anon** — `createClient()` in `/api/stripe/webhook/route.ts` is the SSR cookie client, not a service-role client. Under RLS, anon should not be able to UPDATE another user's profile. Either RLS has an open update policy I haven't found, or the webhook is silently failing.
+3. ~~**Stripe webhook writes to `profiles` under anon**~~ — **RESOLVED (verified 2026-08-07).** The webhook uses `createServiceClient()` (`SUPABASE_SERVICE_ROLE_KEY`), which bypasses RLS, and throws loudly if the key is absent. This entry was stale and was believed and repeated as a live bug during the 2026-08 session before being checked — verify against the code before acting on anything in this section.
 4. **PWA manifest stale** — `public/manifest.json` still names the app "PeptideTracker", uses `#0f172a` / `#0f172a` as `background_color` / `theme_color`, and references SVG icons. None of this matches the current `cx.*` palette or the `Peptide Cortex` brand. This is the user's first impression on iPhone home-screen install.
 5. **Three different production domains in code** — `peptidecortex.com` (capacitor.config.ts), `peptidecortex.ai` (layout.tsx metadataBase), `peptidetracker.app` (stripe/create-checkout fallback). Open-graph cards, share links, Stripe success URLs, and middleware all need one canonical domain.
 6. **README and MARKETING.md are out of date** — README says "PeptideTracker", "58 peptides", "max 20 users"; MARKETING.md uses an old dark-navy/indigo brand palette. Both contradict current code.
