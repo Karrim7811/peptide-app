@@ -335,8 +335,11 @@ export default function StackFinderPage() {
 
           {/* CTA row */}
           <div className="mt-5 pt-4 border-t border-[#E8E5E0] flex flex-wrap gap-3">
+            {/* /checker is a redirect stub — InteractionCheck lives on the
+                Mirror's compound view now. Point at the Mirror directly rather
+                than bouncing through it. */}
             <Link
-              href="/checker"
+              href="/dashboard"
               className="flex items-center gap-2 text-sm bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/30 text-emerald-300 px-4 py-2 rounded-lg transition-colors"
             >
               Check interactions

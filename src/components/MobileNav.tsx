@@ -4,42 +4,31 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
-  LayoutDashboard, MessageSquare, Shield, Sparkles,
-  Layers, FlaskRound, Calculator, RotateCcw, MapPin,
-  BookOpen, Bell, Package, AlertCircle, FileText,
-  Library, Scale, Store, LogOut, Menu, X, ChevronRight, FlaskConical,
+  LayoutDashboard, MessageSquare, Sparkles, Layers, FlaskRound, RotateCcw,
+  MapPin, BookOpen, Library, Scale, Store, LogOut, Menu, X, ChevronRight,
+  FlaskConical,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
+// Mirrors Sidebar.tsx exactly — see the reconciliation note there for why the
+// eight bare-/dashboard entries were removed and the four deep links kept.
+// Keep the two in step; they are the same nav at two breakpoints.
 const NAV_SECTIONS = [
   {
     label: 'Intelligence',
     links: [
       { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
       { href: '/ai-chat', label: 'Peptide AI', icon: MessageSquare },
-      { href: '/checker', label: 'Interaction Checker', icon: Shield },
       { href: '/stack-finder', label: 'Stack Finder', icon: Sparkles },
-      { href: '/bloodwork', label: 'Bloodwork Analyzer', icon: FlaskConical },
-    ],
-  },
-  {
-    label: 'My Protocol',
-    links: [
-      { href: '/stack', label: 'My Stack', icon: Layers },
-      { href: '/reconstitution', label: 'Reconstitution', icon: FlaskRound },
-      { href: '/dosing', label: 'Dosing Reference', icon: Calculator },
-      { href: '/cycle', label: 'Cycle Tracker', icon: RotateCcw },
-      { href: '/sites', label: 'Injection Sites', icon: MapPin },
     ],
   },
   {
     label: 'Tracking',
     links: [
-      { href: '/log', label: 'Dose Log', icon: BookOpen },
-      { href: '/reminders', label: 'Reminders', icon: Bell },
-      { href: '/inventory', label: 'Fridge Inventory', icon: Package },
-      { href: '/side-effects', label: 'Side Effects', icon: AlertCircle },
-      { href: '/notes', label: 'Research Notes', icon: FileText },
+      { href: '/dashboard?ledger=1', label: 'Dose Log', icon: BookOpen },
+      { href: '/dashboard?tab=cycle', label: 'Cycle Tracker', icon: RotateCcw },
+      { href: '/dashboard?tab=rotation', label: 'Injection Sites', icon: MapPin },
+      { href: '/dashboard?bloodwork=1', label: 'Bloodwork Analyzer', icon: FlaskConical },
     ],
   },
   {

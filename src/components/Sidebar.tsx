@@ -4,26 +4,53 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
-  LayoutDashboard, MessageSquare, Shield, Sparkles,
-  Layers, FlaskRound, Calculator, RotateCcw, MapPin,
-  BookOpen, Bell, Package, AlertCircle, FileText,
-  Library, Scale, Store, LogOut, Zap, FlaskConical,
+  LayoutDashboard, MessageSquare, Sparkles, RotateCcw, MapPin,
+  BookOpen, LogOut, Zap, FlaskConical,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 const FONT = "'Gill Sans', 'Gill Sans MT', Calibri, sans-serif"
 
+// ── Reconciled against the Mirror redirect scheme (src/app/stack/page.tsx) ────
+//
+// Twelve routes this nav used to point at are now redirect stubs. Four of them
+// deep-link somewhere distinct inside the Mirror and are kept, pointed at their
+// real target:
+//
+//   /log         → /dashboard?ledger=1
+//   /cycle       → /dashboard?tab=cycle
+//   /sites       → /dashboard?tab=rotation
+//   /bloodwork   → /dashboard?bloodwork=1
+//
+// The other eight — /stack, /inventory, /reconstitution, /checker, /reminders,
+// /notes, /side-effects, /dosing — all bounce to a bare /dashboard, because
+// their replacements (StackControl, InteractionCheck, THE MATH, NotesTool,
+// RemindersTool, SideEffectsTool …) live ON THE COMPOUND VIEW and have no URL
+// of their own. Eight labels resolving to one destination is not navigation, so
+// they are removed; the Dashboard entry already goes exactly where they went.
+//
+// /dosing is removed on top of that for a second reason: it was the weight-based
+// dose calculator Apple rejected under Guideline 1.4.2, deliberately not carried
+// over (see the note in src/app/dosing/page.tsx). A nav entry advertising it is
+// actively wrong, not merely dead.
+//
+// The four deep links never render as "active" — pathname alone cannot match an
+// href carrying a query string. That is harmless here: this sidebar is not
+// rendered on /dashboard at all (the Mirror is full-bleed and owns its own
+// chrome), so their active state is unreachable by construction.
+//
+// If a future Mirror surface earns its own route, add it back here rather than
+// resurrecting the stub.
+
 const ICON_RAIL = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { href: '/ai-chat', icon: MessageSquare, label: 'Peptide AI' },
-  { href: '/checker', icon: Shield, label: 'Interaction Checker' },
   { href: '/stack-finder', icon: Sparkles, label: 'Stack Finder' },
-  { href: '/bloodwork', icon: FlaskConical, label: 'Bloodwork Analyzer' },
   null,
-  { href: '/stack', icon: Layers, label: 'My Stack' },
-  { href: '/dosing', icon: Calculator, label: 'Dosing Reference' },
-  { href: '/cycle', icon: RotateCcw, label: 'Cycle Tracker' },
-  { href: '/sites', icon: MapPin, label: 'Injection Sites' },
+  { href: '/dashboard?ledger=1', icon: BookOpen, label: 'Dose Log' },
+  { href: '/dashboard?tab=cycle', icon: RotateCcw, label: 'Cycle Tracker' },
+  { href: '/dashboard?tab=rotation', icon: MapPin, label: 'Injection Sites' },
+  { href: '/dashboard?bloodwork=1', icon: FlaskConical, label: 'Bloodwork Analyzer' },
 ] as const
 
 const NAV_SECTIONS = [
@@ -32,29 +59,16 @@ const NAV_SECTIONS = [
     links: [
       { href: '/dashboard', label: 'Dashboard' },
       { href: '/ai-chat', label: 'Peptide AI' },
-      { href: '/checker', label: 'Interaction Checker' },
       { href: '/stack-finder', label: 'Stack Finder' },
-      { href: '/bloodwork', label: 'Bloodwork Analyzer' },
-    ],
-  },
-  {
-    label: 'My Protocol',
-    links: [
-      { href: '/stack', label: 'My Stack' },
-      { href: '/reconstitution', label: 'Reconstitution' },
-      { href: '/dosing', label: 'Dosing Reference' },
-      { href: '/cycle', label: 'Cycle Tracker' },
-      { href: '/sites', label: 'Injection Sites' },
     ],
   },
   {
     label: 'Tracking',
     links: [
-      { href: '/log', label: 'Dose Log' },
-      { href: '/reminders', label: 'Reminders' },
-      { href: '/inventory', label: 'Fridge Inventory' },
-      { href: '/side-effects', label: 'Side Effect Log' },
-      { href: '/notes', label: 'Research Notes' },
+      { href: '/dashboard?ledger=1', label: 'Dose Log' },
+      { href: '/dashboard?tab=cycle', label: 'Cycle Tracker' },
+      { href: '/dashboard?tab=rotation', label: 'Injection Sites' },
+      { href: '/dashboard?bloodwork=1', label: 'Bloodwork Analyzer' },
     ],
   },
   {
