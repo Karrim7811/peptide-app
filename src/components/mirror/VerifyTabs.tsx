@@ -27,6 +27,7 @@
 // `ent.ownedEntry()`, which is tier-blind, never `ent.held()`.
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { COMPOUNDS, type Compound, type StackEntry } from '@/lib/catalog'
 import type { Entitlements } from '@/lib/entitlement'
 import { hueVar } from '@/lib/design/grounds'
@@ -73,6 +74,37 @@ function Headline({ children }: { children: React.ReactNode }) {
 const MATH_DISCLAIMER =
   'For research and reference purposes only. Not intended as dosing instructions for ' +
   'human or animal use. Consult a licensed physician before any medical decisions.'
+
+/**
+ * Long-form preparation guides, keyed by compound id.
+ *
+ * THE MATH answers one question — what is in THIS solution, at the volume the
+ * user mixed. The guide behind it is the reference the arithmetic sits on: vial
+ * sizes, the 28-day characterization window, handling and storage. They are
+ * deliberately separate surfaces, and only compounds with an authored guide
+ * appear here so the link can never point at a route that does not exist.
+ *
+ * The Mirror renders no sidebar, so without this link a guide is reachable only
+ * from the legacy Reference routes or by typing the URL.
+ */
+const PREPARATION_GUIDES: Record<string, string> = {
+  retatrutide: '/guides/retatrutide-reconstitution',
+}
+
+function GuideLink({ compoundId }: { compoundId: string }) {
+  const href = PREPARATION_GUIDES[compoundId]
+  if (!href) return null
+  return (
+    <div className="border-t border-hair pt-4">
+      <Link
+        href={href}
+        className="inline-flex min-h-[44px] items-center font-mono text-[10px] tracking-[0.22em] text-accent hover:text-ink"
+      >
+        FULL PREPARATION REFERENCE →
+      </Link>
+    </div>
+  )
+}
 
 function SolutionMath({ compound, entry }: { compound: Compound; entry: StackEntry }) {
   // Seeded from the stored volume when one exists; otherwise blank, so the
@@ -188,6 +220,8 @@ function SolutionMath({ compound, entry }: { compound: Compound; entry: StackEnt
           </span>
         )}
       </div>
+
+      <GuideLink compoundId={compound.id} />
     </div>
   )
 }
@@ -207,6 +241,10 @@ function MathTab({ compound, entry }: { compound: Compound; entry: StackEntry | 
         <span className="font-mono text-[10px] leading-[1.9] tracking-[0.06em] text-faint">
           ADD IT TO YOUR STACK TO SEE THE ARITHMETIC
         </span>
+
+        {/* The guide is reference, not arithmetic — it stands on its own without
+            a vial on record, so it shows in this branch too. */}
+        <GuideLink compoundId={compound.id} />
       </div>
     )
   }

@@ -62,6 +62,7 @@ const NAV_SECTIONS = [
     links: [
       { href: '/reference', label: 'Peptide Bible' },
       { href: '/stacks', label: 'Popular Stacks' },
+      { href: '/guides/retatrutide-reconstitution', label: 'Retatrutide Prep' },
       { href: '/regulatory', label: 'Legal & Regulatory' },
       { href: '/vendors', label: 'Top Vendors' },
     ],
