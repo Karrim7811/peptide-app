@@ -1,6 +1,6 @@
 # Shop — Checkout & Fulfilment Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Take money for the seven SKUs and get orders out of the door — orders,
 two payment rails behind one interface, and the admin queue Karim works from.
@@ -54,7 +54,7 @@ Postgres + RLS · BTCPay Server (self-hosted) · vitest 4 (`environment: 'node'`
 **Files:**
 - Create: `supabase/shop_orders_schema.sql`
 
-- [ ] **Step 1: Write the migration**
+- [x] **Step 1: Write the migration**
 
 ```sql
 -- Shop orders — 2026-09-04
@@ -153,12 +153,12 @@ create policy shop_order_items_read_own on public.shop_order_items
   );
 ```
 
-- [ ] **Step 2: Check it parses**
+- [x] **Step 2: Check it parses**
 
 Run: `grep -c "create table" supabase/shop_orders_schema.sql`
 Expected: `2`. Do not apply it — see "Blocked until these exist".
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add supabase/shop_orders_schema.sql
@@ -178,7 +178,7 @@ git commit -m "feat(shop): orders schema, with price snapshot and the recall pat
 - Produces: `OrderStatus`, `Order`, `OrderItem`, `canTransition(from, to): boolean`,
   `TERMINAL: OrderStatus[]`, `nextStatuses(from): OrderStatus[]`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 // src/lib/shop/orders/status.test.ts
@@ -224,12 +224,12 @@ describe('order status machine', () => {
 })
 ```
 
-- [ ] **Step 2: Run it and watch it fail**
+- [x] **Step 2: Run it and watch it fail**
 
 Run: `npm test -- src/lib/shop/orders/status.test.ts`
 Expected: FAIL — cannot resolve the module.
 
-- [ ] **Step 3: Write the types**
+- [x] **Step 3: Write the types**
 
 ```ts
 // src/lib/shop/orders/types.ts
@@ -283,7 +283,7 @@ export interface Order {
 }
 ```
 
-- [ ] **Step 4: Write the status machine**
+- [x] **Step 4: Write the status machine**
 
 ```ts
 // src/lib/shop/orders/status.ts
@@ -316,7 +316,7 @@ export function canTransition(from: OrderStatus, to: OrderStatus): boolean {
 }
 ```
 
-- [ ] **Step 5: Run and commit**
+- [x] **Step 5: Run and commit**
 
 ```bash
 npm test -- src/lib/shop/orders/status.test.ts
@@ -338,7 +338,7 @@ short, unambiguous when handwritten, and unique.
 **Interfaces:**
 - Produces: `generateReference(): string`, `isValidReference(s): boolean`, `ALPHABET`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 // src/lib/shop/orders/reference.test.ts
@@ -372,11 +372,11 @@ describe('payment reference', () => {
 })
 ```
 
-- [ ] **Step 2: Run it and watch it fail**
+- [x] **Step 2: Run it and watch it fail**
 
 Run: `npm test -- src/lib/shop/orders/reference.test.ts`
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 ```ts
 // src/lib/shop/orders/reference.ts
@@ -408,7 +408,7 @@ export function isValidReference(value: string): boolean {
 > the insert retries on conflict. At launch volumes a collision is a curiosity,
 > but the constraint is what makes it safe rather than the arithmetic.
 
-- [ ] **Step 4: Run and commit**
+- [x] **Step 4: Run and commit**
 
 ```bash
 npm test -- src/lib/shop/orders/reference.test.ts
@@ -429,7 +429,7 @@ git commit -m "feat(shop): unambiguous payment reference codes"
 - Produces: `SHIPPING_CENTS`, `FREE_SHIPPING_THRESHOLD_CENTS`,
   `priceLine(slug, qty)`, `orderTotals(lines)`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 // src/lib/shop/orders/totals.test.ts
@@ -476,9 +476,9 @@ describe('order totals', () => {
 })
 ```
 
-- [ ] **Step 2: Run it and watch it fail**
+- [x] **Step 2: Run it and watch it fail**
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 ```ts
 // src/lib/shop/orders/totals.ts
@@ -524,7 +524,7 @@ export function orderTotals(lines: PricedLine[]) {
 }
 ```
 
-- [ ] **Step 4: Run and commit**
+- [x] **Step 4: Run and commit**
 
 ```bash
 npm test -- src/lib/shop/orders/totals.test.ts
@@ -550,7 +550,7 @@ git commit -m "feat(shop): order totals with flat shipping"
 - Consumes: `Order` from `@/lib/shop/orders/types`
 - Produces: `PaymentProvider`, `ChargeIntent`, `ZELLE`
 
-- [ ] **Step 1: Write the interface**
+- [x] **Step 1: Write the interface**
 
 ```ts
 // src/lib/shop/payments/provider.ts
@@ -580,7 +580,7 @@ export interface PaymentProvider {
 }
 ```
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 ```ts
 // src/lib/shop/payments/zelle.test.ts
@@ -619,7 +619,7 @@ describe('zelle adapter', () => {
 })
 ```
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 ```ts
 // src/lib/shop/payments/zelle.ts
@@ -659,7 +659,7 @@ export const ZELLE: PaymentProvider = {
 }
 ```
 
-- [ ] **Step 4: Run and commit**
+- [x] **Step 4: Run and commit**
 
 ```bash
 npm test -- src/lib/shop/payments/zelle.test.ts
@@ -683,7 +683,7 @@ the plan — an unverified webhook is a public endpoint for marking orders paid.
 **Interfaces:**
 - Produces: `BTCPAY`, `verifySignature(rawBody, header, secret): boolean`
 
-- [ ] **Step 1: Write the failing signature test**
+- [x] **Step 1: Write the failing signature test**
 
 ```ts
 // src/lib/shop/payments/btcpay-signature.test.ts
@@ -718,9 +718,9 @@ describe('btcpay webhook signature', () => {
 })
 ```
 
-- [ ] **Step 2: Run it and watch it fail**
+- [x] **Step 2: Run it and watch it fail**
 
-- [ ] **Step 3: Implement verification**
+- [x] **Step 3: Implement verification**
 
 ```ts
 // src/lib/shop/payments/btcpay-signature.ts
@@ -754,7 +754,7 @@ export function verifySignature(
 }
 ```
 
-- [ ] **Step 4: Write the adapter**
+- [x] **Step 4: Write the adapter**
 
 ```ts
 // src/lib/shop/payments/btcpay.ts
@@ -806,7 +806,7 @@ export const BTCPAY: PaymentProvider = {
 }
 ```
 
-- [ ] **Step 5: Write the webhook route**
+- [x] **Step 5: Write the webhook route**
 
 ```ts
 // src/app/api/shop/btcpay-webhook/route.ts
@@ -870,7 +870,7 @@ export async function POST(request: Request) {
 }
 ```
 
-- [ ] **Step 6: Run and commit**
+- [x] **Step 6: Run and commit**
 
 ```bash
 npm test -- src/lib/shop/payments/btcpay-signature.test.ts
@@ -898,7 +898,7 @@ Karim clicking something.
 - Produces: `assertAdmin()`, `markPaid()`, `markPacked(orderId, lotByItem)`,
   `markShipped(orderId, tracking)`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 // src/lib/shop/orders/admin.test.ts
@@ -933,9 +933,9 @@ describe('packing an order', () => {
 })
 ```
 
-- [ ] **Step 2: Run it and watch it fail**
+- [x] **Step 2: Run it and watch it fail**
 
-- [ ] **Step 3: Implement the guard**
+- [x] **Step 3: Implement the guard**
 
 ```ts
 // src/lib/shop/orders/admin.ts
@@ -966,7 +966,7 @@ export function validatePackAssignment(
 }
 ```
 
-- [ ] **Step 4: Write the server actions**
+- [x] **Step 4: Write the server actions**
 
 ```ts
 // src/app/admin/orders/actions.ts
@@ -1047,7 +1047,7 @@ export async function markShipped(orderId: string, tracking: string) {
 }
 ```
 
-- [ ] **Step 5: Write the queue page**
+- [x] **Step 5: Write the queue page**
 
 ```tsx
 // src/app/admin/orders/page.tsx
@@ -1108,7 +1108,7 @@ export default async function AdminOrdersPage() {
 }
 ```
 
-- [ ] **Step 6: Run and commit**
+- [x] **Step 6: Run and commit**
 
 ```bash
 npm test && npx tsc --noEmit
@@ -1128,7 +1128,7 @@ git commit -m "feat(shop): the admin order queue"
 **Files:**
 - Modify: `docs/BACKEND-CONTRACT.md` (extend section 13)
 
-- [ ] **Step 1: Document what the checkout UI needs**
+- [x] **Step 1: Document what the checkout UI needs**
 
 Append to §13, in the file's existing voice:
 
@@ -1143,7 +1143,7 @@ Append to §13, in the file's existing voice:
 - Refunds are manual: neither rail gives the buyer an issuer to appeal to, so the
   refund policy must be visible at checkout and honoured by hand.
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add docs/BACKEND-CONTRACT.md
@@ -1205,3 +1205,47 @@ closed on the strength of a unit test; this is the check that actually proves it
    are placeholders. Cold-chain packaging is not free.
 4. Env: `SHOP_ADMIN_USER_ID`, `SHOP_ZELLE_HANDLE`, and the four `BTCPAY_*`.
 5. Apply `shop_schema.sql`, `shop_seed.sql`, then `shop_orders_schema.sql`.
+
+---
+
+## Execution record, part 2 — 2026-09-04
+
+**All eight tasks complete**, plus `createOrder` and the age gate, which the plan
+had deferred. 203 tests passing (was 133 at the start of the day), `tsc --noEmit`
+clean, `next build` succeeds.
+
+**Correction to this plan's own header.** It said "do not start Task 5 or 6"
+without the entity, bank account and BTCPay instance. That was over-scoped: what
+those block is *testing against live services*, not writing adapters. The
+signature verification in particular is pure crypto and needed no BTCPay at all —
+leaving the security-critical function unwritten because a server did not exist
+yet would have been the wrong call.
+
+**Two things changed shape during execution, both from Karim pushing back:**
+
+Shipping stopped being a constant. `$12` and a `$150` free threshold were
+invented, and the question "to where, how long, USPS or UPS?" was the right one.
+It is now three methods with researched carriers and transit windows, every price
+`null`, and `orderTotals` throws rather than assuming. `sellableMethods()` is
+empty until they are priced.
+
+`createCharge` was narrowed from `Order` to `ChargeableOrder`. The original
+called it with a partial object cast `as never`, which compiled — a lie the
+compiler had stopped checking.
+
+## What is left before this can take money
+
+1. **Prices for the three shipping methods.** Nothing can be ordered until then,
+   by design.
+2. **Env**: `SHOP_ADMIN_USER_ID`, `SHOP_ZELLE_HANDLE`, `BTCPAY_URL`,
+   `BTCPAY_STORE_ID`, `BTCPAY_API_KEY`, `BTCPAY_WEBHOOK_SECRET`.
+3. **Apply the migrations**, in order: `shop_schema.sql`, `shop_seed.sql`,
+   `shop_orders_schema.sql`.
+4. **The buttons** wiring `markPaid` / `markPacked` / `markShipped` into the
+   admin queue. The actions are written and guarded; the queue is read-only.
+5. **Cart, checkout and order-status pages** — Claude Design, against §13.
+6. **Lot codes for VIP, Selank, Semax and NAD+.** Independent of the assay: with
+   `lotCode: null` those four cannot be packed at all, because the pack guard
+   refuses an item without a lot.
+7. **Live-fire test**: a real BTCPay invoice through to a settled webhook, and a
+   real Zelle payment matched by hand.
