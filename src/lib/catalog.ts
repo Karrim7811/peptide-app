@@ -137,8 +137,6 @@ export interface Vial {
   mfg: string | null
   exp: string | null
   shelfLife: string
-  /** The Janoshik report code the label's DataMatrix resolves to. */
-  reportCode: string
   /** Component compound ids, for a blend. Absent on a single compound. */
   blendOf?: string[]
 }
@@ -3880,7 +3878,6 @@ export const VIALS: Vial[] = [
     mfg: '2026-01',
     exp: '2028-01',
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: 'D14D7EHWHFH9',
   },
   {
     slug: '102108-RT_60_8S1BF8KMN7IM',
@@ -3893,7 +3890,6 @@ export const VIALS: Vial[] = [
     mfg: '2026-01',
     exp: '2028-01',
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: '8S1BF8KMN7IM',
   },
   {
     slug: '102109-Tesa_10_6757MQWXFMZP',
@@ -3906,7 +3902,6 @@ export const VIALS: Vial[] = [
     mfg: '2026-01',
     exp: '2028-01',
     shelfLife: 'USE WITHIN 14 DAYS · 2–8 °C',
-    reportCode: '6757MQWXFMZP',
   },
   {
     slug: '102111-Motc_10_VJUDHK6MDGT3',
@@ -3919,7 +3914,6 @@ export const VIALS: Vial[] = [
     mfg: '2026-01',
     exp: '2028-01',
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: 'VJUDHK6MDGT3',
   },
   {
     slug: '102112-Ghk_cu_100_SYH79DCV36D1',
@@ -3932,7 +3926,6 @@ export const VIALS: Vial[] = [
     mfg: '2026-01',
     exp: '2028-01',
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: 'SYH79DCV36D1',
   },
   {
     slug: '102113-KLOW_80mg_XAKRSW4WN85N',
@@ -3945,7 +3938,6 @@ export const VIALS: Vial[] = [
     mfg: '2026-01',
     exp: '2028-01',
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: 'XAKRSW4WN85N',
     blendOf: ['ghk-cu-copper-peptide', 'kpv', 'larazotide', 'bpc-157'],
   },
   {
@@ -3959,7 +3951,6 @@ export const VIALS: Vial[] = [
     mfg: '2025-06',
     exp: '2027-06',
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: '2W48EUV1JHUK',
   },
   {
     slug: '68243-R30_1WL2W46TW4DP',
@@ -3972,7 +3963,6 @@ export const VIALS: Vial[] = [
     mfg: '2025-06',
     exp: '2027-06',
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: '1WL2W46TW4DP',
   },
   {
     slug: '69769-HGH_24iu_B7EZMSYUP645',
@@ -3985,7 +3975,6 @@ export const VIALS: Vial[] = [
     mfg: '2025-07',
     exp: '2027-07',
     shelfLife: 'USE WITHIN 14 DAYS · 2–8 °C',
-    reportCode: 'B7EZMSYUP645',
   },
   {
     slug: '58538-Semaglutide_10_mg_UPNT8Z2I7C1K',
@@ -3998,7 +3987,6 @@ export const VIALS: Vial[] = [
     mfg: '2025-03',
     exp: '2027-03',
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: 'UPNT8Z2I7C1K',
   },
   {
     slug: '58539-Tirzepatide_15_mg_U4HBJNTSB74U',
@@ -4011,7 +3999,6 @@ export const VIALS: Vial[] = [
     mfg: '2025-03',
     exp: '2027-03',
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: 'U4HBJNTSB74U',
   },
   {
     slug: '63067-Semaglutide_20mg_Y2KNHJ2PWV1E',
@@ -4024,7 +4011,6 @@ export const VIALS: Vial[] = [
     mfg: '2025-04',
     exp: '2027-04',
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: 'Y2KNHJ2PWV1E',
   },
   {
     slug: '63068-Tirzepatide_30mg_LT78Z3CNK1EU',
@@ -4037,7 +4023,6 @@ export const VIALS: Vial[] = [
     mfg: '2025-04',
     exp: '2027-04',
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: 'LT78Z3CNK1EU',
   },
   {
     slug: '63069-Tirzepatide_60mg_JHRHW7ZN6YY5',
@@ -4050,7 +4035,6 @@ export const VIALS: Vial[] = [
     mfg: '2025-04',
     exp: '2027-04',
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: 'JHRHW7ZN6YY5',
   },
   {
     slug: '63070-Retatrutide_20mg_WPDWU5NYUUME',
@@ -4063,7 +4047,6 @@ export const VIALS: Vial[] = [
     mfg: '2025-04',
     exp: '2027-04',
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: 'WPDWU5NYUUME',
   },
   {
     slug: '63071-Retatrutide_30mg_CBRF2LN5Y16E',
@@ -4076,7 +4059,6 @@ export const VIALS: Vial[] = [
     mfg: '2025-04',
     exp: '2027-04',
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: 'CBRF2LN5Y16E',
   },
   {
     slug: '63073-Cagrilintide_5mg_KRHZKWLHPA4B',
@@ -4089,7 +4071,6 @@ export const VIALS: Vial[] = [
     mfg: '2025-04',
     exp: '2027-04',
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: 'KRHZKWLHPA4B',
   },
   {
     slug: '63074-BPC157_10mg_2ST291UD8DZM',
@@ -4102,7 +4083,6 @@ export const VIALS: Vial[] = [
     mfg: '2025-04',
     exp: '2027-04',
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: '2ST291UD8DZM',
   },
   {
     slug: '63075-TB500_10mg_EVT1A19Z6ZCT',
@@ -4115,7 +4095,6 @@ export const VIALS: Vial[] = [
     mfg: '2025-04',
     exp: '2027-04',
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: 'EVT1A19Z6ZCT',
   },
   {
     slug: '70680-R10_B42S8WIZGV9J',
@@ -4128,7 +4107,6 @@ export const VIALS: Vial[] = [
     mfg: '2025-07',
     exp: '2027-07',
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: 'B42S8WIZGV9J',
   },
   {
     slug: '70681-R20_7CCZE6G5K6W8',
@@ -4141,7 +4119,6 @@ export const VIALS: Vial[] = [
     mfg: '2025-07',
     exp: '2027-07',
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: '7CCZE6G5K6W8',
   },
   {
     slug: '70683-T60_M3Y3RA1QUDH4',
@@ -4154,7 +4131,6 @@ export const VIALS: Vial[] = [
     mfg: '2025-07',
     exp: '2027-07',
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: 'M3Y3RA1QUDH4',
   },
   {
     slug: '70756-Glow_70_Y2BRUZN3F7HG',
@@ -4167,7 +4143,6 @@ export const VIALS: Vial[] = [
     mfg: '2025-07',
     exp: '2027-07',
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: 'Y2BRUZN3F7HG',
     blendOf: ['ghk-cu-copper-peptide', 'bpc-157', 'tb-500'],
   },
   {
@@ -4181,7 +4156,6 @@ export const VIALS: Vial[] = [
     mfg: null,
     exp: null,
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: 'MDTR34NN18JH',
   },
   {
     slug: '205038-Tr_30mg_UZMJ2BZU2N7V',
@@ -4194,7 +4168,6 @@ export const VIALS: Vial[] = [
     mfg: null,
     exp: null,
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: 'UZMJ2BZU2N7V',
   },
   {
     slug: '205039-Tr_40mg_9XKFJS7PIVZL',
@@ -4207,7 +4180,6 @@ export const VIALS: Vial[] = [
     mfg: null,
     exp: null,
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: '9XKFJS7PIVZL',
   },
   {
     slug: '205040-Rt_10mg_MKF4CLBUWS7F',
@@ -4220,7 +4192,6 @@ export const VIALS: Vial[] = [
     mfg: null,
     exp: null,
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
-    reportCode: 'MKF4CLBUWS7F',
   },
 ];
 

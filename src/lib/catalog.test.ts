@@ -57,10 +57,9 @@ describe('VIALS', () => {
     expect(new Set(VIALS.map((vial) => vial.lot)).size).toBe(VIALS.length)
   })
 
-  it('ends each slug in that vial’s report code', () => {
-    const mismatched = VIALS.filter((vial) => !vial.slug.endsWith(vial.reportCode))
-    expect(mismatched.map((vial) => vial.slug)).toEqual([])
-  })
+  // The slug-ends-in-its-report-code check moved to vial-reports.test.ts on
+  // 2026-09-04, when reportCode left Vial for a server-only module. Vial no
+  // longer knows its code, so this file can no longer make that assertion.
 
   it('states a positive quantity in a unit the app can read', () => {
     for (const vial of VIALS) {
