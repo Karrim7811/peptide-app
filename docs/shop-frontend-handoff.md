@@ -82,7 +82,7 @@ THE DATA — real values, not placeholders. Design against these.
 
 All products: cold chain, "USE WITHIN 28 DAYS · 2–8 °C".
 
-So the layout has to survive: 99.62% sitting beside $4.17 / mg; a four-row
+So the layout has to survive: 99.623% sitting beside $4.17 / mg; a four-row
 measured-component table totalling more than its own label; and four products
 that have a date where a number should be.
 
