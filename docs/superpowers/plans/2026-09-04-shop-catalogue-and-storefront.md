@@ -2,13 +2,18 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Ship a browsable, read-only shop at `/shop` — seven products, real assay
-data, per-mg unit pricing — with no cart and no way to pay.
+**Goal:** Build the shop's **data layer** — seven products, real assay data, per-mg
+unit pricing, schema and seed — plus the contract the new storefront is built
+against. **No UI.**
 
 **Architecture:** Products and lots become Postgres tables seeded from typed TS
-constants that stay the reviewable source of truth in git. The storefront reads
-them in server components. The assay block is one state-driven component covering
-three states and two assay shapes. Nothing in this plan handles money.
+constants that stay the reviewable source of truth in git. The storefront itself
+is being built separately in Claude Design, so this plan ends at a documented read
+shape and a real sample payload rather than at a page. Nothing here handles money.
+
+**Division of labour:** this repo owns data, schema, pricing logic and the rules.
+Claude Design owns the pixels. `docs/BACKEND-CONTRACT.md` is the interface — the
+same channel the wider redesign already uses.
 
 **Tech Stack:** Next.js 14 App Router · TypeScript 5 · Tailwind (`cx.*` tokens) ·
 Supabase Postgres + RLS · vitest 4 (`environment: 'node'`)
@@ -613,379 +618,90 @@ git commit -m "feat(shop): catalogue schema and generated seed"
 
 ---
 
-### Task 5: The assay block
+### Task 5: The frontend contract and sample payload
 
-The component that carries the whole differentiator. Three states, two shapes.
+The storefront UI is being built separately in Claude Design. This task produces
+what it builds against. No UI is written here.
 
 **Files:**
-- Create: `src/components/shop/AssayBlock.tsx`
+- Modify: `docs/BACKEND-CONTRACT.md` (append section 13)
+- Create: `docs/shop-sample-payload.json`
 
 **Interfaces:**
-- Consumes: `ShopLot` from `@/lib/shop/types`
-- Produces: `<AssayBlock lot={ShopLot} />` — a server component, no `'use client'`
+- Consumes: `PRODUCTS`, `LOTS` from `@/lib/shop/catalogue`; pricing helpers
+- Produces: a documented read shape and a real sample payload for all 7 products
 
-- [ ] **Step 1: Implement**
+- [ ] **Step 1: Append section 13 to the backend contract**
 
-```tsx
-// src/components/shop/AssayBlock.tsx
-//
-// Three states, two shapes. No verification affordance: there is nothing to
-// click until Karim's own assays land (spec D5), and an unverifiable COA that
-// invites you to verify it is worse than one that does not.
+Follow the existing file's voice: describe what exists and what it refuses to do,
+never how it should look. Cover the `ShopProduct` / `ShopLot` types verbatim from
+`src/lib/shop/types.ts`, the three assay states, the two assay shapes, and this
+list of refusals:
 
-import type { ShopLot } from '@/lib/shop/types'
+```markdown
+### Rules a shop frontend inherits
 
-const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
-
-function monthName(iso: string): string {
-  const [year, month] = iso.split('-')
-  return `${MONTHS[Number(month) - 1]} ${year}`
-}
-
-export function AssayBlock({ lot }: { lot: ShopLot }) {
-  if (lot.assayState === 'none') return null
-
-  if (lot.assayState === 'pending') {
-    return (
-      <section className="rounded-lg border border-cx-light bg-cx-off p-5">
-        <h2 className="font-sans text-xs uppercase tracking-widest text-cx-stone">Independent assay</h2>
-        <p className="mt-2 font-mono text-lg text-cx-dark">
-          Commissioned — results expected {monthName(lot.assayExpectedAt!)}
-        </p>
-        <p className="mt-2 text-sm italic text-cx-stone">
-          This product ships with no published assay until then.
-        </p>
-      </section>
-    )
-  }
-
-  if (lot.assayType === 'composition') {
-    return (
-      <section className="rounded-lg border border-cx-light bg-cx-off p-5">
-        <h2 className="font-sans text-xs uppercase tracking-widest text-cx-stone">
-          Independent assay — composition
-        </h2>
-        <table className="mt-3 w-full font-mono text-sm">
-          <tbody>
-            {(lot.components ?? []).map((c) => (
-              <tr key={c.name} className="border-b border-cx-light last:border-0">
-                <td className="py-1.5 text-cx-dark">{c.name}</td>
-                <td className="py-1.5 text-right tabular-nums text-cx-dark">{c.mg.toFixed(2)} mg</td>
-              </tr>
-            ))}
-            <tr className="border-t-2 border-cx-dark">
-              <td className="pt-2 font-semibold text-cx-dark">Measured</td>
-              <td className="pt-2 text-right font-semibold tabular-nums text-cx-teal">
-                {lot.measuredTotalMg?.toFixed(2)} mg
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <p className="mt-2 font-mono text-xs text-cx-stone">
-          against {lot.labelMg} mg labelled · lot {lot.lotCode}
-        </p>
-        <p className="mt-3 text-sm text-cx-stone">Independent third-party assay · report on file</p>
-      </section>
-    )
-  }
-
-  return (
-    <section className="rounded-lg border border-cx-light bg-cx-off p-5">
-      <h2 className="font-sans text-xs uppercase tracking-widest text-cx-stone">Independent assay</h2>
-      <p className="mt-2 font-mono text-4xl tabular-nums text-cx-teal">{lot.purityPct?.toFixed(2)}%</p>
-      <p className="font-sans text-sm text-cx-stone">purity · third-party HPLC · report on file</p>
-      <p className="mt-3 font-mono text-xs text-cx-stone">
-        Lot {lot.lotCode}
-        {lot.mfg ? ` · MFG ${lot.mfg}` : ''}
-        {lot.exp ? ` · EXP ${lot.exp}` : ''}
-      </p>
-    </section>
-  )
-}
+- **No Janoshik report code is available, ever.** There is no field for one and
+  no endpoint returns one. A published code resolves to a page naming the
+  manufacturer. Do not add a "verify" link; there is nothing to link to yet.
+- **`unitPriceDisplay` is null for blends.** That is a decision, not missing
+  data. A price per milligram of a four-molecule mixture is meaningless. Render
+  the component table in its place.
+- **Never sort, rank, filter or badge the catalogue by unit price.** Per-mg
+  compares within a compound only. NAD+ at $0.075/mg beside Semax at $6.00/mg
+  says nothing about value, and a "best value" affordance built on it would
+  mislead. Sort by `sortOrder`.
+- **`pending` must show its expected month and must not look comfortable.** It
+  carries the line "This product ships with no published assay until then." If
+  that state reads as tidy, the published figures stop meaning anything.
+- **Stock levels are not exposed.** `shop_inventory` is not publicly readable.
+- Every numeric — purity, mg, price, lot code, date — renders in JetBrains Mono.
+- Accent teal is `#1A8A9E`, deliberately deeper than the Tigris family teal.
 ```
 
-- [ ] **Step 2: Typecheck**
-
-Run: `npx tsc --noEmit`
-Expected: clean.
-
-- [ ] **Step 3: Commit**
+- [ ] **Step 2: Verify neither artifact leaks a report code**
 
 ```bash
-git add src/components/shop/AssayBlock.tsx
-git commit -m "feat(shop): the assay block — three states, two shapes"
+grep -nE 'XAKRSW4WN85N|D14D7EHWHFH9|MDTR34NN18JH|UZMJ2BZU2N7V|9XKFJS7PIVZL|MKF4CLBUWS7F|VJUDHK6MDGT3'   docs/shop-sample-payload.json docs/BACKEND-CONTRACT.md && echo 'LEAK' || echo 'clean'
 ```
 
----
+Expected: `clean`.
 
-### Task 6: Product card and the shop grid
+- [ ] **Step 3: Verify the payload matches the catalogue it claims to sample**
 
-**Files:**
-- Create: `src/components/shop/ProductCard.tsx`
-- Create: `src/app/shop/page.tsx`
-
-**Interfaces:**
-- Consumes: `PRODUCTS`, `currentLot` from `@/lib/shop/catalogue`;
-  `formatPrice`, `formatUnitPrice` from `@/lib/shop/pricing`
-- Produces: `<ProductCard product={ShopProduct} />`, the `/shop` route
-
-- [ ] **Step 1: Write the card**
-
-```tsx
-// src/components/shop/ProductCard.tsx
-import Link from 'next/link'
-import { currentLot } from '@/lib/shop/catalogue'
-import { formatPrice, formatUnitPrice } from '@/lib/shop/pricing'
-import type { ShopProduct } from '@/lib/shop/types'
-
-export function ProductCard({ product }: { product: ShopProduct }) {
-  const lot = currentLot(product.slug)
-  const unit = formatUnitPrice(product)
-
-  return (
-    <Link
-      href={`/shop/${product.slug}`}
-      className="block rounded-lg border border-cx-light bg-cx-parchment p-5 transition hover:border-cx-teal"
-    >
-      <h3 className="font-display text-2xl text-cx-black">{product.name}</h3>
-      <p className="font-mono text-sm text-cx-stone">
-        {product.sizeValue} {product.sizeUnit}
-      </p>
-
-      <div className="mt-4 flex items-baseline gap-2">
-        <span className="font-mono text-xl text-cx-dark">{formatPrice(product.priceCents)}</span>
-        {/* Unit price compares within a compound only — never ranked across the grid. */}
-        {unit && <span className="font-mono text-sm text-cx-stone">{unit}</span>}
-      </div>
-
-      <p className="mt-3 font-mono text-xs text-cx-stone">
-        {lot?.assayState === 'assayed'
-          ? lot.assayType === 'purity'
-            ? `${lot.purityPct?.toFixed(2)}% assayed`
-            : `${(lot.components ?? []).length} components measured`
-          : 'assay pending'}
-      </p>
-    </Link>
-  )
-}
+```bash
+node -e "
+const p=require('./docs/shop-sample-payload.json');
+const slugs=p.products.map(x=>x.slug).sort();
+console.log(p.products.length, 'products');
+console.log('null unit price:', p.products.filter(x=>x.unitPriceDisplay===null).map(x=>x.slug));
+console.log('pending:', p.products.filter(x=>x.lot.assayState==='pending').map(x=>x.slug));
+console.log('with history:', p.products.filter(x=>x.lotHistory.length>1).map(x=>x.slug));
+"
 ```
 
-- [ ] **Step 2: Write the grid page**
-
-```tsx
-// src/app/shop/page.tsx
-import type { Metadata } from 'next'
-import { ProductCard } from '@/components/shop/ProductCard'
-import { PRODUCTS } from '@/lib/shop/catalogue'
-
-export const metadata: Metadata = {
-  title: 'Shop — Peptide Cortex',
-  description: 'Research compounds with published third-party assay data and per-milligram pricing.',
-}
-
-export default function ShopPage() {
-  // sortOrder only. NEVER sort by price or $/mg — cross-compound comparison is
-  // meaningless and a "best value" ordering would mislead. Spec §5.
-  const products = PRODUCTS.filter((p) => p.active).sort((a, b) => a.sortOrder - b.sortOrder)
-
-  return (
-    <main className="mx-auto max-w-5xl px-6 py-12">
-      <h1 className="font-display text-4xl text-cx-black">Shop</h1>
-      <p className="mt-2 max-w-2xl text-cx-dark">
-        Every product lists its independent assay and its price per milligram. Where an
-        assay is still outstanding, we say so and give the date.
-      </p>
-
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {products.map((product) => (
-          <ProductCard key={product.slug} product={product} />
-        ))}
-      </div>
-
-      <p className="mt-12 border-t border-cx-light pt-6 text-xs leading-relaxed text-cx-stone">
-        For research and reference purposes only. Not intended as dosing instructions for
-        human or animal use, and not for human consumption. Consult a licensed physician
-        before any medical decisions. Adults 18+. US shipping only.
-      </p>
-    </main>
-  )
-}
-```
-
-- [ ] **Step 3: Verify it renders**
-
-Run: `npm run dev`, open `http://localhost:3000/shop`
-Expected: seven cards, sortOrder order, KLOW showing no per-mg figure, four cards
-reading "assay pending".
+Expected: 7 products · null unit price `[ 'klow-80mg' ]` · pending
+`[ 'vip-5mg', 'selank-5mg', 'semax-5mg', 'nad-1000mg' ]` · with history
+`[ 'glp-3-30mg' ]`.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add src/components/shop/ProductCard.tsx src/app/shop/page.tsx
-git commit -m "feat(shop): product card and the catalogue grid"
-```
-
----
-
-### Task 7: Product page with lot history
-
-**Files:**
-- Create: `src/components/shop/LotHistory.tsx`
-- Create: `src/app/shop/[slug]/page.tsx`
-
-**Interfaces:**
-- Consumes: `PRODUCTS`, `lotsFor`, `currentLot`, `AssayBlock`, pricing helpers,
-  `COMPOUNDS` from `@/lib/catalog`
-- Produces: the `/shop/[slug]` route
-
-- [ ] **Step 1: Write the lot history**
-
-```tsx
-// src/components/shop/LotHistory.tsx
-//
-// Renders only when a product has more than one lot — an archive of one is not a
-// track record. It fills in on its own as batches are restocked.
-
-import type { ShopLot } from '@/lib/shop/types'
-
-export function LotHistory({ lots }: { lots: ShopLot[] }) {
-  const assayed = lots.filter((l) => l.assayState === 'assayed' && l.assayType === 'purity')
-  if (assayed.length < 2) return null
-
-  return (
-    <section className="mt-8">
-      <h2 className="font-sans text-xs uppercase tracking-widest text-cx-stone">
-        Every lot we have shipped
-      </h2>
-      <table className="mt-3 w-full font-mono text-sm">
-        <tbody>
-          {assayed.map((lot) => (
-            <tr key={lot.lotCode} className="border-b border-cx-light last:border-0">
-              <td className="py-2 text-cx-dark">{lot.lotCode}</td>
-              <td className="py-2 text-cx-stone">{lot.mfg ?? '—'}</td>
-              <td className="py-2 text-right tabular-nums text-cx-teal">
-                {lot.purityPct?.toFixed(2)}%
-              </td>
-              <td className="py-2 pl-3 text-right text-xs text-cx-stone">
-                {lot.isCurrent ? 'shipping now' : ''}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </section>
-  )
-}
-```
-
-- [ ] **Step 2: Write the product page**
-
-```tsx
-// src/app/shop/[slug]/page.tsx
-import { notFound } from 'next/navigation'
-import { AssayBlock } from '@/components/shop/AssayBlock'
-import { LotHistory } from '@/components/shop/LotHistory'
-import { COMPOUNDS } from '@/lib/catalog'
-import { PRODUCTS, currentLot, lotsFor } from '@/lib/shop/catalogue'
-import { formatPrice, formatUnitPrice } from '@/lib/shop/pricing'
-
-export function generateStaticParams() {
-  return PRODUCTS.filter((p) => p.active).map((p) => ({ slug: p.slug }))
-}
-
-export default function ProductPage({ params }: { params: { slug: string } }) {
-  const product = PRODUCTS.find((p) => p.slug === params.slug && p.active)
-  if (!product) notFound()
-
-  const lot = currentLot(product.slug)
-  const unit = formatUnitPrice(product)
-  const compound = product.compoundId ? COMPOUNDS[product.compoundId] : undefined
-
-  return (
-    <main className="mx-auto max-w-3xl px-6 py-12">
-      <h1 className="font-display text-4xl text-cx-black">{product.name}</h1>
-      <p className="font-mono text-cx-stone">
-        {product.sizeValue} {product.sizeUnit}
-      </p>
-
-      <div className="mt-4 flex items-baseline gap-3">
-        <span className="font-mono text-3xl text-cx-dark">{formatPrice(product.priceCents)}</span>
-        {unit && <span className="font-mono text-cx-stone">{unit}</span>}
-      </div>
-
-      <div className="mt-8">{lot && <AssayBlock lot={lot} />}</div>
-
-      <LotHistory lots={lotsFor(product.slug)} />
-
-      {compound && (
-        <section className="mt-8">
-          <h2 className="font-sans text-xs uppercase tracking-widest text-cx-stone">
-            What it is
-          </h2>
-          <p className="mt-2 text-cx-dark">{compound.action}</p>
-          <p className="mt-2 text-sm text-cx-stone">{compound.bottomLine}</p>
-        </section>
-      )}
-
-      {product.blendOf && (
-        <section className="mt-8">
-          <h2 className="font-sans text-xs uppercase tracking-widest text-cx-stone">
-            What is in it
-          </h2>
-          <ul className="mt-2 space-y-1">
-            {product.blendOf.map((id) => (
-              <li key={id} className="text-cx-dark">
-                {COMPOUNDS[id]?.name ?? id}
-                <span className="text-sm text-cx-stone"> — {COMPOUNDS[id]?.purpose ?? ''}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      <p className="mt-12 border-t border-cx-light pt-6 text-xs leading-relaxed text-cx-stone">
-        For research and reference purposes only. Not intended as dosing instructions for
-        human or animal use, and not for human consumption. Consult a licensed physician
-        before any medical decisions. Adults 18+. US shipping only.
-      </p>
-    </main>
-  )
-}
-```
-
-- [ ] **Step 3: Verify all seven pages render**
-
-Run: `npm run dev`, then visit each of:
-`/shop/glp-3-30mg` `/shop/vip-5mg` `/shop/mots-c-10mg` `/shop/selank-5mg`
-`/shop/semax-5mg` `/shop/klow-80mg` `/shop/nad-1000mg`
-
-Expected: GLP-3 shows a purity block **and** a three-row lot history; KLOW shows
-the component table, no per-mg, and its four ingredients; the four pending
-products show the dated commissioned line and no number.
-
-- [ ] **Step 4: Full verification**
-
-Run: `npm test && npx tsc --noEmit && npm run build`
-Expected: all tests pass, no type errors, build succeeds.
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add src/components/shop/LotHistory.tsx "src/app/shop/[slug]/page.tsx"
-git commit -m "feat(shop): product page with lot history"
+git add docs/BACKEND-CONTRACT.md docs/shop-sample-payload.json
+git commit -m "docs(shop): frontend contract and real sample payload"
 ```
 
 ---
 
 ## What this plan does not build
 
-Cart · checkout · BTCPay · Zelle · orders · `order_items` · the admin queue ·
-inventory display · nav links into `/shop`. All of it lands in a second plan,
-which is blocked on spec §10 items 4 and 5 (shop entity, business bank account,
-refund policy) — none of which are code.
+**Any storefront UI.** No `/shop` route, no components, no pages. That is Claude
+Design's work, built against Task 5's contract and payload.
 
-`/shop` is reachable by URL only until that plan ships. That is deliberate: a
-storefront you cannot buy from should not be advertised in the nav.
+Cart · checkout · BTCPay · Zelle · orders · `order_items` · the admin queue ·
+inventory display. All of it lands in a second plan, which is blocked on spec §10
+items 4 and 5 (shop entity, business bank account, refund policy) — none of which
+are code.
 
 ## Follow-ups for Karim
 

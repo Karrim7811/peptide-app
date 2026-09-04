@@ -1,0 +1,239 @@
+{
+  "_comment": "Real launch data for the Peptide Cortex shop, for building the storefront UI against. Every value here is the actual figure that will render in production - design against these, not placeholders. See docs/BACKEND-CONTRACT.md section 13 for the rules that are not visible in a layout.",
+  "_generated": "2026-09-04",
+  "_shape": "This is the response shape of the shop catalogue read. lot is the batch currently shipping; lotHistory is every assayed batch for that product, newest first.",
+
+  "products": [
+    {
+      "slug": "glp-3-30mg",
+      "name": "GLP-3 (Retatrutide)",
+      "sizeValue": 30,
+      "sizeUnit": "mg",
+      "priceCents": 12500,
+      "priceDisplay": "$125.00",
+      "unitPriceDisplay": "$4.17 / mg",
+      "blendOf": null,
+      "compound": {
+        "name": "Retatrutide",
+        "purpose": "Metabolic / Weight loss",
+        "action": "Triple agonist at GLP-1, GIP and glucagon receptors"
+      },
+      "lot": {
+        "lotCode": "JA-102107",
+        "assayState": "assayed",
+        "assayType": "purity",
+        "purityPct": 99.62,
+        "components": null,
+        "labelMg": 30,
+        "measuredTotalMg": null,
+        "assayExpectedAt": null,
+        "mfg": "2026-01",
+        "exp": "2028-01",
+        "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+      },
+      "lotHistory": [
+        { "lotCode": "JA-102107", "purityPct": 99.62, "mfg": "2026-01", "isCurrent": true },
+        { "lotCode": "JA-68243", "purityPct": 99.73, "mfg": null, "isCurrent": false },
+        { "lotCode": "JA-63071", "purityPct": 99.46, "mfg": null, "isCurrent": false }
+      ]
+    },
+
+    {
+      "slug": "vip-5mg",
+      "name": "VIP",
+      "sizeValue": 5,
+      "sizeUnit": "mg",
+      "priceCents": 3000,
+      "priceDisplay": "$30.00",
+      "unitPriceDisplay": "$6.00 / mg",
+      "blendOf": null,
+      "compound": {
+        "name": "VIP (VIP)",
+        "purpose": "Vasoactive intestinal peptide",
+        "action": "Vasoactive intestinal peptide receptor agonist"
+      },
+      "lot": {
+        "lotCode": null,
+        "assayState": "pending",
+        "assayType": "purity",
+        "purityPct": null,
+        "components": null,
+        "labelMg": 5,
+        "measuredTotalMg": null,
+        "assayExpectedAt": "2026-10",
+        "mfg": null,
+        "exp": null,
+        "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+      },
+      "lotHistory": []
+    },
+
+    {
+      "slug": "mots-c-10mg",
+      "name": "MOTS-c",
+      "sizeValue": 10,
+      "sizeUnit": "mg",
+      "priceCents": 3000,
+      "priceDisplay": "$30.00",
+      "unitPriceDisplay": "$3.00 / mg",
+      "blendOf": null,
+      "compound": {
+        "name": "MOTS-c",
+        "purpose": "Mitochondrial / Metabolic",
+        "action": "Mitochondrial-derived peptide; activates AMPK"
+      },
+      "lot": {
+        "lotCode": "JA-102111",
+        "assayState": "assayed",
+        "assayType": "purity",
+        "purityPct": 99.11,
+        "components": null,
+        "labelMg": 10,
+        "measuredTotalMg": null,
+        "assayExpectedAt": null,
+        "mfg": "2026-01",
+        "exp": "2028-01",
+        "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+      },
+      "lotHistory": [
+        { "lotCode": "JA-102111", "purityPct": 99.11, "mfg": "2026-01", "isCurrent": true }
+      ]
+    },
+
+    {
+      "slug": "selank-5mg",
+      "name": "Selank",
+      "sizeValue": 5,
+      "sizeUnit": "mg",
+      "priceCents": 3000,
+      "priceDisplay": "$30.00",
+      "unitPriceDisplay": "$6.00 / mg",
+      "blendOf": null,
+      "compound": {
+        "name": "Selank",
+        "purpose": "Nootropic / Anxiolytic",
+        "action": "Tuftsin analogue; modulates GABA and monoamine systems"
+      },
+      "lot": {
+        "lotCode": null,
+        "assayState": "pending",
+        "assayType": "purity",
+        "purityPct": null,
+        "components": null,
+        "labelMg": 5,
+        "measuredTotalMg": null,
+        "assayExpectedAt": "2026-10",
+        "mfg": null,
+        "exp": null,
+        "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+      },
+      "lotHistory": []
+    },
+
+    {
+      "slug": "semax-5mg",
+      "name": "Semax",
+      "sizeValue": 5,
+      "sizeUnit": "mg",
+      "priceCents": 3000,
+      "priceDisplay": "$30.00",
+      "unitPriceDisplay": "$6.00 / mg",
+      "blendOf": null,
+      "compound": {
+        "name": "Semax",
+        "purpose": "Nootropic / Neuroprotective",
+        "action": "ACTH(4-10) analogue; modulates BDNF and NGF expression"
+      },
+      "lot": {
+        "lotCode": null,
+        "assayState": "pending",
+        "assayType": "purity",
+        "purityPct": null,
+        "components": null,
+        "labelMg": 5,
+        "measuredTotalMg": null,
+        "assayExpectedAt": "2026-10",
+        "mfg": null,
+        "exp": null,
+        "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+      },
+      "lotHistory": []
+    },
+
+    {
+      "slug": "klow-80mg",
+      "name": "KLOW",
+      "sizeValue": 80,
+      "sizeUnit": "mg",
+      "priceCents": 10000,
+      "priceDisplay": "$100.00",
+      "unitPriceDisplay": null,
+      "blendOf": [
+        { "name": "GHK-Cu", "purpose": "Skin / Repair" },
+        { "name": "BPC-157", "purpose": "Healing / Repair" },
+        { "name": "TB-500", "purpose": "Healing / Repair" },
+        { "name": "KPV", "purpose": "Anti-inflammatory" }
+      ],
+      "compound": null,
+      "lot": {
+        "lotCode": "JA-102113",
+        "assayState": "assayed",
+        "assayType": "composition",
+        "purityPct": null,
+        "components": [
+          { "name": "GHK-Cu", "mg": 57.45 },
+          { "name": "BPC-157", "mg": 11.12 },
+          { "name": "TB-500 (TB4)", "mg": 10.88 },
+          { "name": "KPV", "mg": 11.2 }
+        ],
+        "labelMg": 80,
+        "measuredTotalMg": 90.65,
+        "assayExpectedAt": null,
+        "mfg": "2026-01",
+        "exp": "2028-01",
+        "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+      },
+      "lotHistory": []
+    },
+
+    {
+      "slug": "nad-1000mg",
+      "name": "NAD+",
+      "sizeValue": 1000,
+      "sizeUnit": "mg",
+      "priceCents": 7500,
+      "priceDisplay": "$75.00",
+      "unitPriceDisplay": "$0.075 / mg",
+      "blendOf": null,
+      "compound": {
+        "name": "NAD+",
+        "purpose": "Cellular energy / Longevity",
+        "action": "Nicotinamide adenine dinucleotide; a coenzyme, not a peptide"
+      },
+      "lot": {
+        "lotCode": null,
+        "assayState": "pending",
+        "assayType": "purity",
+        "purityPct": null,
+        "components": null,
+        "labelMg": 1000,
+        "measuredTotalMg": null,
+        "assayExpectedAt": "2026-10",
+        "mfg": null,
+        "exp": null,
+        "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+      },
+      "lotHistory": []
+    }
+  ],
+
+  "_designNotes": {
+    "theHardCases": [
+      "glp-3-30mg is the ONLY product with a lot history. Three assays, 99.62 / 99.73 / 99.46. This is the most important block on the site - it is a track record no competitor can fake. Give it real weight.",
+      "klow-80mg is the only composition assay. Four measured components totalling 90.65 mg against an 80 mg label. It has NO unit price - that field is null on purpose, not missing. The component table replaces it.",
+      "Four of seven products (vip, selank, semax, nad) have assayState 'pending' and NO number to show. They must display the expected month and the sentence 'This product ships with no published assay until then.' Do not make this state look comfortable."
+    ],
+    "numericsUseJetBrainsMono": "Every purity, mg, price, lot code and date renders in JetBrains Mono. This is a brand rule, not a preference - it is the instrument-panel feel the product is built on.",
+    "accentTeal": "#1A8A9E - deliberately deeper than the Tigris family teal. Do not change it to #00C9B1."
+  }
+}
