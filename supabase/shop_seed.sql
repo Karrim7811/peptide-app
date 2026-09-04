@@ -83,8 +83,8 @@ and not exists (select 1 from public.shop_lots l where l.product_id = p.id
 insert into public.shop_lots
   (product_id, lot_code, assay_state, assay_type, purity_pct, components,
    label_mg, measured_total_mg, assay_expected_at, mfg, exp, shelf_life, is_current)
-select p.id, 'JA-102111', 'assayed', 'purity', 99.11, null,
-       10, null, null, '2026-01', '2028-01', 'USE WITHIN 28 DAYS · 2–8 °C', true
+select p.id, 'JA-102111', 'assayed', 'purity', 99.114, null,
+       10, 12.33, null, '2026-01', '2028-01', 'USE WITHIN 28 DAYS · 2–8 °C', true
 from public.shop_products p where p.slug = 'mots-c-10mg'
 and not exists (select 1 from public.shop_lots l where l.product_id = p.id
   and coalesce(l.lot_code, '') = coalesce('JA-102111', ''));

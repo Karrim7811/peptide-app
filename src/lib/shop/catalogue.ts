@@ -145,13 +145,18 @@ export const LOTS: ShopLot[] = [
   },
 
   {
+    // Verified against Janoshik #102111 on 2026-09-04. The report says 99.114%
+    // and 12.33 mg content; peptides.json had rounded the first to 99.11 and
+    // dropped the second. Both are restored — on a site whose whole claim is
+    // that it publishes what the lab said, publishing something slightly else
+    // is a strange place to start.
     productSlug: 'mots-c-10mg',
     lotCode: 'JA-102111',
     assayState: 'assayed',
     assayType: 'purity',
-    purityPct: 99.11,
+    purityPct: 99.114,
     labelMg: 10,
-    measuredTotalMg: null,
+    measuredTotalMg: 12.33,
     assayExpectedAt: null,
     mfg: '2026-01',
     exp: '2028-01',

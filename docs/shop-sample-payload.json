@@ -86,17 +86,17 @@
         "lotCode": "JA-102111",
         "assayState": "assayed",
         "assayType": "purity",
-        "purityPct": 99.11,
+        "purityPct": 99.114,
         "components": null,
         "labelMg": 10,
-        "measuredTotalMg": null,
+        "measuredTotalMg": 12.33,
         "assayExpectedAt": null,
         "mfg": "2026-01",
         "exp": "2028-01",
         "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
       },
       "lotHistory": [
-        { "lotCode": "JA-102111", "purityPct": 99.11, "mfg": "2026-01", "isCurrent": true }
+        { "lotCode": "JA-102111", "purityPct": 99.114, "mfg": "2026-01", "isCurrent": true }
       ]
     },
 

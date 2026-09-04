@@ -84,6 +84,21 @@ describe('assay invariants', () => {
     }
   })
 
+  // Overfill is a real, verifiable selling point, but only if the figure is the
+  // lab's. A measured content below the label would be the opposite of a
+  // selling point and must never be published as one by accident.
+  it('never records a measured content below what the label claims', () => {
+    const short = LOTS.filter(
+      (l) => l.measuredTotalMg !== null && l.measuredTotalMg < l.labelMg,
+    )
+    expect(short.map((l) => l.productSlug)).toEqual([])
+  })
+
+  it('records no measured content for a lot with no assay', () => {
+    const impossible = LOTS.filter((l) => l.assayState !== 'assayed' && l.measuredTotalMg !== null)
+    expect(impossible.map((l) => l.productSlug)).toEqual([])
+  })
+
   // Spec D3. The shop must not reintroduce what Task 1 removed.
   it('carries no Janoshik report code', () => {
     const serialized = JSON.stringify(LOTS)

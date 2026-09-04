@@ -47,8 +47,16 @@ export interface ShopLot {
   purityPct: number | null
   /** Measured components. Set when assayType is 'composition'. */
   components?: Component[]
+  /** What the label claims. */
   labelMg: number
-  /** Sum of the measured components. Null for a purity assay. */
+  /**
+   * What the lab actually found — the sum of the components for a composition
+   * assay, the measured content of the single compound for a purity one. Read
+   * against labelMg it is the overfill, which has run +13% to +26% across every
+   * report seen so far and which nobody else in this market publishes.
+   *
+   * Null only where the report was never read.
+   */
   measuredTotalMg: number | null
   /** YYYY-MM. Required when assayState is 'pending'. */
   assayExpectedAt: string | null
