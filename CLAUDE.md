@@ -10,7 +10,7 @@ Karim Naga is SVP at Aon by day and founder of **Tigris Tech Labs** by night. **
 
 The target user is the **peptide researcher / biohacker** — technically literate, runs multi-compound protocols, already maintains a stack in a Notes app or spreadsheet, and wants a single tool that combines a high-quality reference, an AI interaction checker, and a tracker. Peptide Cortex is positioned against the absence of trustworthy, structured peptide data in mainstream health apps.
 
-**Pricing**: a free tier and a paid Pro tier (Stripe-billed monthly/yearly). A third "lifetime" tier exists at the data-model level — granted via a Supabase whitelist for founders and early-supporter accounts, not purchasable. Whether `lifetime` was intended as a publicly-marketed third commercial tier is an open question (see §13).
+**Pricing**: a free tier and a paid Pro tier, Stripe-billed at `$14.99/month` or `$119.88/year` with a one-month free trial. `lifetime` is a third value of `subscription_tier`, not a third feature set — it was sold as a one-time purchase, withdrawn from the pricing page on 2026-08-06, and is still granted via the `pro_whitelist` table to founders and early supporters. Gating treats it exactly as `pro`. `src/lib/pricing.ts` is the only source for a price; see §16.4.
 
 **Hosting**: production lives at `peptidecortex.com` (per `capacitor.config.ts` allowNavigation). `peptide-app-nine.vercel.app` is the current Vercel hostname; `peptidecortex.ai` appears as `metadataBase` in `src/app/layout.tsx`; `peptidetracker.app` appears as a fallback domain in `src/app/api/stripe/create-checkout/route.ts`. Domain canonicalization needs cleanup (see §13).
 
@@ -58,7 +58,7 @@ Both directories share the name "peptide-app" but the iOS clone has the `-ios` s
 
 A single hybrid product across two surfaces (web + native iOS) sharing one Supabase backend and one set of Next.js API routes:
 
-**Reference layer** — the Peptide Bible: 92 peptide entries (auto-generated from `Peptides_Master_List_FULL_Explainers_CV_Interactions_Dropdowns.xlsx` via `generate_knowledge.py`), each carrying primary purpose, mechanism, dosage range, risk cautions, evidence level, CV impact rating 0–5, drug interactions, goal category, and a curated list of compounds that stack well. Plus 24+ pre-defined named stacks (KLOW, GLOW, Wolverine Stack, Tri-Heal, etc.). Plus vendor directory, regulatory status tracker, and side-effect reference.
+**Reference layer** — the Peptide Bible: **124 peptide entries**, each carrying primary purpose, mechanism, dosage range, risk cautions, evidence level, CV impact rating 0–5, drug interactions, goal category, and a curated list of compounds that stack well. 92 were generated from `Peptides_Master_List_FULL_Explainers_CV_Interactions_Dropdowns.xlsx` via `generate_knowledge.py`; the other 32 were researched against named trials and drug labels (2026-09-03) and carry `sourced: 'researched'`. Fourteen of those state outright that no human dose exists, and a test in `src/lib/catalog.test.ts` keeps them saying so. Alongside them sit **27 `Vial` records** — real assayed batches with lot, purity, expiry and Janoshik report code, from `design/vial-labels/peptides.json`. Plus 24+ pre-defined named stacks (KLOW, GLOW, Wolverine Stack, Tri-Heal, etc.). Plus vendor directory, regulatory status tracker, and side-effect reference.
 
 **Intelligence layer** — Anthropic Claude-powered tools:
 - **Interaction Checker** — checks any two compounds (peptide / Rx / supplement / OTC) for interaction (`/api/check-interaction`, model `claude-opus-4-5`).
@@ -187,7 +187,8 @@ src/
     TopBar.tsx                    Desktop topbar
   lib/
     ai-consent.ts                 hasAiConsent / requireAiConsent helpers
-    peptide-knowledge.ts          92 peptide entries, generated from xlsx
+    peptide-knowledge.ts          124 peptide entries — drives /reference and every AI route
+    catalog.ts                    the same 124 as typed Compounds, plus 27 VIALS — drives the Mirror
     peptides.ts                   Smaller helper module
     stripe.ts                     Stripe client + checkout/portal helpers
     subscription.ts               getUserSubscription / isProUser / rate-limit count
@@ -311,10 +312,10 @@ These are present in the iOS Swift app and either missing from the web app, miss
 | `subscription_events` | `id`, `user_id`, `event_type`, `tier`, `provider`, `provider_event_id`, `created_at` | Read-own only | Stripe webhook (service role) |
 | `interaction_checks` | `id`, `user_id`, `item_a`, `item_b`, `created_at` | Yes | User (insert) for rate-limit counter |
 | `pro_whitelist` | `id`, `email unique`, `name`, `tier ('pro'|'lifetime')`, `note`, `added_at` | RLS enabled, no policies — service-role only | Manual |
-| `cycles` ⚠️ | Implied by `/cycle/page.tsx` but **not in schema.sql** | ? | ? |
-| `injection_sites` ⚠️ | Implied by `/sites/page.tsx` but **not in schema.sql** | ? | ? |
-| `research_notes` ⚠️ | Implied by `/notes/page.tsx` but **not in schema.sql** | ? | ? |
-| `side_effects` ⚠️ | Implied by `/side-effects/page.tsx` but **not in schema.sql** | ? | ? |
+| `cycles` | `id`, `user_id`, `name`, `peptide_names text[]`, `on_weeks`, `off_weeks`, `start_date`, `status`, `notes`, `created_at` | Yes | User |
+| `injection_sites` | `id`, `user_id`, `site`, `peptide_name`, `notes`, `logged_at`, `created_at` — an injection **log**, not geometry | Yes | User |
+| `research_notes` | `id`, `user_id`, `peptide_name`, `note`, `url`, `created_at` | Yes | User |
+| `side_effects` | `id`, `user_id`, `peptide_name`, `effect`, `severity`, `notes`, `logged_at`, `created_at` | Yes | User |
 
 **Triggers**: `on_auth_user_created` on `auth.users` → `handle_new_user()` reads `pro_whitelist` and inserts a `profiles` row with the correct tier.
 
@@ -338,10 +339,12 @@ STRIPE_SECRET_KEY
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 STRIPE_WEBHOOK_SECRET
 STRIPE_PRO_MONTHLY_PRICE_ID
-STRIPE_PRO_YEARLY_PRICE_ID
+STRIPE_PRO_ANNUAL_PRICE_ID
+STRIPE_PRO_LIFETIME_PRICE_ID
+SUPABASE_SERVICE_ROLE_KEY
 ```
 
-There is **no** `SUPABASE_SERVICE_ROLE_KEY` referenced in `.env.example` and no obvious service-role usage in any API route — every call uses the anon key + the user's session. This is good for RLS-as-defence-in-depth but means the Stripe webhook's `profiles` updates are running under anon, which would fail RLS. Audit recommended (REFACTOR-ROADMAP item C-3).
+Every route except the Stripe webhook uses the anon key plus the user's session, which keeps RLS as defence in depth. The webhook is the deliberate exception: it uses `createServiceClient()` with `SUPABASE_SERVICE_ROLE_KEY` to write `profiles.subscription_tier`, and throws loudly if the key is absent. An earlier revision of this file claimed the key was unreferenced and the webhook was running under anon — it was not, and that claim was repeated as a live bug before anyone checked. See §13.3.
 
 ---
 
@@ -357,7 +360,7 @@ The next 90 days of work are about getting `peptidecortex.com` to the polish lev
 
 ### Hard issues (will burn a real session if not addressed)
 
-1. **Schema/code drift** — `/cycle`, `/sites`, `/notes`, `/side-effects` pages exist but their tables are absent from `supabase/schema.sql`. Pages may be writing to tables only the Supabase remote knows about, or to `localStorage`. Need to introspect the live Supabase project and write missing migrations.
+1. ~~**Schema/code drift**~~ — **RESOLVED (verified against the live database 2026-09-03).** `cycles`, `injection_sites`, `research_notes` and `side_effects` all exist in production AND are checked into the repo — `supabase/mirror_schema_reconciliation.sql` creates all four with RLS policies and indexes. This entry described them as missing and called it "the single biggest schema/code drift in the repo"; that has not been true since the reconciliation migration landed. Note the migration's own header: `cycles` and `injection_sites` do not carry the shapes the Mirror handoff assumed — `injection_sites` is an injection **log**, not site geometry. Read that file before building on either.
 2. **Middleware is a no-op** — `middleware.ts` matches `/_never_match_this_route_`. No route-level session refresh. Pages do per-render session reads. Acceptable but worth a deliberate decision.
 3. ~~**Stripe webhook writes to `profiles` under anon**~~ — **RESOLVED (verified 2026-08-07).** The webhook uses `createServiceClient()` (`SUPABASE_SERVICE_ROLE_KEY`), which bypasses RLS, and throws loudly if the key is absent. This entry was stale and was believed and repeated as a live bug during the 2026-08 session before being checked — verify against the code before acting on anything in this section.
 4. **PWA manifest stale** — `public/manifest.json` still names the app "PeptideTracker", uses `#0f172a` / `#0f172a` as `background_color` / `theme_color`, and references SVG icons. None of this matches the current `cx.*` palette or the `Peptide Cortex` brand. This is the user's first impression on iPhone home-screen install.
@@ -423,16 +426,21 @@ Peptide Cortex's deeper, clinical teal stays. The Tigris Tech Labs family Neural
 ### 16.3 JetBrains Mono → adopt for data
 Render precise numeric content in JetBrains Mono: mg dosages, vial concentrations, lab values, dates, IDs, lab ranges. Two benefits: (a) instrument-panel feel matches the brand, (b) column-wise digit alignment is genuinely easier to scan in bloodwork results and dose logs. Roadmap item upgraded to High.
 
-### 16.4 Subscription tiers → Free + Pro (two SKUs)
-- **Free** — current free-tier limits unchanged.
-- **Pro** — same feature set, two billing SKUs:
-  - `$9.99 / month` recurring
-  - `$99.99 one-time` lifetime
-- **Annual `$79.99 / year` is deprecated and removed.** Existing annual subscribers are grandfathered until their next renewal, at which point they are offered conversion to monthly or lifetime.
-- The Supabase `subscription_tier` enum (`'free' | 'pro' | 'lifetime'`) stays as-is — `lifetime` is now a payment path into Pro, not a marketed third tier. Lifetime customers get a `subscription_tier = 'lifetime'` row that the gating code treats identically to `'pro'`.
+### 16.4 Subscription tiers → Free + Pro
+**Superseded 2026-08-06. The decision below is kept for the reasoning; the numbers are wrong.** What shipped went the other way: annual came back and lifetime was withdrawn from sale. `src/lib/pricing.ts` is the single source of truth — do not hardcode a price anywhere, and do not trust this section over that file.
 
-### 16.5 Live Stripe prices → `$9.99/mo` and `$99.99` lifetime
-Both must be created (or updated) in live Stripe; the env vars `STRIPE_PRO_MONTHLY_PRICE_ID` and a new `STRIPE_PRO_LIFETIME_PRICE_ID` reference them. `STRIPE_PRO_YEARLY_PRICE_ID` is retired. `pricing/page.tsx` updated to show the two SKUs and remove the monthly/yearly toggle.
+- **Free** — current free-tier limits unchanged.
+- **Pro** — `$14.99 / month` (`MONTHLY_PRICE`) or `$119.88 / year` (`ANNUAL_PRICE`), with a **one-month free trial** (`TRIAL_MONTHS = 1`, `TRIAL_DAYS = 30`).
+- **Lifetime is no longer sold.** It was withdrawn from the pricing page on 2026-08-06. `'lifetime'` remains a valid `ProPlan` and a working checkout path, and existing holders plus the founder whitelist keep permanent access.
+- The Supabase `subscription_tier` enum (`'free' | 'pro' | 'lifetime'`) is unchanged — `lifetime` is a payment path into Pro, never a third feature set. Gating treats it identically to `'pro'`; see `resolveTier()` in `src/lib/tier.ts`.
+
+_Original decision (2026-05-23), now historical: `$9.99/mo` plus a `$99.99` one-time lifetime, with annual `$79.99` deprecated and removed._
+
+### 16.5 Live Stripe prices
+Three env vars, all referenced from `src/lib/stripe.ts` via `STRIPE_PRICES`:
+`STRIPE_PRO_MONTHLY_PRICE_ID`, `STRIPE_PRO_ANNUAL_PRICE_ID`, `STRIPE_PRO_LIFETIME_PRICE_ID`.
+
+**`STRIPE_PRO_YEARLY_PRICE_ID` does not exist** — the annual var is spelled `ANNUAL`. If the annual var is unset, annual checkout fails loudly rather than falling back to the monthly price, which is deliberate: a visitor who picked ANNUAL must never be silently charged monthly.
 
 ### 16.6 Web Push for reminders → v1 requirement, non-negotiable
 Web Push (VAPID + service worker subscription) is required at v1 of the web-primary surface. Without it, the web app cannot replace the iOS reminder use-case — users have no way to be reminded to inject without keeping a browser tab open. Web Push targets **iOS Safari 16.4+ when installed as a PWA on home screen** (which is already our install pattern) plus all desktop browsers. Without this, the web app feels like a website; with it, it feels like an app. Roadmap item promoted to Critical.
@@ -475,4 +483,6 @@ The states that matter (California, New York, Connecticut, Illinois) all have sp
 
 ---
 
-_Last audit: 2026-05-23 by Claude (Opus 4.7, 1M context). Repo head at audit time: `b611890 fix: robust JSON extraction for bloodwork AI analysis` on `main`._
+_Last full audit: 2026-05-23 by Claude (Opus 4.7, 1M context), repo head `b611890`._
+
+_Partial revision 2026-09-03 by Claude (Opus 5, 1M context) at head `b09b14c`, correcting sections verified against the code and the live database: §1 and §16.4/16.5 (pricing was still recorded as $9.99/mo plus a $99.99 lifetime; it is $14.99/mo or $119.88/yr with a one-month trial, and annual returned while lifetime was withdrawn), §11 (env vars, and the service-role claim that had already been disproved in §13.3), §13.1 (the four "missing" tables exist in production and in `supabase/mirror_schema_reconciliation.sql` — this was listed as the repo's biggest schema drift and had not been true for some time), §10, §4 and §7 (92 peptides → 124, plus 27 vials). Everything else in this file predates that pass and has not been re-verified — §13.4 through §13.8 especially._
