@@ -5,19 +5,14 @@
 // Nothing downstream re-derives it — a price change must never rewrite what a
 // past customer was charged, and the schema carries a matching CHECK constraint
 // because this is the arithmetic people dispute.
+//
+// Shipping is a method the customer chooses, not a constant. See shipping.ts.
+// There is no free-shipping threshold: the one that used to live here was
+// invented, and it has been removed rather than replaced with another guess.
 
 import { PRODUCTS } from '@/lib/shop/catalogue'
-
-/**
- * Flat domestic shipping. PLACEHOLDER — Karim has not set the real figure, and
- * cold-chain packaging is not free. Confirm before launch.
- */
-export const SHIPPING_CENTS = 1200
-
-/**
- * At or above this subtotal, shipping is free. PLACEHOLDER, same caveat.
- */
-export const FREE_SHIPPING_THRESHOLD_CENTS = 15000
+import { shippingMethod } from '@/lib/shop/orders/shipping'
+import type { ShippingMethodId } from '@/lib/shop/orders/shipping'
 
 export interface PricedLine {
   productSlug: string
@@ -32,6 +27,7 @@ export interface OrderTotals {
   subtotalCents: number
   shippingCents: number
   totalCents: number
+  shippingMethodId: ShippingMethodId
 }
 
 export function priceLine(slug: string, qty: number): PricedLine {
@@ -52,13 +48,26 @@ export function priceLine(slug: string, qty: number): PricedLine {
   }
 }
 
-export function orderTotals(lines: PricedLine[]): OrderTotals {
+/**
+ * Totals an order for a chosen shipping method.
+ *
+ * Throws while that method has no price. Refusing is the right failure: the
+ * alternative is charging a number nobody chose, and defaulting to zero would
+ * ship free postage on every order until someone noticed the bank balance.
+ */
+export function orderTotals(lines: PricedLine[], methodId: ShippingMethodId): OrderTotals {
   if (lines.length === 0) throw new Error('cannot total an empty order')
 
-  const subtotalCents = lines.reduce((sum, line) => sum + line.lineCents, 0)
-  // At the threshold, not past it — a customer who hits the number exactly
-  // should not pay for shipping because of a comparison operator.
-  const shippingCents = subtotalCents >= FREE_SHIPPING_THRESHOLD_CENTS ? 0 : SHIPPING_CENTS
+  const method = shippingMethod(methodId)
+  if (method.priceCents === null) {
+    throw new Error(`shipping method '${methodId}' has no price set`)
+  }
 
-  return { subtotalCents, shippingCents, totalCents: subtotalCents + shippingCents }
+  const subtotalCents = lines.reduce((sum, line) => sum + line.lineCents, 0)
+  return {
+    subtotalCents,
+    shippingCents: method.priceCents,
+    totalCents: subtotalCents + method.priceCents,
+    shippingMethodId: methodId,
+  }
 }

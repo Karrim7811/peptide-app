@@ -41,6 +41,10 @@ create table if not exists public.shop_orders (
 
   subtotal_cents     integer not null check (subtotal_cents >= 0),
   shipping_cents     integer not null default 0 check (shipping_cents >= 0),
+  -- Which service the customer chose and paid for. Recorded because a dispute
+  -- about when something should have arrived is unanswerable without it, and
+  -- because only 'overnight' carries a carrier guarantee.
+  shipping_method    text not null check (shipping_method in ('standard','priority','overnight')),
   total_cents        integer not null check (total_cents >= 0),
 
   payment_provider   text not null check (payment_provider in ('btcpay', 'zelle')),
