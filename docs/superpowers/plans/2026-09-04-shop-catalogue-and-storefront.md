@@ -1,6 +1,6 @@
 # Shop — Catalogue & Storefront Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Build the shop's **data layer** — seven products, real assay data, per-mg
 unit pricing, schema and seed — plus the contract the new storefront is built
@@ -57,7 +57,7 @@ they are dead data that resolves to a page naming the manufacturer.
 - Consumes: `VIALS`, `Vial` from `@/lib/catalog`
 - Produces: `REPORT_CODES: Record<string, string>` (slug → Janoshik code), server-only
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 // src/lib/vial-reports.test.ts
@@ -77,12 +77,12 @@ describe('report codes', () => {
 })
 ```
 
-- [ ] **Step 2: Run it and watch it fail**
+- [x] **Step 2: Run it and watch it fail**
 
 Run: `npm test -- src/lib/vial-reports.test.ts`
 Expected: FAIL — cannot resolve `@/lib/vial-reports.server`.
 
-- [ ] **Step 3: Extract the codes into a server-only module**
+- [x] **Step 3: Extract the codes into a server-only module**
 
 Run this script once; it writes the new module and strips the field.
 
@@ -108,7 +108,7 @@ print('ok')
 PY
 ```
 
-- [ ] **Step 4: Update the existing catalog test that asserted the field**
+- [x] **Step 4: Update the existing catalog test that asserted the field**
 
 Replace `src/lib/catalog.test.ts:61` (which read
 `VIALS.filter((vial) => !vial.slug.endsWith(vial.reportCode))`) with:
@@ -119,12 +119,12 @@ Replace `src/lib/catalog.test.ts:61` (which read
 
 and add `import { REPORT_CODES } from '@/lib/vial-reports.server'` to that file.
 
-- [ ] **Step 5: Run the whole suite**
+- [x] **Step 5: Run the whole suite**
 
 Run: `npm test && npx tsc --noEmit`
 Expected: all pass. The suite was 101 tests; expect 103 now.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/lib/catalog.ts src/lib/vial-reports.server.ts src/lib/catalog.test.ts src/lib/vial-reports.test.ts
@@ -152,7 +152,7 @@ git commit -m "fix(shop): stop shipping Janoshik report codes to the browser"
   `PRODUCTS: ShopProduct[]`, `LOTS: ShopLot[]`, `lotsFor(productSlug): ShopLot[]`,
   `currentLot(productSlug): ShopLot | undefined`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 // src/lib/shop/catalogue.test.ts
@@ -212,12 +212,12 @@ describe('launch catalogue', () => {
 })
 ```
 
-- [ ] **Step 2: Run it and watch it fail**
+- [x] **Step 2: Run it and watch it fail**
 
 Run: `npm test -- src/lib/shop/catalogue.test.ts`
 Expected: FAIL — cannot resolve `@/lib/shop/catalogue`.
 
-- [ ] **Step 3: Write the types**
+- [x] **Step 3: Write the types**
 
 ```ts
 // src/lib/shop/types.ts
@@ -264,7 +264,7 @@ export interface ShopLot {
 }
 ```
 
-- [ ] **Step 4: Write the catalogue**
+- [x] **Step 4: Write the catalogue**
 
 ```ts
 // src/lib/shop/catalogue.ts
@@ -333,12 +333,12 @@ export function currentLot(productSlug: string): ShopLot | undefined {
 }
 ```
 
-- [ ] **Step 5: Run the tests**
+- [x] **Step 5: Run the tests**
 
 Run: `npm test -- src/lib/shop/catalogue.test.ts`
 Expected: PASS, 9 tests.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/lib/shop/types.ts src/lib/shop/catalogue.ts src/lib/shop/catalogue.test.ts
@@ -363,7 +363,7 @@ git commit -m "feat(shop): types and the seven-SKU launch catalogue"
 - Produces: `perMgCents(product): number | null`, `formatPrice(cents): string`,
   `formatUnitPrice(product): string | null`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```ts
 // src/lib/shop/pricing.test.ts
@@ -399,12 +399,12 @@ describe('unit pricing', () => {
 })
 ```
 
-- [ ] **Step 2: Run it and watch it fail**
+- [x] **Step 2: Run it and watch it fail**
 
 Run: `npm test -- src/lib/shop/pricing.test.ts`
 Expected: FAIL — cannot resolve `@/lib/shop/pricing`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 ```ts
 // src/lib/shop/pricing.ts
@@ -440,12 +440,12 @@ export function formatUnitPrice(product: ShopProduct): string | null {
 }
 ```
 
-- [ ] **Step 4: Run the tests**
+- [x] **Step 4: Run the tests**
 
 Run: `npm test -- src/lib/shop/pricing.test.ts`
 Expected: PASS, 5 tests.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/lib/shop/pricing.ts src/lib/shop/pricing.test.ts
@@ -465,7 +465,7 @@ git commit -m "feat(shop): per-mg unit pricing, with blends excluded by design"
 - Consumes: `PRODUCTS`, `LOTS` from `@/lib/shop/catalogue`
 - Produces: tables `shop_products`, `shop_lots`, `shop_inventory`
 
-- [ ] **Step 1: Write the schema**
+- [x] **Step 1: Write the schema**
 
 ```sql
 -- supabase/shop_schema.sql
@@ -546,7 +546,7 @@ create policy shop_lots_public_read on public.shop_lots for select using (true);
 -- and the storefront does not display them at launch.
 ```
 
-- [ ] **Step 2: Write the seed generator**
+- [x] **Step 2: Write the seed generator**
 
 ```js
 // scripts/generate-shop-seed.mjs
@@ -588,7 +588,7 @@ writeFileSync('supabase/shop_seed.sql', lines.join('\n') + '\n')
 console.log(`wrote ${PRODUCTS.length} products, ${LOTS.length} lots`)
 ```
 
-- [ ] **Step 3: Generate the seed and eyeball it**
+- [x] **Step 3: Generate the seed and eyeball it**
 
 ```bash
 npx tsx scripts/generate-shop-seed.mjs
@@ -597,7 +597,7 @@ head -20 supabase/shop_seed.sql
 
 Expected: `wrote 7 products, 9 lots`, and no Janoshik code anywhere in the file.
 
-- [ ] **Step 4: Verify the redaction invariant survived generation**
+- [x] **Step 4: Verify the redaction invariant survived generation**
 
 ```bash
 grep -E 'XAKRSW4WN85N|D14D7EHWHFH9|MDTR34NN18JH' supabase/shop_seed.sql && echo 'LEAK' || echo 'clean'
@@ -605,7 +605,7 @@ grep -E 'XAKRSW4WN85N|D14D7EHWHFH9|MDTR34NN18JH' supabase/shop_seed.sql && echo 
 
 Expected: `clean`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add supabase/shop_schema.sql supabase/shop_seed.sql scripts/generate-shop-seed.mjs
@@ -631,7 +631,7 @@ what it builds against. No UI is written here.
 - Consumes: `PRODUCTS`, `LOTS` from `@/lib/shop/catalogue`; pricing helpers
 - Produces: a documented read shape and a real sample payload for all 7 products
 
-- [ ] **Step 1: Append section 13 to the backend contract**
+- [x] **Step 1: Append section 13 to the backend contract**
 
 Follow the existing file's voice: describe what exists and what it refuses to do,
 never how it should look. Cover the `ShopProduct` / `ShopLot` types verbatim from
@@ -659,7 +659,7 @@ list of refusals:
 - Accent teal is `#1A8A9E`, deliberately deeper than the Tigris family teal.
 ```
 
-- [ ] **Step 2: Verify neither artifact leaks a report code**
+- [x] **Step 2: Verify neither artifact leaks a report code**
 
 ```bash
 grep -nE 'XAKRSW4WN85N|D14D7EHWHFH9|MDTR34NN18JH|UZMJ2BZU2N7V|9XKFJS7PIVZL|MKF4CLBUWS7F|VJUDHK6MDGT3'   docs/shop-sample-payload.json docs/BACKEND-CONTRACT.md && echo 'LEAK' || echo 'clean'
@@ -667,7 +667,7 @@ grep -nE 'XAKRSW4WN85N|D14D7EHWHFH9|MDTR34NN18JH|UZMJ2BZU2N7V|9XKFJS7PIVZL|MKF4C
 
 Expected: `clean`.
 
-- [ ] **Step 3: Verify the payload matches the catalogue it claims to sample**
+- [x] **Step 3: Verify the payload matches the catalogue it claims to sample**
 
 ```bash
 node -e "
@@ -684,7 +684,7 @@ Expected: 7 products · null unit price `[ 'klow-80mg' ]` · pending
 `[ 'vip-5mg', 'selank-5mg', 'semax-5mg', 'nad-1000mg' ]` · with history
 `[ 'glp-3-30mg' ]`.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add docs/BACKEND-CONTRACT.md docs/shop-sample-payload.json
@@ -721,3 +721,27 @@ are code.
    `lotCode: null` because no code was supplied; the vials are real, the codes
    are unknown. They ship without a lot identifier until you provide one, which
    also means no recall path for those batches once orders exist.
+
+---
+
+## Execution record — 2026-09-04
+
+All five tasks complete. 129 tests passing (was 101), `tsc --noEmit` clean.
+
+**One deviation, in Task 1.** The plan deferred the slug leak to a follow-up,
+which contradicted this plan's own first global constraint — "not as a field,
+**not embedded in a slug**". Removing the field while leaving every slug ending
+in its own report code would have been worse than not starting, because the
+field's absence made it look handled. Checked first that nothing resolves label
+artwork by slug (identity and test messages only) and that `peptides.json` is
+never imported by the app, then stripped the codes from slugs and rekeyed
+`REPORT_CODES` by lot. The label generator is untouched and the SVGs keep their
+original filenames.
+
+`vial-reports.test.ts` now serializes `VIALS` and asserts no code appears in it,
+so a slug that embeds one again fails loudly rather than quietly.
+
+**Still open, all Karim's:** real `assayExpectedAt` dates; lot codes for the four
+pending batches (they have no recall path without them); the printed labels'
+DataMatrix; applying `shop_schema.sql` and `shop_seed.sql`; and the shop entity
+and bank account that block the checkout plan.
