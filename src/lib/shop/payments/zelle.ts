@@ -10,8 +10,11 @@
 // closes it — and never the account that receives subscription revenue.
 
 import { formatPrice } from '@/lib/shop/pricing'
-import type { Order } from '@/lib/shop/orders/types'
-import type { ChargeIntent, PaymentProvider } from '@/lib/shop/payments/provider'
+import type {
+  ChargeIntent,
+  ChargeableOrder,
+  PaymentProvider,
+} from '@/lib/shop/payments/provider'
 
 export const ZELLE: PaymentProvider = {
   id: 'zelle',
@@ -19,7 +22,7 @@ export const ZELLE: PaymentProvider = {
   // The load-bearing false. Nothing ships on this rail without a human.
   confirmsAutomatically: false,
 
-  async createCharge(order: Order): Promise<ChargeIntent> {
+  async createCharge(order: ChargeableOrder): Promise<ChargeIntent> {
     const handle = process.env.SHOP_ZELLE_HANDLE?.trim()
     if (!handle) {
       // Telling a customer to send money nowhere is worse than failing checkout.

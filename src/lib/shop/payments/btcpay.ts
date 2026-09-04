@@ -9,8 +9,11 @@
 // surfaces as a failed checkout with a clear message, not as a server that
 // refuses to boot.
 
-import type { Order } from '@/lib/shop/orders/types'
-import type { ChargeIntent, PaymentProvider } from '@/lib/shop/payments/provider'
+import type {
+  ChargeIntent,
+  ChargeableOrder,
+  PaymentProvider,
+} from '@/lib/shop/payments/provider'
 
 interface BtcPayConfig {
   url: string
@@ -37,7 +40,7 @@ export const BTCPAY: PaymentProvider = {
   id: 'btcpay',
   confirmsAutomatically: true,
 
-  async createCharge(order: Order): Promise<ChargeIntent> {
+  async createCharge(order: ChargeableOrder): Promise<ChargeIntent> {
     const { url, storeId, apiKey } = config()
 
     const response = await fetch(`${url}/api/v1/stores/${storeId}/invoices`, {

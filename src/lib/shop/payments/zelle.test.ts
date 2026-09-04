@@ -4,13 +4,13 @@
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { ZELLE } from '@/lib/shop/payments/zelle'
-import type { Order } from '@/lib/shop/orders/types'
+import type { ChargeableOrder } from '@/lib/shop/payments/provider'
 
-const order = {
+const order: ChargeableOrder = {
   id: 'order-1',
   paymentReference: 'PC-4F2A',
   totalCents: 12500,
-} as Order
+}
 
 describe('zelle adapter', () => {
   const saved = process.env.SHOP_ZELLE_HANDLE

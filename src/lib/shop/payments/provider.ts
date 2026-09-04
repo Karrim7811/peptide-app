@@ -11,6 +11,13 @@
 
 import type { Order, PaymentProviderId } from '@/lib/shop/orders/types'
 
+/**
+ * What an adapter actually needs to raise a charge. Narrower than Order on
+ * purpose: createOrder calls this before the full row has been read back, and a
+ * cast to satisfy a wider type would be a lie the compiler stopped checking.
+ */
+export type ChargeableOrder = Pick<Order, 'id' | 'totalCents' | 'paymentReference'>
+
 export interface ChargeInstructions {
   heading: string
   /** Lines to render, in order. */
@@ -36,5 +43,5 @@ export interface PaymentProvider {
    * page, whether a next-day promise is honest — follows from this.
    */
   confirmsAutomatically: boolean
-  createCharge(order: Order): Promise<ChargeIntent>
+  createCharge(order: ChargeableOrder): Promise<ChargeIntent>
 }
