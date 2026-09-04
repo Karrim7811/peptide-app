@@ -102,42 +102,55 @@ export const LOTS: ShopLot[] = [
   // record, and the strongest single asset on the site: anyone can post one
   // certificate, almost nobody can show a run of them.
   {
+    // Janoshik #102107, analysed 27 Jan 2026. 99.623% and 35.95 mg content —
+    // both read off the report on 2026-09-04; the stored 99.62 was rounded and
+    // the content was missing.
     productSlug: 'glp-3-30mg',
     lotCode: 'JA-102107',
     assayState: 'assayed',
     assayType: 'purity',
-    purityPct: 99.62,
+    purityPct: 99.623,
     labelMg: 30,
-    measuredTotalMg: null,
+    measuredTotalMg: 35.95,
     assayExpectedAt: null,
+    assayedAt: '2026-01',
     mfg: '2026-01',
     exp: '2028-01',
     shelfLife: COLD,
     isCurrent: true,
   },
   {
+    // Janoshik #68243, analysed 17 Jun 2025. This report assayed TWO vials:
+    // 99.736% / 99.741% purity, 33.54 mg / 31.72 mg content. We publish the
+    // LOWER of each pair. Picking the better number from a report that contains
+    // both would be selective quotation on the one page that exists to prove we
+    // do not do that.
     productSlug: 'glp-3-30mg',
     lotCode: 'JA-68243',
     assayState: 'assayed',
     assayType: 'purity',
-    purityPct: 99.73,
+    purityPct: 99.736,
     labelMg: 30,
-    measuredTotalMg: null,
+    measuredTotalMg: 31.72,
     assayExpectedAt: null,
+    assayedAt: '2025-06',
     mfg: null,
     exp: null,
     shelfLife: COLD,
     isCurrent: false,
   },
   {
+    // Janoshik #63071, analysed 25 Apr 2025. The oldest of the three, and the
+    // reason the ledger is a nine-month record rather than a snapshot.
     productSlug: 'glp-3-30mg',
     lotCode: 'JA-63071',
     assayState: 'assayed',
     assayType: 'purity',
-    purityPct: 99.46,
+    purityPct: 99.466,
     labelMg: 30,
-    measuredTotalMg: null,
+    measuredTotalMg: 32.61,
     assayExpectedAt: null,
+    assayedAt: '2025-04',
     mfg: null,
     exp: null,
     shelfLife: COLD,
@@ -158,6 +171,7 @@ export const LOTS: ShopLot[] = [
     labelMg: 10,
     measuredTotalMg: 12.33,
     assayExpectedAt: null,
+    assayedAt: '2026-01',
     mfg: '2026-01',
     exp: '2028-01',
     shelfLife: COLD,
@@ -182,6 +196,7 @@ export const LOTS: ShopLot[] = [
     labelMg: 80,
     measuredTotalMg: 90.65,
     assayExpectedAt: null,
+    assayedAt: '2026-01',
     mfg: '2026-01',
     exp: '2028-01',
     shelfLife: COLD,
@@ -201,6 +216,7 @@ export const LOTS: ShopLot[] = [
     labelMg: 5,
     measuredTotalMg: null,
     assayExpectedAt: ASSAY_EXPECTED,
+    assayedAt: null,
     mfg: null,
     exp: null,
     shelfLife: COLD,
@@ -215,6 +231,7 @@ export const LOTS: ShopLot[] = [
     labelMg: 5,
     measuredTotalMg: null,
     assayExpectedAt: ASSAY_EXPECTED,
+    assayedAt: null,
     mfg: null,
     exp: null,
     shelfLife: COLD,
@@ -229,6 +246,7 @@ export const LOTS: ShopLot[] = [
     labelMg: 5,
     measuredTotalMg: null,
     assayExpectedAt: ASSAY_EXPECTED,
+    assayedAt: null,
     mfg: null,
     exp: null,
     shelfLife: COLD,
@@ -243,6 +261,7 @@ export const LOTS: ShopLot[] = [
     labelMg: 1000,
     measuredTotalMg: null,
     assayExpectedAt: ASSAY_EXPECTED,
+    assayedAt: null,
     mfg: null,
     exp: null,
     shelfLife: COLD,

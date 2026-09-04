@@ -60,6 +60,12 @@ export interface ShopLot {
   measuredTotalMg: number | null
   /** YYYY-MM. Required when assayState is 'pending'. */
   assayExpectedAt: string | null
+  /**
+   * YYYY-MM the analysis was conducted. Distinct from mfg — it is the lab's
+   * date, not the factory's — and it is what turns the lot history from a list
+   * of numbers into a dated record.
+   */
+  assayedAt: string | null
   mfg: string | null
   exp: string | null
   shelfLife: string | null

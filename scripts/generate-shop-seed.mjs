@@ -45,9 +45,9 @@ for (const l of LOTS) {
   lines.push(
     'insert into public.shop_lots',
     '  (product_id, lot_code, assay_state, assay_type, purity_pct, components,',
-    '   label_mg, measured_total_mg, assay_expected_at, mfg, exp, shelf_life, is_current)',
+    '   label_mg, measured_total_mg, assay_expected_at, assay_assayed_at, mfg, exp, shelf_life, is_current)',
     `select p.id, ${q(l.lotCode)}, ${q(l.assayState)}, ${q(l.assayType)}, ${num(l.purityPct)}, ${json(l.components)},`,
-    `       ${num(l.labelMg)}, ${num(l.measuredTotalMg)}, ${q(l.assayExpectedAt)}, ${q(l.mfg)}, ${q(l.exp)}, ${q(l.shelfLife)}, ${l.isCurrent}`,
+    `       ${num(l.labelMg)}, ${num(l.measuredTotalMg)}, ${q(l.assayExpectedAt)}, ${q(l.assayedAt)}, ${q(l.mfg)}, ${q(l.exp)}, ${q(l.shelfLife)}, ${l.isCurrent}`,
     `from public.shop_products p where p.slug = ${q(l.productSlug)}`,
     // Keyed on the pair rather than lot_code, which is null for pending batches
     // and so cannot carry an on-conflict target.

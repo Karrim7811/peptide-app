@@ -59,6 +59,9 @@ create table if not exists public.shop_lots (
   measured_total_mg  numeric,
   -- YYYY-MM.
   assay_expected_at  text,
+  -- YYYY-MM the lab conducted the analysis. Not mfg — that is the factory's
+  -- date. This is what makes the lot history a dated record.
+  assay_assayed_at   text,
   mfg                text,
   exp                text,
   shelf_life         text,
@@ -71,6 +74,8 @@ create table if not exists public.shop_lots (
     check (assay_state <> 'pending' or purity_pct is null),
   constraint assayed_purity_carries_a_figure
     check (assay_state <> 'assayed' or assay_type <> 'purity' or purity_pct is not null),
+  constraint assayed_carries_its_analysis_date
+    check (assay_state <> 'assayed' or assay_assayed_at is not null),
   constraint assayed_composition_carries_components
     check (assay_state <> 'assayed' or assay_type <> 'composition'
            or (components is not null and measured_total_mg is not null))

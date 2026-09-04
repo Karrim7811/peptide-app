@@ -99,6 +99,13 @@ describe('assay invariants', () => {
     expect(impossible.map((l) => l.productSlug)).toEqual([])
   })
 
+  it('dates every assayed lot, and only assayed lots', () => {
+    const undated = LOTS.filter((l) => l.assayState === 'assayed' && !l.assayedAt)
+    expect(undated.map((l) => l.productSlug)).toEqual([])
+    const wrongly = LOTS.filter((l) => l.assayState !== 'assayed' && l.assayedAt)
+    expect(wrongly.map((l) => l.productSlug)).toEqual([])
+  })
+
   // Spec D3. The shop must not reintroduce what Task 1 removed.
   it('carries no Janoshik report code', () => {
     const serialized = JSON.stringify(LOTS)
@@ -108,8 +115,18 @@ describe('assay invariants', () => {
 })
 
 describe('the GLP-3 track record', () => {
-  it('carries three consecutive assayed lots', () => {
-    expect(lotsFor('glp-3-30mg').map((l) => l.purityPct)).toEqual([99.62, 99.73, 99.46])
+  it('carries three assayed lots, exact figures off the reports', () => {
+    expect(lotsFor('glp-3-30mg').map((l) => l.purityPct)).toEqual([99.623, 99.736, 99.466])
+  })
+
+  // Apr 2025 → Jun 2025 → Jan 2026. Nine months of consecutive batches is the
+  // claim; the dates are what make it one rather than three loose numbers.
+  it('spans nine months, newest first', () => {
+    expect(lotsFor('glp-3-30mg').map((l) => l.assayedAt)).toEqual([
+      '2026-01',
+      '2025-06',
+      '2025-04',
+    ])
   })
 
   it('ships the one marked current', () => {

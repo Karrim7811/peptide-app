@@ -55,81 +55,81 @@ on conflict (slug) do update set
 
 insert into public.shop_lots
   (product_id, lot_code, assay_state, assay_type, purity_pct, components,
-   label_mg, measured_total_mg, assay_expected_at, mfg, exp, shelf_life, is_current)
-select p.id, 'JA-102107', 'assayed', 'purity', 99.62, null,
-       30, null, null, '2026-01', '2028-01', 'USE WITHIN 28 DAYS · 2–8 °C', true
+   label_mg, measured_total_mg, assay_expected_at, assay_assayed_at, mfg, exp, shelf_life, is_current)
+select p.id, 'JA-102107', 'assayed', 'purity', 99.623, null,
+       30, 35.95, null, '2026-01', '2026-01', '2028-01', 'USE WITHIN 28 DAYS · 2–8 °C', true
 from public.shop_products p where p.slug = 'glp-3-30mg'
 and not exists (select 1 from public.shop_lots l where l.product_id = p.id
   and coalesce(l.lot_code, '') = coalesce('JA-102107', ''));
 
 insert into public.shop_lots
   (product_id, lot_code, assay_state, assay_type, purity_pct, components,
-   label_mg, measured_total_mg, assay_expected_at, mfg, exp, shelf_life, is_current)
-select p.id, 'JA-68243', 'assayed', 'purity', 99.73, null,
-       30, null, null, null, null, 'USE WITHIN 28 DAYS · 2–8 °C', false
+   label_mg, measured_total_mg, assay_expected_at, assay_assayed_at, mfg, exp, shelf_life, is_current)
+select p.id, 'JA-68243', 'assayed', 'purity', 99.736, null,
+       30, 31.72, null, '2025-06', null, null, 'USE WITHIN 28 DAYS · 2–8 °C', false
 from public.shop_products p where p.slug = 'glp-3-30mg'
 and not exists (select 1 from public.shop_lots l where l.product_id = p.id
   and coalesce(l.lot_code, '') = coalesce('JA-68243', ''));
 
 insert into public.shop_lots
   (product_id, lot_code, assay_state, assay_type, purity_pct, components,
-   label_mg, measured_total_mg, assay_expected_at, mfg, exp, shelf_life, is_current)
-select p.id, 'JA-63071', 'assayed', 'purity', 99.46, null,
-       30, null, null, null, null, 'USE WITHIN 28 DAYS · 2–8 °C', false
+   label_mg, measured_total_mg, assay_expected_at, assay_assayed_at, mfg, exp, shelf_life, is_current)
+select p.id, 'JA-63071', 'assayed', 'purity', 99.466, null,
+       30, 32.61, null, '2025-04', null, null, 'USE WITHIN 28 DAYS · 2–8 °C', false
 from public.shop_products p where p.slug = 'glp-3-30mg'
 and not exists (select 1 from public.shop_lots l where l.product_id = p.id
   and coalesce(l.lot_code, '') = coalesce('JA-63071', ''));
 
 insert into public.shop_lots
   (product_id, lot_code, assay_state, assay_type, purity_pct, components,
-   label_mg, measured_total_mg, assay_expected_at, mfg, exp, shelf_life, is_current)
+   label_mg, measured_total_mg, assay_expected_at, assay_assayed_at, mfg, exp, shelf_life, is_current)
 select p.id, 'JA-102111', 'assayed', 'purity', 99.114, null,
-       10, 12.33, null, '2026-01', '2028-01', 'USE WITHIN 28 DAYS · 2–8 °C', true
+       10, 12.33, null, '2026-01', '2026-01', '2028-01', 'USE WITHIN 28 DAYS · 2–8 °C', true
 from public.shop_products p where p.slug = 'mots-c-10mg'
 and not exists (select 1 from public.shop_lots l where l.product_id = p.id
   and coalesce(l.lot_code, '') = coalesce('JA-102111', ''));
 
 insert into public.shop_lots
   (product_id, lot_code, assay_state, assay_type, purity_pct, components,
-   label_mg, measured_total_mg, assay_expected_at, mfg, exp, shelf_life, is_current)
+   label_mg, measured_total_mg, assay_expected_at, assay_assayed_at, mfg, exp, shelf_life, is_current)
 select p.id, 'JA-102113', 'assayed', 'composition', null, '[{"name":"GHK-Cu","mg":57.45},{"name":"BPC-157","mg":11.12},{"name":"TB-500 (TB4)","mg":10.88},{"name":"KPV","mg":11.2}]'::jsonb,
-       80, 90.65, null, '2026-01', '2028-01', 'USE WITHIN 28 DAYS · 2–8 °C', true
+       80, 90.65, null, '2026-01', '2026-01', '2028-01', 'USE WITHIN 28 DAYS · 2–8 °C', true
 from public.shop_products p where p.slug = 'klow-80mg'
 and not exists (select 1 from public.shop_lots l where l.product_id = p.id
   and coalesce(l.lot_code, '') = coalesce('JA-102113', ''));
 
 insert into public.shop_lots
   (product_id, lot_code, assay_state, assay_type, purity_pct, components,
-   label_mg, measured_total_mg, assay_expected_at, mfg, exp, shelf_life, is_current)
+   label_mg, measured_total_mg, assay_expected_at, assay_assayed_at, mfg, exp, shelf_life, is_current)
 select p.id, null, 'pending', 'purity', null, null,
-       5, null, '2026-10', null, null, 'USE WITHIN 28 DAYS · 2–8 °C', true
+       5, null, '2026-10', null, null, null, 'USE WITHIN 28 DAYS · 2–8 °C', true
 from public.shop_products p where p.slug = 'vip-5mg'
 and not exists (select 1 from public.shop_lots l where l.product_id = p.id
   and coalesce(l.lot_code, '') = coalesce(null, ''));
 
 insert into public.shop_lots
   (product_id, lot_code, assay_state, assay_type, purity_pct, components,
-   label_mg, measured_total_mg, assay_expected_at, mfg, exp, shelf_life, is_current)
+   label_mg, measured_total_mg, assay_expected_at, assay_assayed_at, mfg, exp, shelf_life, is_current)
 select p.id, null, 'pending', 'purity', null, null,
-       5, null, '2026-10', null, null, 'USE WITHIN 28 DAYS · 2–8 °C', true
+       5, null, '2026-10', null, null, null, 'USE WITHIN 28 DAYS · 2–8 °C', true
 from public.shop_products p where p.slug = 'selank-5mg'
 and not exists (select 1 from public.shop_lots l where l.product_id = p.id
   and coalesce(l.lot_code, '') = coalesce(null, ''));
 
 insert into public.shop_lots
   (product_id, lot_code, assay_state, assay_type, purity_pct, components,
-   label_mg, measured_total_mg, assay_expected_at, mfg, exp, shelf_life, is_current)
+   label_mg, measured_total_mg, assay_expected_at, assay_assayed_at, mfg, exp, shelf_life, is_current)
 select p.id, null, 'pending', 'purity', null, null,
-       5, null, '2026-10', null, null, 'USE WITHIN 28 DAYS · 2–8 °C', true
+       5, null, '2026-10', null, null, null, 'USE WITHIN 28 DAYS · 2–8 °C', true
 from public.shop_products p where p.slug = 'semax-5mg'
 and not exists (select 1 from public.shop_lots l where l.product_id = p.id
   and coalesce(l.lot_code, '') = coalesce(null, ''));
 
 insert into public.shop_lots
   (product_id, lot_code, assay_state, assay_type, purity_pct, components,
-   label_mg, measured_total_mg, assay_expected_at, mfg, exp, shelf_life, is_current)
+   label_mg, measured_total_mg, assay_expected_at, assay_assayed_at, mfg, exp, shelf_life, is_current)
 select p.id, null, 'pending', 'purity', null, null,
-       1000, null, '2026-10', null, null, 'USE WITHIN 28 DAYS · 2–8 °C', true
+       1000, null, '2026-10', null, null, null, 'USE WITHIN 28 DAYS · 2–8 °C', true
 from public.shop_products p where p.slug = 'nad-1000mg'
 and not exists (select 1 from public.shop_lots l where l.product_id = p.id
   and coalesce(l.lot_code, '') = coalesce(null, ''));

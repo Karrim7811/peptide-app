@@ -22,19 +22,20 @@
         "lotCode": "JA-102107",
         "assayState": "assayed",
         "assayType": "purity",
-        "purityPct": 99.62,
+        "purityPct": 99.623,
         "components": null,
         "labelMg": 30,
-        "measuredTotalMg": null,
+        "measuredTotalMg": 35.95,
+        "assayedAt": "2026-01",
         "assayExpectedAt": null,
         "mfg": "2026-01",
         "exp": "2028-01",
         "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
       },
       "lotHistory": [
-        { "lotCode": "JA-102107", "purityPct": 99.62, "mfg": "2026-01", "isCurrent": true },
-        { "lotCode": "JA-68243", "purityPct": 99.73, "mfg": null, "isCurrent": false },
-        { "lotCode": "JA-63071", "purityPct": 99.46, "mfg": null, "isCurrent": false }
+        { "lotCode": "JA-102107", "purityPct": 99.623, "assayedAt": "2026-01", "measuredTotalMg": 35.95, "isCurrent": true },
+        { "lotCode": "JA-68243", "purityPct": 99.736, "assayedAt": "2025-06", "measuredTotalMg": 31.72, "isCurrent": false },
+        { "lotCode": "JA-63071", "purityPct": 99.466, "assayedAt": "2025-04", "measuredTotalMg": 32.61, "isCurrent": false }
       ]
     },
 
@@ -90,6 +91,7 @@
         "components": null,
         "labelMg": 10,
         "measuredTotalMg": 12.33,
+        "assayedAt": "2026-01",
         "assayExpectedAt": null,
         "mfg": "2026-01",
         "exp": "2028-01",
@@ -188,6 +190,7 @@
         ],
         "labelMg": 80,
         "measuredTotalMg": 90.65,
+        "assayedAt": "2026-01",
         "assayExpectedAt": null,
         "mfg": "2026-01",
         "exp": "2028-01",
@@ -229,7 +232,7 @@
 
   "_designNotes": {
     "theHardCases": [
-      "glp-3-30mg is the ONLY product with a lot history. Three assays, 99.62 / 99.73 / 99.46. This is the most important block on the site - it is a track record no competitor can fake. Give it real weight.",
+      "glp-3-30mg is the ONLY product with a lot history. Three assays across nine months - 99.623 (Jan 2026), 99.736 (Jun 2025), 99.466 (Apr 2025). This is the most important block on the site - it is a track record no competitor can fake. Give it real weight.",
       "klow-80mg is the only composition assay. Four measured components totalling 90.65 mg against an 80 mg label. It has NO unit price - that field is null on purpose, not missing. The component table replaces it.",
       "Four of seven products (vip, selank, semax, nad) have assayState 'pending' and NO number to show. They must display the expected month and the sentence 'This product ships with no published assay until then.' Do not make this state look comfortable."
     ],

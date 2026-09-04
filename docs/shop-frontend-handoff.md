@@ -42,11 +42,12 @@ THE DATA — real values, not placeholders. Design against these.
 
 1. GLP-3 (Retatrutide) — 30 mg — $125.00 — $4.17 / mg
    Triple agonist at GLP-1, GIP and glucagon receptors. Metabolic / weight loss.
-   ASSAYED: 99.62% purity · lot JA-102107 · MFG 2026-01 · EXP 2028-01
-   LOT HISTORY (all shipped batches):
-      JA-102107   99.62%   2026-01   ← shipping now
-      JA-68243    99.73%
-      JA-63071    99.46%
+   ASSAYED: 99.623% purity · 35.95 mg measured against a 30 mg label
+   lot JA-102107 · MFG 2026-01 · EXP 2028-01
+   LOT HISTORY — nine months of consecutive batches:
+      JA-102107   Jan 2026   99.623%   35.95 mg   ← shipping now
+      JA-68243    Jun 2025   99.736%   31.72 mg
+      JA-63071    Apr 2025   99.466%   32.61 mg
 
 2. VIP — 5 mg — $30.00 — $6.00 / mg
    Vasoactive intestinal peptide.
@@ -120,8 +121,9 @@ invisible in a mockup, which is exactly why they're written down.
 
 5. GLP-3's lot history is the most important block on the site. Anyone can post
    one certificate for the batch they're currently selling. Almost nobody can
-   show a run of consecutive batches holding 99.4%+. It's a record, not a
-   claim, and it takes time to fake. Give it real weight — not a footnote.
+   show nine months of consecutive batches holding 99.4%+. The DATES are what
+   make it a record rather than three loose numbers, so keep them on every row.
+   It takes time to fake. Give it real weight — not a footnote.
 
 
 NUMERICS
