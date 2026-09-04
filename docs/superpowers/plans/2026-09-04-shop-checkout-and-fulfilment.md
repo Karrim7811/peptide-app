@@ -973,13 +973,17 @@ export function validatePackAssignment(
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createServiceClient, getAuthenticatedUser } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { canTransition } from '@/lib/shop/orders/status'
 import { validatePackAssignment } from '@/lib/shop/orders/admin'
 import type { OrderStatus } from '@/lib/shop/orders/types'
 
+// getAuthenticatedUser() takes a Request and suits route handlers. Server
+// actions and server components read the session from cookies instead — the
+// pattern every existing layout in this app already uses.
 async function assertAdmin() {
-  const user = await getAuthenticatedUser()
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
   const adminId = process.env.SHOP_ADMIN_USER_ID
   if (!adminId) throw new Error('SHOP_ADMIN_USER_ID is not set')
   if (!user || user.id !== adminId) throw new Error('not authorised')
@@ -1052,18 +1056,19 @@ export async function markShipped(orderId: string, tracking: string) {
 // Zelle payment, pack a paid order, ship a packed one.
 
 import { notFound } from 'next/navigation'
-import { createServiceClient, getAuthenticatedUser } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { formatPrice } from '@/lib/shop/pricing'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminOrdersPage() {
-  const user = await getAuthenticatedUser()
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
   // 404 rather than 403: an admin route should not confirm it exists.
   if (!user || user.id !== process.env.SHOP_ADMIN_USER_ID) notFound()
 
-  const supabase = createServiceClient()
-  const { data: orders } = await supabase
+  const service = createServiceClient()
+  const { data: orders } = await service
     .from('shop_orders')
     .select('id, status, total_cents, payment_provider, payment_reference, created_at, ship_name')
     .in('status', ['awaiting_payment', 'paid', 'packed'])
