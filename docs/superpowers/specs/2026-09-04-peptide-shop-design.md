@@ -45,15 +45,15 @@ Two firewalls survive the integration and are non-negotiable:
 
 ## 3. Launch catalogue — 7 SKUs
 
-| # | Product | Lot(s) | Assay |
-|---|---|---|---|
-| 1 | **GLP-3 (Retatrutide) 30 mg** | `JA-102107`, `JA-68243`, `JA-63071` | purity 99.62 / 99.73 / 99.46 |
-| 2 | VIP 5 mg | — | `pending` |
-| 3 | **MOTS-c 10 mg** | `JA-102111` | purity 99.11 |
-| 4 | Selank 5 mg | — | `pending` |
-| 5 | Semax 5 mg | — | `pending` |
-| 6 | **KLOW 80 mg** | `JA-102113` | composition (below) |
-| 7 | NAD+ 1000 mg | — | `pending` |
+| # | Product | Price | $/mg | Lot(s) | Assay |
+|---|---|---|---|---|---|
+| 1 | **GLP-3 (Retatrutide) 30 mg** | $125 | 4.167 | `JA-102107`, `JA-68243`, `JA-63071` | purity 99.62 / 99.73 / 99.46 |
+| 2 | VIP 5 mg | **TBD** | — | — | `pending` |
+| 3 | **MOTS-c 10 mg** | $30 | 3.000 | `JA-102111` | purity 99.11 |
+| 4 | Selank 5 mg | $30 | 6.000 | — | `pending` |
+| 5 | Semax 5 mg | $30 | 6.000 | — | `pending` |
+| 6 | **KLOW 80 mg** | **TBD** | n/a — blend | `JA-102113` | composition (below) |
+| 7 | NAD+ 1000 mg | $75 | 0.075 | — | `pending` |
 
 **KLOW `JA-102113`** (analysed 27 Jan 2026) is a *composition* assay, not a
 purity assay, and will never yield a single percentage:
@@ -141,6 +141,23 @@ exposure, no competitor to provoke. It works particularly well for this
 catalogue: a 30 mg retatrutide vial competes against 5 mg and 10 mg vials with
 smaller sticker prices, and per-mg normalisation turns the format into the
 argument. The customer performs the comparison, in a unit we supplied.
+
+### Two rules the unit price must obey
+
+**Per-mg is comparable within a compound, never across the catalogue.** NAD+ at
+$0.075/mg and Semax at $6.00/mg does not mean NAD+ is eighty times the value —
+they are different molecules with different dose ranges. The figure exists so a
+buyer can compare *our* retatrutide against *someone else's* retatrutide. So:
+show it on the card and the product page, but **never sort, rank, or visually
+compare the catalogue by it**, and never present it in a way that implies a
+cross-compound ranking. A "best value" badge computed from $/mg would be
+actively misleading and must not be built.
+
+**Blends carry no per-mg figure.** KLOW is four molecules in one vial; a price
+per milligram of *unspecified mixture* means nothing, and it is ambiguous
+besides (per 80 mg labelled, or per 90.65 mg measured?). For `assay_type =
+'composition'` products the component table replaces the unit price entirely —
+which is the stronger disclosure anyway.
 
 **Explicitly rejected:**
 
@@ -236,7 +253,8 @@ reconciliation (not possible) · migrating the existing Stripe subscription code
    attach to SKU 1. Not yet explicitly confirmed.
 2. **`assay_expected_at` for the four pending SKUs** (VIP, Selank, Semax, NAD+) —
    a date is required before they can list.
-3. **Prices** for all seven SKUs.
+3. **Prices** — five of seven set (§3). Still needed: **VIP 5 mg** and
+   **KLOW 80 mg**.
 4. **Shop legal entity + business bank account** — prerequisite for D8 and both
    firewalls.
 5. **Refund policy text** — needs Karim's sign-off; ToS changes require it.
