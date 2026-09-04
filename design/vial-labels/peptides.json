@@ -1,0 +1,274 @@
+[
+  {
+    "slug": "102107-RT_30_D14D7EHWHFH9",
+    "compound": "Retatrutide",
+    "qty": "30 mg",
+    "purity": "99.62%",
+    "lot": "JA-102107",
+    "mfg": "2026-01",
+    "exp": "2028-01",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "102108-RT_60_8S1BF8KMN7IM",
+    "compound": "Retatrutide",
+    "qty": "60 mg",
+    "purity": "99.71%",
+    "lot": "JA-102108",
+    "mfg": "2026-01",
+    "exp": "2028-01",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "102109-Tesa_10_6757MQWXFMZP",
+    "compound": "Tesamorelin",
+    "qty": "10 mg",
+    "purity": "99.65%",
+    "lot": "JA-102109",
+    "mfg": "2026-01",
+    "exp": "2028-01",
+    "shelfLife": "USE WITHIN 14 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "102111-Motc_10_VJUDHK6MDGT3",
+    "compound": "MOTS-c",
+    "qty": "10 mg",
+    "purity": "99.11%",
+    "lot": "JA-102111",
+    "mfg": "2026-01",
+    "exp": "2028-01",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "102112-Ghk_cu_100_SYH79DCV36D1",
+    "compound": "GHK-Cu",
+    "qty": "100 mg",
+    "purity": "99.45%",
+    "lot": "JA-102112",
+    "mfg": "2026-01",
+    "exp": "2028-01",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "102113-KLOW_80mg_XAKRSW4WN85N",
+    "compound": "KLOW",
+    "qty": "80 mg",
+    "purity": null,
+    "blend": "4-PEPTIDE BLEND",
+    "lot": "JA-102113",
+    "mfg": "2026-01",
+    "exp": "2028-01",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "68244-T30_2W48EUV1JHUK",
+    "compound": "Tirzepatide",
+    "qty": "30 mg",
+    "purity": "99.61%",
+    "lot": "JA-68244",
+    "mfg": "2025-06",
+    "exp": "2027-06",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "68243-R30_1WL2W46TW4DP",
+    "compound": "Retatrutide",
+    "qty": "30 mg",
+    "purity": "99.73%",
+    "lot": "JA-68243",
+    "mfg": "2025-06",
+    "exp": "2027-06",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "69769-HGH_24iu_B7EZMSYUP645",
+    "compound": "HGH",
+    "qty": "24 IU",
+    "purity": "96.13%",
+    "lot": "JA-69769",
+    "mfg": "2025-07",
+    "exp": "2027-07",
+    "shelfLife": "USE WITHIN 14 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "58538-Semaglutide_10_mg_UPNT8Z2I7C1K",
+    "compound": "Semaglutide",
+    "qty": "10 mg",
+    "purity": "99.75%",
+    "lot": "JA-58538",
+    "mfg": "2025-03",
+    "exp": "2027-03",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "58539-Tirzepatide_15_mg_U4HBJNTSB74U",
+    "compound": "Tirzepatide",
+    "qty": "15 mg",
+    "purity": "99.75%",
+    "lot": "JA-58539",
+    "mfg": "2025-03",
+    "exp": "2027-03",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "63067-Semaglutide_20mg_Y2KNHJ2PWV1E",
+    "compound": "Semaglutide",
+    "qty": "20 mg",
+    "purity": "99.57%",
+    "lot": "JA-63067",
+    "mfg": "2025-04",
+    "exp": "2027-04",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "63068-Tirzepatide_30mg_LT78Z3CNK1EU",
+    "compound": "Tirzepatide",
+    "qty": "30 mg",
+    "purity": "99.30%",
+    "lot": "JA-63068",
+    "mfg": "2025-04",
+    "exp": "2027-04",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "63069-Tirzepatide_60mg_JHRHW7ZN6YY5",
+    "compound": "Tirzepatide",
+    "qty": "60 mg",
+    "purity": "99.44%",
+    "lot": "JA-63069",
+    "mfg": "2025-04",
+    "exp": "2027-04",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "63070-Retatrutide_20mg_WPDWU5NYUUME",
+    "compound": "Retatrutide",
+    "qty": "20 mg",
+    "purity": "99.49%",
+    "lot": "JA-63070",
+    "mfg": "2025-04",
+    "exp": "2027-04",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "63071-Retatrutide_30mg_CBRF2LN5Y16E",
+    "compound": "Retatrutide",
+    "qty": "30 mg",
+    "purity": "99.46%",
+    "lot": "JA-63071",
+    "mfg": "2025-04",
+    "exp": "2027-04",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "63073-Cagrilintide_5mg_KRHZKWLHPA4B",
+    "compound": "Cagrilintide",
+    "qty": "5 mg",
+    "purity": "99.09%",
+    "lot": "JA-63073",
+    "mfg": "2025-04",
+    "exp": "2027-04",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "63074-BPC157_10mg_2ST291UD8DZM",
+    "compound": "BPC-157",
+    "qty": "10 mg",
+    "purity": "99.18%",
+    "lot": "JA-63074",
+    "mfg": "2025-04",
+    "exp": "2027-04",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "63075-TB500_10mg_EVT1A19Z6ZCT",
+    "compound": "TB-500",
+    "qty": "10 mg",
+    "purity": "99.88%",
+    "lot": "JA-63075",
+    "mfg": "2025-04",
+    "exp": "2027-04",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "70680-R10_B42S8WIZGV9J",
+    "compound": "Retatrutide",
+    "qty": "10 mg",
+    "purity": "99.42%",
+    "lot": "JA-70680",
+    "mfg": "2025-07",
+    "exp": "2027-07",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "70681-R20_7CCZE6G5K6W8",
+    "compound": "Retatrutide",
+    "qty": "20 mg",
+    "purity": "99.74%",
+    "lot": "JA-70681",
+    "mfg": "2025-07",
+    "exp": "2027-07",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "70683-T60_M3Y3RA1QUDH4",
+    "compound": "Tirzepatide",
+    "qty": "60 mg",
+    "purity": "99.39%",
+    "lot": "JA-70683",
+    "mfg": "2025-07",
+    "exp": "2027-07",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "70756-Glow_70_Y2BRUZN3F7HG",
+    "compound": "GLOW",
+    "qty": "70 mg",
+    "purity": null,
+    "blend": "3-PEPTIDE BLEND",
+    "lot": "JA-70756",
+    "mfg": "2025-07",
+    "exp": "2027-07",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "205037-Tr_10_mg_MDTR34NN18JH",
+    "compound": "Tirzepatide",
+    "qty": "10 mg",
+    "purity": null,
+    "lot": "JA-205037",
+    "mfg": "",
+    "exp": "",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "205038-Tr_30mg_UZMJ2BZU2N7V",
+    "compound": "Tirzepatide",
+    "qty": "30 mg",
+    "purity": null,
+    "lot": "JA-205038",
+    "mfg": "",
+    "exp": "",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "205039-Tr_40mg_9XKFJS7PIVZL",
+    "compound": "Tirzepatide",
+    "qty": "40 mg",
+    "purity": null,
+    "lot": "JA-205039",
+    "mfg": "",
+    "exp": "",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  },
+  {
+    "slug": "205040-Rt_10mg_MKF4CLBUWS7F",
+    "compound": "Retatrutide",
+    "qty": "10 mg",
+    "purity": null,
+    "lot": "JA-205040",
+    "mfg": "",
+    "exp": "",
+    "shelfLife": "USE WITHIN 28 DAYS · 2–8 °C"
+  }
+]

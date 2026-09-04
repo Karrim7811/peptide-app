@@ -1,0 +1,13 @@
+{
+  "name": "peptide-cortex-vial-labels",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "RUO vial label artwork generator for Peptide Cortex",
+  "scripts": {
+    "build": "node generate-labels.mjs"
+  },
+  "dependencies": {
+    "bwip-js": "^4.11.2"
+  }
+}
