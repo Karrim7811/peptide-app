@@ -122,7 +122,12 @@ export interface StackEntry {
  * so catalog.test.ts holds the invariants instead.
  */
 export interface Vial {
-  /** Matches design/vial-labels/labels-{dark,light}/<slug>.svg. */
+  /**
+   * Batch identity. Was the label artwork's filename until 2026-09-04, when the
+   * trailing Janoshik code was stripped — it leaked the supplier into the client
+   * bundle. The SVGs in design/vial-labels/ keep their original names; nothing
+   * resolves them programmatically.
+   */
   slug: string
   /** Into COMPOUNDS. Null for a blend, which is no single compound — see blendOf. */
   compoundId: string | null
@@ -3868,7 +3873,7 @@ export const STACK: StackEntry[] = [
 
 export const VIALS: Vial[] = [
   {
-    slug: '102107-RT_30_D14D7EHWHFH9',
+    slug: '102107-RT_30',
     compoundId: 'retatrutide',
     label: 'Retatrutide',
     qty: 30,
@@ -3880,7 +3885,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
   },
   {
-    slug: '102108-RT_60_8S1BF8KMN7IM',
+    slug: '102108-RT_60',
     compoundId: 'retatrutide',
     label: 'Retatrutide',
     qty: 60,
@@ -3892,7 +3897,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
   },
   {
-    slug: '102109-Tesa_10_6757MQWXFMZP',
+    slug: '102109-Tesa_10',
     compoundId: 'tesamorelin',
     label: 'Tesamorelin',
     qty: 10,
@@ -3904,7 +3909,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 14 DAYS · 2–8 °C',
   },
   {
-    slug: '102111-Motc_10_VJUDHK6MDGT3',
+    slug: '102111-Motc_10',
     compoundId: 'mots-c',
     label: 'MOTS-c',
     qty: 10,
@@ -3916,7 +3921,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
   },
   {
-    slug: '102112-Ghk_cu_100_SYH79DCV36D1',
+    slug: '102112-Ghk_cu_100',
     compoundId: 'ghk-cu-copper-peptide',
     label: 'GHK-Cu',
     qty: 100,
@@ -3928,7 +3933,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
   },
   {
-    slug: '102113-KLOW_80mg_XAKRSW4WN85N',
+    slug: '102113-KLOW_80mg',
     compoundId: null,
     label: 'KLOW',
     qty: 80,
@@ -3941,7 +3946,7 @@ export const VIALS: Vial[] = [
     blendOf: ['ghk-cu-copper-peptide', 'kpv', 'larazotide', 'bpc-157'],
   },
   {
-    slug: '68244-T30_2W48EUV1JHUK',
+    slug: '68244-T30',
     compoundId: 'tirzepatide',
     label: 'Tirzepatide',
     qty: 30,
@@ -3953,7 +3958,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
   },
   {
-    slug: '68243-R30_1WL2W46TW4DP',
+    slug: '68243-R30',
     compoundId: 'retatrutide',
     label: 'Retatrutide',
     qty: 30,
@@ -3965,7 +3970,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
   },
   {
-    slug: '69769-HGH_24iu_B7EZMSYUP645',
+    slug: '69769-HGH_24iu',
     compoundId: 'somatropin',
     label: 'HGH',
     qty: 24,
@@ -3977,7 +3982,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 14 DAYS · 2–8 °C',
   },
   {
-    slug: '58538-Semaglutide_10_mg_UPNT8Z2I7C1K',
+    slug: '58538-Semaglutide_10_mg',
     compoundId: 'semaglutide',
     label: 'Semaglutide',
     qty: 10,
@@ -3989,7 +3994,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
   },
   {
-    slug: '58539-Tirzepatide_15_mg_U4HBJNTSB74U',
+    slug: '58539-Tirzepatide_15_mg',
     compoundId: 'tirzepatide',
     label: 'Tirzepatide',
     qty: 15,
@@ -4001,7 +4006,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
   },
   {
-    slug: '63067-Semaglutide_20mg_Y2KNHJ2PWV1E',
+    slug: '63067-Semaglutide_20mg',
     compoundId: 'semaglutide',
     label: 'Semaglutide',
     qty: 20,
@@ -4013,7 +4018,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
   },
   {
-    slug: '63068-Tirzepatide_30mg_LT78Z3CNK1EU',
+    slug: '63068-Tirzepatide_30mg',
     compoundId: 'tirzepatide',
     label: 'Tirzepatide',
     qty: 30,
@@ -4025,7 +4030,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
   },
   {
-    slug: '63069-Tirzepatide_60mg_JHRHW7ZN6YY5',
+    slug: '63069-Tirzepatide_60mg',
     compoundId: 'tirzepatide',
     label: 'Tirzepatide',
     qty: 60,
@@ -4037,7 +4042,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
   },
   {
-    slug: '63070-Retatrutide_20mg_WPDWU5NYUUME',
+    slug: '63070-Retatrutide_20mg',
     compoundId: 'retatrutide',
     label: 'Retatrutide',
     qty: 20,
@@ -4049,7 +4054,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
   },
   {
-    slug: '63071-Retatrutide_30mg_CBRF2LN5Y16E',
+    slug: '63071-Retatrutide_30mg',
     compoundId: 'retatrutide',
     label: 'Retatrutide',
     qty: 30,
@@ -4061,7 +4066,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
   },
   {
-    slug: '63073-Cagrilintide_5mg_KRHZKWLHPA4B',
+    slug: '63073-Cagrilintide_5mg',
     compoundId: 'cagrilintide',
     label: 'Cagrilintide',
     qty: 5,
@@ -4073,7 +4078,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
   },
   {
-    slug: '63074-BPC157_10mg_2ST291UD8DZM',
+    slug: '63074-BPC157_10mg',
     compoundId: 'bpc-157',
     label: 'BPC-157',
     qty: 10,
@@ -4085,7 +4090,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
   },
   {
-    slug: '63075-TB500_10mg_EVT1A19Z6ZCT',
+    slug: '63075-TB500_10mg',
     compoundId: 'tb-500',
     label: 'TB-500',
     qty: 10,
@@ -4097,7 +4102,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
   },
   {
-    slug: '70680-R10_B42S8WIZGV9J',
+    slug: '70680-R10',
     compoundId: 'retatrutide',
     label: 'Retatrutide',
     qty: 10,
@@ -4109,7 +4114,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
   },
   {
-    slug: '70681-R20_7CCZE6G5K6W8',
+    slug: '70681-R20',
     compoundId: 'retatrutide',
     label: 'Retatrutide',
     qty: 20,
@@ -4121,7 +4126,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
   },
   {
-    slug: '70683-T60_M3Y3RA1QUDH4',
+    slug: '70683-T60',
     compoundId: 'tirzepatide',
     label: 'Tirzepatide',
     qty: 60,
@@ -4133,7 +4138,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
   },
   {
-    slug: '70756-Glow_70_Y2BRUZN3F7HG',
+    slug: '70756-Glow_70',
     compoundId: null,
     label: 'GLOW',
     qty: 70,
@@ -4146,7 +4151,7 @@ export const VIALS: Vial[] = [
     blendOf: ['ghk-cu-copper-peptide', 'bpc-157', 'tb-500'],
   },
   {
-    slug: '205037-Tr_10_mg_MDTR34NN18JH',
+    slug: '205037-Tr_10_mg',
     compoundId: 'tirzepatide',
     label: 'Tirzepatide',
     qty: 10,
@@ -4158,7 +4163,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
   },
   {
-    slug: '205038-Tr_30mg_UZMJ2BZU2N7V',
+    slug: '205038-Tr_30mg',
     compoundId: 'tirzepatide',
     label: 'Tirzepatide',
     qty: 30,
@@ -4170,7 +4175,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
   },
   {
-    slug: '205039-Tr_40mg_9XKFJS7PIVZL',
+    slug: '205039-Tr_40mg',
     compoundId: 'tirzepatide',
     label: 'Tirzepatide',
     qty: 40,
@@ -4182,7 +4187,7 @@ export const VIALS: Vial[] = [
     shelfLife: 'USE WITHIN 28 DAYS · 2–8 °C',
   },
   {
-    slug: '205040-Rt_10mg_MKF4CLBUWS7F',
+    slug: '205040-Rt_10mg',
     compoundId: 'retatrutide',
     label: 'Retatrutide',
     qty: 10,

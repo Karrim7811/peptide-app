@@ -1,41 +1,41 @@
-// Janoshik report codes, keyed by vial slug.
+// Janoshik report codes, keyed by lot.
 //
-// SERVER ONLY. Never import this from a 'use client' module, and never put a
-// code into an API response. Each one resolves to a public Janoshik page that
-// names the client, the manufacturer and a supplier-prefixed batch number, so
-// publishing one publishes the supply chain. See decision D3 in
+// SERVER ONLY. Never import this from a 'use client' module and never put a
+// code into an API response. Each resolves to a public Janoshik page naming the
+// client, the manufacturer and a supplier-prefixed batch, so publishing one
+// publishes the supply chain. Decision D3 in
 // docs/superpowers/specs/2026-09-04-peptide-shop-design.md.
 //
-// These lived on Vial in catalog.ts until 2026-09-04. catalog.ts is imported by
-// nine client components, so all 27 were in the public bundle, rendering
-// nothing.
+// Keyed by lot rather than slug because slugs used to END with the code, which
+// leaked it right back into the bundle they were removed from. Lots are the
+// durable identifier and carry nothing secret.
 
 export const REPORT_CODES: Record<string, string> = {
-  '102107-RT_30_D14D7EHWHFH9': 'D14D7EHWHFH9',
-  '102108-RT_60_8S1BF8KMN7IM': '8S1BF8KMN7IM',
-  '102109-Tesa_10_6757MQWXFMZP': '6757MQWXFMZP',
-  '102111-Motc_10_VJUDHK6MDGT3': 'VJUDHK6MDGT3',
-  '102112-Ghk_cu_100_SYH79DCV36D1': 'SYH79DCV36D1',
-  '102113-KLOW_80mg_XAKRSW4WN85N': 'XAKRSW4WN85N',
-  '68244-T30_2W48EUV1JHUK': '2W48EUV1JHUK',
-  '68243-R30_1WL2W46TW4DP': '1WL2W46TW4DP',
-  '69769-HGH_24iu_B7EZMSYUP645': 'B7EZMSYUP645',
-  '58538-Semaglutide_10_mg_UPNT8Z2I7C1K': 'UPNT8Z2I7C1K',
-  '58539-Tirzepatide_15_mg_U4HBJNTSB74U': 'U4HBJNTSB74U',
-  '63067-Semaglutide_20mg_Y2KNHJ2PWV1E': 'Y2KNHJ2PWV1E',
-  '63068-Tirzepatide_30mg_LT78Z3CNK1EU': 'LT78Z3CNK1EU',
-  '63069-Tirzepatide_60mg_JHRHW7ZN6YY5': 'JHRHW7ZN6YY5',
-  '63070-Retatrutide_20mg_WPDWU5NYUUME': 'WPDWU5NYUUME',
-  '63071-Retatrutide_30mg_CBRF2LN5Y16E': 'CBRF2LN5Y16E',
-  '63073-Cagrilintide_5mg_KRHZKWLHPA4B': 'KRHZKWLHPA4B',
-  '63074-BPC157_10mg_2ST291UD8DZM': '2ST291UD8DZM',
-  '63075-TB500_10mg_EVT1A19Z6ZCT': 'EVT1A19Z6ZCT',
-  '70680-R10_B42S8WIZGV9J': 'B42S8WIZGV9J',
-  '70681-R20_7CCZE6G5K6W8': '7CCZE6G5K6W8',
-  '70683-T60_M3Y3RA1QUDH4': 'M3Y3RA1QUDH4',
-  '70756-Glow_70_Y2BRUZN3F7HG': 'Y2BRUZN3F7HG',
-  '205037-Tr_10_mg_MDTR34NN18JH': 'MDTR34NN18JH',
-  '205038-Tr_30mg_UZMJ2BZU2N7V': 'UZMJ2BZU2N7V',
-  '205039-Tr_40mg_9XKFJS7PIVZL': '9XKFJS7PIVZL',
-  '205040-Rt_10mg_MKF4CLBUWS7F': 'MKF4CLBUWS7F',
+  'JA-102107': 'D14D7EHWHFH9',
+  'JA-102108': '8S1BF8KMN7IM',
+  'JA-102109': '6757MQWXFMZP',
+  'JA-102111': 'VJUDHK6MDGT3',
+  'JA-102112': 'SYH79DCV36D1',
+  'JA-102113': 'XAKRSW4WN85N',
+  'JA-68244': '2W48EUV1JHUK',
+  'JA-68243': '1WL2W46TW4DP',
+  'JA-69769': 'B7EZMSYUP645',
+  'JA-58538': 'UPNT8Z2I7C1K',
+  'JA-58539': 'U4HBJNTSB74U',
+  'JA-63067': 'Y2KNHJ2PWV1E',
+  'JA-63068': 'LT78Z3CNK1EU',
+  'JA-63069': 'JHRHW7ZN6YY5',
+  'JA-63070': 'WPDWU5NYUUME',
+  'JA-63071': 'CBRF2LN5Y16E',
+  'JA-63073': 'KRHZKWLHPA4B',
+  'JA-63074': '2ST291UD8DZM',
+  'JA-63075': 'EVT1A19Z6ZCT',
+  'JA-70680': 'B42S8WIZGV9J',
+  'JA-70681': '7CCZE6G5K6W8',
+  'JA-70683': 'M3Y3RA1QUDH4',
+  'JA-70756': 'Y2BRUZN3F7HG',
+  'JA-205037': 'MDTR34NN18JH',
+  'JA-205038': 'UZMJ2BZU2N7V',
+  'JA-205039': '9XKFJS7PIVZL',
+  'JA-205040': 'MKF4CLBUWS7F',
 }
