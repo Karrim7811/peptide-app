@@ -182,6 +182,12 @@ npm install --no-save zxing-wasm sharp && node _verify.mjs
 
 Re-run it after changing `peptides.json`, the code size, or the payload format.
 
+> **Stale counts.** The two figures above — "7 of the 23" and "All 23 decode" —
+> date from when this set held 23 labels. It now holds 27. The four `JA-2050xx`
+> batches were added afterwards and have not been through `_verify.mjs`, so the
+> decode claim covers 23 of the current 27. Re-run the verifier before a print
+> run and update both numbers to what it actually reports.
+
 ### Shortening the payload
 
 If `peptidecortex.com/t/<key>` were set up to redirect to the matching Janoshik
