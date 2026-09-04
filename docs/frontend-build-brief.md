@@ -279,7 +279,13 @@ CHECKOUT — US shipping address, then two choices.
                 their banking app. Confirmed by hand, usually within one
                 business day.
 
-ZELLE SCREEN — the hardest and most important screen in the shop. If the
+ZELLE SCREEN — 2a, the instruction sheet. Retire 2b, the bank facsimile: if it
+mimics a real bank's interface it teaches people that bank-like UI on a
+third-party site is normal, which is the pattern phishing runs on. Even as
+generic payment-slip styling it decorates, when the actual problem is whether
+someone puts the right code in a memo field.
+
+This is the hardest and most important screen in the shop. If the
 reference code is missed or mistyped, money lands in a bank account matched to
 no order, and that is a manual support problem every time. Include:
   - the reference code as the largest element on the screen
@@ -346,6 +352,17 @@ that breaks all nine still looks good.
 
 9. THE SHOP IS NEVER TIER-GATED. A free user can buy. It is commerce, not a Pro
    feature.
+
+
+═══ HOW MANY TAKES ═══
+
+One take per screen. The only screen worth two was the Zelle sheet, and that
+comparison has already happened — 2a won. Everything else is settled enough by
+the rules above that a second option would be variation for its own sake rather
+than a real decision to make.
+
+If something below turns out to be genuinely ambiguous once you are in it, build
+two and say which one you would keep — but do not go looking for places to.
 
 
 ═══ CROSS-CUTTING ═══
