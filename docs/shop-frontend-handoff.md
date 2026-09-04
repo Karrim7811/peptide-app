@@ -54,7 +54,8 @@ THE DATA — real values, not placeholders. Design against these.
 
 3. MOTS-c — 10 mg — $30.00 — $3.00 / mg
    Mitochondrial-derived peptide; activates AMPK.
-   ASSAYED: 99.11% purity · lot JA-102111 · MFG 2026-01 · EXP 2028-01
+   ASSAYED: 99.114% purity · 12.33 mg measured against a 10 mg label
+   lot JA-102111 · MFG 2026-01 · EXP 2028-01
 
 4. Selank — 5 mg — $30.00 — $6.00 / mg
    Tuftsin analogue; modulates GABA and monoamine systems. Nootropic/anxiolytic.
@@ -83,6 +84,13 @@ All products: cold chain, "USE WITHIN 28 DAYS · 2–8 °C".
 So the layout has to survive: 99.62% sitting beside $4.17 / mg; a four-row
 measured-component table totalling more than its own label; and four products
 that have a date where a number should be.
+
+OVERFILL. Where we have the figure, the vial holds more than the label claims —
+MOTS-c is 12.33 mg in a 10 mg vial, KLOW 90.65 mg in an 80 mg one. That is
++23% and +13% of free compound, measured by a third party, and essentially
+nobody in this market publishes it. Give it a place next to the purity figure.
+Some products have no content figure yet; treat its absence as normal, not as
+a broken layout.
 
 
 HARD RULES — product decisions, not style preferences. Every one of these is

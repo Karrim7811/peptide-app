@@ -453,3 +453,14 @@ is the difference between notifying eleven customers and emailing the whole list
 Cart · checkout · BTCPay · Zelle · `orders` · `order_items` · admin queue ·
 inventory display · any `/shop` route or component. The storefront UI is being
 built separately in Claude Design against `docs/shop-sample-payload.json`.
+
+### Overfill
+
+`measuredTotalMg` read against `labelMg` is the overfill, and it applies to both
+assay types — the component sum for a blend, the measured content of the single
+compound for a purity assay. Every report read so far runs over: +23.3% on
+MOTS-c, +13.3% on KLOW, +26% on a Tirzepatide lot outside the launch set.
+
+It is null where the report has not been read, which is not an error state. Two
+tests guard it: a measured content below the label is never stored as if it were
+overfill, and a lot with no assay carries no content figure.
