@@ -1178,3 +1178,30 @@ they are assembly rather than design.
 5. **Inventory decrement is not wired.** At seven SKUs and manual fulfilment,
    overselling is recoverable by refunding, and a reservation system built before
    the first order would be guesswork. Revisit once real order volume exists.
+
+---
+
+## Execution record — 2026-09-04
+
+**Tasks 1, 2, 3, 4 and 7 complete.** Tasks 5, 6 and 8 are untouched, still
+blocked on the shop entity, its bank account and a BTCPay instance.
+
+170 tests passing (was 133), `tsc --noEmit` clean, `next build` succeeds and
+`/admin/orders` is in the route table.
+
+**Deviation:** Task 2's test spread a `Set`, which this tsconfig's target does
+not allow. Fixed in the test with `Array.from` rather than by raising the target
+— a compiler-wide change to make one assertion prettier is the wrong trade.
+
+**Verified at the bundle level, not just by test:** grepping `.next/static` for
+the report codes finds nothing. The earlier catalogue plan claimed the leak was
+closed on the strength of a unit test; this is the check that actually proves it.
+
+**What remains before this can take money:**
+
+1. Tasks 5 and 6 — the Zelle and BTCPay adapters, and the webhook.
+2. `createOrder`, and the buttons wiring `markPaid` / `markPacked` / `markShipped`.
+3. `SHIPPING_CENTS` (`$12.00`) and `FREE_SHIPPING_THRESHOLD_CENTS` (`$150.00`)
+   are placeholders. Cold-chain packaging is not free.
+4. Env: `SHOP_ADMIN_USER_ID`, `SHOP_ZELLE_HANDLE`, and the four `BTCPAY_*`.
+5. Apply `shop_schema.sql`, `shop_seed.sql`, then `shop_orders_schema.sql`.
