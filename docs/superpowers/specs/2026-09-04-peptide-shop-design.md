@@ -48,11 +48,11 @@ Two firewalls survive the integration and are non-negotiable:
 | # | Product | Price | $/mg | Lot(s) | Assay |
 |---|---|---|---|---|---|
 | 1 | **GLP-3 (Retatrutide) 30 mg** | $125 | 4.167 | `JA-102107`, `JA-68243`, `JA-63071` | purity 99.62 / 99.73 / 99.46 |
-| 2 | VIP 5 mg | **TBD** | — | — | `pending` |
+| 2 | VIP 5 mg | $30 | 6.000 | — | `pending` |
 | 3 | **MOTS-c 10 mg** | $30 | 3.000 | `JA-102111` | purity 99.11 |
 | 4 | Selank 5 mg | $30 | 6.000 | — | `pending` |
 | 5 | Semax 5 mg | $30 | 6.000 | — | `pending` |
-| 6 | **KLOW 80 mg** | **TBD** | n/a — blend | `JA-102113` | composition (below) |
+| 6 | **KLOW 80 mg** | $100 | n/a — blend | `JA-102113` | composition (below) |
 | 7 | NAD+ 1000 mg | $75 | 0.075 | — | `pending` |
 
 **KLOW `JA-102113`** (analysed 27 Jan 2026) is a *composition* assay, not a
@@ -249,12 +249,11 @@ reconciliation (not possible) · migrating the existing Stripe subscription code
 
 ## 10. Open items
 
-1. **Confirm `GLP-3` = Retatrutide.** Assumed throughout; it decides which lots
-   attach to SKU 1. Not yet explicitly confirmed.
+1. ~~Confirm `GLP-3` = Retatrutide.~~ **Confirmed 2026-09-04 (Karim).** SKU 1 is
+   Retatrutide and maps to lots `JA-102107` / `JA-68243` / `JA-63071`.
 2. **`assay_expected_at` for the four pending SKUs** (VIP, Selank, Semax, NAD+) —
    a date is required before they can list.
-3. **Prices** — five of seven set (§3). Still needed: **VIP 5 mg** and
-   **KLOW 80 mg**.
+3. ~~Prices.~~ **All seven set 2026-09-04 (Karim)** — see §3.
 4. **Shop legal entity + business bank account** — prerequisite for D8 and both
    firewalls.
 5. **Refund policy text** — needs Karim's sign-off; ToS changes require it.
