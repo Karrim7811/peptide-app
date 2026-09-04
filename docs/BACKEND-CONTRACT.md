@@ -464,3 +464,52 @@ MOTS-c, +13.3% on KLOW, +26% on a Tirzepatide lot outside the launch set.
 It is null where the report has not been read, which is not an error state. Two
 tests guard it: a measured content below the label is never stored as if it were
 overfill, and a lot with no assay carries no content figure.
+
+### Checkout
+
+`createOrder(lines, ship, shippingMethodId, providerId)` in
+`src/app/shop/actions.ts` returns `{ orderId, paymentReference, intent }`.
+
+The `intent` tells the UI what to do next, and the two cases are genuinely
+different journeys rather than two styles of the same one:
+
+- **`intent.redirectUrl`** — send the buyer there. BTCPay's hosted checkout,
+  which returns them to `/shop/orders/[id]`.
+- **`intent.instructions`** — render them in the page. Zelle: a handle, an exact
+  amount, and the reference that must go in the memo. There is nowhere to send
+  the buyer, because payment happens in their banking app.
+
+**Requirements the action enforces, so the UI does not have to guess:**
+
+- Signed in. There is no guest checkout.
+- 18+, checked against `profiles.dob`. Signup already refuses under-18s in a
+  trigger; this is the second gate, because the trigger guards account creation
+  and not the sale.
+- US shipping only.
+- The chosen shipping method must have a price. None do yet, so **checkout throws
+  until Karim prices them** — `sellableMethods()` returns the ones that can
+  currently be offered, and it is empty.
+
+**Shipping methods** are `standard` (USPS Ground Advantage, 2–5 business days),
+`priority` (USPS Priority Mail, 1–3), `overnight` (Priority Mail Express, next
+business day). Only `overnight` carries a carrier guarantee — it is the only one
+a date should be promised on.
+
+**`awaiting_payment` after a Zelle checkout is the normal state, not an error.**
+It clears when the payment is matched by hand, usually within a business day.
+Say so plainly on the order page; a spinner or a warning colour would be wrong.
+
+**Delivery estimates run from payment confirmation, not from checkout.** On the
+Zelle rail an order can sit unconfirmed for a day, so a next-day *service* is not
+a next-day *delivery*. Word it accordingly wherever a date appears.
+
+**Order status page** at `/shop/orders/[id]`, readable only by its owner — RLS
+enforces that, there is no admin-visible variant of this route.
+
+**Refunds are manual.** Neither rail gives the buyer a card issuer to appeal to,
+so the refund policy must be visible at checkout and honoured by hand. In a
+trust-first brand that is an asset rather than a gap, but only if it is actually
+honoured.
+
+**Never display stock levels.** `shop_inventory` has no read policy, and scarcity
+urgency is the opposite of this shop's positioning.
