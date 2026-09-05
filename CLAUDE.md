@@ -466,38 +466,40 @@ Apple flagged this on Guideline 1.4.2 for a reason that applies to web too: spec
 
 Roadmap item added at Critical priority. This reframing must land before the next public launch push.
 
-### 16.9a Dosing calculator reinstated (2026-09-04, Karim)
+### 16.9a Dosing calculator — considered again, dropped again (2026-09-04, Karim)
 
-§16.9 retired the weight-based dose calculator; `/dosing` still redirects and its
-retirement note still explains why. **Karim has reversed that decision** — the
-calculator returns on the web, framed as reference.
+§16.9 retired the weight-based dose calculator. On 2026-09-04 Karim reopened it,
+reasoning that Apple's guidelines govern the App Store and not the web, that most
+of these peptides are unapproved so there is no label to contradict, and that
+other references publish the same thing. A bounded version was specified. He then
+reversed again the same day and removed it. **The calculator is not being built.**
 
-His reasoning: Apple's guidelines govern the App Store and not the web, most of
-these peptides are unapproved so there is no label to contradict, and other
-references publish the same thing.
-
-The counter-argument was put to him and he reaffirmed. Recorded so a future
-session does not re-litigate it, and so the reasoning on both sides survives:
+Recorded so it is not proposed a third time, with the reasoning that settled it:
 
 - A disclaimer does not convert an individualised output into reference content.
   The test is what the tool does, not what the footer says.
 - **Peptide Cortex is now a seller.** Publishing suggested doses for compounds
-  you also sell is materially different from publishing them as a pure
-  information site — it is close to the FDA's test for intended use. This is new
-  since §16.9 was written and is the strongest reason to be careful.
+  you also sell is close to the FDA's test for intended use in a way that a pure
+  information site is not. This is new since §16.9 and is the strongest argument.
+- It would have been inert anyway on most of the catalogue. Published GLP-1
+  dosing is a fixed titration, not per-kg, so weight never enters it for
+  semaglutide, tirzepatide or retatrutide — the compounds people actually ask
+  about.
+- For the 43 research-tier entries it could only have invented a number, since
+  no human dose exists to divide.
 
-What was agreed as the shape, and what must hold:
-
-1. Compute only from a cited source. Where a label or trial is expressed per kg,
-   applying it to a weight is arithmetic on published data. Never invent a
-   relationship the source does not state.
-2. **Refuse the 43 research-tier entries entirely.** No published human dose
-   means no output — not a guess, not animal extrapolation, not community
-   practice. This is the binding constraint.
-3. Show the source beside every figure.
-4. Phrase the output as published-figure-divided, never as an instruction.
+**What IS built: a dosing reference.** 81 entries carry a real published range
+from a label or trial, shown with its source. The 43 say "no human dose
+established". No personalisation of any kind — no weight, no goals, no frequency.
 
 THE MATH (§16.9's solution-chemistry reframing) is unaffected and its rules stand.
+
+**Still open, and now the only place a dose figure can be generated:** the AI
+routes. `/api/protocol-plan` instructs the model to include "research-reported
+amounts" with no exclusion for peptides that have none, and `/api/chat` has no
+equivalent guardrail at all. The library's `N/A` is enforced on the data by a
+test; it is NOT enforced on model output. With the calculator gone this is the
+remaining exposure, not a lesser one.
 
 ### 16.10 Age gate at signup → collect DOB, not self-attest
 Collect date-of-birth at `/signup`. Store in `profiles.dob` (date). Block signup if the computed age is under 18. Self-attestation ("I confirm I am 18+") is rejected — a real DOB on record is far more defensible if challenged.
