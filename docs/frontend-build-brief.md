@@ -16,7 +16,7 @@ the lab record. Figures, never documents.
 Peptide Cortex — full frontend build.
 
 Two businesses on one domain. A subscription app (a peptide reference library,
-tracking tools and AI analysis) and a shop selling seven research compounds.
+tracking tools and AI analysis) and a shop selling seven products.
 They share a brand and an account. They should not share chrome — see
 ARCHITECTURE.
 
@@ -29,13 +29,13 @@ it is one of those three and not taste.
 
 Build one vertical slice, end to end:
 
-    landing → signup → dashboard → one compound → THE MATH → shop → checkout
+    landing → signup → dashboard → one peptide → THE MATH → shop → checkout
 
 Screens:
   1. Home / landing
   2. Auth — sign up, log in, reset password
   3. Dashboard (the app shell — see ARCHITECTURE)
-  4. Compound detail
+  4. Peptide detail
   5. Reference / search
   6. THE MATH (a panel inside the dashboard, not a route)
   7. Shop — catalogue, product, cart, checkout, order status
@@ -66,9 +66,14 @@ app shell as another tab.
 
 Wire real data. Read catalog.ts and the shop catalogue in the project.
 
-This matters more than usual. Of the 124 compounds, fourteen state outright that
-no human dose exists. Several vials have null purity. Several have no dates at
-all. Those are the cases that break layouts, and they are invisible if you
+A NAMING TRAP IN THAT FILE: catalog.ts calls its batch records "vials" and its
+entries "compounds". Both are wrong for users. A vial is a container; those
+records are TESTED BATCHES — a lot number, an assay, a date. And the entries are
+peptides. Do not surface either word in the interface.
+
+This matters more than usual. Of the 124 peptides, fourteen state outright that
+no human dose exists. Several assayed batches have null purity. Several have no
+dates at all. Those are the cases that break layouts, and they are invisible if you
 design against six tidy examples.
 
 VIEWPORTS: mobile first. This audience checks protocols on a phone and the
@@ -82,7 +87,7 @@ order states cannot be judged standing still.
 
 ═══ 1. LANDING ═══
 
-Data-led. The assay ledger and the 124-compound reference are the hero.
+Data-led. The assay ledger and the 124-peptide reference are the hero.
 
 It has to sell both businesses at once: the reference depth sells the
 subscription, the assay ledger sells the shop. Not product-led — dashboard
@@ -116,15 +121,26 @@ Pricing, when it appears: $14.99/month or $119.88/year, one-month free trial.
 Never hardcode those — they come from pricing.ts.
 
 TWO THINGS ARE NEVER GATED, and both are deliberate:
-  • THE MATH — even for compounds a free user has not unlocked.
+  • THE MATH — even for peptides a free user has not unlocked.
   • Side effects — and no upgrade affordance may appear anywhere near them.
 Putting an upgrade prompt beside safety information is the wrong pairing.
 
 
-═══ 4. COMPOUND DETAIL ═══
+═══ 4. PEPTIDE DETAIL ═══
 
 One of 124. Carries purpose, mechanism, effects, cautions, interactions,
 evidence grade (A–D), and a cardiovascular rating 0–5.
+
+SAY "PEPTIDE", NOT "COMPOUND", EVERYWHERE A USER CAN SEE IT. This is a place
+people come to learn about peptides; "compound" is colder and reads as evasive.
+The code calls them compounds internally — ignore that, it is a naming artefact.
+
+  Three of the 124 are genuinely NOT peptides: NAD+ (a dinucleotide coenzyme),
+  Vitamin B12 (a corrinoid) and L-Carnitine (an amino-acid derivative). Each
+  should say so on its own page — "NAD+ is a coenzyme, not a peptide." That is
+  not a caveat that undermines the category; it is the same instinct as admitting
+  an assay is pending, and a library that tells you when something is not what
+  the label says is more trustworthy than one that rounds it off.
 
 MUST: never render a dose the data does not state. Fourteen entries say outright
 that no human dose exists, and a test enforces that they keep saying so. Do not
@@ -138,8 +154,8 @@ invents distinctions that do not exist.
 
 ═══ 5. REFERENCE / SEARCH ═══
 
-All 124, searchable. Search covers compound names, brand names, and indications
-— someone types "Botox" or "fat loss", not always an exact compound name.
+All 124, searchable. Search covers peptide names, brand names, and indications
+— someone types "Botox" or "fat loss", not always an exact peptide name.
 
 
 ═══ 6. THE MATH ═══
