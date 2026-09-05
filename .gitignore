@@ -39,3 +39,7 @@ peptide-bible.txt
 # vial-label build output — regenerate with `node export-png.mjs`
 design/vial-labels/png-*/
 design/vial-labels/*.zip
+
+# Generated label output — regenerate with design/vial-labels/*.mjs
+design/liene-labels/
+design/liene-4x7/
