@@ -72,11 +72,16 @@ one and stopping. Design both: the generated plan, and the refinement.
 
 What the published literature and drug labels actually say, per peptide.
 
-  81 of the 124 carry a real range from a label or a trial. Show the source
+  Many of the 124 carry a real range from a label or a trial. Show the source
   beside every figure — an unattributed number is indistinguishable from a
-  recommendation.
-  43 SAY N/A AND MUST KEEP SAYING IT. Research-tier, no approval, nothing to
-  cite. Render as "no human dose established" — never blank, never a dash.
+  recommendation. Do NOT hardcode a count. Three different classification rules gave three
+  different splits (43/81, 63/61, 73/51) — the number depends entirely on
+  whether a no-dose statement in prose counts, and on where in the string it
+  is looked for. Count live off the entries and let the UI report what it
+  actually found. The rule itself still needs reconciling against
+  src/lib/catalog.ts, which is the source of truth.
+  THE REST SAY SO AND MUST KEEP SAYING SO. Research-tier, no approval, nothing
+  to cite. Render as "no human dose established" — never blank, never a dash.
   NO PERSONALISATION AT ALL. No body weight, no goals, no frequency, no
   calculator. A weight-based calculator was considered twice and dropped twice.
   It is not an omission to be helpfully filled in.

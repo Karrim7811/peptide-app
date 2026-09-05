@@ -485,8 +485,8 @@ Recorded so it is not proposed a third time, with the reasoning that settled it:
   dosing is a fixed titration, not per-kg, so weight never enters it for
   semaglutide, tirzepatide or retatrutide — the compounds people actually ask
   about.
-- For the 43 research-tier entries it could only have invented a number, since
-  no human dose exists to divide.
+- For every research-tier entry it could only have invented a number, since no
+  human dose exists to divide. (The exact count is unsettled — see below.)
 
 **What IS built: a dosing reference.** 81 entries carry a real published range
 from a label or trial, shown with its source. The 43 say "no human dose

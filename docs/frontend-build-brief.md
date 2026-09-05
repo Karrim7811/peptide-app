@@ -312,9 +312,16 @@ What the published literature and drug labels actually say, per peptide. A
 reference. There is no calculator, and no input for body weight or anything else
 about the person — see the note at the end of this section.
 
-81 of the 124 entries carry a real dosing range taken from a label or a trial.
-That data already exists in the library and is currently much harder to find than
-it should be. Surfacing it properly is the whole job here.
+Many of the 124 entries carry a real dosing range taken from a label or a
+trial. That data already exists in the library and is currently much harder to
+find than it should be. Surfacing it properly is the whole job here.
+
+  Do NOT hardcode a count. Three different classification rules gave three
+  different splits (43/81, 63/61, 73/51) — the number depends entirely on
+  whether a no-dose statement in prose counts, and on where in the string it
+  is looked for. Count live off the entries and let the UI report what it
+  actually found. The rule itself still needs reconciling against
+  src/lib/catalog.ts, which is the source of truth.
 
   IT REPORTS WHAT WAS PUBLISHED, attributed. "The Wegovy label titrates 0.25 mg
   weekly to 2.4 mg." A statement about what a trial or a label says, with the

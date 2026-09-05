@@ -53,7 +53,7 @@ PROTOCOL PLANNER
 
   8. If a plan includes a peptide with no published human dose, what does the
      amount column show? It must not show a number. Design that state — it will
-     occur, because 43 of the 124 have no dose to report.
+     occur, and often — a large share of the 124 have no dose to report.
 
 ALL FIVE
 
