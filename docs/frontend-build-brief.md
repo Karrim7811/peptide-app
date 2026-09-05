@@ -56,12 +56,14 @@ Screens, in priority order:
   7. ASK / AI
   8. Reference / search
   9. THE MATH (a panel inside the dashboard, not a route)
- 9b. VIAL SCANNER — photograph a label, it reads the peptide and the mg
+ 10. PROTOCOL PLANNER
+ 11. DOSING REFERENCE
+ 12. VIAL SCANNER — photograph a label, it reads the peptide and the mg
 
   THE SHOP — secondary
-  10. Catalogue, product, cart, checkout, order status
+  13. Catalogue, product, cart, checkout, order status
 
-  11. Legal — terms, privacy, refund, EU
+  14. Legal — terms, privacy, refund, EU
 
 DEFERRED: onboarding, stacks, stack finder, dose log, reminders, cycles,
 injection sites, notes, inventory, vendors, regulatory, pricing page. Those are tracking
@@ -286,7 +288,77 @@ reconstitution calculator, and never a dose calculator.
   the same to everyone.
 
 
-═══ 10. THE SHOP ═══
+═══ 10. PROTOCOL PLANNER ═══
+
+Goals plus the current stack in, a structured protocol out. Both endpoints exist
+and nothing calls them — built, and invisible.
+
+This is one of the three features Apple would not permit, which is why it lives
+here. It is also the most obviously valuable thing to someone already running
+several peptides and guessing at how to sequence them.
+
+  Conversational as well as one-shot: /api/protocol-consult supports refining a
+  plan by talking to it, not just generating one and stopping.
+
+  AI-generated, labelled as such, every time.
+
+  It plans a protocol; it does not prescribe one. Same posture as everything
+  else here — it informs a conversation with a doctor rather than replacing one.
+
+
+═══ 11. DOSING REFERENCE ═══
+
+What the published literature and the drug labels actually say, per peptide.
+
+81 of the 124 entries carry a real dosing range taken from a label or a trial.
+That is reference content, it is already in the data, and it is currently much
+harder to find than it should be. Surface it properly.
+
+  IT REPORTS WHAT WAS PUBLISHED. "The Wegovy label titrates 0.25 mg weekly to
+  2.4 mg." A statement about what a trial or a label says, attributed.
+
+  43 ENTRIES SAY N/A, and they must keep saying it. Those are research-tier
+  peptides with no approval and no label to cite. The library publishes no
+  protocol numbers for them, deliberately — inventing one from community
+  practice is how you turn a reference into advice. Render that as
+  "no human dose established", never as a blank or a dash.
+
+  NOT A CALCULATOR. This route previously held a weight-based dose calculator —
+  enter a body weight, receive a suggested dose — and it was retired. Reporting
+  what a published trial administered and computing what a specific person
+  should take are different acts with different legal exposure, and only the
+  first one is what this screen does.
+
+
+═══ 12. VIAL SCANNER ═══
+
+Photograph a vial label; it reads the peptide name and the mg and adds it to the
+stack. /api/scan-vials exists and nothing on the web calls it.
+
+The audience owns a fridge of vials, and typing them in by hand is the friction
+that stops people using a tracker past the second week.
+
+  SHOW WHAT IT READ BEFORE COMMITTING IT, and let it be corrected. A misread
+  label entering someone's stack silently is worse than making them type.
+
+  PHONE HANDOFF, and this is the interesting part. Most people will be at a
+  desktop, where there is no useful camera and no vial in reach. So:
+
+     desktop shows a QR code
+       → phone scans it, opens a capture page
+       → phone takes the photo
+       → it appears in the desktop session
+
+  Design both ends. The phone page should be almost nothing — a camera, a
+  shutter, a confirmation — because it is used one-handed, standing at a fridge.
+  The desktop needs a visible waiting state and then the result, without a
+  refresh.
+
+  It should also just work as a plain file upload on the phone, for anyone who
+  is already there.
+
+
+═══ 13. THE SHOP ═══
 
 Five screens: catalogue, product, cart, checkout, order status.
 
@@ -484,12 +556,9 @@ WHAT THE iOS APP HAS THAT THIS BRIEF SHOULD COVER:
   Vial scanner. Photograph a vial label; it reads the peptide name and the mg and
   adds it to the stack. The audience owns a fridge full of vials and typing them
   in is the friction that stops people using a tracker at all. The backend for
-  this already exists and nothing on the web calls it — this is the one genuine
-  feature gap between the two apps.
+  this already exists and nothing on the web calls it — it is now screen 12.
 
-    File upload plus a camera capture path. Show what it read BEFORE committing
-    it, and let it be corrected — a misread label silently entering someone's
-    stack is worse than making them type it.
+    Fully specified as screen 12, including the desktop-to-phone QR handoff.
 
   Inventory. What is in the fridge: vial, quantity remaining, expiry. Deferred
   this pass, but it is a real surface and the expiry tracking is the useful part.
@@ -501,12 +570,18 @@ WHAT THE iOS APP HAS THAT THIS BRIEF SHOULD COVER:
   A 3D vial as a visual motif. Optional, and only if it earns its place — but it
   is the app's most distinctive visual asset and it is worth knowing it exists.
 
-WHAT THE iOS APP HAS THAT MUST NOT BE PORTED:
+THE ONE DISTINCTION TO HOLD ON DOSING:
 
-  A dosing view. iOS still carries one; the web deliberately retired /dosing and
-  must not reintroduce it in any form. Same reason as THE MATH — Guideline 1.4.2
-  and the US exposure behind it. If a screen would tell a person how much to
-  take, it does not belong here.
+  iOS carries a DosingView. The web has a DOSING REFERENCE (screen 11), which is
+  not the same thing and is the right version of it.
+
+  Reporting what a published trial or a drug label administered is reference
+  content. Computing what a specific person should take from their body weight
+  is a different act with different exposure — that one is not an App Store rule
+  we can ignore on the web, it is US product-liability and practice-of-medicine
+  law, which does not care what platform it happens on.
+
+  Screen 11 does the first. It does not do the second.
 
 WHAT THE iOS APP IS MISSING, AND WHY IT MATTERS:
 
