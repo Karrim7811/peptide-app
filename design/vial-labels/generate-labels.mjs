@@ -139,12 +139,43 @@ function dataMatrix(lot, fg, bg) {
    1.6 mm wordmark. Tracking is preserved so the mark still reads as the brand. */
 const SERIF = "'Cormorant Garamond',Georgia,serif"
 const SANS = "'Jost','Century Gothic',sans-serif"
+// Site rule: every purity, mg, lot code and date is monospaced (build brief,
+// CROSS-CUTTING). The label follows it — these are the numbers a buyer checks.
+const MONO = "'JetBrains Mono',ui-monospace,monospace"
 
 // Mean advance per glyph, in em, for caps + figures. Used to shrink long
 // compound names to fit rather than letting them run into the next zone.
 const ADV_SERIF = 0.5
 
 const SKINS = {
+  /* Matches the 2026-09-05 site design (design_handoff_peptide_cortex_site).
+     Paper ground, ink rules, teal reserved for the brand mark and the kicker —
+     the site uses accent sparingly and structure is drawn with 1px rules. */
+  paper: {
+    base: '#E6E9EB', // paper
+    rule: '#1A1D1F', // ink; the site's structural hairline is solid, not tinted
+    ruleOpacity: 1,
+    brandDot: '#1A8A9E',
+    brandText: '#1A1D1F',
+    // Ink, not teal. On the site teal is a kicker/accent colour and headings are
+    // ink — a teal compound name would be the one element off-language.
+    compound: '#1A1D1F',
+    spec: '#3B4045', // ink-2
+    // ink-3 (#7E878E) is the site value but goes illegible at 1.05 mm on paper,
+    // so field labels step up one stop, same compromise the other skins make.
+    fieldLabel: '#3B4045',
+    fieldValue: '#1A1D1F',
+    zoneStroke: '#1A1D1F',
+    zoneOpacity: 0.45,
+    codeBg: '#FAFAF8',
+    codeFg: '#1A1D1F',
+    meta: '#3B4045',
+    // The site's footer treatment: ink band, paper text. Replaces the amber.
+    warnBg: '#1A1D1F',
+    warnFg: '#FAFAF8',
+    writeOn: '#FAFAF8',
+    writeRule: '#7E878E',
+  },
   dark: {
     base: '#050505',
     rule: '#00E5FF',
@@ -249,7 +280,7 @@ export function label(skinName, d, cmpSize) {
   <circle cx="${FLAP + 0.15}" cy="2.15" r="0.62" fill="${s.brandDot}"/>
   ${t(FLAP + 1.9, 2.75, 'PEPTIDE CORTEX', { size: TYPE.wordmark, fill: s.brandText, font: SERIF, weight: 500, track: 0.16 })}
   ${t(FLAP - 0.4, 8.0, d.compound, { size: cmpSize, fill: s.compound, font: SERIF, weight: 400, track: cmpTrack })}
-  ${t(FLAP - 0.4, 10.9, specLine, { size: d.blend ? TYPE.spec * 0.875 : TYPE.spec, fill: s.spec, track: 0.08 })}
+  ${t(FLAP - 0.4, 10.9, specLine, { size: d.blend ? TYPE.spec * 0.875 : TYPE.spec, fill: s.spec, track: 0.08, font: MONO })}
 
   <!-- ── batch data (thermal overprint zone) ───────────────────────────
        Separated by wide spaces rather than the "·" used elsewhere. At this
@@ -258,7 +289,7 @@ export function label(skinName, d, cmpSize) {
        label a second time. -->
   <rect x="2.6" y="11.5" width="34.4" height="2.3" fill="none"
         stroke="${s.zoneStroke}" stroke-width="0.1" stroke-dasharray="0.5 0.5" opacity="${s.zoneOpacity}"/>
-  ${t(FLAP, 13.25, batchLine(d), { size: TYPE.batch, fill: s.fieldValue, track: 0.02 })}
+  ${t(FLAP, 13.25, batchLine(d), { size: TYPE.batch, fill: s.fieldValue, track: 0.02, font: MONO })}
 
   <!-- ── reconstitution block ──────────────────────────────────────────
        The write-on panel is a light patch on purpose: a date inked onto the
