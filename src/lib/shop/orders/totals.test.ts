@@ -13,6 +13,7 @@ describe('pricing a line', () => {
   it('takes name, size and price from the catalogue', () => {
     expect(priceLine('glp-3-30mg', 2)).toEqual({
       productSlug: 'glp-3-30mg',
+      // Composed from name + subtitle — an order line stands alone.
       productName: 'GLP-3 (Retatrutide)',
       sizeDisplay: '30 mg',
       qty: 2,

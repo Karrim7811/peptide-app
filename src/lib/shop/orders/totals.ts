@@ -40,7 +40,11 @@ export function priceLine(slug: string, qty: number): PricedLine {
 
   return {
     productSlug: product.slug,
-    productName: product.name,
+    // Composed, not the card's short name. A card can say "GLP-3" because the
+    // subtitle sits under it; an order line read six months later has no
+    // subtitle and "GLP-3" alone is a vendor nickname. The snapshot has to
+    // identify what was bought without anything else on screen to help.
+    productName: product.subtitle ? `${product.name} (${product.subtitle})` : product.name,
     sizeDisplay: `${product.sizeValue} ${product.sizeUnit}`,
     qty,
     unitPriceCents: product.priceCents,
