@@ -277,12 +277,18 @@ These are present in the iOS Swift app and either missing from the web app, miss
 - Auth: `LoginView`, `SignupView` (Apple/Google sign-in support in code, Apple button temporarily removed for review)
 - Components: `AIConsentSheet`, `LoadingView`, `ProGateView`, `SceneKitVial`, `SearchBar`, `StatCard`, `VialScannerView`, `VialView`
 - Dashboard: `DashboardView` with Quick Actions, Today's Doses (with animated 3D vial rows), Active Stack, streaks, supply alerts
-- Intelligence: `ChatView`, `CheckerView`, `ProtocolPlannerView`, `StackFinderView`
+- Intelligence: `ChatView`, `CheckerView`, `StackFinderView`
 - Navigation: `DrawerMenu`, `MainView`
 - Pricing: `PricingView` (StoreKit 2-backed in-app purchases via `StoreService.swift`)
-- Protocol: `CycleView`, `DosingView`, `ReconstitutionView` (with mL/cc unit toggle), `SitesView`, `StackView`
+- Protocol: `CycleView`, `DosingView`, `SitesView`, `StackView`
 - Reference: `AboutView`, `PeptideBibleView`, `PopularStacksView`, `RegulatoryView`, `VendorsView`
-- Tracking: `BloodworkView`, `DoseLogView` (with calendar + streaks), `InventoryView` (with vial scanner), `NotesView` (with bold/italic toolbar — recently reverted), `RemindersView`, `SideEffectsView`
+- Tracking: `DoseLogView` (with calendar + streaks), `InventoryView` (with vial scanner), `NotesView` (with bold/italic toolbar — recently reverted), `RemindersView`, `SideEffectsView`
+
+> **Corrected 2026-09-04.** This section previously listed `BloodworkView`,
+> `ProtocolPlannerView` and `ReconstitutionView` as iOS views. None of the three
+> exists in `ios-native/` — all were removed to pass App Store review, which is
+> the entire reason the web app carries them. Verified by enumerating
+> `ios-native/**/Views/*.swift`.
 
 **iOS-only features that require deliberate decisions before/against migrating** to web:
 

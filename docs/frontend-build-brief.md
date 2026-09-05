@@ -56,6 +56,7 @@ Screens, in priority order:
   7. ASK / AI
   8. Reference / search
   9. THE MATH (a panel inside the dashboard, not a route)
+ 9b. VIAL SCANNER — photograph a label, it reads the peptide and the mg
 
   THE SHOP — secondary
   10. Catalogue, product, cart, checkout, order status
@@ -63,7 +64,7 @@ Screens, in priority order:
   11. Legal — terms, privacy, refund, EU
 
 DEFERRED: onboarding, stacks, stack finder, dose log, reminders, cycles,
-injection sites, notes, vendors, regulatory, pricing page. Those are tracking
+injection sites, notes, inventory, vendors, regulatory, pricing page. Those are tracking
 and browsing surfaces — they matter, but they are variations on a language the
 screens above establish.
 
@@ -471,6 +472,50 @@ than a real decision to make.
 
 If something below turns out to be genuinely ambiguous once you are in it, build
 two and say which one you would keep — but do not go looking for places to.
+
+
+═══ PARITY WITH THE iOS APP ═══
+
+There is a native iOS app. It is the version that SURVIVED App Store review, so
+it is a useful checklist of what the product does — with one important asymmetry.
+
+WHAT THE iOS APP HAS THAT THIS BRIEF SHOULD COVER:
+
+  Vial scanner. Photograph a vial label; it reads the peptide name and the mg and
+  adds it to the stack. The audience owns a fridge full of vials and typing them
+  in is the friction that stops people using a tracker at all. The backend for
+  this already exists and nothing on the web calls it — this is the one genuine
+  feature gap between the two apps.
+
+    File upload plus a camera capture path. Show what it read BEFORE committing
+    it, and let it be corrected — a misread label silently entering someone's
+    stack is worse than making them type it.
+
+  Inventory. What is in the fridge: vial, quantity remaining, expiry. Deferred
+  this pass, but it is a real surface and the expiry tracking is the useful part.
+
+  A shared disclaimer banner component. iOS made it one component used
+  everywhere rather than copy repeated per screen. Do the same — the disclaimer
+  text has legal weight and must not drift between screens.
+
+  A 3D vial as a visual motif. Optional, and only if it earns its place — but it
+  is the app's most distinctive visual asset and it is worth knowing it exists.
+
+WHAT THE iOS APP HAS THAT MUST NOT BE PORTED:
+
+  A dosing view. iOS still carries one; the web deliberately retired /dosing and
+  must not reintroduce it in any form. Same reason as THE MATH — Guideline 1.4.2
+  and the US exposure behind it. If a screen would tell a person how much to
+  take, it does not belong here.
+
+WHAT THE iOS APP IS MISSING, AND WHY IT MATTERS:
+
+  No bloodwork. No protocol planner. No reconstitution maths. All three were
+  REMOVED to pass App Store review.
+
+  That is the whole argument for the web app in one line: the iOS app is what
+  Apple would allow, and this is what the product actually is. The three features
+  Apple would not permit are the three this brief treats as core.
 
 
 ═══ CROSS-CUTTING ═══
