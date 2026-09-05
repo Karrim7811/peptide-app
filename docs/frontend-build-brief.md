@@ -15,10 +15,23 @@ the lab record. Figures, never documents.
 ```
 Peptide Cortex — full frontend build.
 
-Two businesses on one domain. A subscription app (a peptide reference library,
-tracking tools and AI analysis) and a shop selling seven products.
-They share a brand and an account. They should not share chrome — see
-ARCHITECTURE.
+WHAT THIS PRODUCT IS, because the balance of this brief has to follow from it:
+
+A tool for people who actually run peptide protocols. It tells them what a
+peptide does, what it interacts with — prescriptions, supplements, other
+peptides — and what their bloodwork looks like against what they are taking.
+That is the product.
+
+IT EXISTS AS A WEB APP BECAUSE APPLE REFUSED IT. The iOS app was rejected under
+Guidelines 1.4.1 and 1.4.2 for exactly these features. So everything Apple would
+not allow — interaction checking, bloodwork analysis, protocol guidance — is not
+a bonus feature here. It is the reason the web app was built, and it is what the
+site should be visibly about.
+
+There is ALSO a small shop attached, selling seven products in small batches. It
+matters, it should be excellent, and it is not the headline. If a visitor comes
+away thinking this is a store that also has some reference material, the design
+has inverted the product.
 
 The visual language is yours. Everything below is either data you need or a rule
 that is load-bearing for the product, the law, or the money. Where I say "must",
@@ -31,22 +44,32 @@ Build one vertical slice, end to end:
 
     landing → signup → dashboard → one peptide → THE MATH → shop → checkout
 
-Screens:
+Screens, in priority order:
+
+  THE PRODUCT
   1. Home / landing
   2. Auth — sign up, log in, reset password
   3. Dashboard (the app shell — see ARCHITECTURE)
   4. Peptide detail
-  5. Reference / search
-  6. THE MATH (a panel inside the dashboard, not a route)
-  7. Shop — catalogue, product, cart, checkout, order status
-  8. Legal — terms, privacy, refund, EU
+  5. INTERACTION CHECKER
+  6. BLOODWORK
+  7. ASK / AI
+  8. Reference / search
+  9. THE MATH (a panel inside the dashboard, not a route)
 
-DEFERRED, deliberately: onboarding, stacks, stack finder, interaction checker,
-AI chat, bloodwork, dose log, reminders, cycles, injection sites, notes,
-vendors, regulatory, pricing page. Every one lives inside the app shell. Once
-the shell and one feature page are right, they are variations in an established
-language — designing 25 screens before knowing whether the language works is how
-you get 25 mediocre ones.
+  THE SHOP — secondary
+  10. Catalogue, product, cart, checkout, order status
+
+  11. Legal — terms, privacy, refund, EU
+
+DEFERRED: onboarding, stacks, stack finder, dose log, reminders, cycles,
+injection sites, notes, vendors, regulatory, pricing page. Those are tracking
+and browsing surfaces — they matter, but they are variations on a language the
+screens above establish.
+
+5, 6 and 7 ARE NOT DEFERRABLE. They are the product. An earlier draft of this
+brief deferred them and gave the shop five screens; that was wrong and this
+corrects it.
 
 
 ═══ ARCHITECTURE ═══
@@ -87,17 +110,25 @@ order states cannot be judged standing still.
 
 ═══ 1. LANDING ═══
 
-Data-led. The assay ledger and the 124-peptide reference are the hero.
+Lead with what the product DOES, not with the shop.
 
-It has to sell both businesses at once: the reference depth sells the
-subscription, the assay ledger sells the shop. Not product-led — dashboard
-screenshots and a pro pitch is what every SaaS landing page looks like, and it
-says nothing about why this one is different. Not editorial either; long-form on
-why published assays matter is slow to convert and expensive to write well.
+The three things a visitor should understand before scrolling:
+  • what a peptide does, with the evidence graded honestly
+  • what it interacts with — their prescriptions, their supplements, their stack
+  • what their bloodwork says against what they are taking
 
-The differentiator, stated plainly: everyone else asks you to trust them. We
-publish the numbers and let you check.
+That is the pitch, and it is a pitch nothing else in this space makes. The
+reference library is 124 peptides deep, fourteen of which say outright that no
+human dose exists — a library willing to tell you it does not know is the
+differentiator.
 
+The shop appears BELOW that, as a small-batch supply line for people who already
+trust the reference. Not the hero. If someone lands here and thinks "peptide
+store", the page has failed.
+
+Not product-led — dashboard screenshots and a pro pitch is what every SaaS
+landing looks like. Not editorial — long-form on why assays matter is slow to
+convert. Show the tools working on real data.
 
 ═══ 2. AUTH ═══
 
@@ -152,13 +183,66 @@ influence how a grade is displayed — they are different axes and conflating th
 invents distinctions that do not exist.
 
 
-═══ 5. REFERENCE / SEARCH ═══
+═══ 5. INTERACTION CHECKER ═══
+
+The single most valuable thing this product does, and the clearest reason it is
+not on the App Store.
+
+Someone runs three peptides, takes two prescriptions and a handful of
+supplements, and has nowhere to find out whether that combination is a problem.
+Their doctor has usually not heard of half of it. This answers that.
+
+It exists today as a panel on the peptide view. It should be a DESTINATION —
+something a visitor can see the site does before signing up, not a control
+buried behind a dashboard overlay.
+
+  Inputs are two things to compare: peptide, prescription medication,
+  supplement, or over-the-counter drug. Not restricted to our 124.
+
+  Output is an interaction assessment with its reasoning. AI-generated, and it
+  must say so — an interaction claim presented as settled fact is worse than
+  useless.
+
+  It carries the same disclaimer posture as everything else. It informs a
+  conversation with a doctor; it does not replace one.
+
+═══ 6. BLOODWORK ═══
+
+Upload a lab report — Labcorp, Quest, any PDF, or a clear photo — and get an
+educational overview of the markers against the peptides being taken.
+
+This exists and works. It is an overlay inside the dashboard, which is why
+nobody finds it. It should be a destination.
+
+  Upload → parsed markers → educational overview → saved to history.
+
+  Marker values, reference ranges and dates are dense numeric data. This is the
+  screen where monospaced, column-aligned figures earn their keep most.
+
+  Previous analyses are kept, so change over time is visible. That is most of
+  the value — one panel is a snapshot, four is a trend.
+
+  EDUCATIONAL OVERVIEW, never a diagnosis. It describes what markers are
+  commonly studied in relation to which peptides. It does not tell anyone their
+  results are good or bad, and it never recommends a change.
+
+═══ 7. ASK / AI ═══
+
+Conversational, with the user's own stack loaded as context — so the answer is
+about what they are actually taking rather than about peptides in general.
+
+  AI output is labelled as AI output, every time.
+
+  First use requires explicit consent to AI processing. That flow exists; design
+  it as a real moment rather than a dismissable banner.
+
+═══ 8. REFERENCE / SEARCH ═══
 
 All 124, searchable. Search covers peptide names, brand names, and indications
 — someone types "Botox" or "fat loss", not always an exact peptide name.
 
 
-═══ 6. THE MATH ═══
+═══ 9. THE MATH ═══
 
 A panel inside the dashboard shell. Not its own route. It is already called THE
 MATH in the app; its current headings read "SOLUTION CHEMISTRY · WORKING SHOWN"
@@ -201,11 +285,19 @@ reconstitution calculator, and never a dose calculator.
   the same to everyone.
 
 
-═══ 7. THE SHOP ═══
+═══ 10. THE SHOP ═══
 
 Five screens: catalogue, product, cart, checkout, order status.
 
 WHAT THE SHOP IS FOR
+
+A SMALL-BATCH SUPPLY LINE, not a store. Seven products, deliberately — we do not
+carry a wide catalogue and we are not trying to. Small conservative batches,
+every assayed one above 99.4%. The constraint IS the pitch: a short list you can
+account for beats a long one you cannot.
+
+It should feel like a supply line attached to a reference tool, not a shopfront
+with an article section. It is the smaller half of this product.
 
 We publish the independent lab assay for every batch and the price per
 milligram, and let the reader draw their own conclusions about everyone else. We
