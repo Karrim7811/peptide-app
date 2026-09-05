@@ -86,12 +86,21 @@ const CODE_X = 38.6
 const CODE_Y = 1.5
 const XDIM_FLOOR = 0.375 // ~phone-camera minimum for DataMatrix
 
-function codeUrl(slug) {
-  return `janoshik.com/tests/${slug}`
+/* Points at OUR domain and OUR lot number, not the testing lab's report.
+   Changed 2026-09-05. The previous payload was `janoshik.com/tests/<slug>`,
+   which resolves to a public page naming the client, the manufacturer and a
+   supplier-prefixed batch — so every printed vial handed its buyer the supply
+   chain. A label is the one surface a website redaction cannot reach.
+
+   It is also shorter: 29 characters against 49, which is the "redirect option"
+   the sizing note above anticipates. Fewer modules at the same 12.5 mm means a
+   larger X-dimension and a better read rate on a curved Ø14.75 mm body. */
+function codeUrl(lot) {
+  return `peptidecortex.com/v/${lot}`
 }
 
-function dataMatrix(slug, fg, bg) {
-  const m = bwipjs.raw({ bcid: 'datamatrix', text: codeUrl(slug) })[0]
+function dataMatrix(lot, fg, bg) {
+  const m = bwipjs.raw({ bcid: 'datamatrix', text: codeUrl(lot) })[0]
   const n = m.pixx
   const mod = CODE_MM / n
   const quiet = mod // DataMatrix needs exactly 1 module of quiet zone
@@ -216,7 +225,7 @@ export function label(skinName, d, cmpSize) {
     `>${esc(str)}</text>`
 
   const cmpTrack = 0.03
-  const code = dataMatrix(d.slug, s.codeFg, s.codeBg)
+  const code = dataMatrix(d.lot, s.codeFg, s.codeBg)
 
   // Purity is printed only when the linked report actually stated one. The two
   // blend reports (KLOW, GLOW) spend all three Results rows on analytes and
@@ -321,9 +330,10 @@ if (overflows.length) {
 
 const built = items.map((d) => {
   const svg = label(SKIN, d, cmpSize)
-  const file = `${d.slug}.svg`
+  // Named by LOT, not slug: slugs still embed the lab report code.
+  const file = `${d.lot}.svg`
   writeFileSync(join(dir, file), svg, 'utf8')
-  const c = dataMatrix(d.slug, '#000', '#fff')
+  const c = dataMatrix(d.lot, '#000', '#fff')
   return { ...d, file, svg, grid: c.grid, xdim: c.xdim }
 })
 
@@ -396,7 +406,7 @@ ${rows
       <b>${esc(r.compound)} ${esc(r.qty)}</b> · lot ${esc(r.lot)}<br>
       purity ${r.purity ? esc(r.purity) : '<span class="nop">not captured</span>'} ·
       ${r.grid}×${r.grid} grid · X-dim ${r.xdim.toFixed(3)} mm<br>
-      <a href="https://${codeUrl(r.slug)}">${esc(codeUrl(r.slug))}</a>
+      <a href="https://${codeUrl(r.lot)}">${esc(codeUrl(r.lot))}</a>
     </div>
   </div>`
   )
