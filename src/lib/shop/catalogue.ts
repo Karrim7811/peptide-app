@@ -13,7 +13,8 @@ import type { ShopLot, ShopProduct } from '@/lib/shop/types'
 export const PRODUCTS: ShopProduct[] = [
   {
     slug: 'glp-3-30mg',
-    name: 'GLP-3 (Retatrutide)',
+    name: 'GLP-3',
+    subtitle: 'Retatrutide',
     compoundId: 'retatrutide',
     sizeValue: 30,
     sizeUnit: 'mg',
@@ -24,6 +25,7 @@ export const PRODUCTS: ShopProduct[] = [
   {
     slug: 'vip-5mg',
     name: 'VIP',
+    subtitle: 'Vasoactive intestinal peptide',
     compoundId: 'vip-vip',
     sizeValue: 5,
     sizeUnit: 'mg',
@@ -34,6 +36,7 @@ export const PRODUCTS: ShopProduct[] = [
   {
     slug: 'mots-c-10mg',
     name: 'MOTS-c',
+    subtitle: 'Mitochondrial-derived peptide',
     compoundId: 'mots-c',
     sizeValue: 10,
     sizeUnit: 'mg',
@@ -44,6 +47,7 @@ export const PRODUCTS: ShopProduct[] = [
   {
     slug: 'selank-5mg',
     name: 'Selank',
+    subtitle: 'Tuftsin analogue',
     compoundId: 'selank',
     sizeValue: 5,
     sizeUnit: 'mg',
@@ -54,6 +58,7 @@ export const PRODUCTS: ShopProduct[] = [
   {
     slug: 'semax-5mg',
     name: 'Semax',
+    subtitle: 'ACTH(4-10) analogue',
     compoundId: 'semax',
     sizeValue: 5,
     sizeUnit: 'mg',
@@ -66,6 +71,7 @@ export const PRODUCTS: ShopProduct[] = [
     // at all four so the page can name what is in it.
     slug: 'klow-80mg',
     name: 'KLOW',
+    subtitle: 'Four-peptide blend',
     compoundId: null,
     sizeValue: 80,
     sizeUnit: 'mg',
@@ -79,6 +85,7 @@ export const PRODUCTS: ShopProduct[] = [
     // it sits outside the peptide framing the rest of the shop inherits.
     slug: 'nad-1000mg',
     name: 'NAD+',
+    subtitle: 'Nicotinamide adenine dinucleotide',
     compoundId: 'nad',
     sizeValue: 1000,
     sizeUnit: 'mg',

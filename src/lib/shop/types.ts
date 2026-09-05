@@ -25,7 +25,13 @@ export interface Component {
 
 export interface ShopProduct {
   slug: string
+  /** The name as it heads a card — "GLP-3", not "GLP-3 (Retatrutide)". */
   name: string
+  /**
+   * The italic line beneath the name. Usually the compound's own name where the
+   * product is sold under a different one, otherwise what it is in plain words.
+   */
+  subtitle: string
   /** Into COMPOUNDS. Null for a blend or a non-peptide — KLOW and NAD+. */
   compoundId: string | null
   sizeValue: number
