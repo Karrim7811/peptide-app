@@ -139,6 +139,16 @@ export function historyRows(slug: string): HistoryRow[] {
   }))
 }
 
+export interface Ledger {
+  rows: HistoryRow[]
+  /** 'low 99.466% · high 99.736%'. Empty when there is nothing assayed. */
+  range: string
+  /** 'every batch ≥ 99.466%'. Only meaningful across more than one batch. */
+  floor: string
+  /** The sentence under the ledger, which differs by what the ledger contains. */
+  note: string
+}
+
 export interface ProductView extends ShopCard {
   action: string | null
   bottomLine: string | null
@@ -148,6 +158,43 @@ export interface ProductView extends ShopCard {
   notAPeptide: string | null
   history: HistoryRow[]
   batchCount: number
+  ledger: Ledger
+}
+
+/**
+ * The ledger's summary lines.
+ *
+ * The floor is the claim that carries: one certificate covers one vial, a run
+ * covers a supplier. It only exists across more than one batch, so a product
+ * with a single assay gets the range and no floor rather than a floor of one.
+ */
+export function ledgerFor(slug: string, isBlend: boolean, state: ShopLot['assayState']): Ledger {
+  const rows = historyRows(slug)
+  const assayed = lotsFor(slug).filter((l) => l.assayState === 'assayed' && l.purityPct !== null)
+  const purities = assayed.map((l) => l.purityPct as number)
+
+  const lo = purities.length ? Math.min(...purities) : null
+  const hi = purities.length ? Math.max(...purities) : null
+
+  let note = ''
+  if (state === 'pending') {
+    note = 'Nothing on the ledger yet. The first row is written when the lab returns.'
+  } else if (isBlend) {
+    note =
+      'Four molecules in one vial, each measured separately. A blend has no single purity figure to quote.'
+  } else if (rows.length > 1) {
+    note =
+      'Every batch we have shipped, with its assay. One certificate covers one vial; a run covers a supplier.'
+  } else {
+    note = 'First batch on the ledger. It grows by one row each time a batch ships and returns.'
+  }
+
+  return {
+    rows,
+    range: lo !== null && hi !== null ? `low ${pct(lo)} · high ${pct(hi)}` : '',
+    floor: purities.length > 1 ? `every batch ≥ ${pct(lo)}` : '',
+    note,
+  }
 }
 
 /** NAD+ is a coenzyme, B12 a corrinoid, L-carnitine an amino-acid derivative. */
@@ -174,5 +221,6 @@ export function productView(slug: string): ProductView | null {
     notAPeptide: product.compoundId ? (NOT_PEPTIDE[product.compoundId] ?? null) : null,
     history: historyRows(slug),
     batchCount: lotsFor(slug).length,
+    ledger: ledgerFor(slug, Boolean(product.blendOf), currentLot(slug)?.assayState ?? 'none'),
   }
 }

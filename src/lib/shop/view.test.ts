@@ -3,7 +3,7 @@
 // restyle cannot quietly break a rule.
 
 import { describe, expect, it } from 'vitest'
-import { historyRows, mg, monthName, pct, productView, shopCard, shopCards } from '@/lib/shop/view'
+import { historyRows, ledgerFor, mg, monthName, pct, productView, shopCards } from '@/lib/shop/view'
 import { PRODUCTS } from '@/lib/shop/catalogue'
 
 const card = (slug: string) => shopCards().find((c) => c.slug === slug)!
@@ -121,6 +121,38 @@ describe('lot history', () => {
   it('is empty for a product with one batch — an archive of one is not a record', () => {
     expect(historyRows('mots-c-10mg')).toEqual([])
     expect(historyRows('klow-80mg')).toEqual([])
+  })
+})
+
+describe('the ledger', () => {
+  it('gives GLP-3 a range and a floor across three batches', () => {
+    const l = ledgerFor('glp-3-30mg', false, 'assayed')
+    expect(l.rows).toHaveLength(3)
+    expect(l.range).toBe('low 99.466% · high 99.736%')
+    expect(l.floor).toBe('every batch ≥ 99.466%')
+    expect(l.note).toMatch(/a run covers a supplier/)
+  })
+
+  // A floor of one batch is not a floor, it is that batch. The claim only means
+  // something across a run, so a single-batch product gets no floor line.
+  it('gives a single-batch product a range but no floor', () => {
+    const l = ledgerFor('mots-c-10mg', false, 'assayed')
+    expect(l.range).toBe('low 99.114% · high 99.114%')
+    expect(l.floor).toBe('')
+    expect(l.note).toMatch(/First batch on the ledger/)
+  })
+
+  it('says a blend has no single purity figure', () => {
+    const l = ledgerFor('klow-80mg', true, 'assayed')
+    expect(l.floor).toBe('')
+    expect(l.note).toMatch(/no single purity figure/)
+  })
+
+  it('says a pending product has nothing on the ledger yet', () => {
+    const l = ledgerFor('nad-1000mg', false, 'pending')
+    expect(l.rows).toEqual([])
+    expect(l.range).toBe('')
+    expect(l.note).toMatch(/Nothing on the ledger yet/)
   })
 })
 
