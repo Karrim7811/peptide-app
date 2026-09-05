@@ -565,10 +565,9 @@ WHAT THE iOS APP HAS THAT THIS BRIEF SHOULD COVER:
 
   Vial scanner. Photograph a vial label; it reads the peptide name and the mg and
   adds it to the stack. The audience owns a fridge full of vials and typing them
-  in is the friction that stops people using a tracker at all. The backend for
-  this already exists and nothing on the web calls it — it is now screen 12.
-
-    Fully specified as screen 12, including the desktop-to-phone QR handoff.
+  in is the friction that stops people using a tracker at all. The backend
+  already exists and nothing on the web calls it. Fully specified as screen 12,
+  including the desktop-to-phone QR handoff.
 
   Inventory. What is in the fridge: vial, quantity remaining, expiry. Deferred
   this pass, but it is a real surface and the expiry tracking is the useful part.
@@ -591,10 +590,8 @@ THE ONE DISTINCTION TO HOLD ON DOSING:
   we can ignore on the web, it is US product-liability and practice-of-medicine
   law, which does not care what platform it happens on.
 
-  Screen 11 does the first only. There is no calculator on the web either — it
-  was considered and dropped. Reporting what a trial administered and computing
-  what a specific person should take are different acts, and only the first is
-  in this product.
+  Screen 11 does the first only. A calculator was considered twice and dropped
+  twice — it is not an omission to be helpfully filled in.
 
 WHAT THE iOS APP IS MISSING, AND WHY IT MATTERS:
 
