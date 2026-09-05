@@ -306,29 +306,53 @@ several peptides and guessing at how to sequence them.
   else here — it informs a conversation with a doctor rather than replacing one.
 
 
-═══ 11. DOSING REFERENCE ═══
+═══ 11. DOSING REFERENCE + CALCULATOR ═══
 
-What the published literature and the drug labels actually say, per peptide.
+What the published literature and drug labels actually say, per peptide — and,
+where the source supports it, that figure worked through for a body weight.
 
 81 of the 124 entries carry a real dosing range taken from a label or a trial.
-That is reference content, it is already in the data, and it is currently much
-harder to find than it should be. Surface it properly.
+That data already exists and is currently much harder to find than it should be.
 
-  IT REPORTS WHAT WAS PUBLISHED. "The Wegovy label titrates 0.25 mg weekly to
-  2.4 mg." A statement about what a trial or a label says, attributed.
+THE REFERENCE HALF
 
-  43 ENTRIES SAY N/A, and they must keep saying it. Those are research-tier
-  peptides with no approval and no label to cite. The library publishes no
-  protocol numbers for them, deliberately — inventing one from community
-  practice is how you turn a reference into advice. Render that as
-  "no human dose established", never as a blank or a dash.
+  Reports what was published, attributed. "The Wegovy label titrates 0.25 mg
+  weekly to 2.4 mg." A statement about what a trial or a label says.
 
-  NOT A CALCULATOR. This route previously held a weight-based dose calculator —
-  enter a body weight, receive a suggested dose — and it was retired. Reporting
-  what a published trial administered and computing what a specific person
-  should take are different acts with different legal exposure, and only the
-  first one is what this screen does.
+  43 ENTRIES SAY N/A AND MUST KEEP SAYING IT. Research-tier peptides with no
+  approval and no label to cite. Render as "no human dose established", never a
+  blank or a dash.
 
+THE CALCULATOR HALF
+
+  Included deliberately, and bounded. Three rules make it a reference tool
+  rather than a prescription:
+
+  1. IT ONLY COMPUTES FROM A CITED SOURCE. Where a label or trial is itself
+     expressed per kilogram, applying that to a body weight is arithmetic on
+     published data. Where the published dose is a fixed range — most GLP-1s —
+     weight does not enter it and the range is shown as-is. The calculator never
+     invents a relationship the source does not state.
+
+  2. IT REFUSES THE 43. No published human dose means no output. Not a guess,
+     not an extrapolation from animal data, not a community figure. This is the
+     most important of the three: a number generated for a compound nobody has
+     dosed in humans is fiction, and fiction is the version that causes harm.
+
+  3. IT SHOWS ITS SOURCE NEXT TO ITS ANSWER. Every figure names where it came
+     from — which label, which trial. An unattributed number is indistinguishable
+     from a recommendation.
+
+  MANDATORY DISCLAIMER, above the result, never collapsed:
+  "Reference only, for educational purposes. This reports published dosing from
+  labels and trials — it is not a recommendation, not medical advice, and not
+  specific to you. Most peptides listed here are not approved for human use.
+  Consult a licensed physician before any medical decision."
+
+  ONE THING TO GET RIGHT IN THE DESIGN: the output is a published figure that
+  happens to have been divided, not an instruction. "Trials in this indication
+  used 0.05 mg/kg — at 80 kg that is 4 mg" reads as arithmetic. "Your dose:
+  4 mg" reads as a prescription. Same number, different product.
 
 ═══ 12. VIAL SCANNER ═══
 
@@ -581,7 +605,11 @@ THE ONE DISTINCTION TO HOLD ON DOSING:
   we can ignore on the web, it is US product-liability and practice-of-medicine
   law, which does not care what platform it happens on.
 
-  Screen 11 does the first. It does not do the second.
+  Screen 11 does both, deliberately and bounded — see its three rules. The
+  binding one is that it refuses to output anything for the 43 peptides with no
+  published human dose. Computing a number for a compound nobody has dosed in
+  humans is not reference, it is invention, and it is the version that causes
+  harm rather than merely creating exposure.
 
 WHAT THE iOS APP IS MISSING, AND WHY IT MATTERS:
 

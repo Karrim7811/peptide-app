@@ -466,6 +466,39 @@ Apple flagged this on Guideline 1.4.2 for a reason that applies to web too: spec
 
 Roadmap item added at Critical priority. This reframing must land before the next public launch push.
 
+### 16.9a Dosing calculator reinstated (2026-09-04, Karim)
+
+§16.9 retired the weight-based dose calculator; `/dosing` still redirects and its
+retirement note still explains why. **Karim has reversed that decision** — the
+calculator returns on the web, framed as reference.
+
+His reasoning: Apple's guidelines govern the App Store and not the web, most of
+these peptides are unapproved so there is no label to contradict, and other
+references publish the same thing.
+
+The counter-argument was put to him and he reaffirmed. Recorded so a future
+session does not re-litigate it, and so the reasoning on both sides survives:
+
+- A disclaimer does not convert an individualised output into reference content.
+  The test is what the tool does, not what the footer says.
+- **Peptide Cortex is now a seller.** Publishing suggested doses for compounds
+  you also sell is materially different from publishing them as a pure
+  information site — it is close to the FDA's test for intended use. This is new
+  since §16.9 was written and is the strongest reason to be careful.
+
+What was agreed as the shape, and what must hold:
+
+1. Compute only from a cited source. Where a label or trial is expressed per kg,
+   applying it to a weight is arithmetic on published data. Never invent a
+   relationship the source does not state.
+2. **Refuse the 43 research-tier entries entirely.** No published human dose
+   means no output — not a guess, not animal extrapolation, not community
+   practice. This is the binding constraint.
+3. Show the source beside every figure.
+4. Phrase the output as published-figure-divided, never as an instruction.
+
+THE MATH (§16.9's solution-chemistry reframing) is unaffected and its rules stand.
+
 ### 16.10 Age gate at signup → collect DOB, not self-attest
 Collect date-of-birth at `/signup`. Store in `profiles.dob` (date). Block signup if the computed age is under 18. Self-attestation ("I confirm I am 18+") is rejected — a real DOB on record is far more defensible if challenged.
 
