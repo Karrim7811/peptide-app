@@ -84,6 +84,47 @@ ${svg}`
   process.stdout.write(`\r  rendered ${done}/${files.length}`)
 }
 
+/* Chrome writes no pHYs chunk, so the PNG carries no physical size and every
+   print tool falls back to 72 dpi — which would set this 53 mm label at 883 mm.
+   Stamping the real density is the difference between 'print at 100%' working
+   and someone having to scale by eye. Written by hand because the only other
+   way is another image dependency for four numbers. */
+function stampDpi(file, dpi) {
+  const buf = readFileSync(file)
+  if (buf.includes(Buffer.from('pHYs'))) return
+  const ppm = Math.round(dpi / 0.0254) // pixels per metre
+  const data = Buffer.alloc(9)
+  data.writeUInt32BE(ppm, 0)
+  data.writeUInt32BE(ppm, 4)
+  data.writeUInt8(1, 8) // unit: metres
+  const type = Buffer.from('pHYs')
+  const chunk = Buffer.concat([
+    Buffer.alloc(4), type, data, Buffer.alloc(4),
+  ])
+  chunk.writeUInt32BE(data.length, 0)
+  chunk.writeUInt32BE(crc32(Buffer.concat([type, data])) >>> 0, chunk.length - 4)
+  // pHYs must precede IDAT; the IHDR chunk is always the first, 25 bytes in.
+  const at = 8 + 25
+  writeFileSync(file, Buffer.concat([buf.subarray(0, at), chunk, buf.subarray(at)]))
+}
+
+let CRC_TABLE = null
+function crc32(buf) {
+  if (!CRC_TABLE) {
+    CRC_TABLE = new Int32Array(256)
+    for (let n = 0; n < 256; n++) {
+      let c = n
+      for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1
+      CRC_TABLE[n] = c
+    }
+  }
+  let c = -1
+  for (const b of buf) c = CRC_TABLE[(c ^ b) & 0xff] ^ (c >>> 8)
+  return c ^ -1
+}
+
+for (const f of readdirSync(dstDir)) stampDpi(join(dstDir, f), DPI)
+
 rmSync(tmpDir, { recursive: true, force: true })
 
 const total = readdirSync(dstDir).reduce((n, f) => n + statSync(join(dstDir, f)).size, 0)
