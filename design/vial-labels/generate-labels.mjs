@@ -272,11 +272,15 @@ export function label(skinName, d, cmpSize) {
   <rect width="${W}" height="${H}" fill="${s.base}"/>
 
 
+  <g stroke="${s.rule}" stroke-width="0.12" opacity="${s.ruleOpacity}">
+    <line x1="35.6" y1="1.6" x2="35.6" y2="19.4"/>
+  </g>
+
   <!-- ── identity block ────────────────────────────────────────────── -->
   <circle cx="${FLAP + 0.15}" cy="2.15" r="0.62" fill="${s.brandDot}"/>
   ${t(FLAP + 1.9, 2.75, 'PEPTIDE CORTEX', { size: TYPE.wordmark, fill: s.brandText, font: SERIF, weight: 500, track: 0.16 })}
   ${t(FLAP - 0.4, 8.0, d.compound, { size: cmpSize, fill: s.compound, font: SERIF, weight: 400, track: cmpTrack })}
-  ${t(33.0, 10.9, 'STORE AT −20 °C', { size: TYPE.caption, fill: s.meta, track: 0.02 })}
+
   ${t(FLAP - 0.4, 10.9, specLine, { size: d.blend ? TYPE.spec * 0.875 : TYPE.spec, fill: s.spec, track: 0.08, font: MONO })}
 
   <!-- ── batch data (thermal overprint zone) ───────────────────────────
@@ -284,24 +288,31 @@ export function label(skinName, d, cmpSize) {
        size the mid-dot version overruns the 32.6 mm column; dropping three
        glyphs buys back the width without shrinking the type or growing the
        label a second time. -->
-  <rect x="2.6" y="11.5" width="47.8" height="2.3" fill="none"
+  <rect x="2.6" y="11.5" width="31.6" height="2.3" fill="none"
         stroke="${s.zoneStroke}" stroke-width="0.1" stroke-dasharray="0.5 0.5" opacity="${s.zoneOpacity}"/>
   ${t(FLAP, 13.25, batchLine(d), { size: TYPE.batch, fill: s.fieldValue, track: 0.02, font: MONO })}
 
   <!-- ── reconstitution block ──────────────────────────────────────────
-       Full width. The DataMatrix used to take the right quarter of the label;
-       with it gone this is the only variable field left, and it is the one a
-       person fills in by hand at a fridge with a fine-tip pen. It went from
-       26 x 2.7 mm to 47.8 x 4.4 mm — handwriting does not scale down.
+       A square panel in the right column, where the DataMatrix used to sit.
+       14 x 14.2 mm — the code was 12.5 mm, so this is the largest square the
+       column will take, and it gives two comfortable lines of handwriting
+       rather than one cramped one. A fine-tip pen at a fridge, not a form.
+
+       The label splits across two lines because 'DATE OF RECONSTITUTION' does
+       not set in 14 mm at a legible size.
 
        The panel is a light patch on purpose: a date inked onto the dark stock
        would be invisible. On the dark skin it is the one element that inverts,
        which also marks it as the field to complete. -->
-  ${t(FLAP - 0.4, 15.2, 'DATE OF RECONSTITUTION', { size: TYPE.fieldLabel, fill: s.fieldLabel, track: 0.09 })}
-  ${t(26.2, 15.2, d.shelfLife, { size: TYPE.caption, fill: s.compound, track: 0.03 })}
-  <rect x="${FLAP - 0.4}" y="15.7" width="47.8" height="4.2" rx="0"
+  ${t(36.6, 3.3, 'DATE OF', { size: TYPE.fieldLabel, fill: s.fieldLabel, track: 0.09 })}
+  ${t(36.6, 4.7, 'RECONSTITUTION', { size: TYPE.fieldLabel, fill: s.fieldLabel, track: 0.09 })}
+  <rect x="36.6" y="5.2" width="14.0" height="14.2" rx="0"
         fill="${s.writeOn}" stroke="${s.writeRule}" stroke-width="0.14"/>
-  ${t(23.5, 18.8, '/', { size: 2.8, fill: s.writeRule, track: 0 })}
+  ${t(42.6, 13.4, '/', { size: 3.4, fill: s.writeRule, track: 0 })}
+
+  <!-- handling notes take the left column under the batch zone -->
+  ${t(FLAP - 0.4, 16.4, d.shelfLife, { size: TYPE.shelfLife, fill: s.compound, track: 0.04 })}
+  ${t(FLAP - 0.4, 19.0, 'STORE AT −20 °C', { size: TYPE.caption, fill: s.meta, track: 0.02 })}
   <!-- ── warning band ──────────────────────────────────────────────────
        Runs the full width so it stays legible whatever rotation the vial is
        picked up at, and sits outside every variable zone so it can never be
