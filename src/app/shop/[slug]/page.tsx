@@ -10,6 +10,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { AddToCart } from '@/components/shop/AddToCart'
 import { LotLedger } from '@/components/shop/LotLedger'
 import { PRODUCTS } from '@/lib/shop/catalogue'
 import { productView } from '@/lib/shop/view'
@@ -202,6 +203,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
               </span>
             </div>
             <div style={{ ...KICKER, marginTop: 8 }}>{p.size} · one vial</div>
+            <AddToCart slug={p.slug} />
           </div>
         </div>
 
