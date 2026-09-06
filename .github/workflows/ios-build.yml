@@ -1,8 +1,22 @@
 name: iOS Build & Deploy to TestFlight
 
+# Only when the iOS app actually changes. This used to run on every push to
+# main, so a commit touching only src/app/ spent four minutes on a macOS runner
+# building an app it had not modified, then emailed about the failure. A dozen
+# web commits in a day produced a dozen false alarms and buried the real one.
+#
+# NOTE: this does not fix the build. As of 2026-09-06 it fails on three
+# pre-existing Swift errors introduced in the Mirror redesign merge:
+#   DoseLogView.swift:76  / StackView.swift:165  extra argument 'recon' in call
+#   InventoryView.swift:40  expression too complex to type-check
+# It will still fail when ios-native/ changes, which is correct — that is when
+# someone is in a position to care.
 on:
   push:
     branches: [main]
+    paths:
+      - 'ios-native/**'
+      - '.github/workflows/ios-build.yml'
   workflow_dispatch:
 
 jobs:
