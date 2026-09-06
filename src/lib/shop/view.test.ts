@@ -9,10 +9,18 @@ import { PRODUCTS } from '@/lib/shop/catalogue'
 const card = (slug: string) => shopCards().find((c) => c.slug === slug)!
 
 describe('formatters', () => {
-  it('drops trailing zeros from a measured figure', () => {
-    expect(mg(11.2)).toBe('11.2')
-    expect(mg(11.0)).toBe('11')
+  // The lab reports 11.20. Printing 11.2 is a small unforced inaccuracy on a
+  // page whose argument is that it prints what the lab said, and it breaks the
+  // column alignment that makes a list of measured figures readable.
+  it('keeps two decimals, because the lab reported two', () => {
+    expect(mg(11.2)).toBe('11.20')
     expect(mg(90.65)).toBe('90.65')
+    expect(mg(35.95)).toBe('35.95')
+  })
+
+  it('leaves a whole number whole — a 30 mg label is 30, not 30.00', () => {
+    expect(mg(30)).toBe('30')
+    expect(mg(1000)).toBe('1000')
   })
 
   it('returns null rather than a placeholder for an absent figure', () => {

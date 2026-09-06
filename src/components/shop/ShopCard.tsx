@@ -31,6 +31,9 @@ export function ShopCard({ card }: { card: Card }) {
       href={card.href}
       className="shop-card"
       style={{
+        // Grows to fill a short last row so the grid never shows its ink
+        // ground through an empty cell.
+        flex: '1 1 300px',
         display: 'flex',
         flexDirection: 'column',
         background: '#E6E9EB',
@@ -190,8 +193,12 @@ export function ShopCard({ card }: { card: Card }) {
             minHeight: 44,
           }}
         >
-          <span style={KICKER}>Lot</span>
-          <span style={{ ...KICKER, textAlign: 'right' }}>Mfg · Exp</span>
+          {/* Only labels that have something under them. The purity gap above is
+              a deliberate admission and it works because it is rare — a card
+              full of empty labelled rows makes absence look routine and takes
+              the meaning out of the one gap that is saying something. */}
+          <span style={KICKER}>{card.lot ? 'Lot' : ''}</span>
+          <span style={{ ...KICKER, textAlign: 'right' }}>{card.dates ? 'Mfg · Exp' : ''}</span>
           <span>{card.lot}</span>
           <span style={{ textAlign: 'right', color: '#3B4045' }}>{card.dates}</span>
         </div>

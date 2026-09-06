@@ -31,10 +31,16 @@ export function monthName(iso: string | null): string | null {
   return name ? `${name} ${year}` : null
 }
 
-/** Trailing zeros are noise on a measured figure: 11.20 → '11.2', 90.65 → '90.65'. */
+/**
+ * Two decimals, always. The lab reports 11.20 and this page's whole argument is
+ * that it prints what the lab said — trimming to 11.2 is a small unforced
+ * inaccuracy, and in a column of measured figures it also breaks the alignment
+ * that makes the column readable. Whole numbers keep their own form: a 30 mg
+ * label is 30, not 30.00.
+ */
 export function mg(value: number | null): string | null {
   if (value === null || Number.isNaN(value)) return null
-  return String(Number(value.toFixed(2)))
+  return Number.isInteger(value) ? String(value) : value.toFixed(2)
 }
 
 export function pct(value: number | null): string | null {

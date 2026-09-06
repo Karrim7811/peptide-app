@@ -129,8 +129,13 @@ export default function ShopPage() {
         <div
           style={{
             margin: 'clamp(24px,3vw,36px) clamp(16px,3vw,32px) 0',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            // Flex-wrap, not grid. Seven cards never divide evenly into a
+            // responsive column count, and grid cannot fill a short last row —
+            // the ink ground shows through the empty cells as a black slab that
+            // reads as a missing product. Flex stretches the last row instead,
+            // so the count can be any number and the block always closes.
+            display: 'flex',
+            flexWrap: 'wrap',
             gap: 1,
             background: '#1A1D1F',
             border: '1px solid #1A1D1F',
