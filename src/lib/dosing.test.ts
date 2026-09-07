@@ -3,6 +3,7 @@ import { COMPOUND_LIST } from '@/lib/catalog'
 import {
   NO_DOSE_LINE,
   doseCounts,
+  doseSource,
   doseState,
   hasPublishedDose,
   noDoseContext,
@@ -94,5 +95,56 @@ describe('the catalogue, counted live', () => {
 
   it('holds the one sentence an un-dosed entry may render', () => {
     expect(NO_DOSE_LINE).toBe('No human dose established.')
+  })
+})
+
+describe('doseSource', () => {
+  const entry = (patch: Record<string, string>) => ({
+    dosage: '', fullName: '', name: 'X', grade: 'D', ...patch,
+  })
+
+  it('says there is nothing to cite for a no-dose entry', () => {
+    const source = doseSource(entry({ dosage: 'N/A' }))
+    expect(source.kind).toBe('Nothing to cite')
+    expect(source.ref).toBe('research-tier · no approval')
+  })
+
+  it('names the FDA label for a grade A entry and prefers the named brand', () => {
+    const source = doseSource(
+      entry({ dosage: '0.25 mg weekly up to 2.4 mg weekly (Wegovy)', grade: 'A', name: 'Semaglutide' }),
+    )
+    expect(source.kind).toBe('FDA label')
+    expect(source.ref).toBe('Wegovy')
+  })
+
+  it('falls back to the entry name when nothing is parenthesised', () => {
+    const source = doseSource(entry({ dosage: '1.4 mg SC once daily', grade: 'A', name: 'Tesamorelin' }))
+    expect(source.ref).toBe('Tesamorelin')
+  })
+
+  it('points at the prescribing information rather than inventing a figure', () => {
+    expect(doseSource(entry({ dosage: 'Product-specific dosing (endocrinology)' })).kind).toBe('PI')
+    expect(doseSource(entry({ dosage: 'Hospital protocols only' })).kind).toBe('PI')
+  })
+
+  it('calls a regional approval regional, not FDA', () => {
+    expect(doseSource(entry({ dosage: '0.5 mg daily', grade: 'B' })).kind).toBe('Regional label')
+  })
+
+  // Every row on the dosing reference prints one of these. A blank would read
+  // as missing data when the absence is itself the finding.
+  it('never returns an empty kind or ref for any entry in the catalogue', () => {
+    for (const compound of COMPOUND_LIST) {
+      const source = doseSource(compound)
+      expect(source.kind.trim(), compound.id).not.toBe('')
+      expect(source.ref.trim(), compound.id).not.toBe('')
+    }
+  })
+
+  it('only ever cites a real source for an entry that has a figure', () => {
+    for (const compound of COMPOUND_LIST) {
+      if (doseState(compound) !== 'none') continue
+      expect(doseSource(compound).kind, compound.id).toBe('Nothing to cite')
+    }
   })
 })

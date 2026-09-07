@@ -108,3 +108,44 @@ export function doseCounts(entries: Compound[] = COMPOUND_LIST): DoseCounts {
   for (const entry of entries) counts[doseState(entry)]++
   return counts
 }
+
+// ── Where a figure comes from ─────────────────────────────────────────────
+//
+// A figure without its source is indistinguishable from a recommendation. The
+// dosing reference prints one beside every row, and where nothing can be cited
+// the row says that instead of leaving the column blank.
+//
+// Derived from the entry rather than stored, which is a compromise: the
+// catalogue should carry a real source field, and until it does this reads the
+// regulatory grade and the shape of the prose. It is honest about the class of
+// source ("FDA label", "Published trial") and does not invent a citation.
+
+export interface DoseSource {
+  /** The class of source. Short, for the label above the reference. */
+  kind: string
+  /** What to look at. Never a fabricated citation. */
+  ref: string
+}
+
+export function doseSource(entry: Pick<Compound, 'dosage' | 'fullName' | 'name' | 'grade'>): DoseSource {
+  const text = entry.dosage ?? ''
+  const brand = (entry.fullName.match(/\(([^)]+)\)/) ?? [])[1] ?? ''
+  const named = (text.match(/\(([^)]+)\)/) ?? [])[1]
+
+  if (doseState(entry) === 'none') {
+    return { kind: 'Nothing to cite', ref: 'research-tier · no approval' }
+  }
+  if (/product PI|see product|product-specific|indication-specific|country-specific|protocol|prescribing information/i.test(text)) {
+    return { kind: 'PI', ref: 'Product prescribing information' }
+  }
+  if (/topical|cosmetic/i.test(text)) {
+    return { kind: 'Product', ref: 'Product labelling · topical' }
+  }
+  if (entry.grade === 'A') {
+    return { kind: 'FDA label', ref: named || brand.split('/')[0] || entry.name }
+  }
+  if (entry.grade === 'B') {
+    return { kind: 'Regional label', ref: named || brand.split('/')[0] || entry.name }
+  }
+  return { kind: 'Published trial', ref: named || 'Human trial report' }
+}
