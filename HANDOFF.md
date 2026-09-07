@@ -3,7 +3,7 @@
 Read `CLAUDE.md` first, then this. Where they disagree, this is newer.
 Supersedes the 2026-09-06 handoff.
 
-`main` = pushed and deployed. **386 tests passing, `tsc --noEmit` clean,
+`main` = pushed and deployed. **398 tests passing, `tsc --noEmit` clean,
 `next build` succeeds, no assay report codes in `.next/static`.**
 peptidecortex.com is serving the rebuilt site.
 
@@ -32,17 +32,20 @@ are a reference to read, not a prototype to execute.
 compound page, Shop, Product, Cart, Checkout, Zelle, Order, the bench, and all
 five tools — interactions, bloodwork, planner, dosing, scanner.
 
-What is left, in order:
+What is left:
 
-1. **Apply the shop migrations.** See below. Nothing about the shop works until
-   this happens and it is not a code task.
-2. **The Mirror's own styling.** It sits at `/mirror` and is the last surface
+1. **The Mirror's own styling.** It sits at `/mirror` and is the only surface
    not speaking V3. It is also the most complex thing in the repo and holds
    every write path, so treat a rewrite as a project, not an afternoon. It
-   works today.
-3. **The scanner's QR phone hand-off**, which needs a session-token table.
-4. **The planner's refinement thread** (`/api/protocol-consult` is still
-   uncalled — the planner drafts but does not yet argue back).
+   works today, and nothing is broken by leaving it.
+
+That is the whole list of remaining code. Everything else blocking launch is in
+the shop section below and none of it can be done from this repo.
+
+`/api/protocol-consult` is still uncalled. It is a PRE-plan intake (goals in,
+questions or a recommendation out) and was never the refinement thread — that
+is `/api/protocol-refine`, which is built. Wiring consult as a guided intake on
+the planner is optional polish, not a gap.
 
 ## /dashboard and /mirror — read this before moving anything
 
@@ -130,29 +133,38 @@ If you add a third route that can emit an amount, add it to that test's list.
 
 ---
 
-## The shop cannot take an order yet, and prices are not the first reason
+## The shop: migrations are APPLIED, the rest is not code
 
-Verified against the live database on 2026-09-07, not carried over from a
-previous handoff: **there are no shop tables in production.** `shop_products`,
-`shop_lots`, `shop_orders` and `shop_order_items` do not exist. `createOrder`
-queries `shop_products` to resolve slugs before it ever reaches pricing, so an
-order fails before shipping is consulted. Setting the USPS prices first changes
-nothing.
+**Applied to production on 2026-09-07** and verified: `shop_products`,
+`shop_lots`, `shop_inventory`, `shop_orders`, `shop_order_items` and
+`scan_sessions`. Seven products, nine lots, three assayed — matching
+`catalogue.ts` exactly. Existing tables were untouched; `profiles` (12) and
+`bloodwork_results` (56) are unchanged.
 
-The order the blockers actually resolve in:
+*A note for whoever checks: Supabase's table listing reports a stale row-count
+ESTIMATE, not an exact count. It said `stack_items` was 9 before and 8 after,
+which looked like data loss and was not — the exact count was 8 both times and
+the planner estimate is 7. Count with `select count(*)` before panicking.*
 
-1. Apply the three migrations. Nothing else matters until this is done.
-2. Set the three USPS prices in `shipping.ts`. A code change, not a dashboard
-   setting.
-3. `SHOP_ZELLE_HANDLE`, or the Zelle adapter throws.
-4. `SHOP_ADMIN_USER_ID`. **Easy to miss** — without it the admin queue 404s to
+What remains is **not code**. Nothing below can be done from this repo:
+
+1. Set the three USPS prices in `src/lib/shop/orders/shipping.ts`. This one IS
+   a code change, but the numbers are a business decision — `orderTotals()`
+   throws rather than invent them, and that is deliberate.
+2. `SHOP_ZELLE_HANDLE`, which needs a bank account under a shop entity.
+3. `SHOP_ADMIN_USER_ID`. **Easy to miss** — without it the admin queue 404s to
    everyone, so a Zelle payment can never be marked paid and nothing ever
    ships, while checkout looks like it is working.
-5. A bank account under the shop entity.
-6. Lot codes for the four pending products.
+4. Lot codes and real assay dates for VIP, Selank, Semax and NAD+.
+5. The §16.12 attorney review on the refund policy.
 
 BTCPay's four variables are only needed if crypto ships at launch. Zelle alone
 can take an order.
+
+**What changed when the migrations landed:** checkout stopped failing at "no
+such table" and now fails at "shipping is not priced". That is progress, but
+the storefront now looks closer to working than it is. Checkout still refuses,
+and says why.
 
 ## Blocked on Karim, not on code
 
@@ -214,6 +226,23 @@ actually specifies and is what shipped.
 
 ---
 
+## The one unauthenticated write, and why it is shaped that way
+
+`/api/scan-session/[token]/upload` is the only endpoint in this codebase that
+writes without a session. The token in the path is the entire credential.
+
+**Its check ORDER is the security property, not the checks.** Shape before
+query; refuse before reading a 6 MB body; claim the token before calling
+Claude, conditionally on `consumed_at` still being null, so two uploads racing
+one token cannot both spend a vision call. If you refactor it, keep the order.
+
+`scan_sessions` deliberately has no insert or update policy at all — not even
+for authenticated users. Both writes are service-role, because the phone has no
+session and nothing carrying one should be able to forge these rows.
+
+The phone page fetches nothing. Checking whether a token is live would leak
+whether it exists.
+
 ## Conventions added this session — do not "improve" these
 
 - **No projected dates on the order timeline.** A step prints a recorded
@@ -255,7 +284,7 @@ same mistake is recorded in `046b7b6` from the previous session.
 
 ## Verification state
 
-`npm test` 386 passing across 28 files · `npx tsc --noEmit` clean ·
+`npm test` 398 passing across 29 files · `npx tsc --noEmit` clean ·
 `npx next build` succeeds · `grep -rlE "D14D7EHWHFH9|XAKRSW4WN85N|VJUDHK6MDGT3"
 .next/static` returns nothing · working tree clean · nothing unpushed ·
 production deployment READY.
