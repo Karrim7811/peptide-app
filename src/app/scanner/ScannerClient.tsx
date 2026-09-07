@@ -17,14 +17,18 @@
 //     pre-filled with zero, and Add stays disabled until a real figure exists.
 //   • The image is sent, read and discarded. It is not stored anywhere.
 //
-// The V3 design also specifies a QR hand-off that opens a capture page on a
-// phone tied to this session. That needs a session token table that does not
-// exist yet, so this is the "from this device" half — which is what §16.8
-// actually specifies — and the phone path is noted as not built rather than
-// faked.
+// ── Two ways in ──────────────────────────────────────────────────────────
+//
+// From this device: a file picker, or the camera on a phone browser.
+//
+// From your phone: a QR opening a capture page tied to a single-use token that
+// expires in ten minutes. That exists because the shelf is in a fridge and the
+// computer usually is not. The desktop polls for the result; the phone is told
+// nothing about the account. See src/lib/scan-session.ts and the ordering
+// comment in the upload route, which is where the security actually lives.
 
 import Link from 'next/link'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAiConsent } from '@/components/AiConsentProvider'
 import { setInventory } from '@/app/dashboard/actions'
 import { amountNote, libraryNote, nearestNames, parseMg, readingsFrom } from '@/lib/scan'
@@ -50,12 +54,37 @@ interface Row extends Reading {
   failure: string | null
 }
 
-export function ScannerClient() {
+export function ScannerClient({ origin }: { origin: string }) {
   const { requireConsent } = useAiConsent()
   const fileRef = useRef<HTMLInputElement>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [rows, setRows] = useState<Row[] | null>(null)
+  const [handoff, setHandoff] = useState<{ token: string; url: string } | null>(null)
+  const [waiting, setWaiting] = useState(false)
+  const poll = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const stopPolling = useCallback(() => {
+    if (poll.current) clearInterval(poll.current)
+    poll.current = null
+    setWaiting(false)
+  }, [])
+
+  useEffect(() => () => stopPolling(), [stopPolling])
+
+  const showReadings = useCallback((raw: unknown) => {
+    const readings = readingsFrom(raw)
+    setRows(
+      readings.map((reading, i) => ({
+        ...reading,
+        key: `${reading.readName}-${i}`,
+        editedName: reading.compoundName ?? reading.readName,
+        editedAmount: reading.mg !== null ? String(reading.mg) : '',
+        added: false,
+        failure: null,
+      })),
+    )
+  }, [])
 
   const scan = useCallback(
     async (file: File) => {
@@ -95,26 +124,62 @@ export function ScannerClient() {
           return
         }
 
-        const readings = readingsFrom(payload?.vials)
-        setRows(
-          readings.map((reading, i) => ({
-            ...reading,
-            key: `${reading.readName}-${i}`,
-            editedName: reading.compoundName ?? reading.readName,
-            // Blank rather than 0 where nothing was read. Zero is a claim.
-            editedAmount: reading.mg !== null ? String(reading.mg) : '',
-            added: false,
-            failure: null,
-          })),
-        )
+        // Blank rather than 0 where nothing was read. Zero is a claim.
+        showReadings(payload?.vials)
       } catch {
         setError('The scan failed. Nothing was added.')
       } finally {
         setBusy(false)
       }
     },
-    [requireConsent],
+    [requireConsent, showReadings],
   )
+
+  const openHandoff = useCallback(async () => {
+    setError(null)
+    // Consent is taken here, on the device that has an account to ask about.
+    // The phone page has none and must not be the place this is decided.
+    const consented = await requireConsent()
+    if (!consented) return
+
+    stopPolling()
+    try {
+      const response = await fetch('/api/scan-session', { method: 'POST' })
+      const payload = await response.json().catch(() => ({}))
+      if (!response.ok || !payload?.token) {
+        setError(payload?.error ?? 'Could not open a capture link.')
+        return
+      }
+
+      const token: string = payload.token
+      setHandoff({ token, url: `${origin}/scan/${token}` })
+      setWaiting(true)
+
+      poll.current = setInterval(async () => {
+        try {
+          const check = await fetch(`/api/scan-session/${token}`)
+          if (!check.ok) return
+          const state = await check.json()
+          if (state.status === 'done') {
+            stopPolling()
+            setHandoff(null)
+            showReadings(state.vials)
+          } else if (state.status === 'failed' || state.status === 'expired') {
+            stopPolling()
+            setError(
+              state.status === 'expired'
+                ? 'That capture link expired before a photo arrived.'
+                : 'The photo from your phone could not be read.',
+            )
+          }
+        } catch {
+          // A dropped poll is not a failure. The next tick tries again.
+        }
+      }, 2500)
+    } catch {
+      setError('Could not open a capture link.')
+    }
+  }, [origin, requireConsent, showReadings, stopPolling])
 
   async function add(row: Row) {
     const mg = Number(row.editedAmount)
@@ -223,6 +288,113 @@ export function ScannerClient() {
         >
           {busy ? 'Reading the label…' : 'Take or choose a photo'}
         </button>
+        {/* The shelf is in a fridge; the computer usually is not. */}
+        <div style={{ marginTop: 22, borderTop: HAIR, paddingTop: 18 }}>
+          <div
+            style={{
+              fontFamily: JOST,
+              fontSize: 10,
+              letterSpacing: '.22em',
+              textTransform: 'uppercase',
+              color: INK3,
+            }}
+          >
+            From your phone
+          </div>
+
+          {handoff ? (
+            <div
+              style={{
+                marginTop: 12,
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%,220px),1fr))',
+                gap: '18px 28px',
+                alignItems: 'start',
+              }}
+            >
+              <div style={{ width: 160, height: 160, border: RULE, padding: 10 }}>
+                {/* Server-rendered SVG. No QR encoder ships to the browser. */}
+                <img
+                  src={`/api/scan-session/qr?token=${handoff.token}&url=${encodeURIComponent(handoff.url)}`}
+                  alt="Scan this with your phone camera"
+                  width={140}
+                  height={140}
+                  style={{ display: 'block', width: '100%', height: '100%' }}
+                />
+              </div>
+              <div style={{ minWidth: 0 }}>
+                <p style={{ margin: 0, fontSize: 17, lineHeight: 1.45, maxWidth: '44ch' }}>
+                  Point your phone camera at this. It opens a capture page tied to this
+                  session — no sign-in on the phone, nothing installed. It works once and
+                  expires in ten minutes.
+                </p>
+                <p
+                  style={{
+                    margin: '10px 0 0',
+                    fontFamily: JOST,
+                    fontSize: 10,
+                    letterSpacing: '.2em',
+                    textTransform: 'uppercase',
+                    color: waiting ? TEAL : INK3,
+                  }}
+                >
+                  {waiting ? 'Waiting for the phone' : 'Link open'}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    stopPolling()
+                    setHandoff(null)
+                  }}
+                  style={{
+                    marginTop: 12,
+                    appearance: 'none',
+                    border: RULE,
+                    background: 'transparent',
+                    color: INK,
+                    fontFamily: JOST,
+                    fontSize: 10,
+                    letterSpacing: '.22em',
+                    textTransform: 'uppercase',
+                    padding: '10px 14px',
+                    minHeight: 40,
+                    borderRadius: 0,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div style={{ marginTop: 10 }}>
+              <button
+                type="button"
+                onClick={openHandoff}
+                style={{
+                  appearance: 'none',
+                  border: RULE,
+                  background: 'transparent',
+                  color: INK,
+                  fontFamily: JOST,
+                  fontSize: 10.5,
+                  letterSpacing: '.22em',
+                  textTransform: 'uppercase',
+                  padding: '12px 16px',
+                  minHeight: 44,
+                  borderRadius: 0,
+                  cursor: 'pointer',
+                }}
+              >
+                Show a QR for my phone
+              </button>
+              <p style={{ margin: '10px 0 0', fontSize: 16, color: INK2, maxWidth: '52ch' }}>
+                For when the vials are in the fridge and this screen is not.
+              </p>
+            </div>
+          )}
+        </div>
+
         <p style={{ margin: '12px 0 0', fontSize: 16, color: INK2 }}>
           On a phone this opens the camera. On a desktop it opens a file picker. Or skip
           it and{' '}

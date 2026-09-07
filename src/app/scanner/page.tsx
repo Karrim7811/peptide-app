@@ -10,6 +10,7 @@ import { LibraryChrome } from '@/components/library/LibraryChrome'
 import { createClient } from '@/lib/supabase/server'
 import { isProUser } from '@/lib/subscription'
 import { ScannerClient } from './ScannerClient'
+import { headers } from 'next/headers'
 
 export const dynamic = 'force-dynamic'
 
@@ -27,9 +28,16 @@ export default async function ScannerPage() {
   if (!user) redirect('/login')
   if (!(await isProUser())) redirect('/upgrade')
 
+  // The phone needs an absolute URL to open, and it is not on this machine —
+  // localhost would be its own localhost. Read the host the browser actually
+  // used rather than an env var that would be wrong in preview deployments.
+  const head = headers()
+  const host = head.get('x-forwarded-host') ?? head.get('host') ?? 'peptidecortex.com'
+  const proto = head.get('x-forwarded-proto') ?? (host.startsWith('localhost') ? 'http' : 'https')
+
   return (
     <LibraryChrome signedIn>
-      <ScannerClient />
+      <ScannerClient origin={`${proto}://${host}`} />
     </LibraryChrome>
   )
 }
