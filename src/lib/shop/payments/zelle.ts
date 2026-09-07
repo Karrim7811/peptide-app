@@ -8,8 +8,15 @@
 // SHOP_ZELLE_HANDLE must be an account under the shop entity. Not a personal
 // account — a personal Zelle taking commercial volume gets flagged and the bank
 // closes it — and never the account that receives subscription revenue.
+//
+// The instructions name the REGISTERED OWNER as well as the address, because
+// the storefront and the bank account are not the same name: the shop is
+// Peptide Cortex, the account is Tigris Tech Labs LLC. The buyer's banking app
+// shows them that name at the moment they decide whether to send, so we say it
+// first. See src/lib/shop/zelle-account.ts.
 
 import { formatPrice } from '@/lib/shop/pricing'
+import { zelleAccount } from '@/lib/shop/zelle-account'
 import type {
   ChargeIntent,
   ChargeableOrder,
@@ -23,11 +30,12 @@ export const ZELLE: PaymentProvider = {
   confirmsAutomatically: false,
 
   async createCharge(order: ChargeableOrder): Promise<ChargeIntent> {
-    const handle = process.env.SHOP_ZELLE_HANDLE?.trim()
-    if (!handle) {
+    const account = zelleAccount()
+    if (!account) {
       // Telling a customer to send money nowhere is worse than failing checkout.
       throw new Error('SHOP_ZELLE_HANDLE is not set')
     }
+    const { handle } = account
 
     return {
       providerRef: null,
@@ -36,6 +44,11 @@ export const ZELLE: PaymentProvider = {
         reference: order.paymentReference,
         body: [
           `Send exactly ${formatPrice(order.totalCents)} to ${handle}.`,
+          ...(account.name
+            ? [
+                `Your banking app will show this account as ${account.name} — the company behind Peptide Cortex. That is the right account.`,
+              ]
+            : []),
           `Put ${order.paymentReference} in the memo. Without it we cannot match your payment to this order.`,
           // Honest about the rail: transit time starts at handover, and handover
           // cannot happen until this is confirmed by hand.

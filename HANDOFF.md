@@ -330,6 +330,41 @@ record survives a send that fails.
 unset it is the canonical domain, which is right in production and the safe
 answer everywhere else.
 
+## The Zelle account is Tigris Tech Labs LLC, not Peptide Cortex — 2026-09-07
+
+Karim's business Zelle is `info@tigristechlabs.com`, registered to **Tigris
+Tech Labs LLC**. `pay@peptidecortex.com` exists on the domain but is not
+enrolled at a bank, so the shop pays into the Tigris account for now.
+
+**This is a trust problem before it is a config problem.** A buyer types the
+address into their banking app and the app shows them the registered owner. The
+storefront says Peptide Cortex; the bank says Tigris Tech Labs LLC. An
+unexplained mismatch on the exact screen where someone decides whether to send
+money to a stranger reads as fraud, and stopping is the correct response.
+
+So every surface names the entity FIRST: the Zelle sheet, the order page, the
+payment instructions and the confirmation email all say "your banking app will
+show this as Tigris Tech Labs LLC — the company behind Peptide Cortex. That is
+the right account."
+
+**A live bug this uncovered**: the Zelle sheet printed the recipient as
+`Peptide Cortex LLC`, hard-coded, read from nothing. That is not the name on
+any account. A buyer following it would have been told one name by us and shown
+another by their bank. Now `SHOP_ZELLE_NAME`, and unset the surfaces warn that
+a registered name will appear without guessing which — a wrong name is worse
+than none.
+
+**The QR is `SHOP_ZELLE_QR_URL`** — a path under `public/` or an absolute URL,
+and always an image the account holder exported from their banking app. Zelle
+codes encode a bank token and cannot be generated from a handle. **The code
+carries the recipient only**: the buyer still types the amount and the memo,
+and the pages say so, because a scan that silently omitted the memo would
+produce a payment nobody can match to an order.
+
+**Moving to `pay@peptidecortex.com` later** is one variable, one name and one
+QR image, no code change. Do it between orders rather than during one: an order
+already placed carries the old instructions on its own page.
+
 ## The three addresses — 2026-09-07
 
 Karim registered all three on `peptidecortex.com`. They do different jobs and

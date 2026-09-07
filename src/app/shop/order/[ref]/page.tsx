@@ -20,6 +20,7 @@ import { notFound } from 'next/navigation'
 import { CopyButton } from '@/components/shop/CopyButton'
 import { HAIR, KICKER, MONO, RULE, ShopChrome } from '@/components/shop/ShopChrome'
 import { isValidReference } from '@/lib/shop/orders/reference'
+import { recipientNote, zelleAccount } from '@/lib/shop/zelle-account'
 import { orderByReference } from '@/lib/shop/orders/read.server'
 import { orderView } from '@/lib/shop/orders/view'
 import type { TimelineStep } from '@/lib/shop/orders/view'
@@ -37,7 +38,8 @@ export default async function OrderPage({ params }: { params: { ref: string } })
   if (!order) notFound()
 
   const view = orderView(order)
-  const handle = process.env.SHOP_ZELLE_HANDLE?.trim() || null
+  const account = zelleAccount()
+  const handle = account?.handle ?? null
 
   return (
     <ShopChrome>
@@ -158,6 +160,13 @@ export default async function OrderPage({ params }: { params: { ref: string } })
                 >
                   {handle ?? 'Not published yet'}
                 </div>
+                {/* The registered name, so the one the buyer's bank shows is
+                    not a surprise at the moment they decide to send. */}
+                {account && (
+                  <div style={{ marginTop: 8, fontSize: 14, lineHeight: 1.4, color: '#3B4045' }}>
+                    {recipientNote(account)}
+                  </div>
+                )}
               </div>
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                 <CopyButton value={view.reference} label="Copy code" filled />

@@ -42,6 +42,7 @@ import {
   confirmationText,
 } from '@/lib/email/order-confirmation'
 import { SITE_ORIGIN } from '@/lib/site'
+import { zelleAccount } from '@/lib/shop/zelle-account'
 
 export interface CartLine {
   slug: string
@@ -92,6 +93,7 @@ async function emailReceipt(args: {
 
     if (!args.email) return
 
+    const zelle = zelleAccount()
     const input = {
       paymentReference: args.paymentReference,
       totalCents: args.totals.totalCents,
@@ -108,7 +110,8 @@ async function emailReceipt(args: {
       orderUrl: `${SITE_ORIGIN}/shop/order/${encodeURIComponent(args.paymentReference)}`,
       // No fallback, exactly as the Zelle sheet has none. The mail tells the
       // buyer the account is not set up rather than naming one that is not ours.
-      zelleHandle: process.env.SHOP_ZELLE_HANDLE?.trim() || null,
+      zelleHandle: zelle?.handle ?? null,
+      zelleName: zelle?.name ?? null,
     }
 
     const outcome = await send({

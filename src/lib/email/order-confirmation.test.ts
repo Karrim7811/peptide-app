@@ -23,7 +23,8 @@ const base: ConfirmationInput = {
     { productName: 'GLP-3 (Retatrutide)', sizeDisplay: '30 mg', qty: 1, lineCents: 12500 },
   ],
   orderUrl: 'https://peptidecortex.com/shop/order/PC-7K3M',
-  zelleHandle: 'pay@peptidecortex.com',
+  zelleHandle: 'info@tigristechlabs.com',
+  zelleName: 'Tigris Tech Labs LLC',
 }
 
 describe('the subject', () => {
@@ -36,7 +37,7 @@ describe('the Zelle receipt', () => {
   const text = confirmationText(base)
 
   it('carries the three facts a payment cannot be made without', () => {
-    expect(text).toContain('pay@peptidecortex.com')
+    expect(text).toContain('info@tigristechlabs.com')
     expect(text).toContain('$137.00')
     expect(text).toContain('PC-7K3M')
   })
@@ -74,6 +75,25 @@ describe('the Zelle receipt', () => {
   })
 })
 
+describe('the recipient name', () => {
+  it('warns that the bank will show a different name than the shop', () => {
+    // The storefront is Peptide Cortex; the account is Tigris Tech Labs LLC.
+    // An unexplained mismatch on the screen where someone decides whether to
+    // send money reads exactly like a scam, so the mail says it first.
+    const text = confirmationText(base)
+    expect(text).toContain('Tigris Tech Labs LLC')
+    expect(text).toMatch(/right account/)
+  })
+
+  it('says nothing about a name it was not given, rather than guessing', () => {
+    const text = confirmationText({ ...base, zelleName: null })
+    expect(text).not.toContain('LLC')
+    // The handle and the memo still have to be there.
+    expect(text).toContain('info@tigristechlabs.com')
+    expect(text).toContain('PC-7K3M')
+  })
+})
+
 describe('when the Zelle account is not set up', () => {
   const text = confirmationText({ ...base, zelleHandle: null })
 
@@ -91,7 +111,7 @@ describe('the crypto receipt', () => {
   const text = confirmationText({ ...base, provider: 'btcpay' })
 
   it('does not tell a crypto buyer to send a Zelle payment', () => {
-    expect(text).not.toContain('pay@peptidecortex.com')
+    expect(text).not.toContain('info@tigristechlabs.com')
     expect(text).not.toContain('MEMO')
   })
 

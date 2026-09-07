@@ -17,6 +17,7 @@ import { notFound } from 'next/navigation'
 import { CopyButton } from '@/components/shop/CopyButton'
 import { HAIR, KICKER, MONO, RULE, ShopChrome } from '@/components/shop/ShopChrome'
 import { SUPPORT_EMAIL } from '@/lib/legal'
+import { recipientNote, zelleAccount } from '@/lib/shop/zelle-account'
 import { isValidReference } from '@/lib/shop/orders/reference'
 import { orderByReference } from '@/lib/shop/orders/read.server'
 import { shippingMethod } from '@/lib/shop/orders/shipping'
@@ -43,7 +44,8 @@ export default async function ZelleSheetPage({
   // differently for a reference that exists would confirm which ones do.
   if (!order || order.paymentProvider !== 'zelle') notFound()
 
-  const handle = process.env.SHOP_ZELLE_HANDLE?.trim() || null
+  const account = zelleAccount()
+  const handle = account?.handle ?? null
   const amount = formatPrice(order.totalCents)
   const method = shippingMethod(order.shippingMethod)
   const orderHref = `/shop/order/${encodeURIComponent(order.paymentReference)}`
@@ -134,10 +136,49 @@ export default async function ZelleSheetPage({
             kicker="To · Zelle recipient"
             value={handle ?? 'Not published yet'}
             valueSize="clamp(17px,2.4vw,24px)"
-            note={handle ? 'Peptide Cortex LLC' : 'Do not send anything until this appears'}
+            /* This said "Peptide Cortex LLC" as a hard-coded string until
+               2026-09-07, and that is not the name on the account. A buyer is
+               shown the registered owner by their own banking app at the moment
+               they decide whether this is a scam; being told a different name
+               here is the worst possible place to be wrong. */
+            note={
+              account
+                ? recipientNote(account)
+                : 'Do not send anything until this appears'
+            }
             copy={handle}
           />
         </div>
+
+        {account?.qrUrl && (
+          <div
+            style={{
+              marginTop: 28,
+              display: 'flex',
+              gap: 24,
+              alignItems: 'center',
+              flexWrap: 'wrap',
+            }}
+          >
+            {/* The bank's own QR, exported by the account holder. Zelle codes
+                encode a bank token, so this can never be generated from the
+                handle — it is an image or it is nothing. */}
+            <img
+              src={account.qrUrl}
+              alt={`Zelle QR code for ${account.name ?? handle}`}
+              width={180}
+              height={180}
+              style={{ display: 'block', border: RULE, background: '#FFFFFF' }}
+            />
+            <p style={{ margin: 0, fontSize: 17, lineHeight: 1.45, maxWidth: '38ch' }}>
+              Scan this in your banking app to open Zelle with the recipient filled in.
+              <strong style={{ fontWeight: 500 }}>
+                {' '}You still have to type the amount and the memo code yourself
+              </strong>{' '}
+              — the code does not carry either.
+            </p>
+          </div>
+        )}
 
         {/* The handle comes from SHOP_ZELLE_HANDLE and there is no fallback. A
             stand-in address here would be an instruction to send money to
