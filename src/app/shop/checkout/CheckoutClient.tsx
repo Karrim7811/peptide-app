@@ -13,27 +13,39 @@
 // says so plainly rather than rendering a total it cannot stand behind.
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 import { HAIR, KICKER, MONO, RULE } from '@/components/shop/ShopChrome'
-import { type CartLineView, cartLines, subtotalCents } from '@/lib/shop/cart'
+import { createOrder } from '@/app/shop/actions'
+import { cart, type CartLineView, cartLines, subtotalCents } from '@/lib/shop/cart'
 import { SHIPPING_METHODS, sellableMethods } from '@/lib/shop/orders/shipping'
 import type { ShippingMethodId } from '@/lib/shop/orders/shipping'
 import type { PaymentProviderId } from '@/lib/shop/orders/types'
 import { formatPrice } from '@/lib/shop/pricing'
 
 const FIELDS = [
-  ['name', 'Full name', 'name'],
-  ['line1', 'Address', 'address-line1'],
-  ['line2', 'Apartment, suite (optional)', 'address-line2'],
-  ['city', 'City', 'address-level2'],
-  ['state', 'State', 'address-level1'],
-  ['postal', 'ZIP', 'postal-code'],
+  ['name', 'Full name', 'name', true],
+  ['line1', 'Address', 'address-line1', true],
+  ['line2', 'Apartment, suite (optional)', 'address-line2', false],
+  ['city', 'City', 'address-level2', true],
+  ['state', 'State', 'address-level1', true],
+  ['postal', 'ZIP', 'postal-code', true],
 ] as const
 
+type AddressField = (typeof FIELDS)[number][0]
+
+const EMPTY: Record<AddressField, string> = {
+  name: '', line1: '', line2: '', city: '', state: '', postal: '',
+}
+
 export function CheckoutClient() {
+  const router = useRouter()
   const [lines, setLines] = useState<CartLineView[] | null>(null)
   const [method, setMethod] = useState<ShippingMethodId>('priority')
   const [provider, setProvider] = useState<PaymentProviderId>('btcpay')
+  const [address, setAddress] = useState<Record<AddressField, string>>(EMPTY)
+  const [placing, setPlacing] = useState(false)
+  const [failure, setFailure] = useState<string | null>(null)
 
   const refresh = useCallback(() => setLines(cartLines()), [])
   useEffect(() => {
@@ -59,7 +71,54 @@ export function CheckoutClient() {
 
   const subtotal = subtotalCents(lines)
   const sellable = sellableMethods()
-  const canOrder = sellable.length > 0
+  const priced = sellable.length > 0
+  const addressComplete = FIELDS.every(
+    ([id, , , required]) => !required || address[id].trim().length > 0,
+  )
+  // Two independent reasons an order cannot be placed, and the screen says which
+  // one applies rather than presenting one dead button for both.
+  const canOrder = priced && addressComplete && !placing
+
+  const blockedBecause = !priced
+    ? 'Shipping is not priced yet, so orders cannot be completed. Nothing here will charge you a figure nobody chose.'
+    : !addressComplete
+      ? 'Fill in the shipping address to place the order.'
+      : null
+
+  async function place() {
+    setPlacing(true)
+    setFailure(null)
+    try {
+      const { paymentReference, intent } = await createOrder(
+        lines!.map((line) => ({ slug: line.slug, qty: line.qty })),
+        {
+          name: address.name.trim(),
+          line1: address.line1.trim(),
+          line2: address.line2.trim() || null,
+          city: address.city.trim(),
+          state: address.state.trim(),
+          postal: address.postal.trim(),
+          country: 'US',
+        },
+        method,
+        provider,
+      )
+
+      // The order row exists now, so the cart has done its job. Clearing before
+      // navigating means a back button lands on an empty cart rather than one
+      // that could be ordered a second time.
+      cart.clear()
+
+      // A hosted checkout to leave for, or instructions to read here. The two
+      // rails diverge completely and this is the only place that matters.
+      if (intent.redirectUrl) window.location.href = intent.redirectUrl
+      else router.push(`/shop/order/${encodeURIComponent(paymentReference)}/zelle`)
+    } catch (error) {
+      // The cart is untouched on this path, so retrying costs nothing.
+      setFailure(error instanceof Error ? error.message : 'the order could not be placed')
+      setPlacing(false)
+    }
+  }
 
   return (
     <div
@@ -95,6 +154,10 @@ export function CheckoutClient() {
                 <input
                   name={id}
                   autoComplete={auto}
+                  value={address[id]}
+                  // Validation gates the button and writes a line saying why. It
+                  // never blocks typing and never marks a field in red mid-entry.
+                  onChange={(e) => setAddress((a) => ({ ...a, [id]: e.target.value }))}
                   style={{
                     width: '100%',
                     border: RULE,
@@ -224,7 +287,7 @@ export function CheckoutClient() {
           <span>[ $ TBC ]</span>
         </div>
 
-        {!canOrder && (
+        {blockedBecause && (
           // Says why rather than presenting a dead button. Shipping is genuinely
           // unpriced and orderTotals() refuses rather than inventing a figure.
           <p
@@ -237,13 +300,29 @@ export function CheckoutClient() {
               paddingLeft: 12,
             }}
           >
-            Shipping is not priced yet, so orders cannot be completed. Nothing here will
-            charge you a figure nobody chose.
+            {blockedBecause}
+          </p>
+        )}
+
+        {failure && (
+          // Inline, next to the button that failed. The design has no toasts and
+          // no modals anywhere, and nothing was charged on this path.
+          <p
+            style={{
+              margin: '18px 0 0',
+              fontSize: 17,
+              lineHeight: 1.4,
+              borderLeft: '2px solid #1A1D1F',
+              paddingLeft: 12,
+            }}
+          >
+            {failure}. Nothing was charged.
           </p>
         )}
 
         <button
           type="button"
+          onClick={place}
           disabled={!canOrder}
           style={{
             marginTop: 20,
@@ -261,7 +340,11 @@ export function CheckoutClient() {
             cursor: canOrder ? 'pointer' : 'not-allowed',
           }}
         >
-          {provider === 'zelle' ? 'Place order · pay by Zelle' : 'Place order · pay by crypto'}
+          {placing
+            ? 'Placing…'
+            : provider === 'zelle'
+              ? 'Place order · pay by Zelle'
+              : 'Place order · pay by crypto'}
         </button>
 
         <p
