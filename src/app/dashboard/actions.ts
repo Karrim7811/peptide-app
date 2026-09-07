@@ -88,7 +88,7 @@ export async function logDose(input: {
     if (siteError) return fail(siteError.message)
   }
 
-  revalidatePath('/dashboard')
+  revalidatePath('/mirror')
   return OK
 }
 
@@ -133,7 +133,7 @@ export async function addStackItem(input: {
   })
   if (error) return fail(error.message)
 
-  revalidatePath('/dashboard')
+  revalidatePath('/mirror')
   return OK
 }
 
@@ -161,7 +161,7 @@ export async function removeStackItem(compoundId: string): Promise<ActionResult>
 
   if (error) return fail(error.message)
 
-  revalidatePath('/dashboard')
+  revalidatePath('/mirror')
   return OK
 }
 
@@ -207,7 +207,7 @@ export async function setInventory(input: {
 
   if (error) return fail(error.message)
 
-  revalidatePath('/dashboard')
+  revalidatePath('/mirror')
   return OK
 }
 
@@ -248,7 +248,7 @@ export async function setReminder(input: {
   })
   if (error) return fail(error.message)
 
-  revalidatePath('/dashboard')
+  revalidatePath('/mirror')
   return OK
 }
 
@@ -263,7 +263,7 @@ export async function removeReminder(reminderId: string): Promise<ActionResult> 
     .eq('user_id', user.id)
   if (error) return fail(error.message)
 
-  revalidatePath('/dashboard')
+  revalidatePath('/mirror')
   return OK
 }
 
@@ -288,7 +288,7 @@ export async function addNote(input: {
   })
   if (error) return fail(error.message)
 
-  revalidatePath('/dashboard')
+  revalidatePath('/mirror')
   return OK
 }
 
@@ -303,7 +303,7 @@ export async function removeNote(noteId: string): Promise<ActionResult> {
     .eq('user_id', user.id)
   if (error) return fail(error.message)
 
-  revalidatePath('/dashboard')
+  revalidatePath('/mirror')
   return OK
 }
 
@@ -339,7 +339,7 @@ export async function logSideEffect(input: {
   })
   if (error) return fail(error.message)
 
-  revalidatePath('/dashboard')
+  revalidatePath('/mirror')
   return OK
 }
 
@@ -354,7 +354,7 @@ export async function removeSideEffect(id: string): Promise<ActionResult> {
     .eq('user_id', user.id)
   if (error) return fail(error.message)
 
-  revalidatePath('/dashboard')
+  revalidatePath('/mirror')
   return OK
 }
 
@@ -381,6 +381,6 @@ export async function startCycle(input: {
   })
   if (error) return fail(error.message)
 
-  revalidatePath('/dashboard')
+  revalidatePath('/mirror')
   return OK
 }

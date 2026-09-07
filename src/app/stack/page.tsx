@@ -25,5 +25,5 @@ import { redirect } from 'next/navigation'
 // `math` and `record` are per-compound tabs with nothing to show without one,
 // so routes replaced by those land on the field instead of a deep link.
 export default function StackRedirect() {
-  redirect('/dashboard')
+  redirect('/mirror')
 }

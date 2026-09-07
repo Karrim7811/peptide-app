@@ -23,7 +23,7 @@ export default async function WelcomePage() {
     .eq('id', user.id)
     .maybeSingle()
 
-  if (profile?.onboarded_at) redirect('/dashboard')
+  if (profile?.onboarded_at) redirect('/mirror')
 
   return <WelcomeClient initialDisplayName={profile?.display_name ?? ''} />
 }
