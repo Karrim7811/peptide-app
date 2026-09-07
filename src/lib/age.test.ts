@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { MIN_AGE_YEARS, MIN_PASSWORD, ageFrom, isoDob } from '@/lib/age'
+import { MIN_AGE_YEARS, MIN_PASSWORD, ageFrom, isoDob, refuseDob } from '@/lib/age'
 import { isAdult } from '@/lib/shop/orders/age'
 
 // The signup form's half of the age gate. CLAUDE.md §16.10: a real date of
@@ -94,5 +94,42 @@ describe('the promises the signup form makes', () => {
 
   it('gates at eighteen', () => {
     expect(MIN_AGE_YEARS).toBe(18)
+  })
+})
+
+describe('refuseDob', () => {
+  const adult = () => {
+    const [m, d, y] = yearsAgo(30)
+    return isoDob(m, d, y)
+  }
+
+  it('lets an account with no date on file record one', () => {
+    expect(refuseDob(null, adult())).toBeNull()
+    expect(refuseDob(undefined, adult())).toBeNull()
+  })
+
+  // A field the holder can rewrite the moment it refuses them is a checkbox
+  // with extra steps.
+  it('refuses to overwrite a date already on file', () => {
+    expect(refuseDob('1990-06-14', adult())).toBe('already-recorded')
+  })
+
+  it('refuses an under-age date rather than recording it', () => {
+    const [m, d, y] = yearsAgo(10)
+    expect(refuseDob(null, isoDob(m, d, y))).toBe('under-age')
+  })
+
+  it('refuses anything it cannot parse, including an impossible date', () => {
+    expect(refuseDob(null, '')).toBe('unparseable')
+    expect(refuseDob(null, '14/06/1990')).toBe('unparseable')
+    expect(refuseDob(null, '1990-02-31')).toBe('unparseable')
+    expect(refuseDob(null, '1990-13-01')).toBe('unparseable')
+  })
+
+  it('agrees with the checkout gate about who is an adult', () => {
+    const [m, d, y] = yearsAgo(MIN_AGE_YEARS)
+    const iso = isoDob(m, d, y)
+    expect(refuseDob(null, iso)).toBeNull()
+    expect(isAdult(iso)).toBe(true)
   })
 })

@@ -54,3 +54,31 @@ export function ageFrom(m: string, d: string, y: string, now: Date = new Date())
 export function isoDob(m: string, d: string, y: string): string {
   return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`
 }
+
+/** Why a date of birth may not be written. Null means it may. */
+export type DobRefusal = 'already-recorded' | 'unparseable' | 'under-age'
+
+/**
+ * Whether an account may record a date of birth right now.
+ *
+ * Once recorded a date is immutable from the app. That is the whole point of
+ * collecting a real date rather than a checkbox: a field the holder can rewrite
+ * at the moment it refuses them is a checkbox with extra steps. Correcting a
+ * genuine mistake is a support request, and there are twelve accounts.
+ *
+ * Everything unknown refuses. A missing or unparseable date is not permission.
+ */
+export function refuseDob(
+  existing: string | null | undefined,
+  proposed: string,
+  now: Date = new Date(),
+): DobRefusal | null {
+  if (existing) return 'already-recorded'
+
+  const match = proposed.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+  if (!match) return 'unparseable'
+
+  const age = ageFrom(match[2], match[3], match[1], now)
+  if (age === null) return 'unparseable'
+  return age < MIN_AGE_YEARS ? 'under-age' : null
+}

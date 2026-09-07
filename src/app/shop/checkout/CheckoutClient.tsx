@@ -23,6 +23,8 @@ import type { ShippingMethodId } from '@/lib/shop/orders/shipping'
 import type { PaymentProviderId } from '@/lib/shop/orders/types'
 import { formatPrice } from '@/lib/shop/pricing'
 import { REFUND_POLICY, REFUND_STATUS } from '@/lib/legal'
+import { MIN_AGE_YEARS, ageFrom, isoDob } from '@/lib/age'
+import { recordDateOfBirth } from '@/app/shop/dob-actions'
 
 const FIELDS = [
   ['name', 'Full name', 'name', true],
@@ -39,7 +41,7 @@ const EMPTY: Record<AddressField, string> = {
   name: '', line1: '', line2: '', city: '', state: '', postal: '',
 }
 
-export function CheckoutClient() {
+export function CheckoutClient({ needsDob = false }: { needsDob?: boolean }) {
   const router = useRouter()
   const [lines, setLines] = useState<CartLineView[] | null>(null)
   const [method, setMethod] = useState<ShippingMethodId>('priority')
@@ -47,6 +49,11 @@ export function CheckoutClient() {
   const [address, setAddress] = useState<Record<AddressField, string>>(EMPTY)
   const [placing, setPlacing] = useState(false)
   const [failure, setFailure] = useState<string | null>(null)
+  // Ten of the twelve accounts in production predate the date-of-birth field.
+  // isAdult() fails closed on a null, so without this they are refused at the
+  // gate with nothing in the app that ever asks them again.
+  const [dob, setDob] = useState({ m: '', d: '', y: '' })
+  const [dobDone, setDobDone] = useState(false)
 
   const refresh = useCallback(() => setLines(cartLines()), [])
   useEffect(() => {
@@ -78,18 +85,37 @@ export function CheckoutClient() {
   )
   // Two independent reasons an order cannot be placed, and the screen says which
   // one applies rather than presenting one dead button for both.
-  const canOrder = priced && addressComplete && !placing
+  const age = ageFrom(dob.m, dob.d, dob.y)
+  const dobSatisfied = !needsDob || dobDone || (age !== null && age >= MIN_AGE_YEARS)
+  const canOrder = priced && addressComplete && dobSatisfied && !placing
 
   const blockedBecause = !priced
     ? 'Shipping is not priced yet, so orders cannot be completed. Nothing here will charge you a figure nobody chose.'
     : !addressComplete
       ? 'Fill in the shipping address to place the order.'
-      : null
+      : !dobSatisfied
+        ? age !== null && age < MIN_AGE_YEARS
+          ? 'Peptide Cortex is for adults. Orders cannot be placed under 18.'
+          : 'Add your date of birth to place the order.'
+        : null
 
   async function place() {
     setPlacing(true)
     setFailure(null)
     try {
+      // Recorded before the order, not alongside it. createOrder reads the
+      // profile under the service role and refuses a null, so writing this
+      // second would fail the age gate on an account that just proved its age.
+      if (needsDob && !dobDone) {
+        const recorded = await recordDateOfBirth(isoDob(dob.m, dob.d, dob.y))
+        if (!recorded.ok) {
+          setFailure(recorded.error ?? 'could not record your date of birth')
+          setPlacing(false)
+          return
+        }
+        setDobDone(true)
+      }
+
       const { paymentReference, intent } = await createOrder(
         lines!.map((line) => ({ slug: line.slug, qty: line.qty })),
         {
@@ -175,6 +201,56 @@ export function CheckoutClient() {
             ))}
           </div>
         </div>
+
+        {needsDob && !dobDone && (
+          // Asked here because this account was created before the field
+          // existed, not because anything is wrong with it. The copy says so —
+          // an existing customer should not be made to feel suspected.
+          <fieldset style={{ marginTop: 30, border: 'none', padding: 0, margin: '30px 0 0' }}>
+            <legend style={{ ...KICKER, padding: 0 }}>Date of birth · once</legend>
+            <p style={{ margin: '10px 0 0', fontSize: 17, lineHeight: 1.45, maxWidth: '58ch' }}>
+              Your account was created before we recorded this. We sell to adults only and
+              check at the sale, so it is needed once and then never again.
+            </p>
+            <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1fr 1fr 1.4fr', gap: 10, maxWidth: 320 }}>
+              {([['m', 'MM', 'Month', 2], ['d', 'DD', 'Day', 2], ['y', 'YYYY', 'Year', 4]] as const).map(
+                ([key, hint, label, max]) => (
+                  <input
+                    key={key}
+                    value={dob[key]}
+                    aria-label={label}
+                    placeholder={hint}
+                    inputMode="numeric"
+                    onChange={(e) =>
+                      setDob((current) => ({
+                        ...current,
+                        [key]: e.target.value.replace(/\D/g, '').slice(0, max),
+                      }))
+                    }
+                    style={{
+                      height: 44,
+                      padding: '0 12px',
+                      border: RULE,
+                      background: '#F4F5F6',
+                      fontFamily: MONO,
+                      fontSize: 16,
+                      textAlign: 'center',
+                      color: '#1A1D1F',
+                      borderRadius: 0,
+                    }}
+                  />
+                ),
+              )}
+            </div>
+            <p style={{ margin: '8px 0 0', fontSize: 15, color: age !== null && age < MIN_AGE_YEARS ? '#1A1D1F' : '#7E878E' }}>
+              {age !== null && age < MIN_AGE_YEARS
+                ? 'Peptide Cortex is for adults. Orders cannot be placed under 18.'
+                : age !== null
+                  ? 'Recorded with your account when you place the order.'
+                  : 'Required. Month, day, year.'}
+            </p>
+          </fieldset>
+        )}
 
         <fieldset style={{ marginTop: 30, border: 'none', padding: 0, margin: '30px 0 0' }}>
           <legend style={{ ...KICKER, padding: 0 }}>Shipping</legend>
