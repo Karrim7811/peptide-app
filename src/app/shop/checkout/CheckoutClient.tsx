@@ -22,6 +22,7 @@ import { SHIPPING_METHODS, sellableMethods } from '@/lib/shop/orders/shipping'
 import type { ShippingMethodId } from '@/lib/shop/orders/shipping'
 import type { PaymentProviderId } from '@/lib/shop/orders/types'
 import { formatPrice } from '@/lib/shop/pricing'
+import { REFUND_POLICY, REFUND_STATUS } from '@/lib/legal'
 
 const FIELDS = [
   ['name', 'Full name', 'name', true],
@@ -356,14 +357,11 @@ export function CheckoutClient() {
             color: '#3B4045',
           }}
         >
-          Refunds are handled by hand, not by a card network. Unopened vials with the
-          cold-chain seal intact can be returned within 14 days of delivery for a full
-          refund including original shipping. Opened vials cannot be returned — we cannot
-          verify how they were stored after they left us.{' '}
+          {REFUND_POLICY}{' '}
           <Link href="/refund-policy" style={{ textDecoration: 'underline' }}>
             Full policy
-          </Link>
-          .
+          </Link>{' '}
+          <span style={{ color: '#7E878E' }}>[ {REFUND_STATUS} ]</span>
         </p>
       </aside>
     </div>

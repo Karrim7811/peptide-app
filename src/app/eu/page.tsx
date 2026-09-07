@@ -1,46 +1,61 @@
-import { FlaskConical, Globe } from 'lucide-react'
+// The EU notice.
+//
+// This is what the edge geoblock serves, so it hides the header nav and the
+// legal tab column: every destination on this site is blocked for whoever is
+// reading it, and offering links to them would be a maze.
+//
+// It reads as a decision rather than a fault, because it is one. See CLAUDE.md
+// §16.11 — the compliance work is real and deliberately deferred, and saying so
+// plainly is more defensible than an outage page.
 
-export const metadata = {
-  title: 'Peptide Cortex — Not available in your region',
+import type { Metadata } from 'next'
+import { LegalPage } from '@/components/legal/LegalPage'
+import { CONTACT_EMAIL } from '@/lib/legal'
+
+export const metadata: Metadata = {
+  title: 'Not available in the EU · Peptide Cortex',
+  description: 'Peptide Cortex does not serve EU member states. This is deliberate.',
   robots: { index: false, follow: false },
 }
 
-export default function EuGeoblockPage() {
+export default function EuPage() {
   return (
-    <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center px-4">
-      <div className="max-w-lg text-center">
-        <div className="inline-flex items-center justify-center bg-[#1A8A9E]/12 p-3 rounded-2xl mb-6">
-          <FlaskConical className="w-8 h-8 text-[#1A8A9E]" />
-        </div>
-
-        <h1 className="text-3xl font-bold text-[#1A1915] mb-3">
-          Peptide<span className="text-[#1A8A9E]">Cortex</span>
-        </h1>
-
-        <div className="bg-white border border-[#E8E5E0] rounded-2xl p-8 text-left mt-6">
-          <div className="flex items-center gap-3 mb-4">
-            <Globe className="w-5 h-5 text-[#1A8A9E]" />
-            <h2 className="text-lg font-semibold text-[#1A1915]">
-              Not currently available in your region
-            </h2>
-          </div>
-          <p className="text-[#3A3730] text-sm leading-relaxed mb-3">
-            Peptide Cortex is currently available to{' '}
-            <span className="font-semibold">US-based users only</span>.
-          </p>
-          <p className="text-[#B0AAA0] text-sm leading-relaxed">
-            We are working on the additional compliance steps (DPA, data
-            protection, regional terms of service) required to operate in the
-            European Union, the United Kingdom, and Switzerland. Until that
-            work is complete, access from those regions is restricted. Thanks
-            for your patience.
-          </p>
-        </div>
-
-        <p className="text-xs text-[#B0AAA0] mt-6">
-          Questions: support@tigristechlabs.com
-        </p>
+    <LegalPage
+      current={null}
+      kicker="European Union"
+      title="Peptide Cortex is not available in the EU."
+      meta="Deliberate · not an outage"
+      lede="Traffic from EU member states is blocked at the edge. This is a decision about where we operate, not an error, and nothing on your side needs fixing."
+      sections={[
+        ['Why', 'We are a small US operation. Serving EU visitors would bring the reference, the bench and the shop under GDPR and EU medicines rules we are not set up to meet properly, and doing it badly is worse than not doing it.'],
+        ['What is blocked', 'Everything: the library, the bench, the shop and account creation. No EU personal data is processed.'],
+        ['Shipping', 'The shop ships to US addresses only, independently of this block.'],
+        ['If this is wrong', 'Geolocation is imperfect. If you are outside the EU, write to us with your location and we will look.'],
+      ]}
+    >
+      <div style={{ marginTop: 28, display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+        <a
+          href={`mailto:${CONTACT_EMAIL}`}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            border: '1px solid #1A1D1F',
+            color: '#1A1D1F',
+            textDecoration: 'none',
+            fontFamily: 'Jost, sans-serif',
+            fontSize: 11,
+            letterSpacing: '.24em',
+            textTransform: 'uppercase',
+            padding: '14px 22px',
+            minHeight: 44,
+          }}
+        >
+          Write to us
+        </a>
+        <span style={{ fontSize: 15.5, fontStyle: 'italic', color: '#3B4045' }}>
+          If you are outside the EU and seeing this, say so and include your location.
+        </span>
       </div>
-    </div>
+    </LegalPage>
   )
 }
