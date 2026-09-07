@@ -7,6 +7,7 @@
 // happens on the bench — a generated plan must not silently rewrite real data.
 
 import { redirect } from 'next/navigation'
+import { loginUrl } from '@/lib/auth/next'
 import type { Metadata } from 'next'
 import { LibraryChrome } from '@/components/library/LibraryChrome'
 import { createClient } from '@/lib/supabase/server'
@@ -26,7 +27,7 @@ export default async function ProtocolPage() {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user) redirect('/login')
+  if (!user) redirect(loginUrl('/protocol'))
   if (!(await isProUser())) redirect('/upgrade')
 
   const { data: rows } = await supabase

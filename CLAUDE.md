@@ -367,7 +367,7 @@ The next 90 days of work are about getting `peptidecortex.com` to the polish lev
 ### Hard issues (will burn a real session if not addressed)
 
 1. ~~**Schema/code drift**~~ — **RESOLVED (verified against the live database 2026-09-03).** `cycles`, `injection_sites`, `research_notes` and `side_effects` all exist in production AND are checked into the repo — `supabase/mirror_schema_reconciliation.sql` creates all four with RLS policies and indexes. This entry described them as missing and called it "the single biggest schema/code drift in the repo"; that has not been true since the reconciliation migration landed. Note the migration's own header: `cycles` and `injection_sites` do not carry the shapes the Mirror handoff assumed — `injection_sites` is an injection **log**, not site geometry. Read that file before building on either.
-2. **Middleware is a no-op** — `middleware.ts` matches `/_never_match_this_route_`. No route-level session refresh. Pages do per-render session reads. Acceptable but worth a deliberate decision.
+2. ~~**Middleware is a no-op**~~ — **it was worse: it was never compiled.** The EU geoblock was written at the repo root as `middleware.ts`, but a project with a `src/` directory only picks up `src/middleware.ts`; the build manifest had `"middleware": {}` and the geoblock never ran in production. Moved to `src/middleware.ts` on 2026-09-07 — **so the §16.11 geoblock went live with that deploy, not when it was written.** It now runs on every page request: it rewrites EU/EEA/UK/CH visitors to `/eu` (§16.11) and forwards the request path as the `x-cortex-pathname` header, which `src/app/shop/layout.tsx` reads to send a refused visitor back to the product they clicked (§16.13). It still does no session refresh — auth is per-layout / per-page `getUser()` reads, which is a deliberate pattern, not an omission.
 3. ~~**Stripe webhook writes to `profiles` under anon**~~ — **RESOLVED (verified 2026-08-07).** The webhook uses `createServiceClient()` (`SUPABASE_SERVICE_ROLE_KEY`), which bypasses RLS, and throws loudly if the key is absent. This entry was stale and was believed and repeated as a live bug during the 2026-08 session before being checked — verify against the code before acting on anything in this section.
 4. **PWA manifest stale** — `public/manifest.json` still names the app "PeptideTracker", uses `#0f172a` / `#0f172a` as `background_color` / `theme_color`, and references SVG icons. None of this matches the current `cx.*` palette or the `Peptide Cortex` brand. This is the user's first impression on iPhone home-screen install.
 5. **Three different production domains in code** — `peptidecortex.com` (capacitor.config.ts), `peptidecortex.ai` (layout.tsx metadataBase), `peptidetracker.app` (stripe/create-checkout fallback). Open-graph cards, share links, Stripe success URLs, and middleware all need one canonical domain.
@@ -537,6 +537,7 @@ Collect date-of-birth at `/signup`. Store in `profiles.dob` (date). Block signup
 GDPR applies the moment we have EU users — full stop. The compliance burden (DPA with Supabase + Stripe, cookie banner, data-export/deletion endpoints, EU representative if processing at scale) is 3–5 days of focused work. We have ~zero EU users today. Decision: solve the problem by not having the problem.
 
 - **Now**: Vercel edge middleware geoblocks EU IPs. EU traffic gets a clean "Peptide Cortex is currently available to US-based users only" page. ~1 hour of work.
+  _Correction 2026-09-07: this was written as root `middleware.ts`, which Next.js ignores when a `src/` directory exists, so it did not run until it was moved to `src/middleware.ts` that day. See §13.2._
 - **Trigger to revisit**: first time we actively market to EU, OR first time the geoblock is intentionally removed because EU is now a target market. At that point spend the 3–5 days on full compliance.
 
 ### 16.12 Refund policy → ship interim now, full legal review before paid marketing
@@ -550,6 +551,38 @@ The states that matter (California, New York, Connecticut, Illinois) all have sp
 - **Auto-renewal disclosure prominent at checkout** (this is California's specific subscription-auto-renewal-law requirement; the dollar amount, frequency, and cancellation method must be displayed before the user clicks Pay).
 
 **Full legal review**: required before any paid marketing push. Roadmap item added at Critical priority.
+
+### 16.13 Sign-in wall and age threshold → shop + bench + tools behind an account; **18, not 21** (2026-09-07, Karim)
+
+Karim asked for "a login page ASAP — the site cannot be accessed without signing
+in, and without asking if the user is 21 or older". Settled the same day, in
+this order:
+
+- **The age stays 18.** Nothing in US law sets a product-specific age for
+  research peptides; the only legal hook is contract capacity (18 in 47 states,
+  19 in AL/NE, 21 in MS). 21 was offered as the more conservative posture for a
+  seller and turned down: 18 is the legal floor, is what the Terms and the
+  production `handle_new_user` trigger already enforce, and keeps 18–20 buyers.
+  **One age everywhere.** Do not introduce a second threshold for the shop.
+- **The wall covers the shop, the bench and the tools — not the library.**
+  `/shop/**`, `/dashboard`, `/checker`, `/bloodwork`, `/protocol`, `/scanner`
+  require an account. `/reference`, `/dosing`, `/guides/**`, Home and the three
+  legal pages stay public. V3 principle 2 ("reading is free; keeping a bench is
+  Pro") and the Home copy that sells it are unchanged. Payment processors expect
+  Terms / Privacy / Refunds reachable without an account.
+- **The 18+ acknowledgement before the shop is a signpost, not a checkbox.**
+  A signed-out visitor to any `/shop` route sees `AgeGate` in place of the page
+  (`src/components/shop/AgeGate.tsx`, mounted by `src/app/shop/layout.tsx`),
+  with "I am 18 or older — create an account" and "Sign in". Both carry the
+  refused path as `?next=` and lead to the signup form, where the real check
+  is — a stored date of birth (§16.10). Signed-in visitors pass; an account
+  without a date on file is asked for it at checkout, and `createOrder()`
+  refuses from the stored date before any money moves. **No self-attestation
+  checkbox anywhere.** That was rejected in §16.10 and stays rejected.
+- **`?next=` is validated.** `src/lib/auth/next.ts` accepts only a same-origin
+  path and refuses the auth screens themselves; the login form would otherwise
+  be an open redirect. Every gate should write it via `loginUrl()` /
+  `signupUrl()`, never by hand.
 
 ---
 
