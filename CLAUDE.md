@@ -488,9 +488,38 @@ Recorded so it is not proposed a third time, with the reasoning that settled it:
 - For every research-tier entry it could only have invented a number, since no
   human dose exists to divide. (The exact count is unsettled — see below.)
 
-**What IS built: a dosing reference.** 81 entries carry a real published range
-from a label or trial, shown with its source. The 43 say "no human dose
-established". No personalisation of any kind — no weight, no goals, no frequency.
+**What IS built: a dosing reference** — at `/dosing`, since 2026-09-06. Before
+that date this paragraph described a page that did not exist: the route was a
+redirect to the dashboard, and its layout carried a `/login` gate on the one
+screen the rules single out as never gatable.
+
+**The count in this paragraph was also wrong, and the reason matters more than
+the number.** It read "81 entries carry a real published range… the 43 say no
+human dose established". Five different splits have been written into these docs
+(81/43, 49/75, 43/81, 63/61, 73/51) and none was a transcription error. They
+disagreed because the question was asked as a binary and the data has **three**
+states. Measured live off `src/lib/catalog.ts` by `src/lib/dosing.ts`:
+
+| State | Count | What it is |
+|---|---|---|
+| `published` | 26 | An actual amount — a number attached to a dose unit |
+| `labelOnly` | 25 | Defers to a label, a PI, a country or a hospital protocol without naming an amount |
+| `none` | 73 | No human dose. 25 say so in researched prose, 48 are the port's "N/A" |
+
+The 81 and the 51 both counted `labelOnly` as published. "Product-specific
+dosing (endocrinology)" is not a figure. **Only `published` may ever render a
+number**; the other two render `NO_DOSE_LINE`.
+
+Counts are computed live and asserted in `dosing.test.ts`, so a catalogue edit
+that moves an entry between states fails a test rather than quietly changing a
+number printed on the home page. Do not hard-code these figures anywhere.
+
+Ten of the 73 still cite rodent, discontinued-programme or community figures
+after the no-dose sentence. `noDoseContext()` returns them and they render below
+the line, labelled "not a dose". Discarding them printed an absence where cited
+material existed; printing them plainly would have printed a dose.
+
+No personalisation of any kind — no weight, no goals, no frequency.
 
 THE MATH (§16.9's solution-chemistry reframing) is unaffected and its rules stand.
 
@@ -527,3 +556,36 @@ The states that matter (California, New York, Connecticut, Illinois) all have sp
 _Last full audit: 2026-05-23 by Claude (Opus 4.7, 1M context), repo head `b611890`._
 
 _Partial revision 2026-09-03 by Claude (Opus 5, 1M context) at head `b09b14c`, correcting sections verified against the code and the live database: §1 and §16.4/16.5 (pricing was still recorded as $9.99/mo plus a $99.99 lifetime; it is $14.99/mo or $119.88/yr with a one-month trial, and annual returned while lifetime was withdrawn), §11 (env vars, and the service-role claim that had already been disproved in §13.3), §13.1 (the four "missing" tables exist in production and in `supabase/mirror_schema_reconciliation.sql` — this was listed as the repo's biggest schema drift and had not been true for some time), §10, §4 and §7 (92 peptides → 124, plus 27 vials). Everything else in this file predates that pass and has not been re-verified — §13.4 through §13.8 especially._
+
+_Partial revision 2026-09-06 by Claude (Fable 5.1) at head `37337b4`+, recording
+the V3 site rebuild and correcting what this file asserted about it:_
+
+- _**§16.9a rewritten.** It described a dosing reference that did not exist —
+  `/dosing` was a redirect whose layout also carried a `/login` gate, on the one
+  screen the rules call never-gatable — and gave a count that was wrong for a
+  structural reason. The dose split is **three** states, not two: 26 published ·
+  25 label-only · 73 no-dose, computed live in `src/lib/dosing.ts` and asserted
+  in its test. Every previous figure (81/43, 49/75, 43/81, 63/61, 73/51) counted
+  the middle state on one side or the other._
+- _**Rebuilt from `design_handoff_peptide_cortex_site/` (V3, now committed —
+  it was referenced by the previous handoff but had never been in the repo):**
+  Home, the library at `/reference` and `/reference/[id]`, `/dosing`, signup /
+  sign-in / `/forgot-password`, Terms, Privacy, Refunds, `/eu`, plus the Zelle
+  sheet and order page at `/shop/order/[ref]`._
+- _**The library and the dosing reference are no longer behind auth.** Home
+  advertises the library as free to read and `reference/layout.tsx` redirected
+  to `/login`. §8's table should be read with that in mind — several of its
+  rows describe the pre-Mirror app._
+- _**Checkout was a dead end** and is now wired to `createOrder`. It collected
+  the address fields, never read them into state, and its button called nothing._
+- _**Legal copy replaced under the §15 gate**, with Karim's approval in-session.
+  The previous wording predated the shop and described neither orders, refunds
+  nor either payment rail. Refund text is now shared between `/refund-policy`
+  and checkout via `src/lib/legal.ts`._
+- _Still not rebuilt from the V3 design: the bench at `/dashboard` (works, older
+  Mirror styling) and four of the five `Tools.dc.html` screens — interactions,
+  bloodwork, planner and scanner. The scanner and planner have **no web UI at
+  all**, only APIs._
+- _Unchanged and still open: everything in §16.9a's "still open" paragraph. The
+  AI routes remain the only place a dose figure can be generated, and
+  `/api/protocol-plan` still has no exclusion for peptides that have none._
