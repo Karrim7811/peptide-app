@@ -199,7 +199,7 @@ export default function AskBar({ ent, onNavigate }: AskBarProps) {
       )}
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-[10px] px-[14px] py-3">
-        <div className="flex h-12 min-w-[260px] flex-1 basis-[420px] items-center gap-3 border border-accentDim bg-accentWash px-4">
+        <div className="flex h-12 min-w-[260px] flex-1 basis-[420px] items-center gap-3 border border-dashed border-accent px-4">
           <span className="font-mono text-[12px] text-accent">&rsaquo;</span>
           <input
             value={ask}

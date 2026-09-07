@@ -24,6 +24,7 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import { loginUrl } from '@/lib/auth/next'
 import {
   HAIR,
   INK,
@@ -51,7 +52,7 @@ export default async function BloodworkPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  if (!user) redirect(loginUrl('/bloodwork'))
   if (!(await isProUser())) redirect('/upgrade')
 
   const { data: rows } = await supabase

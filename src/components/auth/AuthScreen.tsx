@@ -24,6 +24,15 @@
 // already where the recovery email lands and where a new password is set. The
 // request form lives at /forgot-password instead, so one URL is not two forms
 // depending on session state.
+//
+// ── Return-to ─────────────────────────────────────────────────────────────
+//
+// Every gate in the app passes the page it refused as `?next=`, and this
+// screen sends the new session back there. The value is validated by
+// src/lib/auth/next.ts before it gets here — the page reads it from the URL,
+// so an absolute URL would otherwise make the login form an open redirect.
+// The tabs carry it too, so switching from "Sign in" to "Create account" does
+// not lose the product someone was looking at.
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -31,6 +40,7 @@ import { useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { LEGAL_FOOTER } from '@/components/legal/LegalPage'
 import { MIN_AGE_YEARS, MIN_PASSWORD, ageFrom, isoDob } from '@/lib/age'
+import { DEFAULT_NEXT, withNext } from '@/lib/auth/next'
 
 const INK = '#1A1D1F'
 const INK2 = '#3B4045'
@@ -82,7 +92,7 @@ const COPY: Record<AuthMode, { title: string; lede: string; cta: string }> = {
   },
 }
 
-export default function AuthScreen({ mode }: { mode: AuthMode }) {
+export default function AuthScreen({ mode, next = DEFAULT_NEXT }: { mode: AuthMode; next?: string }) {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -135,7 +145,7 @@ export default function AuthScreen({ mode }: { mode: AuthMode }) {
           // Read by handle_new_user, which refuses under-18 in SQL as well.
           // See supabase/profile_dob_migration.sql.
           data: { dob: isoDob(dob.m, dob.d, dob.y) },
-          emailRedirectTo: `${window.location.origin}/dashboard`,
+          emailRedirectTo: `${window.location.origin}${next}`,
         },
       })
       if (failed) {
@@ -147,7 +157,7 @@ export default function AuthScreen({ mode }: { mode: AuthMode }) {
       // project's current setting. Branch on what the server actually returned,
       // so this stays correct if that is switched on later.
       if (data.session) {
-        router.push('/dashboard')
+        router.push(next)
         router.refresh()
         return
       }
@@ -162,7 +172,7 @@ export default function AuthScreen({ mode }: { mode: AuthMode }) {
       setBusy(false)
       return
     }
-    router.push('/dashboard')
+    router.push(next)
     router.refresh()
   }
 
@@ -259,7 +269,7 @@ export default function AuthScreen({ mode }: { mode: AuthMode }) {
             {TABS.map(([key, label, href]) => (
               <Link
                 key={key}
-                href={href}
+                href={withNext(href, next)}
                 style={{
                   color: key === mode ? INK : INK3,
                   borderBottom: `1px solid ${key === mode ? INK : 'transparent'}`,
@@ -321,7 +331,7 @@ export default function AuthScreen({ mode }: { mode: AuthMode }) {
                 </p>
               )}
               <Link
-                href="/login"
+                href={withNext('/login', next)}
                 style={{
                   display: 'inline-block',
                   marginTop: 14,
@@ -375,7 +385,7 @@ export default function AuthScreen({ mode }: { mode: AuthMode }) {
                     <Legend>Password</Legend>
                     {isLogin && (
                       <Link
-                        href="/forgot-password"
+                        href={withNext('/forgot-password', next)}
                         style={{
                           fontFamily: JOST,
                           fontSize: 10,

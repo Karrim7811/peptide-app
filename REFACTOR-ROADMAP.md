@@ -4,6 +4,29 @@ Prioritized remediation backlog for the **web app** (`src/`), independent of the
 
 Effort sizes: XS≈<1h, S≈2–4h, M≈half-day, L≈full-day+.
 
+> **Status as of 2026-09-07** (verified against the code, not against this
+> file — several items were resolved differently from how they were proposed):
+>
+> - **Resolved:** C-1 (four tables exist, `supabase/mirror_schema_reconciliation.sql`);
+>   C-2 (webhook uses the service role, and always did); C-3; C-6 (verified by
+>   grep); C-7 (the math is third-person; the weight-based calculator was
+>   dropped, `CLAUDE.md` §16.9a); C-8 (interim policy live, tagged draft);
+>   C-9 (**but** the middleware only compiled from 2026-09-07 — it was at the
+>   repo root, see `CLAUDE.md` §13.2); C-10 (superseded: annual returned,
+>   lifetime withdrawn, `src/lib/pricing.ts`); H-1 first half (manifest);
+>   H-4 (resolved as per-layout gates + the shop wall, not session middleware,
+>   and that is deliberate); H-6; H-7; H-9; H-10 (JetBrains Mono for data,
+>   throughout the V3 rebuild); M-1 (Home rebuilt from V3 as composed
+>   components); M-9 (the disclaimer is shared copy on every surface); plus
+>   tests (431) and web CI (`.github/workflows/web.yml`), which this roadmap
+>   never listed because "no tests" was the premise.
+> - **Still open, in this repo:** H-1 second half (raster + maskable icons);
+>   H-3 Web Push (§16.6 calls it v1, nothing is built); H-5 webhook
+>   idempotency; H-8 delete-account endpoint; M-4, M-5, M-6, M-7, M-8; L-1,
+>   L-3, L-4.
+> - **Still open, not code:** C-4 (GitHub org), C-5 (FTC audit of Home and
+>   `MARKETING.md`), and everything under "Blocked on Karim" in `HANDOFF.md`.
+>
 > **Sprint 1 complete (2026-05-23)** — the "pre-launch legal / financial defensibility floor" landed in a single session: ✅ C-3 DOB age gate, ✅ C-6 domain cleanup, ✅ C-7 reconstitution reframing, ✅ C-8 interim refund policy + auto-renewal disclosure, ✅ C-9 EU/EEA/UK/CH geoblock, ✅ C-10 Stripe SKU restructure (monthly + lifetime), ✅ H-1 (partial — manifest text + colors; raster icons still pending), ✅ H-6 / H-7 prompt fixes, ✅ L-1 / L-2 / L-3 / L-5 hygiene wins. Sprint 2 (schema + security + continuity floor) is next: C-1, C-2, C-4, H-4, H-5, H-8.
 
 ---

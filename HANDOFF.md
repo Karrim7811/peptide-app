@@ -26,51 +26,57 @@ are a reference to read, not a prototype to execute.
 
 ---
 
-## NEW REQUIREMENT — 2026-09-07, from Karim. Not started.
+## The sign-in wall — built 2026-09-07. Age is 18, not 21.
 
-Asked for at the very end of the session and deliberately NOT begun, because
-two parts of it reverse decisions currently baked into the code and the wrong
-guess is expensive. Nothing was changed. What he said, verbatim in substance:
+The requirement the previous edit of this file recorded as unstarted:
 
 > A login page ASAP. The site cannot be accessed without signing in, and
 > without asking if the user is 21 or older. They can see some info about what
 > the website is and what it does. They cannot go direct to the shop without
 > acknowledging they are 21+, and to go to the shop they need to sign up.
 
-**What this reverses, and why it needs confirming before anyone builds it:**
+Both open questions were put to Karim and settled; the reasoning is in
+CLAUDE.md §16.13 so it is not re-asked. In short:
 
-1. **The library and dosing reference are currently public on purpose.** That
-   is principle 2 of the V3 design — "reading is free; keeping a bench is Pro" —
-   and the home page sells it in those words. Earlier this same session the
-   auth gate was REMOVED from `/reference` because the home page promised
-   something the next click refused. Gating them again is a legitimate business
-   call, but the home copy has to change in the same commit or the site starts
-   lying in the other direction.
+- **18, not 21.** No US law sets an age for research peptides; contract
+  capacity is the only hook and 18 is the floor in 47 states. 21 was offered
+  as the conservative posture for a seller and declined. Nothing about the age
+  changed in code, SQL or copy. One age, everywhere.
+- **The wall covers the shop, the bench and the tools.** The library, the
+  dosing reference and the guides stay public, so Home keeps telling the truth
+  and search engines keep the content that brings people to the shop.
 
-2. **Everything says 18+, not 21+.** `MIN_AGE_YEARS` in `src/lib/age.ts`,
-   `isAdult()` in `src/lib/shop/orders/age.ts`, the `handle_new_user` trigger
-   in `supabase/profile_dob_migration.sql` (production), the Terms "Who"
-   section, the signup form copy, and the footer on three different chromes.
+**What shipped:**
 
-**Checked already, so nobody re-checks it:** of 12 production accounts, 2 have
-a date of birth and **zero would fail a 21+ check**. Raising the threshold
-locks nobody out. Do it as one change rather than leaving two ages in the
-codebase.
+- `src/app/shop/layout.tsx` — one gate over the catalogue, every product, the
+  cart, checkout and the order pages. A signed-out visitor sees
+  `src/components/shop/AgeGate.tsx` in place, at the URL they asked for. It
+  is a signpost to the signup form (where the date of birth is collected), not
+  a checkbox — §16.10 still holds. Signed-in visitors pass; the stored date is
+  enforced at checkout as before.
+- `src/lib/auth/next.ts` — `?next=` return-to, validated to a same-origin
+  path. The auth screen, its three pages and their tab links carry it; the
+  four gated tool pages (checker, bloodwork, planner, scanner) write it with `loginUrl()`. Tested.
+- `src/middleware.ts` forwards the request path as `x-cortex-pathname`; the
+  shop layout reads it (`src/lib/auth/pathname.ts`) so the visitor lands back
+  on the product they clicked.
 
-**Also note §16.10:** self-attestation was rejected deliberately in favour of a
-stored date of birth. A "click to confirm you are 21+" interstitial ON ITS OWN
-would walk that back. It is fine as an additional friction before the shop; it
-is not fine as the only check.
+**Found on the way, and it matters more than the wall: the middleware had
+never run.** It lived at the repo root as `middleware.ts`, and Next.js ignores
+that location when a `src/` directory exists — the build manifest carried
+`"middleware": {}`. The EU geoblock (§16.11) has therefore never blocked
+anyone. Moved to `src/middleware.ts`; verified in the build output
+(`ƒ Middleware 27.1 kB`) and by the header reaching the layout. **The geoblock
+goes live with this deploy.** `request.geo` is only populated on Vercel, so it
+cannot be exercised locally; watch `/eu` traffic after deploy. CLAUDE.md §13.2
+called the middleware a no-op for a different, older reason; corrected.
+- The bench and those four tools already redirected to `/login`; the tools
+  now return the visitor to the page that refused them, and the bench is
+  the default landing so it needs no parameter.
 
-**The two questions to settle first:**
-
-- Does the sign-in wall cover the library and dosing reference, or only the
-  shop and bench? Note that Terms, Privacy and Refunds should stay reachable
-  either way — a paywalled refund policy beside a storefront is a bad look, and
-  payment processors expect them public.
-- Does 21+ REPLACE 18+ everywhere, or is it a shop-only threshold on top of an
-  18+ account? One age is strongly preferable; two is a bug factory and the
-  Terms then have to explain which applies where.
+**Not done, on purpose:** no age interstitial for signed-in users, no
+sessionStorage "I am 18" flag, no gate on the library. If any of those is
+wanted it is a new decision, not a gap.
 
 ---
 
@@ -82,13 +88,52 @@ five tools — interactions, bloodwork, planner, dosing, scanner.
 
 What is left:
 
-1. **The Mirror's own styling.** It sits at `/mirror` and is the only surface
-   not speaking V3. It is also the most complex thing in the repo and holds
-   every write path, so treat a rewrite as a project, not an afternoon. It
-   works today, and nothing is broken by leaving it.
+1. **The Mirror's own styling — first pass done 2026-09-07, see below.** It
+   sits at `/mirror`, holds every write path, and now speaks V3 by default.
+   What remains is optional: the panel and verify-tab LAYOUTS are the older
+   Mirror design's, not App.dc.html's side column. No V3 file draws the field,
+   so there is nothing to transcribe; treat any further pass as design work.
 
 That is the whole list of remaining code. Everything else blocking launch is in
 the shop section below and none of it can be done from this repo.
+
+## The Mirror on paper — 2026-09-07
+
+There is no V3 design for the Mirror. `design_handoff_peptide_cortex_site/`
+lists it as out of scope ("leave as-is and keep reachable from the new bench
+shell"), and `App.dc.html` draws the bench, not the field. So "make it speak
+V3" could not mean transcribing a prototype. It meant the palette and the
+chrome, and the Mirror's architecture made the palette almost free:
+
+- **Every Mirror component reads ground tokens** — `var(--ink)`, `var(--panel)`,
+  `bg-ground`, `text-faint` — resolved by `src/lib/design/grounds.ts`. So the
+  V3 palette was added as a fourth ground, `paper`, and became the Mirror's
+  default. Six hundred token usages followed without an edit.
+- **The ground is scoped to the Mirror, not to `<html>`.** `DEFAULT_GROUND`
+  is still midnight and must stay so: the AI consent screen, `/pricing`, the
+  guides, `/welcome` and `/reset-password` still read the global variables
+  and were designed dark. `MirrorShell` writes its own ground onto its root
+  element (custom properties cascade; nothing in the Mirror portals), and
+  `MirrorClient` remembers the choice under `cortex-mirror-ground`, separate
+  from the site key. Switching one never moves the other. **Do not "simplify"
+  this by changing `DEFAULT_GROUND`** — it repaints five other surfaces.
+- **Two V3 inks do not pass as Mirror text.** Ink-3 `#7E878E` is 3.0:1 on
+  paper and Ink-4 `#9AA3A9` is 2.1:1; the Mirror sets 9–10px mono in those
+  tiers. Paper's `faint`/`faintest` are darkened until they clear 4.5:1, and
+  the accent steps from `#1A8A9E` to `#156F80` for the same reason. The V3
+  pages keep the lighter inks; they set them larger. `grounds.test.ts` now
+  asserts the ratios for every ground — the file had promised 4.5:1 for two
+  months with nothing checking it.
+- **`MirrorShell` is the V3 chrome**: brand → bench, "The field · Free|Pro",
+  Bench | Library | Shop ↗, then the Mirror's own row — breadcrumb, ground,
+  tier preview, Bloodwork, Ledger — as segmented controls under a 1px ink
+  rule. Zero radius, no shadows, tokens throughout so the dark grounds still
+  work. Verified by screenshot in paper and midnight on a production build.
+- The free-tier footer note said **"58 IN LIBRARY"**; the library has held 124
+  for some time. It now reads `COUNTS.compounds`.
+- `src/app/mirror/MarketPulse.tsx` was dead — nothing imported it — and the
+  last file in the tree with `rounded-2xl` and a hex border. Removed.
+
 
 `/api/protocol-consult` is still uncalled. It is a PRE-plan intake (goals in,
 questions or a recommendation out) and was never the refinement thread — that
@@ -268,9 +313,10 @@ redirects** into the dashboard. That is the Mirror consolidation, not rot.
 `/dosing` used to be one of them and is now a real page — do not assume the
 others are equally stale without reading them.
 
-**The design's QR phone hand-off for the scanner is not built.** It needs a
-session-token table that does not exist. The device-camera path is what §16.8
-actually specifies and is what shipped.
+~~**The design's QR phone hand-off for the scanner is not built.**~~ Stale:
+it shipped in `1cf420c` and `scan_sessions` is applied (see "The one
+unauthenticated write" below). The device-camera path remains the §16.8
+default; the hand-off is the addition.
 
 ---
 
@@ -329,6 +375,31 @@ whether it exists.
 I committed once with `tsc --noEmit` failing while the test suite was green
 (fixed in the commit after). Running one check is not running the checks. The
 same mistake is recorded in `046b7b6` from the previous session.
+
+## The last pass — 2026-09-07, "finish all of it"
+
+With the code list empty, the remaining in-repo debt was documentation that
+contradicted the code, and two hygiene items CLAUDE.md §13 had carried since
+May. All of it is done; what is left is listed under "Blocked on Karim".
+
+- **`README.md` rewritten.** It said "PeptideTracker", "58 peptides",
+  "max 20 users" and "dark theme". It now describes the product that ships.
+- **`MARKETING.md` renamed and re-counted**, with a warning at the top: the
+  scripts have never been audited for FTC health-claim language (roadmap
+  C-5) and must not run before that and the §16.12 attorney review.
+- **`public/manifest.json`** now carries the V3 palette and shortcuts to
+  routes that exist (`/log` was a redirect). `viewport.themeColor` in the
+  root layout moved from the old parchment to paper to match.
+- **`.github/workflows/web.yml`** runs typecheck, tests and build on every
+  push and PR touching the web app, plus a grep that the server-only vial
+  report module never reaches `.next/static`. §13.8 ("no tests, no CI") was
+  false on the tests for months — there are 431 — and is now false on CI too.
+- **`CLAUDE.md` §7, §8 and §13 corrected** where they described a codebase
+  that no longer exists: middleware location, the three "missing" tool UIs,
+  the four "missing" tables, the manifest, the domains, the README.
+- **`REFACTOR-ROADMAP.md`** has a status block at the top marking what has
+  since been resolved. The item bodies are left as written; they are the
+  reasoning, and several were resolved differently from how they proposed.
 
 ## Verification state
 

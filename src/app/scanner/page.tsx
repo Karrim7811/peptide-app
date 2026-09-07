@@ -5,6 +5,7 @@
 // the one that decides whether to spend a vision call.
 
 import { redirect } from 'next/navigation'
+import { loginUrl } from '@/lib/auth/next'
 import type { Metadata } from 'next'
 import { LibraryChrome } from '@/components/library/LibraryChrome'
 import { createClient } from '@/lib/supabase/server'
@@ -25,7 +26,7 @@ export default async function ScannerPage() {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user) redirect('/login')
+  if (!user) redirect(loginUrl('/scanner'))
   if (!(await isProUser())) redirect('/upgrade')
 
   // The phone needs an absolute URL to open, and it is not on this machine —

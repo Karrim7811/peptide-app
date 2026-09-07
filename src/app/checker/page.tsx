@@ -12,6 +12,7 @@
 
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import { loginUrl } from '@/lib/auth/next'
 import { LibraryChrome } from '@/components/library/LibraryChrome'
 import { createClient } from '@/lib/supabase/server'
 import { isProUser } from '@/lib/subscription'
@@ -30,7 +31,7 @@ export default async function CheckerPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  if (!user) redirect(loginUrl('/checker'))
 
   return (
     <LibraryChrome signedIn>
