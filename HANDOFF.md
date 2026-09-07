@@ -106,6 +106,30 @@ If you add a third route that can emit an amount, add it to that test's list.
 
 ---
 
+## The shop cannot take an order yet, and prices are not the first reason
+
+Verified against the live database on 2026-09-07, not carried over from a
+previous handoff: **there are no shop tables in production.** `shop_products`,
+`shop_lots`, `shop_orders` and `shop_order_items` do not exist. `createOrder`
+queries `shop_products` to resolve slugs before it ever reaches pricing, so an
+order fails before shipping is consulted. Setting the USPS prices first changes
+nothing.
+
+The order the blockers actually resolve in:
+
+1. Apply the three migrations. Nothing else matters until this is done.
+2. Set the three USPS prices in `shipping.ts`. A code change, not a dashboard
+   setting.
+3. `SHOP_ZELLE_HANDLE`, or the Zelle adapter throws.
+4. `SHOP_ADMIN_USER_ID`. **Easy to miss** — without it the admin queue 404s to
+   everyone, so a Zelle payment can never be marked paid and nothing ever
+   ships, while checkout looks like it is working.
+5. A bank account under the shop entity.
+6. Lot codes for the four pending products.
+
+BTCPay's four variables are only needed if crypto ships at launch. Zelle alone
+can take an order.
+
 ## Blocked on Karim, not on code
 
 Unchanged from yesterday except where noted.
@@ -136,6 +160,18 @@ Unchanged from yesterday except where noted.
    promise an emailed copy.
 
 ---
+
+## Fixed this session, worth knowing about
+
+**Ten of the twelve production accounts had no date of birth**, including both
+paid ones. `isAdult()` fails closed on a null and the field was collected only
+at signup, so those accounts were refused at checkout with nothing in the app
+that would ever ask again. Checkout now asks once, and `refuseDob()` will not
+let a recorded date be overwritten — a field its holder can rewrite the moment
+it refuses them is a checkbox with extra steps.
+
+If you add a third place that writes `profiles.dob`, it goes through
+`refuseDob()` too.
 
 ## Still open, lower priority
 
