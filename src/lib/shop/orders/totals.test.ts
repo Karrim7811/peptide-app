@@ -2,12 +2,18 @@
 // then snapshotted onto order_items. Everything downstream reads the snapshot,
 // so a price change can never rewrite what a past customer was charged.
 //
-// Shipping is whatever method the customer picked. None of them are priced yet,
-// which is why most of these tests assert a refusal.
+// Shipping is whatever method the customer picked. All three were priced on
+// 2026-09-07; the refusal path is still tested, because an unpriced method must
+// keep failing closed if one is ever added.
 
 import { describe, expect, it, vi } from 'vitest'
 import { orderTotals, priceLine } from '@/lib/shop/orders/totals'
-import { SHIPPING_METHODS, sellableMethods, shippingMethod } from '@/lib/shop/orders/shipping'
+import {
+  SHIPPING_METHODS,
+  TRANSIT_FROM,
+  sellableMethods,
+  shippingMethod,
+} from '@/lib/shop/orders/shipping'
 
 describe('pricing a line', () => {
   it('takes name, size and price from the catalogue', () => {
@@ -60,18 +66,55 @@ describe('shipping methods', () => {
     expect(() => shippingMethod('teleport')).toThrow(/no such shipping method/)
   })
 
-  // Until Karim prices them, nothing is sellable — which is what keeps an
-  // unpriced method off a checkout screen rather than trusting a UI to filter.
-  it('sells nothing while nothing is priced', () => {
-    expect(sellableMethods()).toEqual([])
+  it('prices every method, in whole cents, cheapest first', () => {
+    // Priced 2026-09-07: $7.00 / $12.00 / $49.00. The assertion is on the
+    // ORDER and the shape, not the figures — re-pricing against real postage
+    // is expected and must not have to edit a test. What must not happen is a
+    // faster service costing less than a slower one, or a price arriving as
+    // dollars.
+    const prices = SHIPPING_METHODS.map((m) => m.priceCents)
+    expect(prices.every((p) => typeof p === 'number' && Number.isInteger(p) && p > 0)).toBe(true)
+    expect(prices).toEqual([...(prices as number[])].sort((a, b) => a - b))
+  })
+
+  it('sells every priced method, and only priced methods', () => {
+    // sellableMethods() is what keeps an unpriced method off a checkout screen,
+    // rather than trusting a UI to filter. With all three priced it returns all
+    // three; the filter is still load-bearing for anything added later.
+    expect(sellableMethods().map((m) => m.id)).toEqual(['standard', 'priority', 'overnight'])
+
+    vi.spyOn(SHIPPING_METHODS[1], 'priceCents', 'get').mockReturnValue(null)
+    try {
+      expect(sellableMethods().map((m) => m.id)).toEqual(['standard', 'overnight'])
+    } finally {
+      vi.restoreAllMocks()
+    }
+  })
+
+  it('says where the transit windows start, because the Zelle rail is manual', () => {
+    // A window quoted from checkout would be a promise the slower rail cannot
+    // keep. See the note at the top of shipping.ts.
+    expect(TRANSIT_FROM).toMatch(/payment clears/)
   })
 })
 
 describe('order totals', () => {
   it('refuses to total against an unpriced method rather than assuming zero', () => {
-    expect(() => orderTotals([priceLine('mots-c-10mg', 1)], 'priority')).toThrow(
-      /has no price set/,
-    )
+    vi.spyOn(SHIPPING_METHODS[1], 'priceCents', 'get').mockReturnValue(null)
+    try {
+      expect(() => orderTotals([priceLine('mots-c-10mg', 1)], 'priority')).toThrow(
+        /has no price set/,
+      )
+    } finally {
+      vi.restoreAllMocks()
+    }
+  })
+
+  it('totals a real order at the prices that are actually set', () => {
+    const totals = orderTotals([priceLine('glp-3-30mg', 1)], 'standard')
+    expect(totals.subtotalCents).toBe(12500)
+    expect(totals.shippingCents).toBe(shippingMethod('standard').priceCents)
+    expect(totals.totalCents).toBe(totals.subtotalCents + totals.shippingCents)
   })
 
   it('rejects an empty order before it even looks at shipping', () => {
@@ -79,6 +122,9 @@ describe('order totals', () => {
   })
 
   it('adds the chosen method and balances, once priced', () => {
+    // Mocked rather than read from the catalogue: this test is about the
+    // arithmetic balancing, and it must keep proving that if the real price
+    // changes.
     vi.spyOn(SHIPPING_METHODS[2], 'priceCents', 'get').mockReturnValue(4995)
     try {
       const totals = orderTotals([priceLine('mots-c-10mg', 1), priceLine('semax-5mg', 2)], 'overnight')
