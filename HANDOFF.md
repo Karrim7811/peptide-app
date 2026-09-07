@@ -3,7 +3,7 @@
 Read `CLAUDE.md` first, then this. Where they disagree, this is newer.
 Supersedes the 2026-09-06 handoff.
 
-`main` = pushed and deployed. **341 tests passing, `tsc --noEmit` clean,
+`main` = pushed and deployed. **365 tests passing, `tsc --noEmit` clean,
 `next build` succeeds, no assay report codes in `.next/static`.**
 peptidecortex.com is serving the rebuilt site.
 
@@ -28,17 +28,29 @@ are a reference to read, not a prototype to execute.
 
 ## Where to start
 
-1. **The bench at `/dashboard`.** The only signed-in surface still on the older
-   Mirror styling, now that everything around it is V3. It works — do not treat
-   this as a bug hunt. `App.dc.html`'s bench view is the target. Note it wires
-   to real user data through `src/lib/mirror/load.ts`, so this is the highest-
-   regression-risk screen left; the public ones were mostly pure functions.
-2. **The protocol planner.** `/api/protocol-plan` and `/api/protocol-consult`
-   exist and nothing calls them. Same situation the vial scanner was in
-   yesterday. `Tools.dc.html`'s planner view is the design.
-3. **Interactions and bloodwork** are live inside the dashboard
-   (`InteractionCheck`, `BloodworkOverlay`) and work. They are a restyle, not a
-   build, and are the lowest-value item on this list.
+1. **Interactions and bloodwork** are the last two `Tools.dc.html` screens not
+   rebuilt. They are live and working inside the Mirror (`InteractionCheck`,
+   `BloodworkOverlay`) and reachable from the bench, so this is a restyle and a
+   route split, not a build.
+2. **The Mirror's own styling.** It sits at `/mirror` now and is the last
+   surface not speaking V3. It is also the most complex thing in the repo and
+   holds every write path, so treat a rewrite as a project, not an afternoon.
+
+## /dashboard and /mirror — read this before moving anything
+
+**The bench is at `/dashboard`. The Mirror is at `/mirror`, unchanged.**
+
+The Mirror was not replaced. Twelve routes redirect into it carrying query
+params only it reads — `?bloodwork=1`, `?tab=cycle`, `?ledger=1`,
+`?tab=rotation` — and it holds every write path the app has: adding a stack
+item, logging a dose, editing inventory, cycles, notes, side effects. The bench
+is a read surface that understands none of that.
+
+If you point those redirects back at `/dashboard`, the app's only data entry
+becomes reachable by no route at all. `docs/design-integration-prompt.md` §5
+warns about exactly this. The eleven `revalidatePath` calls in
+`src/app/dashboard/actions.ts` target `/mirror` for the same reason — the
+actions file kept its path, the surface it revalidates did not.
 
 **Read the element you are rebuilding.** Every style in the prototypes is inline
 on the element and the values are exact. Approximating drifts, and it shows
@@ -48,7 +60,8 @@ immediately next to the screens that were transcribed.
 
 ## What this session did
 
-**The whole public site, rebuilt from V3 and deployed.** Home, the library at
+**The whole public site plus the bench, planner and scanner, rebuilt from V3
+and deployed.** Home, the library at
 `/reference` and `/reference/[id]`, the dosing reference at `/dosing`, signup /
 sign-in / `/forgot-password`, Terms, Privacy, Refunds, `/eu`, the Zelle sheet
 and the order page. Plus the vial scanner at `/scanner`.
@@ -231,7 +244,7 @@ same mistake is recorded in `046b7b6` from the previous session.
 
 ## Verification state
 
-`npm test` 341 passing across 24 files · `npx tsc --noEmit` clean ·
+`npm test` 365 passing across 26 files · `npx tsc --noEmit` clean ·
 `npx next build` succeeds · `grep -rlE "D14D7EHWHFH9|XAKRSW4WN85N|VJUDHK6MDGT3"
 .next/static` returns nothing · working tree clean · nothing unpushed ·
 production deployment READY.
