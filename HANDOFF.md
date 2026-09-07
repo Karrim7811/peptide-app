@@ -313,9 +313,10 @@ redirects** into the dashboard. That is the Mirror consolidation, not rot.
 `/dosing` used to be one of them and is now a real page — do not assume the
 others are equally stale without reading them.
 
-**The design's QR phone hand-off for the scanner is not built.** It needs a
-session-token table that does not exist. The device-camera path is what §16.8
-actually specifies and is what shipped.
+~~**The design's QR phone hand-off for the scanner is not built.**~~ Stale:
+it shipped in `1cf420c` and `scan_sessions` is applied (see "The one
+unauthenticated write" below). The device-camera path remains the §16.8
+default; the hand-off is the addition.
 
 ---
 
@@ -374,6 +375,31 @@ whether it exists.
 I committed once with `tsc --noEmit` failing while the test suite was green
 (fixed in the commit after). Running one check is not running the checks. The
 same mistake is recorded in `046b7b6` from the previous session.
+
+## The last pass — 2026-09-07, "finish all of it"
+
+With the code list empty, the remaining in-repo debt was documentation that
+contradicted the code, and two hygiene items CLAUDE.md §13 had carried since
+May. All of it is done; what is left is listed under "Blocked on Karim".
+
+- **`README.md` rewritten.** It said "PeptideTracker", "58 peptides",
+  "max 20 users" and "dark theme". It now describes the product that ships.
+- **`MARKETING.md` renamed and re-counted**, with a warning at the top: the
+  scripts have never been audited for FTC health-claim language (roadmap
+  C-5) and must not run before that and the §16.12 attorney review.
+- **`public/manifest.json`** now carries the V3 palette and shortcuts to
+  routes that exist (`/log` was a redirect). `viewport.themeColor` in the
+  root layout moved from the old parchment to paper to match.
+- **`.github/workflows/web.yml`** runs typecheck, tests and build on every
+  push and PR touching the web app, plus a grep that the server-only vial
+  report module never reaches `.next/static`. §13.8 ("no tests, no CI") was
+  false on the tests for months — there are 431 — and is now false on CI too.
+- **`CLAUDE.md` §7, §8 and §13 corrected** where they described a codebase
+  that no longer exists: middleware location, the three "missing" tool UIs,
+  the four "missing" tables, the manifest, the domains, the README.
+- **`REFACTOR-ROADMAP.md`** has a status block at the top marking what has
+  since been resolved. The item bodies are left as written; they are the
+  reasoning, and several were resolved differently from how they proposed.
 
 ## Verification state
 

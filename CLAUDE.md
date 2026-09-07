@@ -203,7 +203,7 @@ supabase/
   subscription_migration.sql      Add subscription_tier, subscription_expires_at, stripe_customer_id; subscription_events; interaction_checks
   admin_access.sql                pro_whitelist + lifetime tier assignment
 public/
-  manifest.json                   PWA manifest (STALE — see §10)
+  manifest.json                   PWA manifest — V3 palette, shortcuts to live routes (corrected 2026-09-07)
   sw.js                           Service worker (network-first for API, cache-first for static)
   icons/                          App icons
 ios-native/
@@ -214,7 +214,7 @@ Complete_Peptide_Bible_v2.pdf     Source reference document (commit history doc,
 Peptides_Master_List_*.xlsx/csv   Authoring source for peptide knowledge
 MARKETING.md                      Marketing playbook (out of date — see §10)
 README.md                         Out of date — see §10
-middleware.ts                     No-op (`matcher: ['/_never_match_this_route_']`) — disables Next.js middleware entirely
+src/middleware.ts                 EU geoblock + `x-cortex-pathname` header. MUST live in src/ — at the root it never compiled (§13.2)
 next.config.js                    Empty default config
 capacitor.config.ts               appId 'ai.peptidecortex.app', appName 'Peptide Cortex'
 tailwind.config.js                cx.* palette + Cormorant/Jost fonts
@@ -239,20 +239,20 @@ Status legend: ✅ working · 🟡 partial · 🔴 broken · ⚪ planned/unknown
 | Peptide Bible reference | ✅ | `src/app/reference` |
 | Interaction Checker | ✅ | `src/app/checker` + `/api/check-interaction` |
 | Cortex AI Chat | ✅ | `src/app/ai-chat` + `/api/chat` |
-| Bloodwork Analyzer (UI) | 🔴 Missing | API exists (`/api/bloodwork-analyze`, `/api/bloodwork-ocr`); no page in `src/app/bloodwork/` |
-| Protocol Planner (UI) | 🔴 Missing | API exists (`/api/protocol-plan`, `/api/protocol-consult`); no page in `src/app/protocol/` |
+| Bloodwork (UI) | ✅ | `src/app/bloodwork` — the trend across panels, Pro. Built 2026-09-07 |
+| Protocol Planner (UI) | ✅ | `src/app/protocol` — plan + refinement thread (`/api/protocol-refine`), Pro. Built 2026-09-07 |
 | Reconstitution Calculator | ✅ | `src/app/reconstitution` |
 | Dose Log | ✅ | `src/app/log` |
 | Fridge Inventory | ✅ | `src/app/inventory` |
 | Reminders | ✅ | `src/app/reminders` |
-| Cycle Tracker (UI) | ✅ | `src/app/cycle` — but `cycles` table is **not** in `supabase/schema.sql` |
-| Injection Sites tracker (UI) | ✅ | `src/app/sites` — but `injection_sites` table is **not** in `supabase/schema.sql` |
-| Research Notes (UI) | ✅ | `src/app/notes` — but `research_notes` table is **not** in `supabase/schema.sql` |
-| Side Effects log (UI) | ✅ | `src/app/side-effects` — but `side_effects` table is **not** in `supabase/schema.sql` |
+| Cycle Tracker (UI) | ✅ | `/cycle` redirects into `/mirror?tab=cycle`; table in `supabase/mirror_schema_reconciliation.sql` |
+| Injection Sites tracker (UI) | ✅ | `/sites` redirects into `/mirror?tab=rotation`; `injection_sites` is a log, not geometry |
+| Research Notes (UI) | ✅ | `/notes` redirects into `/mirror`; table in `mirror_schema_reconciliation.sql` |
+| Side Effects log (UI) | ✅ | `/side-effects` redirects into `/mirror`; table in `mirror_schema_reconciliation.sql` |
 | Vendors directory | ✅ | `src/app/vendors` |
 | Regulatory status tracker | ✅ | `src/app/regulatory` |
 | Market Pulse news feed | ✅ | `/api/market-pulse` |
-| Vial Scanner (UI) | 🔴 Missing | API exists (`/api/scan-vials`); web has no camera/upload UI calling it |
+| Vial Scanner (UI) | ✅ | `src/app/scanner` + QR phone hand-off at `/scan/[token]`, Pro. Built 2026-09-07 |
 | Stripe checkout | ✅ | `/api/stripe/create-checkout` |
 | Stripe customer portal | ✅ | `/api/stripe/portal` |
 | Stripe webhook | ✅ | `/api/stripe/webhook` |
@@ -260,10 +260,10 @@ Status legend: ✅ working · 🟡 partial · 🔴 broken · ⚪ planned/unknown
 | Terms of Service | ✅ | `src/app/terms` — Tigris Tech Labs-branded, US-law, educational-only framing |
 | Privacy Policy | ✅ | `src/app/privacy` |
 | AI Consent modal + persistence | ✅ | `src/components/AiConsentModal.tsx` + `/api/ai-consent` |
-| PWA manifest | 🟡 Stale | `public/manifest.json` still names "PeptideTracker" with `#0f172a` colours |
+| PWA manifest | ✅ | `public/manifest.json` — V3 palette, shortcuts to `/reference`, `/checker`, `/mirror`. SVG icons only; raster + maskable PNGs still open (roadmap H-1) |
 | Service worker | ✅ | `public/sw.js` — network-first for `/api/*` and `/auth/*`, cache-first for static |
 | Apple touch icon | ✅ | `<link rel="apple-touch-icon" href="/icons/apple-touch-icon.svg" />` |
-| Route-level auth middleware | 🔴 Disabled | `middleware.ts` matcher is `'/_never_match_this_route_'` — auth is per-page Supabase session reads only |
+| Route-level auth middleware | ⚪ By design | `src/middleware.ts` geoblocks and forwards the path; auth is per-layout `getUser()`. The shop wall is `src/app/shop/layout.tsx` (§16.13) |
 | Analytics / observability | ⚪ None | No Sentry, no PostHog, no Plausible, no Vercel Analytics |
 
 ---
@@ -369,11 +369,11 @@ The next 90 days of work are about getting `peptidecortex.com` to the polish lev
 1. ~~**Schema/code drift**~~ — **RESOLVED (verified against the live database 2026-09-03).** `cycles`, `injection_sites`, `research_notes` and `side_effects` all exist in production AND are checked into the repo — `supabase/mirror_schema_reconciliation.sql` creates all four with RLS policies and indexes. This entry described them as missing and called it "the single biggest schema/code drift in the repo"; that has not been true since the reconciliation migration landed. Note the migration's own header: `cycles` and `injection_sites` do not carry the shapes the Mirror handoff assumed — `injection_sites` is an injection **log**, not site geometry. Read that file before building on either.
 2. ~~**Middleware is a no-op**~~ — **it was worse: it was never compiled.** The EU geoblock was written at the repo root as `middleware.ts`, but a project with a `src/` directory only picks up `src/middleware.ts`; the build manifest had `"middleware": {}` and the geoblock never ran in production. Moved to `src/middleware.ts` on 2026-09-07 — **so the §16.11 geoblock went live with that deploy, not when it was written.** It now runs on every page request: it rewrites EU/EEA/UK/CH visitors to `/eu` (§16.11) and forwards the request path as the `x-cortex-pathname` header, which `src/app/shop/layout.tsx` reads to send a refused visitor back to the product they clicked (§16.13). It still does no session refresh — auth is per-layout / per-page `getUser()` reads, which is a deliberate pattern, not an omission.
 3. ~~**Stripe webhook writes to `profiles` under anon**~~ — **RESOLVED (verified 2026-08-07).** The webhook uses `createServiceClient()` (`SUPABASE_SERVICE_ROLE_KEY`), which bypasses RLS, and throws loudly if the key is absent. This entry was stale and was believed and repeated as a live bug during the 2026-08 session before being checked — verify against the code before acting on anything in this section.
-4. **PWA manifest stale** — `public/manifest.json` still names the app "PeptideTracker", uses `#0f172a` / `#0f172a` as `background_color` / `theme_color`, and references SVG icons. None of this matches the current `cx.*` palette or the `Peptide Cortex` brand. This is the user's first impression on iPhone home-screen install.
-5. **Three different production domains in code** — `peptidecortex.com` (capacitor.config.ts), `peptidecortex.ai` (layout.tsx metadataBase), `peptidetracker.app` (stripe/create-checkout fallback). Open-graph cards, share links, Stripe success URLs, and middleware all need one canonical domain.
-6. **README and MARKETING.md are out of date** — README says "PeptideTracker", "58 peptides", "max 20 users"; MARKETING.md uses an old dark-navy/indigo brand palette. Both contradict current code.
+4. ~~**PWA manifest stale**~~ — **RESOLVED 2026-09-07.** Name, colours (paper), description and shortcuts match the V3 site. Still SVG icons; raster + maskable PNGs remain open as roadmap H-1's second half.
+5. ~~**Three different production domains in code**~~ — **RESOLVED (verified by grep 2026-09-07).** `peptidecortex.com` is the only domain in `src/`, `public/` and the config files; `metadataBase`, the Stripe origin fallback and `capacitor.config.ts` all agree.
+6. ~~**README and MARKETING.md are out of date**~~ — **RESOLVED 2026-09-07.** README rewritten; MARKETING renamed, re-coloured and re-counted with a warning that its scripts are unaudited for FTC health-claim language (roadmap C-5) and must not run before that audit and the §16.12 review.
 7. **No off-NAS backup** — origin GitHub remote is `Karrim7811/peptide-app.git` and the working copy is on the T:\ network share. GitHub push status is up-to-date as of clone (`b611890`). Single point of failure if the GitHub account or the NAS is lost.
-8. **No tests, no CI for the web app** — `.github/workflows/` has iOS-only workflows. No `vitest` / `jest` / `playwright` config.
+8. ~~**No tests, no CI for the web app**~~ — **RESOLVED 2026-09-07.** 431 Vitest tests (`npm test`, colocated `*.test.ts` under `src/`) and `.github/workflows/web.yml` running typecheck, tests, build and a client-bundle leak check on every web push and PR. The iOS workflow is separate and still fails on three Swift errors (see its header).
 
 ### Resolved strategic decisions
 

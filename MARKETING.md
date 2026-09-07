@@ -1,10 +1,23 @@
-# PeptideTracker Marketing Playbook
+# Peptide Cortex Marketing Playbook
+
+> **Status (2026-09-07):** the scripts below were written for "Peptide Cortex"
+> and have been renamed, re-coloured and re-counted to match the product as it
+> ships. They have NOT been audited for FTC health-claim language
+> (`REFACTOR-ROADMAP.md` C-5). Do not run any of them before that audit and
+> the §16.12 attorney review. Handles are placeholders until availability is
+> confirmed.
 
 ## Brand Voice
 - Tone: Analytical, practical, slightly edgy. "Science-first biohacking."
 - NOT: overly medical, scary, or supplement-bro. Smart and direct.
-- Colors: Dark navy `#0f172a`, Indigo `#6366f1`, White text.
-- Handle: @peptidetracker everywhere
+- **Positioning line:** "Everyone else asks you to trust them. We publish the numbers."
+- Colors (V3, `CLAUDE.md` §6 and §16.2): paper `#E6E9EB`, ink `#1A1D1F`,
+  teal `#1A8A9E`. Cormorant Garamond for display, Jost for labels, JetBrains
+  Mono for every number. No radius, no shadows, 1px rules.
+- Domain: `peptidecortex.com` — the only one. Handle: `@peptidecortex`
+  everywhere (**confirm availability before use**).
+- Always: "Adults 18+ · Educational & research use only · Not medical advice."
+  The disclaimer goes on the creative, not just the bio.
 
 ---
 
@@ -12,9 +25,9 @@
 
 ### Account Bio
 ```
-PeptideTracker 🧬
+Peptide Cortex 🧬
 AI-powered peptide tracking & interaction safety
-58 peptides · Peptide Bible · AI chat
+124 peptides · Peptide Bible · AI chat
 📲 Free app — link below
 ```
 
@@ -38,8 +51,8 @@ AI-powered peptide tracking & interaction safety
 - Slide 4: Thymosin Alpha-1 — "Immune modulation with clinical evidence in hepatitis and cancer. Well-documented mechanism."
 - Slide 5: CJC-1295 + Ipamorelin — "The stack that started the GH axis conversation. Synergistic. Well-documented half-lives."
 - Slide 6: Semax — "Nootropic peptide with clinical use in Russia. Neurological data is real. Underrated in the West."
-- Slide 7 (CTA): "Check all 58 peptides with CV ratings, drug interactions, and evidence levels in PeptideTracker. Free in bio."
-- **Hashtags**: #peptides #biohacking #BPC157 #longevity #semaglutide #healthoptimization #peptidestack #researchchemicals #peptidetracker
+- Slide 7 (CTA): "Check all 124 peptides with CV ratings, drug interactions, and evidence levels in Peptide Cortex. Free in bio."
+- **Hashtags**: #peptides #biohacking #BPC157 #longevity #semaglutide #healthoptimization #peptidestack #researchchemicals #peptidecortex
 
 ---
 
@@ -48,15 +61,15 @@ AI-powered peptide tracking & interaction safety
 - Slide 2: Screenshot of Interaction Checker — checking Semaglutide + Ipamorelin
 - Slide 3: AI result showing the safety analysis
 - Slide 4: "3 checks/day free. Unlimited on Pro."
-- Slide 5 (CTA): "peptidetracker.app — free to start"
+- Slide 5 (CTA): "peptidecortex.com — free to start"
 - **Hashtags**: same as above + #peptideinteractions #stacksafety
 
 ---
 
-**Post 3: "The Peptide Bible — 58 compounds explained"**
-- Slide 1: "I spent 6 months compiling this. 58 peptides. Every one with dosing, CV impact, drug interactions, and evidence level."
+**Post 3: "The library — 124 peptides explained"**
+- Slide 1: "I spent 6 months compiling this. 124 peptides. Every one with dosing, CV impact, drug interactions, and evidence level."
 - Slide 2-6: Show screenshots of Reference page — different categories
-- Slide 7 (CTA): "It's built into PeptideTracker. Free to access. Link in bio."
+- Slide 7 (CTA): "It's built into Peptide Cortex. Free to access. Link in bio."
 - **Hashtags**: #peptidebible #biohacking #peptideguide
 
 ---
@@ -68,16 +81,16 @@ AI-powered peptide tracking & interaction safety
 [0-3s] Screen recording — PeptideAI opening
 [3-8s] Type: "I'm running BPC-157, TB-500, and Ipamorelin. Any concerns?"
 [8-20s] Watch AI response generate — camera zooms on key safety points
-[20-30s] Voiceover: "This is PeptideAI — trained on 58 peptides with full clinical data"
+[20-30s] Voiceover: "This is PeptideAI — trained on 124 peptides with full clinical data"
 [30-40s] Show app features in quick cuts: Dashboard → Cycle Tracker → Peptide Bible
-[40-45s] "Free at peptidetracker.app"
+[40-45s] "Free at peptidecortex.com"
 Audio: Lo-fi gym or trending audio
 ```
 
 **Reel 2 — "Before and after using a peptide tracker"**
 ```
 [0-5s] "Before: notes app chaos" — show messy notes
-[5-20s] "After: PeptideTracker dashboard" — show clean UI
+[5-20s] "After: Peptide Cortex dashboard" — show clean UI
 Features shown: Stack, Reminders, Dose Log, Interaction Checker
 [20-35s] "Know what you're taking. Know when to take it. Know if it's safe."
 [35-45s] CTA
@@ -87,7 +100,7 @@ Features shown: Stack, Reminders, Dose Log, Interaction Checker
 ```
 [0-5s] "Did you know [Peptide A] + [Peptide B] can cause [specific concern]?"
 [5-15s] Demo: interaction checker catching the issue
-[15-25s] "PeptideTracker's AI checks thousands of compound combinations"
+[15-25s] "Peptide Cortex's AI checks thousands of compound combinations"
 [25-35s] "3 checks free per day. Unlimited on Pro."
 [35-45s] CTA
 ```
@@ -107,7 +120,7 @@ Features shown: Stack, Reminders, Dose Log, Interaction Checker
 
 ### Account Bio
 ```
-PeptideTracker 🧬
+Peptide Cortex 🧬
 AI-powered tracking for biohackers
 Interaction checker · Peptide Bible · AI chat
 Free → link
@@ -127,7 +140,7 @@ Caption: "The ones who understand will understand 😅"
 
 POV: You're about to pin and can't remember if you already took your BPC-157 today
 
-[Show PeptideTracker dose log solving the problem]
+[Show Peptide Cortex dose log solving the problem]
 
 POV: You mixed two compounds without checking interactions first
 
@@ -153,7 +166,7 @@ Encourage duets/stitches from other biohackers showing their setups
 [0-3s] Hook: "I asked an AI to rate every peptide's cardiovascular risk"
 [3-20s] Show Peptide Bible — CV ratings 1-5 for 5-6 peptides
 [20-30s] "Semaglutide: 5/5 (protective). GHRP-6: 2/5 (limited data). Some peptides have NO cardiac research."
-[30-45s] "All 58 ratings in PeptideTracker. Free."
+[30-45s] "All 124 ratings in Peptide Cortex. Free."
 ```
 
 ---
@@ -163,7 +176,7 @@ Encourage duets/stitches from other biohackers showing their setups
 [0-5s] "Let me rank the most popular peptide stacks"
 [5-40s] S tier / A tier / B tier / "do your research" tier
 Use real peptides from knowledge base
-[40-45s] "What's your stack? Comment below. Check interactions at peptidetracker.app"
+[40-45s] "What's your stack? Comment below. Check interactions at peptidecortex.com"
 ```
 
 ---
@@ -171,18 +184,18 @@ Use real peptides from knowledge base
 ### TikTok Hashtags
 Primary: `#biohacking #peptides #healthoptimization #longevity #BPC157`
 Secondary: `#tirzepatide #semaglutide #biohacker #gymtok #selfimprovement`
-Niche: `#peptidetracker #stacktracking #researchchemicals #biohackingapp`
+Niche: `#peptidecortex #stacktracking #researchchemicals #biohackingapp`
 
 ---
 
 ## X (TWITTER / X)
 
-### Handle: @PeptideTracker
+### Handle: @peptidecortex
 
 ### Launch Thread (PIN THIS)
 ```
 Tweet 1:
-"I built PeptideTracker because the biohacking community deserved better than notes apps and spreadsheets.
+"I built Peptide Cortex because the biohacking community deserved better than notes apps and spreadsheets.
 
 Here's what it can do: 🧵"
 
@@ -194,7 +207,7 @@ Not generic. Peptide-specific."
 
 Tweet 3:
 "2/ Peptide Bible
-58 peptides. Each one with:
+124 peptides. Each one with:
 → What it does (plain English)
 → Dosage ranges
 → CV impact rating (0-5)
@@ -228,7 +241,7 @@ Tweet 6:
 "Free forever tier available.
 Pro: $6.67/mo (yearly) or $9.99/mo
 
-peptidetracker.app
+peptidecortex.com
 
 Retweet if you know someone who needs this 🙏"
 ```
@@ -253,7 +266,7 @@ Retweet if you know someone who needs this 🙏"
 
 **Tagline options:**
 1. "The AI-powered peptide tracker built for serious biohackers"
-2. "58 peptides. AI interaction checking. Your complete stack in one app."
+2. "124 peptides. AI interaction checking. Your complete stack in one app."
 3. "The Peptide Bible + full tracking suite, powered by Claude AI"
 
 **Launch day checklist:**
@@ -301,20 +314,20 @@ Add to app at `/waitlist`:
 
 ## INFLUENCER OUTREACH TEMPLATE
 
-Subject: PeptideTracker — 6 months Pro access in exchange for your honest take
+Subject: Peptide Cortex — 6 months Pro access in exchange for your honest take
 
 ```
 Hey [Name],
 
 I've been following your content on [platform] — your breakdown of [specific video] was excellent.
 
-I built PeptideTracker — an AI-powered app for peptide tracking with a full interaction checker and 58-peptide reference database. I think it aligns with what your audience cares about.
+I built Peptide Cortex — an AI-powered app for peptide tracking with a full interaction checker and 58-peptide reference database. I think it aligns with what your audience cares about.
 
 I'd like to offer you 6 months of Pro access (no strings attached — just use it if it's useful and share your honest take if you feel it's worth it).
 
 No scripts, no fake positivity. If there are things that need improvement, I'd genuinely want the feedback.
 
-App: peptidetracker.app
+App: peptidecortex.com
 
 Let me know if you're interested.
 

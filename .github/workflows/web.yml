@@ -1,0 +1,57 @@
+name: Web
+
+# The three checks a contributor runs before pushing (README "Running it"),
+# on every push and pull request that touches the web app. The iOS app has
+# its own workflow and its own failure; this one must not be gated on it.
+#
+# NEXT_PUBLIC_* values are inlined at build time, so the build needs SOMETHING
+# there. These placeholders are syntactically valid and unreachable — the
+# build does not talk to Supabase, and nothing here is deployed.
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'ios-native/**'
+      - 'ios/**'
+      - '.github/workflows/ios-build.yml'
+  pull_request:
+    paths-ignore:
+      - 'ios-native/**'
+      - 'ios/**'
+      - '.github/workflows/ios-build.yml'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:9
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Typecheck
+        run: npx tsc --noEmit
+      - name: Test
+        run: npm test
+      - name: Build
+        run: npm run build
+      - name: Assay report codes must not reach the client bundle
+        # See design_handoff_peptide_cortex_site/README.md — the codes live in
+        # src/lib/vial-reports.server.ts and must never be in .next/static.
+        # Reads the code values out of that file and greps the client bundle
+        # for each one.
+        run: |
+          codes=$(grep -oE "'[A-Za-z0-9_-]+'\s*:\s*'[^']+'" src/lib/vial-reports.server.ts | sed -E "s/^'[^']+'\s*:\s*'([^']+)'$/\1/")
+          test -n "$codes" || { echo "no report codes found to check"; exit 1; }
+          leaked=0
+          for code in $codes; do
+            if grep -rqF -- "$code" .next/static; then echo "leaked: $code"; leaked=1; fi
+          done
+          exit $leaked
