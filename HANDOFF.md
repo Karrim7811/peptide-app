@@ -247,7 +247,9 @@ What remains is **not code**. Nothing below can be done from this repo:
 2. `SHOP_ZELLE_HANDLE`, which needs a bank account under a shop entity.
 3. `SHOP_ADMIN_USER_ID`. **Easy to miss** — without it the admin queue 404s to
    everyone, so a Zelle payment can never be marked paid and nothing ever
-   ships, while checkout looks like it is working.
+   ships, while checkout looks like it is working. (Until 2026-09-07 setting it
+   would still not have been enough: the queue was read-only. See "The queue
+   had no buttons" below.)
 4. Lot codes and real assay dates for VIP, Selank, Semax and NAD+.
 5. The §16.12 attorney review on the refund policy.
 
@@ -286,6 +288,45 @@ Unchanged from yesterday except where noted.
 
 ---
 
+## The queue had no buttons — fixed 2026-09-07
+
+`markPaid`, `markPacked` and `markShipped` were written, guarded and tested
+when the shop was built. **Nothing imported them.** `/admin/orders` rendered
+three read-only columns, so the queue could show a Zelle payment and offer no
+way to confirm it.
+
+This mattered because "Blocked on Karim" said `SHOP_ADMIN_USER_ID` was what
+stood between here and a shipped order. It was not the only thing: with the
+variable set, the queue would have rendered — and still had no control on any
+card. The page header said so ("Read-only for now… the buttons land once there
+are real rows to act on"), which reads as a note rather than as a blocker.
+
+`src/app/admin/orders/OrderActions.tsx` now supplies the three controls. The
+page stays a server component and does the reading — orders, their items, and
+the **coded** lots per product, in two queries rather than per card. The client
+component owns form state only. **Every guard is where it was**: `assertAdmin`
+runs server-side per action, `canTransition` decides legality, and
+`validatePackAssignment` refuses a pack with a missing lot. Nothing about
+authorisation moved into the browser.
+
+Four decisions worth not undoing:
+
+- **Only Zelle gets a Mark paid button.** A BTCPay order reaches `paid` through
+  the signed webhook; the point of the signature is that no human vouched for
+  it. Those cards say the webhook handles it.
+- **Mark paid takes two clicks**, naming the reference. `paid` cannot return to
+  `awaiting_payment` in the status machine, so there is no undo.
+- **A lot with no code is not offered.** The query filters `lot_code is not
+  null`, and an item whose product has none renders "no lot code on file"
+  rather than an empty dropdown. Four launch SKUs are in that state; that is
+  the recall path refusing, not a UI gap.
+- **Tracking is required to mark shipped.** `markShipped` stores null for a
+  blank string, which would leave a shipped order with no way to find the
+  parcel.
+
+Errors render inline beside the control, never as a toast — "reload and try
+again" from the lost-update guard is something the operator must read.
+
 ## Shipping, priced — 2026-09-07
 
 $7.00 standard · $12.00 priority · $49.00 overnight, **flat per order**, not
@@ -318,7 +359,8 @@ guard.
 **Checkout is not open.** It now completes on the code's side, but a Zelle
 order still cannot be marked paid without `SHOP_ADMIN_USER_ID`, and there is
 no handle without `SHOP_ZELLE_HANDLE`. Those two, not shipping, are what is
-between here and a first order.
+between here and a first order — and see the section below, because until
+2026-09-07 the queue those variables unlock had no buttons on it.
 
 ## Fixed this session, worth knowing about
 

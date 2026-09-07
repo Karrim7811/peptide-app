@@ -4,13 +4,21 @@
 // payment against the bank, pack a paid order, ship a packed one. Zelle cannot
 // reconcile itself, so nothing leaves the building without a click here.
 //
-// Read-only for now. The actions in ./actions.ts are written and guarded; the
-// buttons that call them land once there are real rows to act on and the packing
-// step's shape is known.
+// The actions in ./actions.ts are wired to controls in ./OrderActions.tsx as of
+// 2026-09-07. They had been written, guarded and tested since the shop was
+// built, but nothing imported them — so this page could show a Zelle payment
+// and offer no way to confirm it, and setting SHOP_ADMIN_USER_ID alone would
+// not have let anything ship.
+//
+// This page stays a server component and does the reading: orders, their items,
+// and the coded lots available per product. The client component owns only the
+// form state. Every guard is still server-side — assertAdmin on each action,
+// canTransition for legality, validatePackAssignment for the lot.
 
 import { notFound } from 'next/navigation'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { formatPrice } from '@/lib/shop/pricing'
+import { MarkPacked, MarkPaid, MarkShipped } from './OrderActions'
 
 export const dynamic = 'force-dynamic'
 
@@ -39,6 +47,51 @@ export default async function AdminOrdersPage() {
     )
     .in('status', ['awaiting_payment', 'paid', 'packed'])
     .order('created_at', { ascending: true })
+
+  const orderIds = (orders ?? []).map((order) => order.id)
+
+  // Items and lots, for the packing step only. Fetched in two queries rather
+  // than per card: the queue is small, but N cards each firing their own reads
+  // is the shape that stops being small quietly.
+  const { data: items } = orderIds.length
+    ? await service
+        .from('shop_order_items')
+        .select('id, order_id, product_id, qty, product_name, size_display')
+        .in('order_id', orderIds)
+    : { data: [] }
+
+  // Array.from rather than a spread: the project's tsconfig target predates
+  // downlevel iteration of a Set.
+  const productIds = Array.from(new Set((items ?? []).map((item) => item.product_id)))
+
+  // Only lots WITH a code can be packed. A null lot_code means that batch has
+  // no recall path, and packing against it would make order_items.lot_id
+  // decorative — see validatePackAssignment. Four launch SKUs are in that
+  // state; their items render "no lot code on file" instead of a dropdown.
+  const { data: lots } = productIds.length
+    ? await service
+        .from('shop_lots')
+        .select('id, product_id, lot_code, is_current')
+        .in('product_id', productIds)
+        .not('lot_code', 'is', null)
+        .order('is_current', { ascending: false })
+    : { data: [] }
+
+  const itemsFor = (orderId: string) =>
+    (items ?? [])
+      .filter((item) => item.order_id === orderId)
+      .map((item) => ({
+        id: item.id,
+        productName: item.product_name,
+        sizeDisplay: item.size_display,
+        qty: item.qty,
+        lots: (lots ?? [])
+          .filter((lot) => lot.product_id === item.product_id)
+          .map((lot) => ({
+            id: lot.id,
+            label: lot.is_current ? `${lot.lot_code} · current` : (lot.lot_code as string),
+          })),
+      }))
 
   const inStatus = (status: string) => (orders ?? []).filter((order) => order.status === status)
 
@@ -74,6 +127,23 @@ export default async function AdminOrdersPage() {
                       {formatPrice(order.total_cents)} · {order.payment_provider} ·{' '}
                       {new Date(order.created_at).toISOString().slice(0, 10)}
                     </p>
+
+                    {/* A BTCPay order reaches 'paid' through the signed webhook
+                        and must never be advanced by hand — the whole point of
+                        the signature is that a human did not vouch for it. Only
+                        Zelle gets the button. */}
+                    {status === 'awaiting_payment' && order.payment_provider === 'zelle' && (
+                      <MarkPaid orderId={order.id} reference={order.payment_reference} />
+                    )}
+                    {status === 'awaiting_payment' && order.payment_provider !== 'zelle' && (
+                      <p className="mt-2 text-xs text-cx-stone">
+                        Confirms itself through the payment webhook. Nothing to do here.
+                      </p>
+                    )}
+                    {status === 'paid' && (
+                      <MarkPacked orderId={order.id} items={itemsFor(order.id)} />
+                    )}
+                    {status === 'packed' && <MarkShipped orderId={order.id} />}
                   </li>
                 ))}
               </ul>
