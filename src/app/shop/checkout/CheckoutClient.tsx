@@ -23,7 +23,12 @@ import { useCallback, useEffect, useState } from 'react'
 import { HAIR, KICKER, MONO, RULE } from '@/components/shop/ShopChrome'
 import { createOrder } from '@/app/shop/actions'
 import { cart, type CartLineView, cartLines, subtotalCents } from '@/lib/shop/cart'
-import { SHIPPING_METHODS, TRANSIT_FROM, sellableMethods } from '@/lib/shop/orders/shipping'
+import {
+  SHIPPING_METHODS,
+  TRANSIT_FROM,
+  sellableMethods,
+  shippingMethod,
+} from '@/lib/shop/orders/shipping'
 import type { ShippingMethodId } from '@/lib/shop/orders/shipping'
 import type { PaymentProviderId } from '@/lib/shop/orders/types'
 import { formatPrice } from '@/lib/shop/pricing'
@@ -83,6 +88,12 @@ export function CheckoutClient({ needsDob = false }: { needsDob?: boolean }) {
   }
 
   const subtotal = subtotalCents(lines)
+  // The summary showed "[ $ TBC ]" for shipping and no total line at all, which
+  // was true while nothing was priced and became a lie the moment it was: the
+  // buyer picked a $12.00 method and the panel beside it still said the cost
+  // was unknown. A checkout must show what it is about to charge.
+  const chosenShipping = shippingMethod(method).priceCents
+  const total = chosenShipping === null ? null : subtotal + chosenShipping
   const sellable = sellableMethods()
   const priced = sellable.length > 0
   const addressComplete = FIELDS.every(
@@ -377,7 +388,24 @@ export function CheckoutClient({ needsDob = false }: { needsDob?: boolean }) {
           }}
         >
           <span>Shipping</span>
-          <span>[ $ TBC ]</span>
+          {/* Still says TBC when a method genuinely has no price — that path is
+              live for anything added later. It just is not the normal case. */}
+          <span>{chosenShipping === null ? '[ $ TBC ]' : formatPrice(chosenShipping)}</span>
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            padding: '14px 0',
+            borderBottom: RULE,
+            fontFamily: MONO,
+            fontSize: 20,
+            fontWeight: 500,
+          }}
+        >
+          <span>Total</span>
+          <span>{total === null ? '[ $ TBC ]' : formatPrice(total)}</span>
         </div>
 
         {blockedBecause && (
