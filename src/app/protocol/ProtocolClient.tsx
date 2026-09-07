@@ -54,6 +54,12 @@ export function ProtocolClient({ bench }: { bench: string[] }) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [plan, setPlan] = useState<Plan | null>(null)
+  // The plan as the model last returned it. Kept raw because the refine route
+  // is given the document to revise, while `plan` is the enforced view of it.
+  const [rawPlan, setRawPlan] = useState<unknown>(null)
+  const [thread, setThread] = useState<Array<{ who: 'you' | 'cortex'; text: string }>>([])
+  const [ask, setAsk] = useState('')
+  const [refining, setRefining] = useState(false)
 
   // The bench first, then everything else, so the common case is at the top.
   const options = useMemo(() => {
@@ -91,13 +97,59 @@ export function ProtocolClient({ bench }: { bench: string[] }) {
         return
       }
       // Never rendered raw. Every amount goes through the classifier first.
-      setPlan(readPlan(payload?.plan ?? payload))
+      const document = payload?.plan ?? payload
+      setRawPlan(document)
+      setPlan(readPlan(document))
+      setThread([])
     } catch {
       setError('The plan could not be generated.')
     } finally {
       setBusy(false)
     }
   }, [picked, goals, requireConsent])
+
+  const refine = useCallback(async () => {
+    const question = ask.trim()
+    if (!question || refining || !rawPlan) return
+
+    const consented = await requireConsent()
+    if (!consented) return
+
+    setRefining(true)
+    setThread((current) => [...current, { who: 'you', text: question }])
+    setAsk('')
+    try {
+      const response = await fetch('/api/protocol-refine', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: rawPlan, message: question, peptides: picked }),
+      })
+      const payload = await response.json().catch(() => ({}))
+      if (!response.ok) {
+        setThread((current) => [
+          ...current,
+          { who: 'cortex', text: payload?.error ?? 'That could not be applied. The plan is unchanged.' },
+        ])
+        return
+      }
+      // Straight back through the same enforcement as the first draft. A
+      // refinement cannot smuggle in an amount that a first draft could not.
+      const revised = readPlan(payload)
+      setRawPlan(payload)
+      setPlan(revised)
+      setThread((current) => [
+        ...current,
+        { who: 'cortex', text: revised.summary ?? 'Updated.' },
+      ])
+    } catch {
+      setThread((current) => [
+        ...current,
+        { who: 'cortex', text: 'That could not be applied. The plan is unchanged.' },
+      ])
+    } finally {
+      setRefining(false)
+    }
+  }, [ask, refining, rawPlan, picked, requireConsent])
 
   return (
     <div style={{ padding: 'clamp(22px,3vw,40px) clamp(16px,3vw,32px) clamp(24px,3vw,40px)' }}>
@@ -278,6 +330,82 @@ export function ProtocolClient({ bench }: { bench: string[] }) {
       )}
 
       {plan && <PlanView plan={plan} goals={goals} />}
+
+      {plan && (
+        <div style={{ marginTop: 28, borderTop: RULE, paddingTop: 18 }}>
+          <Label>Refine it by talking to it</Label>
+          <p style={{ margin: '8px 0 0', fontSize: 16, color: INK2, maxWidth: '62ch' }}>
+            Say what you want changed. It rewrites the whole week and says what moved — and
+            will tell you if it thinks the change is a bad idea.
+          </p>
+
+          {thread.length > 0 && (
+            <div style={{ marginTop: 14, borderTop: HAIR }}>
+              {thread.map((turn, i) => (
+                <div key={i} style={{ padding: '12px 0', borderBottom: HAIR }}>
+                  <span
+                    style={{
+                      fontFamily: JOST,
+                      fontSize: 9.5,
+                      letterSpacing: '.18em',
+                      textTransform: 'uppercase',
+                      color: turn.who === 'you' ? INK3 : TEAL,
+                    }}
+                  >
+                    {turn.who === 'you' ? 'You' : 'Cortex · AI-generated'}
+                  </span>
+                  <p style={{ margin: '6px 0 0', fontSize: 17, lineHeight: 1.45 }}>{turn.text}</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div style={{ marginTop: 14, display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+            <input
+              value={ask}
+              onChange={(e) => setAsk(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') refine()
+              }}
+              placeholder="move the BPC-157 to the evening, drop Saturday entirely, …"
+              style={{
+                flex: 1,
+                minWidth: 240,
+                height: 48,
+                padding: '0 12px',
+                border: '1px solid rgba(26,29,31,.45)',
+                background: '#F4F5F6',
+                fontSize: 17,
+                fontStyle: 'italic',
+                borderRadius: 0,
+                color: INK,
+              }}
+            />
+            <button
+              type="button"
+              onClick={refine}
+              disabled={refining || ask.trim().length === 0}
+              style={{
+                appearance: 'none',
+                border: RULE,
+                background: refining || !ask.trim() ? 'transparent' : INK,
+                color: refining || !ask.trim() ? INK3 : '#F4F5F6',
+                fontFamily: JOST,
+                fontSize: 10.5,
+                letterSpacing: '.22em',
+                textTransform: 'uppercase',
+                padding: '12px 18px',
+                minHeight: 44,
+                borderRadius: 0,
+                cursor: refining || !ask.trim() ? 'not-allowed' : 'pointer',
+                opacity: refining || !ask.trim() ? 0.4 : 1,
+              }}
+            >
+              {refining ? 'Revising…' : 'Argue with it'}
+            </button>
+          </div>
+        </div>
+      )}
 
       <p
         style={{

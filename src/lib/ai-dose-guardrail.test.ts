@@ -74,6 +74,7 @@ describe('doseGuardrail', () => {
 describe('the routes that can emit an amount', () => {
   const routes = [
     'src/app/api/protocol-plan/route.ts',
+    'src/app/api/protocol-refine/route.ts',
     'src/app/api/chat/route.ts',
   ]
 
