@@ -1,156 +1,201 @@
-# Handoff — 2026-09-06
+# Handoff — 2026-09-07
 
 Read `CLAUDE.md` first, then this. Where they disagree, this is newer.
-Supersedes the 2026-09-03 handoff; everything still open from it is carried
-forward below.
+Supersedes the 2026-09-06 handoff.
 
-`main` = pushed, working tree clean, **240 tests passing, `tsc --noEmit` clean,
-`next build` succeeds.**
+`main` = pushed and deployed. **336 tests passing, `tsc --noEmit` clean,
+`next build` succeeds, no assay report codes in `.next/static`.**
+peptidecortex.com is serving the rebuilt site.
 
 ---
 
-## Where to start tomorrow
+## Read this before you look for a design file
 
-1. **Zelle screen and order status** — the last two on the money path. Design is
-   in the v3 handoff (`Zelle.dc.html`, `Order.dc.html`); the pattern is
-   established by `/shop/cart` and `/shop/checkout`.
-2. Then Home, Auth, Legal, and the bench shell with its five tool screens.
-3. `docs/design-integration-prompt.md` is the standing brief for all of it.
+**The V3 design handoff is now IN the repo**, at
+`design_handoff_peptide_cortex_site/`. The previous handoff told you to read
+`Shop.dc.html`, `Zelle.dc.html` and `Order.dc.html` before writing a page, and
+none of the three was in the repo. They were in a zip on the OneDrive Desktop,
+in three revisions with nearly the same name, and only V3 carries
+`Tools.dc.html`. That cost the first hour of this session. It will not cost you
+one.
 
-**Before writing a page, read `Shop.dc.html`'s equivalent and transcribe the
-inline styles.** They are exact, and the handoff says to read the element you are
-rebuilding. Approximating drifts.
+The seven prototype `.js` data files are deliberately NOT committed —
+`WHY-THE-DATA-FILES-ARE-MISSING.md` in that folder says why and where the real
+data lives. The `.dc.html` screens will not run standalone without them. They
+are a reference to read, not a prototype to execute.
+
+---
+
+## Where to start
+
+1. **The bench at `/dashboard`.** The only signed-in surface still on the older
+   Mirror styling, now that everything around it is V3. It works — do not treat
+   this as a bug hunt. `App.dc.html`'s bench view is the target. Note it wires
+   to real user data through `src/lib/mirror/load.ts`, so this is the highest-
+   regression-risk screen left; the public ones were mostly pure functions.
+2. **The protocol planner.** `/api/protocol-plan` and `/api/protocol-consult`
+   exist and nothing calls them. Same situation the vial scanner was in
+   yesterday. `Tools.dc.html`'s planner view is the design.
+3. **Interactions and bloodwork** are live inside the dashboard
+   (`InteractionCheck`, `BloodworkOverlay`) and work. They are a restyle, not a
+   build, and are the lowest-value item on this list.
+
+**Read the element you are rebuilding.** Every style in the prototypes is inline
+on the element and the values are exact. Approximating drifts, and it shows
+immediately next to the screens that were transcribed.
 
 ---
 
 ## What this session did
 
-**The shop, front to back.** Data layer, checkout backend, both payment
-adapters, the admin queue, and four screens of UI: `/shop`, `/shop/[slug]` (all
-seven prerendered), `/shop/cart`, `/shop/checkout`.
+**The whole public site, rebuilt from V3 and deployed.** Home, the library at
+`/reference` and `/reference/[id]`, the dosing reference at `/dosing`, signup /
+sign-in / `/forgot-password`, Terms, Privacy, Refunds, `/eu`, the Zelle sheet
+and the order page. Plus the vial scanner at `/scanner`.
 
-**Closed a live leak.** All 27 Janoshik report codes were in the public JS
-bundle — `catalog.ts` is imported by nine client components, and the codes were
-there twice: as a `reportCode` field and as the tail of every slug. Both gone,
-`REPORT_CODES` is server-only and keyed by lot, and a test serialises `VIALS` and
-fails if a code reappears. Verified against `.next/static`, not just in a unit
-test.
+**Four things that were wrong rather than merely unbuilt:**
 
-**Closed the same leak on the physical product.** Every printed label's
-DataMatrix encoded `janoshik.com/tests/<slug>`, which resolves to a page naming
-WBS-Shanghai Wibson. A label is the one surface a website redaction cannot
-reach. Karim then removed the code entirely; the freed space went to the
-reconstitution date field.
-
-**Read the real assay figures off the reports.** The repo had rounded values and
-had dropped the measured content entirely. Now exact: GLP-3 99.623% / 35.95 mg,
-MOTS-c 99.114% / 12.33 mg, and `assayedAt` dates that turn three lots into a
-nine-month record.
+1. **Checkout was a dead end.** It collected the address fields, never read them
+   into state, and its button called nothing. Now wired to `createOrder`.
+2. **The library was behind auth while Home advertised it as free to read.** The
+   most public page promised something the next click refused. So was the dosing
+   reference, which the rules single out as never-gatable.
+3. **`/dosing` was a redirect**, though CLAUDE.md §16.9a said a dosing reference
+   was built. It is built now.
+4. **The AI routes could still invent a dose.** See below.
 
 ---
 
-## Two things that are wrong and need a decision
+## The dose count, settled
 
-### 1. Three printed labels claim a purity that no lab measured
+Five splits had been written into the docs (81/43, 49/75, 43/81, 63/61, 73/51).
+None was a transcription error. **The question was asked as a binary and the
+data has three states**, so every rule had to put the middle one on a side.
 
-`SX-51824` Semax, `SK-51825` Selank, `AD-51826` AOD-9604 — all showing
-"99% HPLC". The lot codes are sequential with compound-initial prefixes; they
-are not lab lots. A real assay never returns a round 99%.
+| State | n | What it is |
+|---|---|---|
+| `published` | 26 | An actual amount — a number attached to a dose unit |
+| `labelOnly` | 25 | Points at a label, a PI, a country or a hospital protocol without naming an amount |
+| `none` | 73 | No human dose. 25 in researched prose, 48 as the port's "N/A" |
 
-**Nothing shipped — Karim confirmed the stock is still on the shelf**, so this is
-a reprint, not a recall. Do not reprint from the old artwork. The current
-generator will not reproduce it: it prints a purity only where one is recorded.
+The 81 and the 51 both counted `labelOnly` as published. "Product-specific
+dosing (endocrinology)" is not a figure.
 
-The NAD+ label on the Desktop is the correct model — no purity claim, blank
-`LOT ___ MFG ___ EXP ___` to fill in by hand.
+`src/lib/dosing.ts` computes this live and `dosing.test.ts` asserts it, so a
+catalogue edit that moves an entry between states fails a test rather than
+quietly changing a number on the home page. **Do not hard-code these anywhere.**
 
-### 2. The dosing split in the briefs was wrong, and no count should be published
+Ten of the 73 still cite rodent or discontinued-programme figures after the
+no-dose sentence. `noDoseContext()` returns them and they render below the line,
+labelled "not a dose". Adipotide is the clearest example — look at it before
+changing anything here.
 
-I wrote "81 of 124 carry a published range". That tested for the literal string
-`"N/A"`, so an entry reading *"No human dose exists. Rodent work used 30–50
-mg/kg…"* counted as HAVING a range. Three rules give three answers: 43/81,
-63/61, 73/51. Claude Design caught it.
+---
 
-Every brief now says to count live off the entries. **The classification rule
-still needs reconciling against `src/lib/catalog.ts`**, which is the source of
-truth. Do not republish a hard number until it is.
+## The AI guardrail, and what it is not
+
+`src/lib/ai-dose-guardrail.ts` is now interpolated into both `/api/chat` and
+`/api/protocol-plan`. It names all 98 peptides with no published dose in full,
+and closes the routes a number arrives through by name — animal studies, body
+weight, allometric scaling, community protocols, a similar peptide, the model's
+own general knowledge.
+
+**It cannot make a model obey.** A test reads both route files and fails if the
+import or the interpolation is removed, which is the part that can be enforced.
+If you add a third route that can emit an amount, add it to that test's list.
 
 ---
 
 ## Blocked on Karim, not on code
 
+Unchanged from yesterday except where noted.
+
 1. **Three shipping prices.** `orderTotals()` throws until they are set, so
-   checkout is disabled and says so on screen. This is deliberate — the
-   alternative is charging a figure nobody chose. Nothing can be ordered until
-   these exist. Carrier and service are chosen (USPS Ground Advantage / Priority
-   / Priority Mail Express); only the numbers are missing.
+   checkout is disabled and says so. Carrier and service are chosen; only the
+   numbers are missing. *This is the single thing standing between the shop and
+   its first order.*
 2. **Apply the migrations**, in order: `shop_schema.sql`, `shop_seed.sql`,
    `shop_orders_schema.sql`. None are applied.
 3. **Env**: `SHOP_ADMIN_USER_ID`, `SHOP_ZELLE_HANDLE`, `BTCPAY_URL`,
-   `BTCPAY_STORE_ID`, `BTCPAY_API_KEY`, `BTCPAY_WEBHOOK_SECRET`.
+   `BTCPAY_STORE_ID`, `BTCPAY_API_KEY`, `BTCPAY_WEBHOOK_SECRET`. The Zelle sheet
+   has no fallback handle by design — with the var unset it tells the buyer the
+   account does not exist yet and that nothing was charged.
 4. **Shop entity + business bank account.** Blocks Zelle and both firewalls.
-5. **Real assay dates** for VIP, Selank, Semax, NAD+ — `2026-10` is my
-   placeholder and is flagged as such in `catalogue.ts`.
-6. **Lot codes for those same four.** They are `null`, so `validatePackAssignment`
-   refuses to pack them — correct behaviour, but it means those four are
-   literally unshippable until codes exist.
-7. **Refund policy** — my draft is in the checkout page and in the spec. Touches
-   ToS, so it needs his sign-off.
-8. Carried from August: **live Stripe prices** (live monthly is still $9.99 vs a
-   $14.99 page; annual cannot be bought) and **Resend SMTP** (no transactional
-   email at all, which is why the Zelle screen must not promise an emailed copy).
+5. **Real assay dates** for VIP, Selank, Semax, NAD+ — `2026-10` is a
+   placeholder, flagged as such in `catalogue.ts`.
+6. **Lot codes for those same four.** Null, so `validatePackAssignment` refuses
+   to pack them. Correct behaviour; they are unshippable until codes exist.
+7. **Refund policy** — the copy is live and tagged `[ Draft · under legal
+   review ]`. The tag stays until the §16.12 attorney review.
+8. **Three printed labels claim a purity no lab measured** — `SX-51824` Semax,
+   `SK-51825` Selank, `AD-51826` AOD-9604, all "99% HPLC". Nothing shipped;
+   reprint, not recall. The current generator will not reproduce it.
+9. Carried from August: **live Stripe prices** (live monthly is still $9.99
+   against a $14.99 page; annual cannot be bought) and **Resend SMTP** — there
+   is no transactional email at all, which is why the Zelle sheet must not
+   promise an emailed copy.
 
 ---
 
 ## Still open, lower priority
 
-**The iOS build fails and has for 39 of its last 40 runs**, starting at the
-Mirror redesign merge. Three pre-existing Swift errors, listed in a comment at
-the top of `.github/workflows/ios-build.yml`. The workflow now only runs when
-`ios-native/` changes, so it no longer emails on every web commit. Not fixed —
-the app is App-Store-rejected and the web is the priority.
+**The iOS build fails and has for 39 of its last 40 runs.** Three pre-existing
+Swift errors, listed at the top of `.github/workflows/ios-build.yml`. It only
+runs when `ios-native/` changes, so it no longer emails on every web commit.
 
-**`Vial.slug` no longer embeds a report code, but the label artwork filenames in
-`design/vial-labels/labels-*/` were renamed to lot.** Anything referencing the old
-filenames is stale.
+**`/reconstitution`, `/checker`, `/bloodwork`, `/stack` and friends are
+redirects** into the dashboard. That is the Mirror consolidation, not rot.
+`/dosing` used to be one of them and is now a real page — do not assume the
+others are equally stale without reading them.
 
-**`design/liene-labels/` and `design/liene-4x7/`** appeared in the working tree
-and are not mine. Gitignored as regenerable output, not deleted.
+**The design's QR phone hand-off for the scanner is not built.** It needs a
+session-token table that does not exist. The device-camera path is what §16.8
+actually specifies and is what shipped.
 
 ---
 
-## Conventions this session added — do not "improve" these
+## Conventions added this session — do not "improve" these
 
-- **`shopCards()` takes no arguments, and a test asserts its arity.** If a
-  comparator appears in that signature it is the "best value" ranking arriving by
-  the back door. Per-mg compares within a compound only.
-- **A blend gets `unitPrice: null` and a reason to render**, never a gap and
-  never a figure.
-- **The view model returns `null` for an absent value, never `'—'` or `0`.** The
-  component decides how to show an absence; the model must not decide for it by
-  supplying a dash.
-- **`mg()` prints two decimals.** The lab reports 11.20; trimming to 11.2 is a
-  small unforced inaccuracy on a page whose argument is that it prints what the
-  lab said, and it breaks column alignment.
-- **Labels only render where something sits under them.** The purity gap on a
-  pending card is a deliberate admission and works because it is rare; a card of
-  empty labelled rows makes absence look routine.
-- **The catalogue grid is flex-wrap, not grid.** Seven cards never divide evenly
-  into a responsive column count, and grid cannot fill a short last row — the ink
-  ground shows through as a black slab that reads as a missing product.
-- **Everything read out of `localStorage` is untrusted input.** Bad JSON, bad
-  slugs, hand-edited quantities are dropped or clamped at the boundary.
-- **`order_items.unit_price_cents` is a snapshot** and the order-line name is
-  composed from name + subtitle — "GLP-3" alone is a vendor nickname, and an
-  order read six months later has no subtitle beside it.
-- **The BTCPay webhook verifies HMAC over the raw body with `timingSafeEqual`
-  before parsing.** A test reads the source and fails if that is swapped out.
-- **The shop is never tier-gated.** THE MATH and side effects are never gated
-  either.
+- **No projected dates on the order timeline.** A step prints a recorded
+  timestamp in mono or an estimate in italic serif, never a computed date. The
+  prototype derived delivery dates from `placedAt`, so a delivery date existed
+  the moment an order did. There is no `delivered_at` column; the Delivered row
+  carries only the carrier's window.
+- **Only `published` may render a number.** Everywhere. The library, the
+  compound page, the dosing reference and both AI prompts.
+- **Every dose figure carries its source.** A figure without one is
+  indistinguishable from a recommendation.
+- **The scanner's amount is null, never 0, when it cannot be parsed.** Zero
+  milligrams is a claim about a vial; null is an admission about a photograph.
+  IU is refused rather than converted — potency per IU is compound-specific.
+- **An unresolved scanner reading is still shown.** A scanner that silently
+  drops half a shelf is worse than one that says "not matched".
+- **The Zelle handle has no fallback.** A stand-in address is an instruction to
+  send money to someone who is not us.
+- **Refund wording lives once**, in `src/lib/legal.ts`, shared by the refund
+  page and checkout. A policy that differs at the point of sale from its own
+  page is a discrepancy that gets read against you.
+- **Grade and CV render as two figures with two labels.** Grade is regulatory
+  status alone; CV is a separate axis and never moves it.
+- **Cautions and interactions sit last, boxed, with nothing sold beside them.**
+- **Carried forward and still true:** `shopCards()` takes no arguments and a
+  test asserts its arity; a blend gets `unitPrice: null` and a reason; view
+  models return `null` for an absence, never `'—'` or `0`; `mg()` prints two
+  decimals; labels render only where something sits under them; the catalogue
+  grid is flex-wrap, not grid; everything out of `localStorage` is untrusted;
+  `order_items.unit_price_cents` is a snapshot; the BTCPay webhook verifies HMAC
+  over the raw body before parsing; the shop is never tier-gated, and neither
+  are THE MATH, side effects or the dosing reference.
+
+## One mistake worth not repeating
+
+I committed once with `tsc --noEmit` failing while the test suite was green
+(fixed in the commit after). Running one check is not running the checks. The
+same mistake is recorded in `046b7b6` from the previous session.
 
 ## Verification state
 
-`npm test` 240 passing across 18 files · `npx tsc --noEmit` clean ·
-`npx next build` succeeds, all seven product pages prerendered ·
-`grep -rlE "D14D7EHWHFH9|XAKRSW4WN85N|VJUDHK6MDGT3" .next/static` returns
-nothing · working tree clean · nothing unpushed.
+`npm test` 336 passing across 24 files · `npx tsc --noEmit` clean ·
+`npx next build` succeeds · `grep -rlE "D14D7EHWHFH9|XAKRSW4WN85N|VJUDHK6MDGT3"
+.next/static` returns nothing · working tree clean · nothing unpushed ·
+production deployment READY.
