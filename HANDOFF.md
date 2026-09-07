@@ -3,7 +3,7 @@
 Read `CLAUDE.md` first, then this. Where they disagree, this is newer.
 Supersedes the 2026-09-06 handoff.
 
-`main` = pushed and deployed. **365 tests passing, `tsc --noEmit` clean,
+`main` = pushed and deployed. **386 tests passing, `tsc --noEmit` clean,
 `next build` succeeds, no assay report codes in `.next/static`.**
 peptidecortex.com is serving the rebuilt site.
 
@@ -28,13 +28,21 @@ are a reference to read, not a prototype to execute.
 
 ## Where to start
 
-1. **Interactions and bloodwork** are the last two `Tools.dc.html` screens not
-   rebuilt. They are live and working inside the Mirror (`InteractionCheck`,
-   `BloodworkOverlay`) and reachable from the bench, so this is a restyle and a
-   route split, not a build.
-2. **The Mirror's own styling.** It sits at `/mirror` now and is the last
-   surface not speaking V3. It is also the most complex thing in the repo and
-   holds every write path, so treat a rewrite as a project, not an afternoon.
+**All eleven V3 screens are built.** Home, Auth, Legal, the library, the
+compound page, Shop, Product, Cart, Checkout, Zelle, Order, the bench, and all
+five tools — interactions, bloodwork, planner, dosing, scanner.
+
+What is left, in order:
+
+1. **Apply the shop migrations.** See below. Nothing about the shop works until
+   this happens and it is not a code task.
+2. **The Mirror's own styling.** It sits at `/mirror` and is the last surface
+   not speaking V3. It is also the most complex thing in the repo and holds
+   every write path, so treat a rewrite as a project, not an afternoon. It
+   works today.
+3. **The scanner's QR phone hand-off**, which needs a session-token table.
+4. **The planner's refinement thread** (`/api/protocol-consult` is still
+   uncalled — the planner drafts but does not yet argue back).
 
 ## /dashboard and /mirror — read this before moving anything
 
@@ -45,6 +53,9 @@ params only it reads — `?bloodwork=1`, `?tab=cycle`, `?ledger=1`,
 `?tab=rotation` — and it holds every write path the app has: adding a stack
 item, logging a dose, editing inventory, cycles, notes, side effects. The bench
 is a read surface that understands none of that.
+
+Ten routes still redirect there. `/checker` and `/bloodwork` were among them
+and are now screens of their own.
 
 If you point those redirects back at `/dashboard`, the app's only data entry
 becomes reachable by no route at all. `docs/design-integration-prompt.md` §5
@@ -244,7 +255,7 @@ same mistake is recorded in `046b7b6` from the previous session.
 
 ## Verification state
 
-`npm test` 365 passing across 26 files · `npx tsc --noEmit` clean ·
+`npm test` 386 passing across 28 files · `npx tsc --noEmit` clean ·
 `npx next build` succeeds · `grep -rlE "D14D7EHWHFH9|XAKRSW4WN85N|VJUDHK6MDGT3"
 .next/static` returns nothing · working tree clean · nothing unpushed ·
 production deployment READY.

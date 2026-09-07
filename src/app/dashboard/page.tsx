@@ -8,10 +8,12 @@
 // This route used to render MirrorClient — the zoomable field with the
 // interaction checker, the bloodwork overlay, THE MATH, and every write path
 // the app has. It has NOT been deleted or reimplemented. It lives at /mirror,
-// unchanged, and twelve routes that redirect into it (/stack, /log, /cycle,
-// /sites, /inventory, /notes, /reminders, /side-effects, /checker, /bloodwork,
-// /reconstitution, /welcome) were repointed there with their query params
-// intact.
+// unchanged, and the routes that redirect into it (/stack, /log, /cycle,
+// /sites, /inventory, /notes, /reminders, /side-effects, /reconstitution,
+// /welcome) were repointed there with their query params intact.
+//
+// /checker and /bloodwork were among them and are now real screens of their
+// own, so ten routes still redirect rather than twelve.
 //
 // That order matters. Those redirects carry params only the Mirror reads —
 // ?bloodwork=1, ?tab=cycle, ?ledger=1, ?tab=rotation — and this screen
@@ -54,8 +56,9 @@ export const metadata: Metadata = { title: 'The bench · Peptide Cortex' }
 /** Where the Mirror's capabilities live now, and what each one is. */
 const TOOLS: Array<[string, string, string]> = [
   ['/mirror', 'The field', 'Your stack, dose log, cycles, sites and notes. Everything you can edit.'],
-  ['/mirror?bloodwork=1', 'Bloodwork', 'Markers read against what is on your bench.'],
+  ['/checker', 'Interactions', 'Any two things compared. Free, three checks a day.'],
   ['/dosing', 'Dosing reference', 'What the label or the trial says, with its source. Never gated.'],
+  ['/bloodwork', 'Bloodwork', 'Your markers across panels. Pro.'],
   ['/protocol', 'Protocol planner', 'A week drafted around the bench. Pro.'],
   ['/scanner', 'Vial scanner', 'Photograph a shelf and check the reading. Pro.'],
 ]
