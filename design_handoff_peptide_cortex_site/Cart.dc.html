@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background:#E6E9EB; }
+  * { box-sizing:border-box; }
+  body { -webkit-font-smoothing:antialiased; }
+  a { color:#1A1D1F; text-decoration:none; }
+  a:hover { color:#1A8A9E; }
+  ::selection { background:#1A8A9E; color:#F4F5F6; }
+</style>
+</helmet>
+
+<div data-screen-label="Cart" style="min-height:100vh; display:flex; flex-direction:column; background:#E6E9EB; color:#1A1D1F; font-family:'Cormorant Garamond',Georgia,serif;">
+  <header style="border-bottom:1px solid #1A1D1F; flex:none;">
+    <div style="padding:14px clamp(16px,3vw,32px); display:flex; align-items:center; gap:clamp(14px,2vw,28px); flex-wrap:wrap;">
+      <a href="./Home.dc.html" style="display:inline-flex; align-items:center; gap:9px; white-space:nowrap;"><span style="width:7px; height:7px; border-radius:50%; background:#1A8A9E; display:inline-block;"></span><span style="font-weight:500; font-size:15px; letter-spacing:.22em;">PEPTIDE CORTEX</span><span style="font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#7E878E; margin-left:6px;">Shop</span></a>
+      <nav style="margin-left:auto; display:flex; align-items:center; gap:clamp(12px,2vw,24px); flex-wrap:wrap; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase;">
+        <a href="./Shop.dc.html" style="white-space:nowrap;">Catalogue</a><span style="border-bottom:1px solid #1A1D1F; white-space:nowrap; font-family:'JetBrains Mono',monospace; letter-spacing:.1em;">Cart · {{ count }}</span><a href="./App.dc.html" style="white-space:nowrap;">The bench</a><a href="./Auth.dc.html?m=login" style="color:#7E878E;">Account</a>
+      </nav>
+    </div>
+  </header>
+
+  <div style="flex:1; width:100%; max-width:1080px; margin:0 auto; padding:clamp(24px,3vw,40px) clamp(16px,3vw,32px) 60px;">
+    <div style="display:flex; gap:18px; align-items:baseline; flex-wrap:wrap;">
+      <h1 style="font-weight:300; font-size:clamp(34px,4vw,46px); line-height:1; letter-spacing:-.028em; margin:0;">Cart</h1>
+      <span style="font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; color:#7E878E;">{{ countLine }}</span>
+    </div>
+
+    <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-top:36px; border-top:1px solid #1A1D1F; padding-top:18px;">
+        <p style="margin:0; font-size:22px; font-style:italic; line-height:1.3;">Nothing in the cart.</p>
+        <a href="./Shop.dc.html" style="display:inline-block; margin-top:14px; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; border-bottom:1px solid #1A1D1F; padding-bottom:2px;">Back to the seven</a>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ hasLines }}" hint-placeholder-val="{{ true }}">
+      <div style="margin-top:36px; display:grid; grid-template-columns:minmax(0,1fr) auto auto auto; gap:0 clamp(14px,2.5vw,32px); padding-bottom:8px; border-bottom:1px solid #1A1D1F; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E;">
+        <span>Item · lot</span><span style="text-align:right;">Each</span><span style="text-align:center;">Qty</span><span style="text-align:right;">Line</span>
+      </div>
+      <sc-for list="{{ lines }}" as="l" hint-placeholder-count="2">
+        <div style="display:grid; grid-template-columns:minmax(0,1fr) auto auto auto; gap:0 clamp(14px,2.5vw,32px); align-items:center; padding:16px 0; border-bottom:1px solid rgba(26,29,31,.18);">
+          <div style="min-width:0;">
+            <a href="{{ l.href }}" style="font-size:26px; line-height:1; letter-spacing:-.01em;">{{ l.name }}</a>
+            <div style="margin-top:6px; display:flex; gap:14px; flex-wrap:wrap; font-family:'JetBrains Mono',monospace; font-size:12.5px; color:#3B4045;"><span>{{ l.size }}</span><span style="color:{{ l.lotInk }};">{{ l.lot }}</span><span style="font-family:'Cormorant Garamond',Georgia,serif; font-style:italic; font-size:15px; color:#1A1D1F;">{{ l.note }}</span></div>
+          </div>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:14px; text-align:right;">{{ l.each }}</span>
+          <div style="display:flex; align-items:center; border:1px solid #1A1D1F;">
+            <button onClick="{{ l.dec }}" style="appearance:none; background:none; border:none; width:36px; height:36px; font-family:'JetBrains Mono',monospace; font-size:16px; cursor:pointer; color:#1A1D1F;" style-hover="background:#DDE1E4;">−</button>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:14px; width:28px; text-align:center;">{{ l.qty }}</span>
+            <button onClick="{{ l.inc }}" style="appearance:none; background:none; border:none; width:36px; height:36px; font-family:'JetBrains Mono',monospace; font-size:16px; cursor:pointer; color:#1A1D1F;" style-hover="background:#DDE1E4;">+</button>
+          </div>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:16px; font-weight:500; text-align:right;">{{ l.total }}</span>
+        </div>
+      </sc-for>
+
+      <div style="margin-top:8px; display:grid; grid-template-columns:minmax(0,1fr) auto; gap:0 24px; font-family:'JetBrains Mono',monospace; font-size:14px;">
+        <span style="padding:10px 0; color:#3B4045;">Subtotal</span><span style="padding:10px 0; text-align:right; font-size:22px; font-weight:500;">{{ subtotal }}</span>
+        <span style="padding:6px 0 10px; color:#3B4045; border-bottom:1px solid #1A1D1F;">Shipping</span><span style="padding:6px 0 10px; text-align:right; color:#7E878E; border-bottom:1px solid #1A1D1F;">chosen at checkout</span>
+      </div>
+
+      <div style="margin-top:24px; display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+        <a href="./Checkout.dc.html" style="display:inline-flex; align-items:center; border:1px solid #1A1D1F; background:#1A1D1F; color:#F4F5F6; font-family:Jost,sans-serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase; padding:14px 22px; min-height:44px;" style-hover="background:#1A8A9E; border-color:#1A8A9E; color:#F4F5F6;">Checkout</a>
+        <a href="./Shop.dc.html" style="font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; border-bottom:1px solid #1A1D1F; padding-bottom:2px;">Keep looking</a>
+        <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E; margin-left:auto;">Checkout needs an account · 18+ · US only</span>
+      </div>
+      <p style="margin:28px 0 0; max-width:60ch; font-size:17px; line-height:1.45; color:#3B4045; text-wrap:pretty;">Vials ship cold-chain from the lot shown. Where a line reads pending, the vial ships with no published assay until the lab returns.</p>
+    </sc-if>
+  </div>
+
+  <footer style="flex:none; border-top:1px solid #1A1D1F; background:#1A1D1F; color:#C9CED2; padding:14px clamp(16px,3vw,32px); font-family:Jost,sans-serif; font-size:10px; letter-spacing:.18em; text-transform:uppercase; line-height:1.8; display:flex; flex-wrap:wrap; gap:8px 24px; justify-content:space-between;"><span style="max-width:80ch;">{{ legal }}</span><span style="display:flex; gap:16px; flex-wrap:wrap;"><a href="./Legal.dc.html?page=terms" style="color:#C9CED2;">Terms</a><a href="./Legal.dc.html?page=privacy" style="color:#C9CED2;">Privacy</a><a href="./Legal.dc.html?page=refund" style="color:#C9CED2;">Refunds</a></span></footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { d: null, cart: null, lines: [] };
+  componentDidMount() {
+    Promise.all([import('./shop-data.js'), import('./cart.js')]).then(([d, cart]) => this.setState({ d, cart, lines: cart.read() }));
+  }
+  renderVals() {
+    const { d, cart, lines } = this.state;
+    if (!d) return { lines: [], legal: '', count: 0, countLine: '', empty: false, hasLines: false };
+    const set = (slug, q) => this.setState({ lines: cart.setQty(slug, q) });
+    const rows = lines.map(l => {
+      const p = d.bySlug(l.slug), L = p.lot;
+      return { name: p.name, href: './Product.dc.html?p=' + p.slug, size: p.size + ' ' + p.unit, lot: L.code ? 'lot ' + L.code : 'no lot yet', lotInk: L.code ? '#3B4045' : '#7E878E',
+        note: L.state === 'pending' ? 'ships with no published assay' : '', each: cart.money(p.priceCents), qty: l.qty, total: cart.money(p.priceCents * l.qty),
+        dec: () => set(l.slug, l.qty - 1), inc: () => set(l.slug, l.qty + 1) };
+    });
+    const n = cart.count(), sub = lines.reduce((s, l) => s + d.bySlug(l.slug).priceCents * l.qty, 0);
+    return { lines: rows, legal: d.LEGAL, count: n, countLine: n ? n + (n === 1 ? ' vial' : ' vials') : 'empty', empty: !lines.length, hasLines: !!lines.length, subtotal: cart.money(sub) };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background:#E6E9EB; }
+  * { box-sizing:border-box; }
+  body { -webkit-font-smoothing:antialiased; }
+  a { color:#1A1D1F; text-decoration:none; }
+  a:hover { color:#1A8A9E; }
+  input { font:inherit; color:#1A1D1F; }
+  input:focus { outline:none; border-color:#1A8A9E !important; }
+  input::placeholder { color:#9AA3A9; font-style:italic; }
+  ::selection { background:#1A8A9E; color:#F4F5F6; }
+</style>
+</helmet>
+
+<div data-screen-label="Auth" style="min-height:100vh; display:flex; flex-direction:column; background:#E6E9EB; color:#1A1D1F; font-family:'Cormorant Garamond',Georgia,serif;">
+  <header style="border-bottom:1px solid #1A1D1F;">
+    <div style="padding:14px clamp(16px,3vw,32px); display:flex; align-items:center; gap:clamp(12px,2vw,28px); flex-wrap:wrap;">
+      <a href="./Home.dc.html" style="display:inline-flex; align-items:center; gap:9px; white-space:nowrap;"><span style="width:7px; height:7px; border-radius:50%; background:#1A8A9E; display:inline-block;"></span><span style="font-weight:500; font-size:15px; letter-spacing:.22em;">PEPTIDE CORTEX</span></a>
+      <nav style="margin-left:auto; display:flex; align-items:center; gap:clamp(12px,2vw,24px); font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase;">
+        <a href="./App.dc.html?v=library">Library</a><a href="./Shop.dc.html">Shop</a>
+      </nav>
+    </div>
+  </header>
+
+  <div style="flex:1; display:grid; grid-template-columns:{{ cols }};">
+    <div style="padding:clamp(28px,4vw,56px) clamp(16px,3vw,32px) 48px; border-right:{{ border }};">
+      <div style="display:flex; gap:18px; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#7E878E;">
+        <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3"><a href="{{ t.href }}" style="color:{{ t.ink }}; border-bottom:1px solid {{ t.line }}; padding-bottom:3px; white-space:nowrap;">{{ t.label }}</a></sc-for>
+      </div>
+      <h1 style="margin:22px 0 0; font-weight:300; font-size:clamp(34px,4.4vw,56px); line-height:1; letter-spacing:-.028em; text-wrap:pretty; max-width:18ch;">{{ title }}</h1>
+      <p style="margin:14px 0 0; font-size:18px; line-height:1.45; color:#3B4045; max-width:50ch; text-wrap:pretty;">{{ lede }}</p>
+
+      <sc-if value="{{ showForm }}" hint-placeholder-val="{{ true }}">
+        <form onSubmit="{{ submit }}" style="margin-top:32px; max-width:460px; display:flex; flex-direction:column; gap:16px;">
+          <label style="display:flex; flex-direction:column; gap:6px;">
+            <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E;">Email</span>
+            <input type="email" value="{{ email }}" onChange="{{ setEmail }}" placeholder="you@lab.example" autoComplete="email" style="height:48px; padding:0 12px; border:1px solid rgba(26,29,31,.45); background:#F4F5F6; font-size:18px;">
+          </label>
+          <sc-if value="{{ needPassword }}" hint-placeholder-val="{{ true }}">
+            <label style="display:flex; flex-direction:column; gap:6px;">
+              <span style="display:flex; justify-content:space-between; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E;"><span>Password</span><sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}"><a href="./Auth.dc.html?m=reset" style="color:#7E878E;">Forgot it</a></sc-if></span>
+              <input type="password" value="{{ password }}" onChange="{{ setPassword }}" placeholder="{{ pwPlaceholder }}" style="height:48px; padding:0 12px; border:1px solid rgba(26,29,31,.45); background:#F4F5F6; font-size:18px; font-family:'JetBrains Mono',monospace; letter-spacing:.1em;">
+            </label>
+          </sc-if>
+          <sc-if value="{{ isSignup }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E;">Date of birth</span>
+              <div style="display:grid; grid-template-columns:1fr 1fr 1.4fr; gap:10px;">
+                <input value="{{ dob.m }}" onChange="{{ setM }}" placeholder="MM" inputMode="numeric" maxLength="2" style="height:48px; padding:0 12px; border:1px solid rgba(26,29,31,.45); background:#F4F5F6; font-size:18px; font-family:'JetBrains Mono',monospace; text-align:center;">
+                <input value="{{ dob.d }}" onChange="{{ setD }}" placeholder="DD" inputMode="numeric" maxLength="2" style="height:48px; padding:0 12px; border:1px solid rgba(26,29,31,.45); background:#F4F5F6; font-size:18px; font-family:'JetBrains Mono',monospace; text-align:center;">
+                <input value="{{ dob.y }}" onChange="{{ setY }}" placeholder="YYYY" inputMode="numeric" maxLength="4" style="height:48px; padding:0 12px; border:1px solid rgba(26,29,31,.45); background:#F4F5F6; font-size:18px; font-family:'JetBrains Mono',monospace; text-align:center;">
+              </div>
+              <span style="font-size:15px; line-height:1.4; color:{{ dobInk }};">{{ dobNote }}</span>
+            </div>
+          </sc-if>
+          <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin-top:6px;">
+            <button type="submit" disabled="{{ notReady }}" style="appearance:none; border:1px solid #1A1D1F; background:#1A1D1F; color:#F4F5F6; font-family:Jost,sans-serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase; padding:14px 22px; cursor:pointer; min-height:48px; opacity:{{ ctaOpacity }};" style-hover="background:#1A8A9E; border-color:#1A8A9E;">{{ cta }}</button>
+            <span style="font-size:15px; font-style:italic; color:#3B4045;">{{ ctaNote }}</span>
+          </div>
+          <sc-if value="{{ isSignup }}" hint-placeholder-val="{{ true }}">
+            <p style="margin:6px 0 0; font-size:14.5px; line-height:1.45; color:#7E878E; max-width:46ch;">By continuing you accept the <a href="./Legal.dc.html?page=terms" style="border-bottom:1px solid rgba(26,29,31,.35);">terms</a> and <a href="./Legal.dc.html?page=privacy" style="border-bottom:1px solid rgba(26,29,31,.35);">privacy notice</a>. Adults 18+. US only.</p>
+          </sc-if>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{ sent }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:32px; max-width:460px; border-top:1px solid #1A1D1F; padding-top:16px;">
+          <p style="margin:0; font-size:22px; line-height:1.3; text-wrap:pretty;">If an account exists for <span style="font-family:'JetBrains Mono',monospace; font-size:17px;">{{ email }}</span>, a reset link is on its way.</p>
+          <p style="margin:10px 0 0; font-size:16px; line-height:1.45; color:#3B4045;">Links expire after one hour. Nothing changes until you open one.</p>
+          <a href="./Auth.dc.html?m=login" style="display:inline-block; margin-top:14px; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; border-bottom:1px solid #1A1D1F; padding-bottom:2px;">Back to sign in</a>
+        </div>
+      </sc-if>
+    </div>
+
+    <aside style="background:#F4F5F6; padding:clamp(28px,4vw,56px) clamp(16px,3vw,32px);">
+      <div style="font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#1A8A9E;">What an account is for</div>
+      <div style="margin-top:14px; border-top:1px solid #1A1D1F;">
+        <sc-for list="{{ reasons }}" as="r" hint-placeholder-count="3">
+          <div style="display:grid; grid-template-columns:minmax(0,110px) minmax(0,1fr); gap:14px; padding:12px 0; border-bottom:1px solid rgba(26,29,31,.16); align-items:baseline;">
+            <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E;">{{ r.k }}</span>
+            <span style="font-size:16px; line-height:1.45; min-width:0;">{{ r.v }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <p style="margin:18px 0 0; font-size:16px; line-height:1.45; color:#3B4045; text-wrap:pretty;">Reading the library needs no account. Keeping a bench, or buying, does.</p>
+    </aside>
+  </div>
+
+  <footer style="background:#1A1D1F; color:#C9CED2; padding:14px clamp(16px,3vw,32px); font-family:Jost,sans-serif; font-size:10px; letter-spacing:.18em; text-transform:uppercase; line-height:1.8;">{{ legal }}</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;mode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;url&quot;,&quot;options&quot;:[&quot;url&quot;,&quot;signup&quot;,&quot;login&quot;,&quot;reset&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Auth&quot;}}">
+class Component extends DCLogic {
+  state = { m: 'signup', email: '', password: '', dob: { m: '', d: '', y: '' }, sent: false, wide: true, legal: '' };
+  componentDidMount() {
+    this.onResize = () => this.setState({ wide: window.innerWidth > 860 });
+    this.onResize(); window.addEventListener('resize', this.onResize); if (window.ResizeObserver) { this.ro = new ResizeObserver(this.onResize); this.ro.observe(document.documentElement); }
+    const q = new URLSearchParams(window.location.search).get('m');
+    this.setState({ m: ['signup', 'login', 'reset'].includes(q) ? q : 'signup' });
+    import('./shop-data.js').then(d => this.setState({ legal: d.LEGAL }));
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onResize); if (this.ro) this.ro.disconnect(); }
+  age() {
+    const { m, d, y } = this.state.dob; if (!(m && d && y && y.length === 4)) return null;
+    const b = new Date(+y, +m - 1, +d); if (isNaN(b)) return null;
+    const now = new Date(); let a = now.getFullYear() - b.getFullYear(); const md = now.getMonth() - b.getMonth();
+    if (md < 0 || (md === 0 && now.getDate() < b.getDate())) a--; return a;
+  }
+  renderVals() {
+    const { m, email, password, dob, sent, wide } = this.state;
+    const mode = (this.props.mode && this.props.mode !== 'url') ? this.props.mode : m;
+    const isSignup = mode === 'signup', isLogin = mode === 'login', isReset = mode === 'reset';
+    const age = this.age(), under = age !== null && age < 18, dobComplete = age !== null;
+    const emailOk = /.+@.+\..+/.test(email);
+    const notReady = !emailOk || (isSignup && (!password || !dobComplete || under)) || (isLogin && !password);
+    const field = k => e => this.setState(s => ({ dob: { ...s.dob, [k]: e.target.value.replace(/\D/g, '') } }));
+    const submit = e => { e.preventDefault(); if (notReady) return; if (isReset) { this.setState({ sent: true }); return; } window.location.href = './App.dc.html?tier=free'; };
+    const tab = (k, label) => ({ label, href: './Auth.dc.html?m=' + k, ink: mode === k ? '#1A1D1F' : '#7E878E', line: mode === k ? '#1A1D1F' : 'transparent' });
+    return {
+      cols: wide ? 'minmax(0,1.4fr) minmax(300px,1fr)' : 'minmax(0,1fr)', border: wide ? '1px solid #1A1D1F' : 'none',
+      tabs: [tab('signup', 'Create account'), tab('login', 'Sign in'), tab('reset', 'Reset password')],
+      title: isSignup ? 'An account, so a bench and an order have somewhere to live.' : (isLogin ? 'Back to the bench.' : 'Reset your password.'),
+      lede: isSignup ? 'Email, a password, and your date of birth. The date is stored: we sell to adults only and check it twice — here and again at checkout.' : (isLogin ? 'Your library notes, your bench and your orders are where you left them.' : 'Enter the email on the account and we will send a one-hour link.'),
+      showForm: !sent, sent, isSignup, isLogin, needPassword: !isReset,
+      email, password, dob, setEmail: e => this.setState({ email: e.target.value }), setPassword: e => this.setState({ password: e.target.value }),
+      setM: field('m'), setD: field('d'), setY: field('y'),
+      pwPlaceholder: isSignup ? 'at least 10 characters' : '••••••••••',
+      dobNote: under ? 'Peptide Cortex is for adults. Accounts cannot be created under 18.' : (dobComplete ? 'Stored with the account. Checked again at checkout.' : 'Required. Month, day, year.'),
+      dobInk: under ? '#1A1D1F' : '#7E878E',
+      submit, notReady, ctaOpacity: notReady ? .4 : 1,
+      cta: isSignup ? 'Create account' : (isLogin ? 'Sign in' : 'Send reset link'),
+      ctaNote: isSignup ? (under ? 'Nothing was created.' : 'Free. Reading stays free after.') : (isLogin ? 'No account yet? Create one above.' : ''),
+      reasons: [ { k: 'Recall', v: 'Orders are tied to a lot code. If a batch is ever recalled, we can reach exactly the people who hold it.' }, { k: 'Age', v: 'Date of birth is a real field, not a checkbox. Under-18 is refused at signup and again at the sale.' }, { k: 'The bench', v: 'Vials, log and notes persist across your phone and desktop. Reading never needs this.' } ],
+      legal: this.state.legal,
+    };
+  }
+}
+</script>
+</body>
+</html>

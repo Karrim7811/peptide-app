@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background:#E6E9EB; }
+  * { box-sizing:border-box; }
+  body { -webkit-font-smoothing:antialiased; }
+  a { color:#1A1D1F; text-decoration:none; }
+  a:hover { color:#1A8A9E; }
+  ::selection { background:#1A8A9E; color:#F4F5F6; }
+</style>
+</helmet>
+
+<div data-screen-label="Order status" style="min-height:100vh; display:flex; flex-direction:column; background:#E6E9EB; color:#1A1D1F; font-family:'Cormorant Garamond',Georgia,serif;">
+  <header style="border-bottom:1px solid #1A1D1F; flex:none;">
+    <div style="padding:14px clamp(16px,3vw,32px); display:flex; align-items:center; gap:clamp(14px,2vw,28px); flex-wrap:wrap;">
+      <a href="./Home.dc.html" style="display:inline-flex; align-items:center; gap:9px; white-space:nowrap;"><span style="width:7px; height:7px; border-radius:50%; background:#1A8A9E; display:inline-block;"></span><span style="font-weight:500; font-size:15px; letter-spacing:.22em;">PEPTIDE CORTEX</span><span style="font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#7E878E; margin-left:6px;">Shop</span></a>
+      <nav style="margin-left:auto; display:flex; align-items:center; gap:clamp(12px,2vw,24px); flex-wrap:wrap; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase;">
+        <a href="./Shop.dc.html" style="white-space:nowrap;">Catalogue</a><a href="./Cart.dc.html" style="white-space:nowrap; font-family:'JetBrains Mono',monospace; letter-spacing:.1em;">Cart · {{ count }}</a><span style="border-bottom:1px solid #1A1D1F;">Orders</span>
+      </nav>
+    </div>
+  </header>
+
+  <!-- prototype only: state switcher -->
+  <div style="border-bottom:1px solid rgba(26,29,31,.18); padding:8px clamp(16px,3vw,32px); display:flex; gap:4px 18px; flex-wrap:wrap; align-items:baseline; font-family:'JetBrains Mono',monospace; font-size:11px; color:#7E878E;">
+    <span style="font-family:Jost,sans-serif; font-size:9px; letter-spacing:.2em; text-transform:uppercase;">prototype · state</span>
+    <sc-for list="{{ switcher }}" as="s" hint-placeholder-count="7"><a href="{{ s.href }}" style="color:{{ s.ink }}; border-bottom:1px solid {{ s.line }}; padding-bottom:1px;">{{ s.label }}</a></sc-for>
+  </div>
+
+  <div style="flex:1; display:grid; grid-template-columns:{{ cols }};">
+    <div style="min-width:0; padding:clamp(24px,3vw,40px) clamp(16px,3vw,32px) 60px; border-right:{{ mainBorder }};">
+      <div style="display:flex; gap:18px; align-items:baseline; flex-wrap:wrap;">
+        <span style="font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; color:#7E878E;">Order</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-weight:500; font-size:clamp(34px,4vw,46px); line-height:1; letter-spacing:.02em;">{{ ref }}</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#3B4045;">placed {{ placed }}</span>
+      </div>
+
+      <h1 style="margin:28px 0 0; font-weight:300; font-size:clamp(30px,3.4vw,40px); line-height:1.1; letter-spacing:-.024em; text-wrap:pretty; max-width:24ch;">{{ head }}</h1>
+      <p style="margin:14px 0 0; font-size:19px; line-height:1.45; max-width:62ch; text-wrap:pretty; color:#1A1D1F;">{{ next }}</p>
+
+      <!-- zelle instructions repeat while awaiting -->
+      <sc-if value="{{ showZelle }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:28px; border:1px solid #1A1D1F; background:#F4F5F6; padding:18px 20px 20px; display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:18px 32px; align-items:end;">
+          <div><div style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#1A8A9E;">Memo · reference</div><div style="font-family:'JetBrains Mono',monospace; font-weight:500; font-size:clamp(40px,4vw,56px); line-height:1; letter-spacing:.02em; margin-top:8px;">{{ ref }}</div></div>
+          <div><div style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E;">Send exactly</div><div style="font-family:'JetBrains Mono',monospace; font-weight:500; font-size:30px; line-height:1; margin-top:8px;">{{ amount }}</div></div>
+          <div><div style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E;">To</div><div style="font-family:'JetBrains Mono',monospace; font-size:16px; line-height:1; margin-top:12px; word-break:break-all;">{{ handle }}</div></div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;"><button onClick="{{ copyRef }}" style="appearance:none; border:1px solid #1A1D1F; background:#1A1D1F; color:#F4F5F6; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.22em; text-transform:uppercase; padding:12px 16px; cursor:pointer; min-height:44px;" style-hover="background:#1A8A9E; border-color:#1A8A9E;">{{ refBtn }}</button><button onClick="{{ copyAmt }}" style="appearance:none; border:1px solid #1A1D1F; background:transparent; color:#1A1D1F; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.22em; text-transform:uppercase; padding:12px 16px; cursor:pointer; min-height:44px;" style-hover="background:#1A1D1F; color:#F4F5F6;">{{ amtBtn }}</button></div>
+        </div>
+      </sc-if>
+
+      <!-- timeline -->
+      <div style="margin-top:36px; border-top:1px solid #1A1D1F;">
+        <sc-for list="{{ steps }}" as="st" hint-placeholder-count="5">
+          <div style="display:grid; grid-template-columns:18px minmax(0,1fr) auto; gap:0 16px; align-items:baseline; padding:14px 0; border-bottom:1px solid rgba(26,29,31,.18); color:{{ st.ink }};">
+            <span style="width:10px; height:10px; border-radius:50%; border:1px solid {{ st.dotLine }}; background:{{ st.dot }}; align-self:center;"></span>
+            <span style="min-width:0;"><span style="font-size:22px; line-height:1;">{{ st.label }}</span><span style="font-size:15.5px; font-style:italic; color:#3B4045; margin-left:12px;">{{ st.note }}</span></span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:13px; text-align:right; white-space:nowrap;">{{ st.when }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ hasTracking }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:20px; display:grid; grid-template-columns:minmax(0,140px) minmax(0,1fr); gap:10px 24px; align-items:baseline;">
+          <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E;">Tracking</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:16px;">{{ tracking }}<span style="font-size:12px; color:#3B4045; margin-left:12px;">{{ carrier }}</span></span>
+        </div>
+      </sc-if>
+
+      <p style="margin:28px 0 0; font-size:15.5px; line-height:1.45; color:#3B4045; max-width:64ch; text-wrap:pretty;">{{ refundLine }}</p>
+    </div>
+
+    <!-- side: the order -->
+    <aside style="min-width:0; background:#F4F5F6; padding:clamp(24px,3vw,40px) clamp(16px,3vw,32px);">
+      <div style="display:flex; justify-content:space-between; align-items:baseline; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#1A8A9E; border-bottom:1px solid #1A1D1F; padding-bottom:8px;"><span>Items</span><span style="color:#7E878E;">{{ payLabel }}</span></div>
+      <sc-for list="{{ lines }}" as="l" hint-placeholder-count="2">
+        <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:0 14px; padding:12px 0; border-bottom:1px solid rgba(26,29,31,.18); align-items:baseline;">
+          <span style="min-width:0;"><span style="font-size:20px;">{{ l.name }}</span><span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#3B4045; margin-left:10px;">{{ l.meta }}</span></span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:14px;">{{ l.total }}</span>
+        </div>
+      </sc-for>
+      <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:6px 14px; padding:12px 0; font-family:'JetBrains Mono',monospace; font-size:13px; color:#3B4045;">
+        <span>Subtotal</span><span style="text-align:right; color:#1A1D1F;">{{ subtotal }}</span>
+        <span>Shipping · {{ methodName }}</span><span style="text-align:right;">{{ shipPrice }}</span>
+      </div>
+      <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:0 14px; padding:12px 0; border-top:1px solid #1A1D1F; align-items:baseline; font-family:'JetBrains Mono',monospace;">
+        <span style="font-size:13px;">Total</span><span style="font-size:26px; font-weight:500; text-align:right;">{{ amount }}</span>
+      </div>
+      <div style="margin-top:24px; border-top:1px solid #1A1D1F; padding-top:12px; display:grid; grid-template-columns:minmax(0,100px) minmax(0,1fr); gap:8px 14px; font-size:16px; line-height:1.4;">
+        <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E; padding-top:4px;">Ship to</span><span style="white-space:pre-line;">{{ address }}</span>
+        <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E; padding-top:4px;">Service</span><span>{{ methodLong }}</span>
+        <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E; padding-top:4px;">Cold chain</span><span style="font-family:'JetBrains Mono',monospace; font-size:13px;">{{ shelf }}</span>
+      </div>
+    </aside>
+  </div>
+
+  <footer style="flex:none; border-top:1px solid #1A1D1F; background:#1A1D1F; color:#C9CED2; padding:14px clamp(16px,3vw,32px); font-family:Jost,sans-serif; font-size:10px; letter-spacing:.18em; text-transform:uppercase; line-height:1.8; display:flex; flex-wrap:wrap; gap:8px 24px; justify-content:space-between;"><span style="max-width:80ch;">{{ legal }}</span><span style="display:flex; gap:16px; flex-wrap:wrap;"><a href="./Legal.dc.html?page=terms" style="color:#C9CED2;">Terms</a><a href="./Legal.dc.html?page=privacy" style="color:#C9CED2;">Privacy</a><a href="./Legal.dc.html?page=refund" style="color:#C9CED2;">Refunds</a></span></footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;state&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;url&quot;,&quot;options&quot;:[&quot;url&quot;,&quot;awaiting&quot;,&quot;confirming&quot;,&quot;paid&quot;,&quot;shipped&quot;,&quot;delivered&quot;,&quot;expired&quot;,&quot;cancelled&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Order&quot;}}">
+class Component extends DCLogic {
+  state = { d: null, cart: null, order: null, wide: true, s: 'awaiting', copied: null };
+  componentDidMount() {
+    this.onResize = () => this.setState({ wide: window.innerWidth > 960 });
+    this.onResize(); window.addEventListener('resize', this.onResize); if (window.ResizeObserver) { this.ro = new ResizeObserver(this.onResize); this.ro.observe(document.documentElement); }
+    const q = new URLSearchParams(window.location.search).get('s');
+    Promise.all([import('./shop-data.js'), import('./cart.js')]).then(([d, cart]) => this.setState({ d, cart, order: cart.readOrder(), s: q || 'awaiting' }));
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onResize); if (this.ro) this.ro.disconnect(); }
+  copy(key, text) { return () => { try { navigator.clipboard.writeText(text); } catch (e) {} this.setState({ copied: key }); clearTimeout(this.t); this.t = setTimeout(() => this.setState({ copied: null }), 1600); }; }
+  renderVals() {
+    const { d, cart, wide, copied } = this.state;
+    const cols = wide ? 'minmax(0,1.5fr) minmax(320px,1fr)' : 'minmax(0,1fr)';
+    if (!d) return { steps: [], lines: [], switcher: [], legal: '', cols, mainBorder: 'none', count: 0 };
+    const key = (this.props.state && this.props.state !== 'url') ? this.props.state : this.state.s;
+    const S = d.STATES[key] || d.STATES.awaiting;
+    const order = this.state.order || { ref: d.REF_CODE, lines: [{ slug: 'glp-3-30mg', qty: 1 }, { slug: 'mots-c-10mg', qty: 1 }], ship: { name: 'K. Reyes', line1: '1180 Mission St', line2: 'Apt 4', city: 'San Francisco', state: 'CA', zip: '94103' }, method: 'standard', pay: S.rail || 'zelle', placedAt: '2026-09-04T14:12:00', subtotalCents: 15500 };
+    const pay = S.rail || order.pay;
+    const m = d.SHIPPING.find(x => x.id === order.method);
+    const amount = cart.money(order.subtotalCents + (m.priceCents || 0));
+    const placedD = new Date(order.placedAt);
+    const fmt = (dt, t) => dt.toISOString().slice(0, 10) + (t ? ' ' + dt.toTimeString().slice(0, 5) : '');
+    const plus = days => { const x = new Date(placedD); x.setDate(x.getDate() + days); return x; };
+    const step = S.step, term = S.terminal;
+    const payWhen = pay === 'zelle' ? fmt(plus(1), true) : fmt(placedD, true);
+    const base = [
+      { label: 'Placed', when: fmt(placedD, true), done: true, note: '' },
+      { label: pay === 'zelle' ? 'Payment matched' : 'Payment confirmed', when: step >= 2 ? payWhen : (key === 'awaiting' ? 'by hand · usually ≤ 1 business day' : key === 'confirming' ? 'on the network · minutes' : ''), done: step >= 2, note: step < 2 && !term ? 'estimates start here' : (step >= 2 ? 'estimates start here' : '') },
+      { label: 'Handed to USPS', when: step >= 3 ? fmt(plus(pay === 'zelle' ? 2 : 1)) : (step >= 2 ? 'within 1 business day' : ''), done: step >= 3, note: '' },
+      { label: 'Delivered', when: step >= 4 ? fmt(plus(pay === 'zelle' ? 6 : 5)) : (step >= 2 ? (m.guaranteed ? 'next business day after hand-off · guaranteed' : m.eta + ' after hand-off · estimate') : ''), done: step >= 4, note: '' },
+    ];
+    if (term) base.push({ label: S.label, when: fmt(plus(key === 'expired' ? 3 : 1), true), done: true, terminal: true, note: '' });
+    const steps = base.map((b, i) => {
+      const current = !term && ((step === 1 && i === 1) || (step === 2 && i === 2) || (step === 3 && i === 3)) || (term && b.terminal);
+      return { ...b, ink: b.done || current ? '#1A1D1F' : '#7E878E', dot: b.done ? '#1A1D1F' : (current ? '#1A8A9E' : 'transparent'), dotLine: b.done ? '#1A1D1F' : (current ? '#1A8A9E' : '#7E878E') };
+    });
+    const btn = (k, label) => copied === k ? 'Copied' : label;
+    return {
+      legal: d.LEGAL, count: cart.count(), cols, mainBorder: wide ? '1px solid #1A1D1F' : 'none',
+      ref: order.ref, placed: fmt(placedD, true), head: S.head, next: S.next, steps,
+      switcher: Object.keys(d.STATES).map(k => ({ label: k, href: './Order.dc.html?s=' + k, ink: k === key ? '#1A1D1F' : '#7E878E', line: k === key ? '#1A1D1F' : 'transparent' })),
+      showZelle: key === 'awaiting', amount, handle: d.ZELLE_HANDLE, copyRef: this.copy('ref', order.ref), copyAmt: this.copy('amt', amount.replace('$', '')), refBtn: btn('ref', 'Copy code'), amtBtn: btn('amt', 'Copy amount'),
+      hasTracking: step >= 3 && !term, tracking: '9400 1112 0620 3452 8871 06', carrier: m.carrier,
+      refundLine: term ? '' : 'Refunds are handled by hand. Unopened vials with the cold-chain seal intact can be returned within 14 days of delivery; email us with reference ' + order.ref + '.',
+      lines: order.lines.map(l => { const pr = d.bySlug(l.slug); return { name: pr.name, meta: pr.size + ' ' + pr.unit + ' × ' + l.qty + (pr.lot.code ? ' · ' + pr.lot.code : ' · no lot yet'), total: cart.money(pr.priceCents * l.qty) }; }),
+      payLabel: pay === 'zelle' ? 'Zelle' : 'Crypto', subtotal: cart.money(order.subtotalCents), methodName: m.name, shipPrice: m.priceCents != null ? cart.money(m.priceCents) : d.PRICE_TBC,
+      address: [order.ship.name, [order.ship.line1, order.ship.line2].filter(Boolean).join(', '), order.ship.city + ', ' + String(order.ship.state).toUpperCase() + ' ' + order.ship.zip].join('\n'),
+      methodLong: m.name + ' · ' + m.carrier + ' · ' + m.eta + (m.guaranteed ? ', carrier-guaranteed' : ', estimate'), shelf: d.SHELF,
+    };
+  }
+}
+</script>
+</body>
+</html>

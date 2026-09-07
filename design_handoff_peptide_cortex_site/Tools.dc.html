@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background:#E6E9EB; }
+  * { box-sizing:border-box; }
+  body { -webkit-font-smoothing:antialiased; }
+  a { color:#1A1D1F; text-decoration:none; }
+  a:hover { color:#1A8A9E; }
+  input, textarea { font:inherit; color:#1A1D1F; background:none; border:none; outline:none; }
+  input::placeholder, textarea::placeholder { color:#9AA3A9; font-style:italic; }
+  ::selection { background:#1A8A9E; color:#F4F5F6; }
+  @keyframes pcPulse { 0%,100% { opacity:1; } 50% { opacity:.25; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
+</style>
+</helmet>
+
+<!-- PHONE CAPTURE PAGE · ?tool=scanner&phone=1 -->
+<sc-if value="{{ isPhone }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Phone capture" style="min-height:100vh; display:flex; flex-direction:column; background:#1A1D1F; color:#F4F5F6; font-family:'Cormorant Garamond',Georgia,serif;">
+    <div style="padding:16px 18px; display:flex; justify-content:space-between; align-items:center; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:#C9CED2;">
+      <span style="display:inline-flex; align-items:center; gap:8px;"><span style="width:7px; height:7px; border-radius:50%; background:#1A8A9E;"></span>Scan</span>
+      <span style="font-family:'JetBrains Mono',monospace; letter-spacing:.08em;">{{ session }}</span>
+    </div>
+    <sc-if value="{{ phCamera }}" hint-placeholder-val="{{ true }}">
+      <div style="flex:1; display:flex; flex-direction:column; padding:0 18px;">
+        <div style="flex:1; position:relative; background:#2C3236; border:1px solid rgba(201,206,210,.25); display:flex; align-items:center; justify-content:center; min-height:52vh;">
+          <div style="position:absolute; inset:14% 10%; border:1px solid rgba(201,206,210,.0);">
+            <span style="position:absolute; left:0; top:0; width:26px; height:26px; border-left:2px solid #F4F5F6; border-top:2px solid #F4F5F6;"></span>
+            <span style="position:absolute; right:0; top:0; width:26px; height:26px; border-right:2px solid #F4F5F6; border-top:2px solid #F4F5F6;"></span>
+            <span style="position:absolute; left:0; bottom:0; width:26px; height:26px; border-left:2px solid #F4F5F6; border-bottom:2px solid #F4F5F6;"></span>
+            <span style="position:absolute; right:0; bottom:0; width:26px; height:26px; border-right:2px solid #F4F5F6; border-bottom:2px solid #F4F5F6;"></span>
+          </div>
+          <span style="font-style:italic; font-size:19px; color:#C9CED2; text-align:center; padding:0 24px; text-wrap:pretty;">Fill the frame with the label. Name and milligrams are what it reads.</span>
+        </div>
+        <div style="padding:26px 0 34px; display:flex; flex-direction:column; align-items:center; gap:14px;">
+          <button onClick="{{ phShoot }}" aria-label="Take photo" style="appearance:none; width:76px; height:76px; border-radius:50%; border:3px solid #F4F5F6; background:transparent; cursor:pointer; padding:4px;"><span style="display:block; width:100%; height:100%; border-radius:50%; background:#F4F5F6;"></span></button>
+          <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E;">One-handed is fine</span>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ phConfirm }}" hint-placeholder-val="{{ false }}">
+      <div style="flex:1; display:flex; flex-direction:column; padding:8px 18px 34px; gap:18px;">
+        <div style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:#1A8A9E;">AI read · Claude vision · check before sending</div>
+        <div style="border-top:1px solid #C9CED2; padding-top:16px;">
+          <div style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E;">Peptide</div>
+          <input value="{{ scanName }}" onChange="{{ setScanName }}" style="width:100%; font-size:44px; font-weight:300; line-height:1.05; letter-spacing:-.02em; color:#F4F5F6; border-bottom:1px solid rgba(201,206,210,.35); padding:6px 0;">
+        </div>
+        <div>
+          <div style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E;">Amount</div>
+          <input value="{{ scanAmount }}" onChange="{{ setScanAmount }}" style="width:100%; font-family:'JetBrains Mono',monospace; font-size:34px; color:#F4F5F6; border-bottom:1px solid rgba(201,206,210,.35); padding:6px 0;">
+        </div>
+        <p style="margin:0; font-size:16px; font-style:italic; line-height:1.4; color:#C9CED2;">{{ scanConfidence }}</p>
+        <div style="margin-top:auto; display:flex; flex-direction:column; gap:10px;">
+          <button onClick="{{ phSend }}" style="appearance:none; border:1px solid #F4F5F6; background:#F4F5F6; color:#1A1D1F; font-family:Jost,sans-serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase; padding:16px 22px; min-height:52px; cursor:pointer;">Send to desktop</button>
+          <button onClick="{{ phRetake }}" style="appearance:none; border:1px solid #C9CED2; background:transparent; color:#F4F5F6; font-family:Jost,sans-serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase; padding:16px 22px; min-height:52px; cursor:pointer;">Retake</button>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ phSent }}" hint-placeholder-val="{{ false }}">
+      <div style="flex:1; display:flex; flex-direction:column; justify-content:center; padding:18px; gap:14px;">
+        <div style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:#1A8A9E;">Sent</div>
+        <h1 style="margin:0; font-weight:300; font-size:40px; line-height:1.05; letter-spacing:-.02em; text-wrap:pretty;">{{ scanName }} · {{ scanAmount }} is on the desktop.</h1>
+        <p style="margin:0; font-size:18px; font-style:italic; color:#C9CED2; line-height:1.4;">Nothing was added yet. The desktop confirms.</p>
+        <span onClick="{{ phRetake }}" style="margin-top:12px; cursor:pointer; font-family:Jost,sans-serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:#F4F5F6; border-bottom:1px solid #F4F5F6; align-self:flex-start; padding-bottom:3px;">Scan another</span>
+      </div>
+    </sc-if>
+    <div style="padding:12px 18px 18px; font-family:Jost,sans-serif; font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; line-height:1.7; color:#7E878E;">{{ disclaimer }}</div>
+  </div>
+</sc-if>
+
+<!-- SHELL -->
+<sc-if value="{{ isShell }}" hint-placeholder-val="{{ true }}">
+<div data-screen-label="Tools" style="min-height:100vh; display:flex; flex-direction:column; background:#E6E9EB; color:#1A1D1F; font-family:'Cormorant Garamond',Georgia,serif; overflow-x:clip;">
+
+  <header style="border-bottom:1px solid #1A1D1F; flex:none;">
+    <div style="padding:12px clamp(16px,3vw,32px); display:flex; align-items:center; gap:clamp(10px,2vw,28px); flex-wrap:wrap;">
+      <a href="./App.dc.html" style="display:inline-flex; align-items:center; gap:9px; white-space:nowrap;"><span style="width:7px; height:7px; border-radius:50%; background:#1A8A9E; display:inline-block;"></span><span style="font-weight:500; font-size:15px; letter-spacing:.22em;">PEPTIDE CORTEX</span></a>
+      <span style="font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#7E878E; white-space:nowrap;">Tools · {{ tierLabel }}</span>
+      <nav style="margin-left:auto; display:flex; align-items:center; gap:clamp(12px,2vw,24px); flex-wrap:wrap; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase;">
+        <a href="{{ benchHref }}" style="white-space:nowrap;">Bench</a>
+        <a href="{{ libraryHref }}" style="white-space:nowrap;">Library</a>
+        <span style="border-bottom:1px solid #1A1D1F; padding-bottom:2px; white-space:nowrap;">Tools</span>
+        <span onClick="{{ toggleTier }}" title="Prototype: switch tier" style="font-family:'JetBrains Mono',monospace; letter-spacing:.06em; color:#7E878E; cursor:pointer; white-space:nowrap;">k.reyes</span>
+      </nav>
+    </div>
+    <div style="border-top:1px solid rgba(26,29,31,.18); padding:0 clamp(16px,3vw,32px); overflow-x:auto; scrollbar-width:none;">
+      <div style="display:flex; gap:clamp(18px,3vw,36px); font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; white-space:nowrap;">
+        <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5"><a href="{{ t.href }}" style="padding:13px 0 11px; border-bottom:2px solid {{ t.line }}; color:{{ t.ink }}; min-height:44px; display:inline-flex; align-items:center;">{{ t.label }}</a></sc-for>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONSENT · a real moment, not a banner -->
+  <sc-if value="{{ consentOpen }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="AI consent" style="flex:1; display:grid; grid-template-columns:{{ cols }};">
+      <div style="min-width:0; padding:clamp(24px,4vw,56px) clamp(16px,3vw,32px) 48px; border-right:{{ mainBorder }};">
+        <div style="font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#1A8A9E;">Before the first AI request · consent v{{ consentVersion }}</div>
+        <h1 style="margin:14px 0 0; font-weight:300; font-size:clamp(34px,4.6vw,60px); line-height:1; letter-spacing:-.028em; max-width:18ch; text-wrap:pretty;">What leaves your account when you ask.</h1>
+        <p style="margin:18px 0 0; font-size:19px; line-height:1.45; color:#3B4045; max-width:58ch; text-wrap:pretty;">Five tools here send text or images to a language model and print what comes back. None of them run until you have read this once and agreed. It is asked again only if the terms change.</p>
+        <div style="margin-top:28px; border-top:1px solid #1A1D1F;">
+          <sc-for list="{{ consentRows }}" as="r" hint-placeholder-count="5">
+            <div style="display:grid; grid-template-columns:minmax(0,120px) minmax(0,1fr); gap:14px; padding:14px 0; border-bottom:1px solid rgba(26,29,31,.18); align-items:baseline;">
+              <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E;">{{ r.k }}</span>
+              <span style="font-size:17px; line-height:1.5; text-wrap:pretty;">{{ r.v }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="margin-top:28px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+          <button onClick="{{ grantConsent }}" style="appearance:none; border:1px solid #1A1D1F; background:#1A1D1F; color:#F4F5F6; font-family:Jost,sans-serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase; padding:14px 22px; min-height:44px; cursor:pointer; white-space:nowrap;" style-hover="background:#1A8A9E; border-color:#1A8A9E;">I have read this and consent · v{{ consentVersion }}</button>
+          <button onClick="{{ declineConsent }}" style="appearance:none; border:1px solid #1A1D1F; background:transparent; color:#1A1D1F; font-family:Jost,sans-serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase; padding:14px 22px; min-height:44px; cursor:pointer; white-space:nowrap;" style-hover="background:#1A1D1F; color:#F4F5F6;">Not now</button>
+        </div>
+        <p style="margin:16px 0 0; font-size:15.5px; font-style:italic; color:#3B4045; max-width:60ch;">Declining keeps the library, the dosing reference and the math fully open. Only the five tools wait.</p>
+      </div>
+      <aside style="min-width:0; background:#F4F5F6; padding:clamp(24px,3vw,40px) clamp(16px,3vw,32px);">
+        <div style="font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#1A8A9E; border-bottom:1px solid #1A1D1F; padding-bottom:8px;">Recorded</div>
+        <div style="display:grid; grid-template-columns:minmax(0,100px) minmax(0,1fr); gap:10px 14px; padding-top:12px; font-size:16px; line-height:1.45;">
+          <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E; padding-top:4px;">Account</span><span style="font-family:'JetBrains Mono',monospace; font-size:14px;">k.reyes</span>
+          <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E; padding-top:4px;">Version</span><span style="font-family:'JetBrains Mono',monospace; font-size:14px;">{{ consentVersion }}</span>
+          <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E; padding-top:4px;">Withdraw</span><span>Any time, from the account page. Tools stop; nothing else changes.</span>
+        </div>
+      </aside>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ consentClosed }}" hint-placeholder-val="{{ true }}">
+  <div style="flex:1; display:grid; grid-template-columns:{{ cols }}; min-height:0;">
+    <div style="min-width:0; display:flex; flex-direction:column; border-right:{{ mainBorder }};">
+
+      <div style="padding:clamp(22px,3vw,40px) clamp(16px,3vw,32px) 0; display:flex; gap:10px 18px; align-items:baseline; flex-wrap:wrap;">
+        <h1 style="font-weight:300; font-size:clamp(30px,3.6vw,46px); line-height:1; letter-spacing:-.028em; margin:0; text-wrap:pretty;">{{ title }}</h1>
+        <span style="font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; color:#7E878E;">{{ subtitle }}</span>
+      </div>
+      <p style="margin:14px 0 0; padding:0 clamp(16px,3vw,32px); font-size:18px; line-height:1.45; color:#3B4045; max-width:62ch; text-wrap:pretty;">{{ lede }}</p>
+
+      <!-- PRO GATE -->
+      <sc-if value="{{ gated }}" hint-placeholder-val="{{ false }}">
+        <div style="margin:28px clamp(16px,3vw,32px) 0; border:1px solid #1A1D1F; background:#F4F5F6; padding:22px 24px; display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,260px),1fr)); gap:18px 32px; align-items:end;">
+          <div>
+            <div style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#1A8A9E;">Pro</div>
+            <h2 style="margin:8px 0 0; font-weight:300; font-size:clamp(24px,2.4vw,32px); line-height:1.1; letter-spacing:-.02em; text-wrap:pretty;">{{ gateHead }}</h2>
+            <p style="margin:10px 0 0; font-size:16px; line-height:1.45; color:#3B4045; text-wrap:pretty;">{{ gateBody }}</p>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:10px; align-items:flex-start;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:14px;">{{ monthly }}/mo · {{ annual }}/yr · first month free</span>
+            <button onClick="{{ goPro }}" style="appearance:none; border:1px solid #1A1D1F; background:#1A1D1F; color:#F4F5F6; font-family:Jost,sans-serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase; padding:14px 22px; min-height:44px; cursor:pointer; white-space:nowrap;" style-hover="background:#1A8A9E; border-color:#1A8A9E;">{{ proCta }}</button>
+            <span style="font-size:15px; font-style:italic; color:#3B4045;">The dosing reference and the math stay free. Interactions: {{ freeChecks }} a day.</span>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- 1 · INTERACTIONS -->
+      <sc-if value="{{ isInteractions }}" hint-placeholder-val="{{ true }}">
+        <div style="padding:clamp(20px,3vw,32px) clamp(16px,3vw,32px) 0;">
+          <form onSubmit="{{ runCheck }}" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,280px),1fr)); gap:18px 28px; align-items:end;">
+            <div style="border-top:1px solid #1A1D1F; padding-top:10px;">
+              <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap;"><span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#1A8A9E;">One</span><span style="display:flex; gap:10px; font-family:Jost,sans-serif; font-size:9.5px; letter-spacing:.18em; text-transform:uppercase;"><sc-for list="{{ kindsA }}" as="k" hint-placeholder-count="4"><span onClick="{{ k.pick }}" style="cursor:pointer; color:{{ k.ink }}; border-bottom:1px solid {{ k.line }}; padding:4px 0;">{{ k.label }}</span></sc-for></span></div>
+              <input value="{{ checkA }}" onChange="{{ setA }}" placeholder="a peptide, a prescription, a supplement" style="width:100%; font-size:clamp(24px,2.4vw,32px); font-weight:300; letter-spacing:-.01em; border-bottom:1px solid #1A1D1F; padding:8px 0; min-height:52px;">
+            </div>
+            <div style="border-top:1px solid #1A1D1F; padding-top:10px;">
+              <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap;"><span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#1A8A9E;">Two</span><span style="display:flex; gap:10px; font-family:Jost,sans-serif; font-size:9.5px; letter-spacing:.18em; text-transform:uppercase;"><sc-for list="{{ kindsB }}" as="k" hint-placeholder-count="4"><span onClick="{{ k.pick }}" style="cursor:pointer; color:{{ k.ink }}; border-bottom:1px solid {{ k.line }}; padding:4px 0;">{{ k.label }}</span></sc-for></span></div>
+              <input value="{{ checkB }}" onChange="{{ setB }}" placeholder="anything, not only the 124" style="width:100%; font-size:clamp(24px,2.4vw,32px); font-weight:300; letter-spacing:-.01em; border-bottom:1px solid #1A1D1F; padding:8px 0; min-height:52px;">
+            </div>
+            <div style="grid-column:1 / -1; display:flex; gap:14px; align-items:center; flex-wrap:wrap;">
+              <button type="submit" style="appearance:none; border:1px solid #1A1D1F; background:#1A1D1F; color:#F4F5F6; font-family:Jost,sans-serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase; padding:14px 22px; min-height:44px; cursor:pointer; white-space:nowrap; opacity:{{ checkOpacity }};" style-hover="background:#1A8A9E; border-color:#1A8A9E;">Compare the two</button>
+              <span style="font-size:15.5px; font-style:italic; color:#3B4045;">{{ checkNote }}</span>
+            </div>
+          </form>
+
+          <sc-if value="{{ hasCheck }}" hint-placeholder-val="{{ true }}">
+            <div style="margin-top:32px; border-top:1px solid #1A1D1F; padding-top:14px;">
+              <div style="display:flex; justify-content:space-between; gap:10px 18px; flex-wrap:wrap; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase;"><span style="color:#1A8A9E;">AI-generated · Claude · not reviewed by a clinician</span><span style="color:#7E878E;">{{ checkPair }}</span></div>
+              <div style="margin-top:14px; display:flex; gap:12px 18px; align-items:baseline; flex-wrap:wrap;">
+                <span style="width:10px; height:10px; border-radius:50%; background:{{ levelDot }}; border:1px solid #1A1D1F; display:inline-block; transform:translateY(-2px);"></span>
+                <h2 style="margin:0; font-weight:300; font-size:clamp(26px,2.8vw,36px); line-height:1.05; letter-spacing:-.02em;">{{ levelLabel }}</h2>
+                <sc-if value="{{ inferred }}" hint-placeholder-val="{{ true }}"><span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E; border:1px solid rgba(26,29,31,.35); padding:4px 8px; white-space:nowrap;">Inferred from related molecules</span></sc-if>
+              </div>
+              <p style="margin:12px 0 0; font-size:20px; line-height:1.4; max-width:60ch; text-wrap:pretty;">{{ checkSummary }}</p>
+              <div style="margin-top:18px; display:grid; grid-template-columns:minmax(0,120px) minmax(0,1fr); gap:14px; padding:14px 0; border-top:1px solid rgba(26,29,31,.18); border-bottom:1px solid rgba(26,29,31,.18);">
+                <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E;">Reasoning</span>
+                <p style="margin:0; font-size:17px; line-height:1.5; color:#1A1D1F; text-wrap:pretty;">{{ checkDetails }}</p>
+              </div>
+              <div style="display:grid; grid-template-columns:minmax(0,120px) minmax(0,1fr); gap:14px; padding:14px 0; border-bottom:1px solid rgba(26,29,31,.18);">
+                <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E;">What the literature says</span>
+                <div style="display:flex; flex-direction:column; gap:8px;"><sc-for list="{{ checkRecs }}" as="r" hint-placeholder-count="3"><span style="font-size:17px; line-height:1.45; text-wrap:pretty;">{{ r.text }}</span></sc-for></div>
+              </div>
+              <p style="margin:14px 0 0; font-size:15.5px; font-style:italic; color:#3B4045; max-width:62ch;">An assessment with its reasoning, not a verdict. The level is the model's reading of the literature; the paragraph above is why. Saved to your history.</p>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- 2 · BLOODWORK -->
+      <sc-if value="{{ isBloodwork }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ bwTrend }}" hint-placeholder-val="{{ true }}">
+          <div style="padding:clamp(20px,3vw,32px) clamp(16px,3vw,32px) 0;">
+            <div style="display:flex; justify-content:space-between; align-items:baseline; gap:10px 18px; flex-wrap:wrap; border-bottom:1px solid #1A1D1F; padding-bottom:8px; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase;">
+              <span style="color:#1A8A9E;">Four panels · the trend</span>
+              <button onClick="{{ bwStartUpload }}" style="appearance:none; border:none; background:none; padding:0; cursor:pointer; font:inherit; color:#1A1D1F; border-bottom:1px solid #1A1D1F; padding-bottom:2px; min-height:32px;">Upload a fifth</button>
+            </div>
+            <div style="overflow-x:auto; margin:0 calc(-1 * clamp(16px,3vw,32px)); padding:0 clamp(16px,3vw,32px);">
+              <div style="min-width:640px;">
+                <div style="display:grid; grid-template-columns:minmax(150px,1.4fr) 96px repeat(4, minmax(68px,1fr)) 40px; gap:0 12px; padding:10px 0 6px; border-bottom:1px solid rgba(26,29,31,.18); font-family:Jost,sans-serif; font-size:9.5px; letter-spacing:.18em; text-transform:uppercase; color:#7E878E; align-items:end;">
+                  <span>Marker</span><span>Printed range</span>
+                  <sc-for list="{{ panelHeads }}" as="p" hint-placeholder-count="4"><span style="text-align:right; font-family:'JetBrains Mono',monospace; letter-spacing:.02em; color:{{ p.ink }};">{{ p.date }}<br><span style="color:#7E878E; font-family:Jost,sans-serif; letter-spacing:.14em;">{{ p.lab }}</span></span></sc-for>
+                  <span></span>
+                </div>
+                <sc-for list="{{ markerRows }}" as="m" hint-placeholder-count="10">
+                  <div style="display:grid; grid-template-columns:minmax(150px,1.4fr) 96px repeat(4, minmax(68px,1fr)) 40px; gap:0 12px; padding:9px 0; border-bottom:1px solid rgba(26,29,31,.14); align-items:baseline;">
+                    <span style="min-width:0;"><span style="font-size:17px;">{{ m.label }}</span><span style="font-family:Jost,sans-serif; font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:#7E878E; margin-left:8px;">{{ m.group }}</span></span>
+                    <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#7E878E;">{{ m.ref }}</span>
+                    <sc-for list="{{ m.cells }}" as="c" hint-placeholder-count="4"><span style="font-family:'JetBrains Mono',monospace; font-size:14px; text-align:right; color:{{ c.ink }}; font-weight:{{ c.weight }}; text-decoration:{{ c.deco }}; text-decoration-style:dotted; text-underline-offset:4px;">{{ c.v }}</span></sc-for>
+                    <span style="font-family:'JetBrains Mono',monospace; font-size:14px; text-align:right; color:#7E878E;">{{ m.trend }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="display:flex; gap:8px 24px; flex-wrap:wrap; padding:10px 0 0; font-family:Jost,sans-serif; font-size:9.5px; letter-spacing:.18em; text-transform:uppercase; color:#7E878E;"><span>bold · latest panel</span><span>· · not on that panel</span><span>↗ ↘ → · direction across panels, not a judgement</span><span>no figure is marked, ranked or flagged</span></div>
+
+            <div style="margin-top:32px; border-top:1px solid #1A1D1F; padding-top:14px;">
+              <div style="display:flex; justify-content:space-between; gap:10px 18px; flex-wrap:wrap; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase;"><span style="color:#1A8A9E;">AI-generated · Claude · educational overview · not a diagnosis</span><span style="color:#7E878E;">Panel of {{ latestDate }} against the bench</span></div>
+              <sc-if value="{{ bwHasOverview }}" hint-placeholder-val="{{ true }}">
+                <div style="margin-top:14px; display:flex; flex-direction:column; gap:12px; max-width:64ch;"><sc-for list="{{ overviewParas }}" as="p" hint-placeholder-count="3"><p style="margin:0; font-size:18px; line-height:1.48; text-wrap:pretty;">{{ p.text }}</p></sc-for></div>
+                <div style="margin-top:18px; border-top:1px solid rgba(26,29,31,.18);">
+                  <sc-for list="{{ overviewRefs }}" as="r" hint-placeholder-count="3">
+                    <div style="display:grid; grid-template-columns:minmax(0,140px) minmax(0,1fr); gap:6px 14px; padding:12px 0; border-bottom:1px solid rgba(26,29,31,.18); align-items:baseline;">
+                      <span style="min-width:0;"><span style="font-size:19px;">{{ r.peptide }}</span><br><span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#7E878E;">{{ r.markers }}</span></span>
+                      <span style="font-size:16.5px; line-height:1.45; color:#3B4045; text-wrap:pretty;">{{ r.reason }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+                <p style="margin:14px 0 0; font-size:15.5px; font-style:italic; color:#3B4045; max-width:62ch;">Peptides listed are those the literature has studied alongside these markers. Nothing here says a value is good or bad, and nothing recommends a change.</p>
+              </sc-if>
+              <sc-if value="{{ bwNoOverview }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:14px; display:flex; gap:14px; align-items:center; flex-wrap:wrap;">
+                  <button onClick="{{ bwAnalyse }}" style="appearance:none; border:1px solid #1A1D1F; background:#1A1D1F; color:#F4F5F6; font-family:Jost,sans-serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase; padding:14px 22px; min-height:44px; cursor:pointer; white-space:nowrap;" style-hover="background:#1A8A9E; border-color:#1A8A9E;">Write the overview</button>
+                  <span style="font-size:15.5px; font-style:italic; color:#3B4045;">Sends the marker values and the bench. Nothing else.</span>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ bwUpload }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:clamp(20px,3vw,32px) clamp(16px,3vw,32px) 0;">
+            <div style="border:1px dashed rgba(26,138,158,.6); padding:clamp(28px,5vw,56px) 24px; display:flex; flex-direction:column; align-items:center; gap:12px; text-align:center;">
+              <span style="font-style:italic; font-size:clamp(20px,2vw,26px); color:#3B4045; text-wrap:pretty;">Drop a lab report here — Labcorp, Quest, any PDF, or a photo of the page.</span>
+              <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E;">PDF · JPG · PNG · up to 6 MB</span>
+              <button onClick="{{ bwSimulate }}" style="margin-top:8px; appearance:none; border:1px solid #1A1D1F; background:transparent; color:#1A1D1F; font-family:Jost,sans-serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase; padding:14px 22px; min-height:44px; cursor:pointer; white-space:nowrap;" style-hover="background:#1A1D1F; color:#F4F5F6;">Choose a file</button>
+            </div>
+            <div style="margin-top:14px; display:flex; justify-content:space-between; gap:10px 18px; flex-wrap:wrap; font-size:15.5px; font-style:italic; color:#3B4045;"><span>The file is read by a model to pull out the numbers. You check them before anything is saved.</span><span onClick="{{ bwBack }}" style="cursor:pointer; font-family:Jost,sans-serif; font-style:normal; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#1A1D1F; border-bottom:1px solid #1A1D1F; padding-bottom:2px;">Back to the trend</span></div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ bwReview }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:clamp(20px,3vw,32px) clamp(16px,3vw,32px) 0;">
+            <div style="display:flex; justify-content:space-between; gap:10px 18px; flex-wrap:wrap; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; border-bottom:1px solid #1A1D1F; padding-bottom:8px;"><span style="color:#1A8A9E;">AI read · Claude · check every number before saving</span><span style="color:#7E878E; font-family:'JetBrains Mono',monospace; letter-spacing:.04em;">labcorp_2026-09.pdf · {{ reviewCount }} markers found</span></div>
+            <sc-for list="{{ reviewRows }}" as="r" hint-placeholder-count="8">
+              <div style="display:grid; grid-template-columns:minmax(0,1.4fr) minmax(90px,120px) 80px; gap:0 14px; padding:8px 0; border-bottom:1px solid rgba(26,29,31,.14); align-items:baseline;">
+                <span style="font-size:17px;">{{ r.label }}</span>
+                <input value="{{ r.value }}" onChange="{{ r.set }}" style="font-family:'JetBrains Mono',monospace; font-size:15px; text-align:right; border-bottom:1px solid rgba(26,29,31,.35); padding:4px 0; min-height:36px; width:100%;">
+                <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#7E878E;">{{ r.unit }}</span>
+              </div>
+            </sc-for>
+            <div style="margin-top:18px; display:flex; gap:14px; align-items:center; flex-wrap:wrap;">
+              <button onClick="{{ bwSave }}" style="appearance:none; border:1px solid #1A1D1F; background:#1A1D1F; color:#F4F5F6; font-family:Jost,sans-serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase; padding:14px 22px; min-height:44px; cursor:pointer; white-space:nowrap;" style-hover="background:#1A8A9E; border-color:#1A8A9E;">Numbers are right — save the panel</button>
+              <span onClick="{{ bwBack }}" style="cursor:pointer; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; border-bottom:1px solid #1A1D1F; padding-bottom:2px;">Discard</span>
+            </div>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <!-- 3 · PLANNER -->
+      <sc-if value="{{ isPlanner }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:clamp(20px,3vw,32px) clamp(16px,3vw,32px) 0;">
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,280px),1fr)); gap:18px 28px; align-items:start;">
+            <div style="border-top:1px solid #1A1D1F; padding-top:10px;">
+              <div style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#1A8A9E;">Goals</div>
+              <div style="display:flex; flex-wrap:wrap; gap:8px 10px; padding:12px 0;"><sc-for list="{{ goalChips }}" as="g" hint-placeholder-count="7"><span onClick="{{ g.pick }}" style="cursor:pointer; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; padding:10px 12px; border:1px solid {{ g.line }}; background:{{ g.bg }}; color:{{ g.ink }}; min-height:40px; display:inline-flex; align-items:center;">{{ g.label }}</span></sc-for></div>
+            </div>
+            <div style="border-top:1px solid #1A1D1F; padding-top:10px;">
+              <div style="display:flex; justify-content:space-between; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#1A8A9E;"><span>The bench · fixed context</span><a href="{{ benchHref }}" style="color:#7E878E;">Edit on the bench</a></div>
+              <sc-for list="{{ stackRows }}" as="s" hint-placeholder-count="3"><div style="display:flex; justify-content:space-between; gap:12px; padding:9px 0; border-bottom:1px solid rgba(26,29,31,.14); align-items:baseline;"><span style="font-size:17px;">{{ s.name }}</span><span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#3B4045; text-align:right;">{{ s.right }}</span></div></sc-for>
+            </div>
+          </div>
+          <div style="margin-top:18px; display:flex; gap:14px; align-items:center; flex-wrap:wrap;">
+            <button onClick="{{ runPlan }}" style="appearance:none; border:1px solid #1A1D1F; background:#1A1D1F; color:#F4F5F6; font-family:Jost,sans-serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase; padding:14px 22px; min-height:44px; cursor:pointer; white-space:nowrap; opacity:{{ planOpacity }};" style-hover="background:#1A8A9E; border-color:#1A8A9E;">{{ planCta }}</button>
+            <span style="font-size:15.5px; font-style:italic; color:#3B4045;">{{ planNote }}</span>
+          </div>
+
+          <sc-if value="{{ hasPlan }}" hint-placeholder-val="{{ true }}">
+            <div style="margin-top:32px; border-top:1px solid #1A1D1F; padding-top:14px;">
+              <div style="display:flex; justify-content:space-between; gap:10px 18px; flex-wrap:wrap; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase;"><span style="color:#1A8A9E;">AI-generated · Claude · a plan, not a prescription</span><span style="color:#7E878E;">{{ planGoals }}</span></div>
+              <div style="margin-top:14px; border-top:1px solid rgba(26,29,31,.18);">
+                <div style="display:grid; grid-template-columns:52px minmax(0,1fr); gap:0 16px; padding:8px 0 6px; border-bottom:1px solid rgba(26,29,31,.14);"><span></span><span style="display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) auto; gap:0 14px; font-family:Jost,sans-serif; font-size:9.5px; letter-spacing:.18em; text-transform:uppercase; color:#7E878E;"><span>Peptide</span><span>Amount · source</span><span>Time</span></span></div>
+                <sc-for list="{{ week }}" as="d" hint-placeholder-count="7">
+                  <div style="display:grid; grid-template-columns:52px minmax(0,1fr); gap:0 16px; padding:10px 0; border-bottom:1px solid rgba(26,29,31,.14); align-items:baseline;">
+                    <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:{{ d.ink }}; padding-top:5px;">{{ d.day }}</span>
+                    <div style="display:flex; flex-direction:column; gap:6px; min-width:0;">
+                      <sc-for list="{{ d.doses }}" as="x" hint-placeholder-count="2"><div style="display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) auto; gap:2px 14px; align-items:baseline;"><span style="min-width:0;"><span style="font-size:18px;">{{ x.peptide }}</span><span style="font-size:15px; font-style:italic; color:#3B4045; margin-left:10px;">{{ x.note }}</span></span><span style="min-width:0; overflow-wrap:anywhere;"><span style="font-family:{{ x.amountFont }}; font-size:{{ x.amountSize }}; font-style:{{ x.amountStyle }}; color:{{ x.amountInk }}; line-height:1.4;">{{ x.amount }}</span><br><span style="font-family:Jost,sans-serif; font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:#7E878E;">{{ x.amountSrc }}</span></span><span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; color:#3B4045; white-space:nowrap;">{{ x.time }}</span></div></sc-for>
+                      <sc-if value="{{ d.empty }}" hint-placeholder-val="{{ false }}"><span style="font-size:16px; font-style:italic; color:#7E878E;">Nothing scheduled.</span></sc-if>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="margin-top:14px; display:flex; flex-direction:column; gap:8px; max-width:64ch;"><sc-for list="{{ planNotes }}" as="n" hint-placeholder-count="3"><span style="font-size:16.5px; line-height:1.45; color:#3B4045; text-wrap:pretty;">{{ n.text }}</span></sc-for></div>
+
+              <div style="margin-top:28px; border-top:1px solid #1A1D1F; padding-top:12px;">
+                <div style="font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#1A8A9E;">Refine it by talking to it</div>
+                <div style="margin-top:12px; display:flex; flex-direction:column; gap:14px; max-width:66ch;">
+                  <sc-for list="{{ thread }}" as="m" hint-placeholder-count="2">
+                    <div style="display:grid; grid-template-columns:minmax(0,72px) minmax(0,1fr); gap:0 14px; align-items:baseline;">
+                      <span style="font-family:Jost,sans-serif; font-size:9.5px; letter-spacing:.2em; text-transform:uppercase; color:{{ m.ink }}; padding-top:5px;">{{ m.who }}</span>
+                      <p style="margin:0; font-size:17px; line-height:1.48; text-wrap:pretty; font-style:{{ m.style }};">{{ m.text }}</p>
+                    </div>
+                  </sc-for>
+                </div>
+                <form onSubmit="{{ sendRefine }}" style="margin-top:16px; border:1px dashed rgba(26,138,158,.6); padding:8px 14px; display:flex; gap:12px; align-items:center;">
+                  <input value="{{ refineText }}" onChange="{{ setRefine }}" placeholder="move something, drop something, ask why" style="flex:1; font-style:italic; font-size:19px; min-height:36px; min-width:0;">
+                  <button type="submit" style="appearance:none; background:none; border:none; cursor:pointer; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; color:#1A1D1F; min-height:36px;">Send</button>
+                </form>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- 4 · DOSING REFERENCE -->
+      <sc-if value="{{ isDosing }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:clamp(20px,3vw,32px) clamp(16px,3vw,32px) 0;">
+          <form onSubmit="{{ stop }}" style="border:1px dashed rgba(26,138,158,.6); padding:8px 14px; display:flex; gap:12px; align-items:center;">
+            <span style="font-style:italic; font-size:19px; color:#7E878E; white-space:nowrap;">Look up —</span>
+            <input value="{{ doseQ }}" onChange="{{ setDoseQ }}" placeholder="a peptide or a brand name" style="flex:1; font-style:italic; font-size:21px; min-height:36px; min-width:0;">
+          </form>
+          <div style="display:flex; gap:8px 18px; flex-wrap:wrap; padding:14px 0 8px; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase;">
+            <sc-for list="{{ doseFilters }}" as="f" hint-placeholder-count="3"><span onClick="{{ f.pick }}" style="cursor:pointer; color:{{ f.ink }}; border-bottom:1px solid {{ f.line }}; padding:6px 0; min-height:32px; display:inline-flex; align-items:center;">{{ f.label }} <span style="font-family:'JetBrains Mono',monospace; letter-spacing:0; margin-left:6px; color:#7E878E;">{{ f.n }}</span></span></sc-for>
+          </div>
+          <div style="display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.6fr) minmax(0,.9fr); gap:0 clamp(12px,2vw,24px); padding-bottom:8px; border-bottom:1px solid #1A1D1F; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E;"><span>Peptide · grade</span><span>What the label or trial says</span><span style="text-align:right;">Source</span></div>
+          <sc-for list="{{ doseRows }}" as="r" hint-placeholder-count="12">
+            <a href="{{ r.href }}" style="display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.6fr) minmax(0,.9fr); gap:4px clamp(12px,2vw,24px); align-items:baseline; padding:11px 0; border-bottom:1px solid rgba(26,29,31,.14); color:inherit;">
+              <span style="min-width:0;"><span style="font-size:18px;">{{ r.name }}</span><span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#7E878E; margin-left:8px;">{{ r.grade }}</span></span>
+              <span style="min-width:0; overflow-wrap:anywhere;"><span style="font-family:{{ r.font }}; font-size:{{ r.size }}; line-height:1.45; color:{{ r.ink }}; font-style:{{ r.style }};">{{ r.dose }}</span><sc-if value="{{ r.hasContext }}" hint-placeholder-val="{{ false }}"><span style="display:block; margin-top:5px; border-left:1px solid rgba(26,29,31,.25); padding-left:10px;"><span style="font-family:Jost,sans-serif; font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:#7E878E;">Not a dose · what the literature contains instead</span><br><span style="font-size:14.5px; line-height:1.4; color:#3B4045;">{{ r.context }}</span></span></sc-if></span>
+              <span style="text-align:right; min-width:0;"><span style="font-family:Jost,sans-serif; font-size:9.5px; letter-spacing:.18em; text-transform:uppercase; color:{{ r.srcInk }};">{{ r.srcKind }}</span><br><span style="font-size:14.5px; font-style:italic; color:#3B4045;">{{ r.srcRef }}</span></span>
+            </a>
+          </sc-for>
+          <sc-if value="{{ doseEmpty }}" hint-placeholder-val="{{ false }}"><p style="margin:16px 0 0; font-size:17px; font-style:italic; color:#3B4045;">Nothing in the 124 matches that.</p></sc-if>
+          <p style="margin:16px 0 0; font-size:15.5px; font-style:italic; color:#3B4045; max-width:62ch; text-wrap:pretty;">No body weight, no goals, no frequency, no calculator. A figure without its source is indistinguishable from a recommendation, so every row carries one. Where nothing can be cited, the row says so.</p>
+        </div>
+      </sc-if>
+
+      <!-- 5 · SCANNER -->
+      <sc-if value="{{ isScanner }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:clamp(20px,3vw,32px) clamp(16px,3vw,32px) 0;">
+          <sc-if value="{{ scIdle }}" hint-placeholder-val="{{ true }}">
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,280px),1fr)); gap:18px 28px; align-items:start;">
+              <div style="border-top:1px solid #1A1D1F; padding-top:10px;">
+                <div style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#1A8A9E;">From your phone</div>
+                <div style="margin-top:12px; display:flex; gap:18px; align-items:flex-start; flex-wrap:wrap;">
+                  <div aria-label="QR code for phone handoff" style="width:148px; height:148px; flex:none; padding:8px; background:#F4F5F6; border:1px solid #1A1D1F; display:grid; grid-template-columns:repeat(21,1fr); grid-template-rows:repeat(21,1fr); gap:0;"><sc-for list="{{ qrCells }}" as="q" hint-placeholder-count="441"><span style="background:{{ q.bg }};"></span></sc-for></div>
+                  <div style="flex:1; min-width:180px;">
+                    <p style="margin:0; font-size:17px; line-height:1.45; color:#1A1D1F; text-wrap:pretty;">Point the phone camera at this. It opens a capture page tied to this session — no sign-in on the phone, nothing installed.</p>
+                    <div style="margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:13px; color:#3B4045;">{{ session }}</div>
+                    <div style="margin-top:14px; display:flex; align-items:center; gap:10px; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E;">{{ waitingDot }}<span>Waiting for the phone</span></div>
+                    <a href="{{ phoneHref }}" target="_blank" style="display:inline-block; margin-top:14px; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; border-bottom:1px solid #1A1D1F; padding-bottom:2px;">Open the phone page ↗</a>
+                    <span onClick="{{ scSimulate }}" style="display:inline-block; margin:14px 0 0 16px; cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:11px; color:#7E878E;">prototype · simulate the photo</span>
+                  </div>
+                </div>
+              </div>
+              <div style="border-top:1px solid #1A1D1F; padding-top:10px;">
+                <div style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#1A8A9E;">From this device</div>
+                <p style="margin:12px 0 0; font-size:17px; line-height:1.45; color:#3B4045; text-wrap:pretty;">{{ localCamLine }}</p>
+                <button onClick="{{ scLocal }}" style="margin-top:14px; appearance:none; border:1px solid #1A1D1F; background:transparent; color:#1A1D1F; font-family:Jost,sans-serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase; padding:14px 22px; min-height:44px; cursor:pointer; white-space:nowrap; opacity:{{ localCamOpacity }};" style-hover="background:#1A1D1F; color:#F4F5F6;">Use this camera</button>
+                <p style="margin:18px 0 0; font-size:15.5px; font-style:italic; color:#3B4045;">Or skip the camera: <a href="{{ benchHref }}" style="border-bottom:1px solid rgba(26,29,31,.35);">type the vial in on the bench</a>.</p>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ scResult }}" hint-placeholder-val="{{ false }}">
+            <div style="border-top:1px solid #1A1D1F; padding-top:14px;">
+              <div style="display:flex; justify-content:space-between; gap:10px 18px; flex-wrap:wrap; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase;"><span style="color:#1A8A9E;">AI read · Claude vision · nothing added until you confirm</span><span style="color:#7E878E; font-family:'JetBrains Mono',monospace; letter-spacing:.04em;">from phone · {{ session }}</span></div>
+              <div style="margin-top:16px; display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,240px),1fr)); gap:18px 32px; align-items:end;">
+                <div><div style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E;">Peptide</div><input value="{{ scanName }}" onChange="{{ setScanName }}" style="width:100%; font-size:clamp(34px,4vw,52px); font-weight:300; line-height:1.05; letter-spacing:-.02em; border-bottom:1px solid #1A1D1F; padding:6px 0;"></div>
+                <div><div style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E;">Amount</div><input value="{{ scanAmount }}" onChange="{{ setScanAmount }}" style="width:100%; font-family:'JetBrains Mono',monospace; font-size:clamp(28px,3vw,40px); border-bottom:1px solid #1A1D1F; padding:6px 0;"></div>
+              </div>
+              <div style="margin-top:14px; display:grid; grid-template-columns:minmax(0,120px) minmax(0,1fr); gap:14px; padding:12px 0; border-top:1px solid rgba(26,29,31,.18); border-bottom:1px solid rgba(26,29,31,.18); align-items:baseline;">
+                <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E;">Also read</span><span style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#3B4045;">{{ scanNotes }}</span>
+                <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E;">Confidence</span><span style="font-size:16.5px; font-style:italic; color:#3B4045;">{{ scanConfidence }}</span>
+                <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E;">In the library</span><span style="font-size:16.5px;">{{ scanMatch }}</span>
+              </div>
+              <div style="margin-top:18px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                <button onClick="{{ scAdd }}" style="appearance:none; border:1px solid #1A1D1F; background:#1A1D1F; color:#F4F5F6; font-family:Jost,sans-serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase; padding:14px 22px; min-height:44px; cursor:pointer; white-space:nowrap;" style-hover="background:#1A8A9E; border-color:#1A8A9E;">Add to the bench</button>
+                <button onClick="{{ scRetake }}" style="appearance:none; border:1px solid #1A1D1F; background:transparent; color:#1A1D1F; font-family:Jost,sans-serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase; padding:14px 22px; min-height:44px; cursor:pointer; white-space:nowrap;" style-hover="background:#1A1D1F; color:#F4F5F6;">Retake</button>
+                <span style="font-size:15.5px; font-style:italic; color:#3B4045;">Edit either field first if the read is off.</span>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ scAdded }}" hint-placeholder-val="{{ false }}">
+            <div style="border-top:1px solid #1A1D1F; padding-top:14px;">
+              <div style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#1A8A9E;">Added</div>
+              <h2 style="margin:10px 0 0; font-weight:300; font-size:clamp(28px,3vw,40px); line-height:1.05; letter-spacing:-.02em; text-wrap:pretty;">{{ scanName }} · {{ scanAmount }} is on the bench.</h2>
+              <div style="margin-top:18px; display:flex; gap:14px; align-items:center; flex-wrap:wrap;">
+                <a href="{{ benchHref }}" style="display:inline-flex; align-items:center; border:1px solid #1A1D1F; background:#1A1D1F; color:#F4F5F6; font-family:Jost,sans-serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase; padding:14px 22px; min-height:44px;" style-hover="background:#1A8A9E; border-color:#1A8A9E;">See the bench</a>
+                <span onClick="{{ scRetake }}" style="cursor:pointer; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; border-bottom:1px solid #1A1D1F; padding-bottom:2px;">Scan another</span>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- DISCLAIMER · every tool -->
+      <div style="margin:auto clamp(16px,3vw,32px) 0; padding:28px 0 40px;">
+        <div style="border:1px solid #1A1D1F; padding:14px 16px; display:grid; grid-template-columns:minmax(0,100px) minmax(0,1fr); gap:10px 14px; align-items:baseline;">
+          <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E;">Disclaimer</span>
+          <span style="font-size:15.5px; line-height:1.45; color:#1A1D1F; text-wrap:pretty;">{{ disclaimer }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDE -->
+    <aside style="min-width:0; background:#F4F5F6; padding:clamp(24px,3vw,40px) clamp(16px,3vw,32px); display:flex; flex-direction:column; gap:28px;">
+      <div>
+        <div style="font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#1A8A9E; border-bottom:1px solid #1A1D1F; padding-bottom:8px;">Notes</div>
+        <sc-for list="{{ notes }}" as="n" hint-placeholder-count="3">
+          <div style="display:grid; grid-template-columns:minmax(0,92px) minmax(0,1fr); gap:6px 14px; padding:12px 0; border-bottom:1px solid rgba(26,29,31,.18); align-items:baseline;">
+            <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E; padding-top:4px; overflow-wrap:anywhere;">{{ n.k }}</span>
+            <span style="font-size:16px; line-height:1.45; text-wrap:pretty;">{{ n.v }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <sc-if value="{{ hasHistory }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <div style="display:flex; justify-content:space-between; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#1A8A9E; border-bottom:1px solid #1A1D1F; padding-bottom:8px;"><span>{{ historyTitle }}</span><span style="color:#7E878E;">{{ historyCount }}</span></div>
+          <sc-for list="{{ history }}" as="h" hint-placeholder-count="4">
+            <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:4px 14px; padding:11px 0; border-bottom:1px solid rgba(26,29,31,.18); align-items:baseline;">
+              <span style="min-width:0;"><span style="font-size:17px;">{{ h.title }}</span><br><span style="font-size:14.5px; font-style:italic; color:#3B4045;">{{ h.sub }}</span></span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:#7E878E; text-align:right; white-space:nowrap;">{{ h.when }}</span>
+            </div>
+          </sc-for>
+          <sc-if value="{{ historyIsAi }}" hint-placeholder-val="{{ true }}"><p style="margin:10px 0 0; font-family:Jost,sans-serif; font-size:9.5px; letter-spacing:.18em; text-transform:uppercase; line-height:1.7; color:#1A8A9E;">Every entry here is AI-generated · Claude · kept as written, never reviewed by a clinician</p></sc-if>
+        </div>
+      </sc-if>
+    </aside>
+  </div>
+  </sc-if>
+
+  <footer style="flex:none; border-top:1px solid #1A1D1F; background:#1A1D1F; color:#C9CED2; padding:14px clamp(16px,3vw,32px); font-family:Jost,sans-serif; font-size:10px; letter-spacing:.18em; text-transform:uppercase; line-height:1.8; display:flex; flex-wrap:wrap; gap:8px 24px; justify-content:space-between;"><span style="max-width:80ch;">{{ disclaimer }}</span><span style="display:flex; gap:16px; flex-wrap:wrap;"><a href="./Legal.dc.html?page=terms" style="color:#C9CED2;">Terms</a><a href="./Legal.dc.html?page=privacy" style="color:#C9CED2;">Privacy</a><a href="./Legal.dc.html?page=refund" style="color:#C9CED2;">Refunds</a></span></footer>
+</div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;tier&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;url&quot;,&quot;options&quot;:[&quot;url&quot;,&quot;free&quot;,&quot;pro&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Account&quot;},&quot;tool&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;url&quot;,&quot;options&quot;:[&quot;url&quot;,&quot;interactions&quot;,&quot;bloodwork&quot;,&quot;planner&quot;,&quot;dosing&quot;,&quot;scanner&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;View&quot;}}">
+class Component extends DCLogic {
+  state = { tool: 'interactions', tier: 'free', wide: false, phone: false, consent: false, consentOpen: false, pending: null,
+    checkA: 'Retatrutide', checkB: 'Metformin', kindA: 'peptide', kindB: 'prescription', hasCheck: true, checksUsed: 1,
+    bwStage: 'trend', bwOverview: true, review: {},
+    goals: ['Fat loss', 'Recovery'], hasPlan: true, thread: null, refineText: '',
+    doseQ: '', doseFilter: 'all',
+    scStage: 'idle', scanName: '', scanAmount: '', phStage: 'camera' };
+  TOOLS = [
+    { id: 'interactions', label: 'Interactions', title: 'Two things, compared.', sub: 'peptide · prescription · supplement · OTC', lede: 'Three peptides, two prescriptions and a handful of supplements, and nowhere to ask whether the set is a problem. Put any two here. The answer comes with its reasoning and is written by a model, which it says every time.' },
+    { id: 'bloodwork', label: 'Bloodwork', title: 'Your markers, over time.', sub: 'upload · parsed · overview · kept', lede: 'One panel is a snapshot. Four is a trend, and the trend is most of the value. Upload a lab report and it is read into the table below, against what is on the bench.' },
+    { id: 'planner', label: 'Protocol', title: 'A protocol, drafted and argued with.', sub: 'goals + bench in · a week out', lede: 'Say what you are after. It drafts a week around what is already on the bench, explains each placement, and changes its mind when you tell it to.' },
+    { id: 'dosing', label: 'Dosing reference', title: 'What the label or the trial says.', sub: 'never gated · no calculator', lede: 'Per peptide, the figure the published literature or the drug label actually gives, with the source beside it. Where there is nothing to cite, the row says so and stays that way.' },
+    { id: 'scanner', label: 'Scan a vial', title: 'Photograph the label.', sub: 'name + mg → the bench', lede: 'Typing vials in is the friction that ends a tracker in week two. Point a camera at the label instead. What it reads is shown before anything is added, and can be corrected.' },
+  ];
+  componentDidMount() {
+    this.onResize = () => this.setState({ wide: window.innerWidth > 900 });
+    this.onResize(); window.addEventListener('resize', this.onResize); if (window.ResizeObserver) { this.ro = new ResizeObserver(this.onResize); this.ro.observe(document.documentElement); }
+    const u = new URLSearchParams(window.location.search);
+    const tool = this.TOOLS.some(t => t.id === u.get('tool')) ? u.get('tool') : 'interactions';
+    let consent = false; try { consent = sessionStorage.getItem('pc-ai-consent') === '1.0'; } catch (e) {}
+    this.setState({ tool, phone: u.get('phone') === '1', tier: u.get('tier') === 'pro' ? 'pro' : 'free', consent });
+    Promise.all([import('./library.js'), import('./catalog.js'), import('./tools-data.js')]).then(([lib, cat, T]) => this.setState({ lib, cat, T, scanName: T.SCAN_SAMPLE.name, scanAmount: T.SCAN_SAMPLE.amount, thread: T.PLAN_THREAD.slice() }));
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onResize); if (this.ro) this.ro.disconnect(); }
+  tier() { return (this.props.tier && this.props.tier !== 'url') ? this.props.tier : this.state.tier; }
+  href(t, extra) { const u = new URLSearchParams(Object.assign({ tool: t, tier: this.tier() }, extra || {})); return './Tools.dc.html?' + u.toString(); }
+  withConsent(fn) { if (this.state.consent) fn(); else this.setState({ consentOpen: true, pending: fn }); }
+  renderVals() {
+    const { lib, cat, T, wide, consentOpen } = this.state;
+    const tool = (this.props.tool && this.props.tool !== 'url') ? this.props.tool : this.state.tool;
+    const isPro = this.tier() === 'pro', isPhone = this.state.phone;
+    const meta = this.TOOLS.find(t => t.id === tool);
+    const disclaimer = T ? T.DISCLAIMER : '';
+    const base = {
+      isPhone, isShell: !isPhone, disclaimer, session: T ? T.SCAN_SESSION : '', consentVersion: T ? T.AI_CONSENT_VERSION : '1.0',
+      tierLabel: isPro ? 'Pro' : 'Free', benchHref: './App.dc.html?v=bench&tier=' + this.tier(), libraryHref: './App.dc.html?v=library&tier=' + this.tier(),
+      toggleTier: () => { const t = isPro ? 'free' : 'pro'; const u = new URLSearchParams(window.location.search); u.set('tier', t); window.history.replaceState(null, '', '?' + u.toString()); this.setState({ tier: t }); },
+      goPro: () => this.setState({ tier: 'pro' }), stop: e => e.preventDefault(),
+      tabs: this.TOOLS.map(t => ({ label: t.label, href: this.href(t.id), line: t.id === tool ? '#1A1D1F' : 'transparent', ink: t.id === tool ? '#1A1D1F' : '#7E878E' })),
+      cols: wide ? 'minmax(0,1.55fr) minmax(320px,1fr)' : 'minmax(0,1fr)', mainBorder: wide ? '1px solid #1A1D1F' : 'none',
+      consentOpen, consentClosed: !consentOpen,
+      consentRows: [
+        { k: 'Sent', v: 'Only what the tool needs: the two names you type; the marker names and values on a panel; your goals and the peptides on the bench; the photo of a label. Each screen says what it sends before it sends it.' },
+        { k: 'Not sent', v: 'Your email, name, date of birth, address, payment details, order history. The model never sees who you are.' },
+        { k: 'Processed by', v: 'Anthropic’s Claude, under our agreement with them. Requests are not used to train models.' },
+        { k: 'Kept', v: 'The request and the reply are stored against your account so history and trends work. Delete any entry, or all of them, at any time.' },
+        { k: 'What comes back', v: 'Text written by a model. It is labelled as such on every screen, is not reviewed by a clinician, and is educational reference — not advice, diagnosis or instruction.' },
+      ],
+      grantConsent: () => { try { sessionStorage.setItem('pc-ai-consent', '1.0'); } catch (e) {} const fn = this.state.pending; this.setState({ consent: true, consentOpen: false, pending: null }, () => { if (fn) fn(); }); },
+      declineConsent: () => this.setState({ consentOpen: false, pending: null }),
+      title: meta.title, subtitle: meta.sub, lede: meta.lede,
+      isInteractions: tool === 'interactions', isBloodwork: tool === 'bloodwork' && isPro, isPlanner: tool === 'planner' && isPro, isDosing: tool === 'dosing', isScanner: tool === 'scanner' && isPro,
+      gated: !isPro && ['bloodwork', 'planner', 'scanner'].includes(tool),
+      notes: [], history: [], hasHistory: false, historyIsAi: false, checkNote: '', checkA: '', checkB: '', checkOpacity: 1, kindsA: [], kindsB: [], checkRecs: [], panelHeads: [], markerRows: [], overviewParas: [], overviewRefs: [], reviewRows: [], goalChips: [], stackRows: [], week: [], planNotes: [], thread: [], doseFilters: [], doseRows: [], qrCells: [],
+      phCamera: this.state.phStage === 'camera', phConfirm: this.state.phStage === 'confirm', phSent: this.state.phStage === 'sent',
+      scanName: this.state.scanName, scanAmount: this.state.scanAmount, setScanName: e => this.setState({ scanName: e.target.value }), setScanAmount: e => this.setState({ scanAmount: e.target.value }),
+      phShoot: () => this.setState({ phStage: 'confirm' }), phRetake: () => this.setState({ phStage: 'camera' }), phSend: () => this.setState({ phStage: 'sent' }),
+    };
+    if (!lib || !T) return base;
+    const P = lib.PRICING, mono = "'JetBrains Mono',monospace", serif = "'Cormorant Garamond',Georgia,serif";
+    Object.assign(base, { monthly: P.money(P.MONTHLY_PRICE), annual: P.money(P.ANNUAL_PRICE), proCta: P.proCta, freeChecks: String(T.FREE_CHECKS_PER_DAY),
+      scanConfidence: T.SCAN_SAMPLE.confidence, scanNotes: T.SCAN_SAMPLE.notes });
+    const gate = { bloodwork: ['Bloodwork lives on a bench.', 'Panels are read, kept and compared over time against what you take. That history is what the subscription pays for. A single panel with no bench to compare against would be a snapshot, and a snapshot is not the product.'],
+      planner: ['A protocol is drafted around a bench.', 'The planner reads what is already on the bench and schedules around it. Without a kept bench there is nothing to plan around, so it sits behind Pro with the bench itself.'],
+      scanner: ['Scanning adds to a bench.', 'A read label becomes a tested batch on the bench, with its lot and dates. The free tier keeps one peptide there and can type it in; the scanner is for the fridge with twelve.'] }[tool];
+    if (gate) Object.assign(base, { gateHead: gate[0], gateBody: gate[1] });
+
+    // 1 · interactions
+    if (tool === 'interactions') {
+      const S = T.INTERACTION_SAMPLE, used = this.state.checksUsed, left = T.FREE_CHECKS_PER_DAY - used;
+      const kinds = which => T.KINDS.map(k => ({ label: k, pick: () => this.setState(which === 'A' ? { kindA: k } : { kindB: k }), ink: this.state['kind' + which] === k ? '#1A1D1F' : '#7E878E', line: this.state['kind' + which] === k ? '#1A1D1F' : 'transparent' }));
+      const ready = this.state.checkA.trim() && this.state.checkB.trim() && (isPro || left > 0);
+      Object.assign(base, {
+        checkA: this.state.checkA, checkB: this.state.checkB, setA: e => this.setState({ checkA: e.target.value, hasCheck: false }), setB: e => this.setState({ checkB: e.target.value, hasCheck: false }),
+        kindsA: kinds('A'), kindsB: kinds('B'), checkOpacity: ready ? 1 : .4,
+        checkNote: isPro ? 'Unlimited on Pro. Each check is kept.' : (left > 0 ? left + ' of ' + T.FREE_CHECKS_PER_DAY + ' checks left today on the free tier.' : 'Three checks a day on the free tier; the next resets at midnight. Pro is unlimited.'),
+        runCheck: e => { e.preventDefault(); if (!ready) return; this.withConsent(() => this.setState(s => ({ hasCheck: true, checksUsed: isPro ? s.checksUsed : s.checksUsed + 1 }))); },
+        hasCheck: this.state.hasCheck, checkPair: this.state.checkA + ' × ' + this.state.checkB + ' · ' + this.state.kindA + ' · ' + this.state.kindB,
+        levelLabel: T.LEVEL_LABEL[S.level], levelDot: S.level === 'safe' ? 'transparent' : (S.level === 'unknown' ? '#F4F5F6' : '#1A1D1F'), inferred: S.inferred,
+        checkSummary: S.summary, checkDetails: S.details, checkRecs: S.recommendations.map(t => ({ text: t })),
+        notes: [ { k: 'Not only 124', v: 'Either side can be anything with a name: a prescription, a supplement, a brand. The library supplies context where it has it.' }, { k: 'Levels', v: 'Four words, no colour scale: no documented interaction · documented consideration · documented risk · insufficient literature. Read the reasoning, not the word.' }, { k: 'Kept', v: 'Every check is saved to your history and counts toward the daily limit on the free tier.' } ],
+        hasHistory: true, historyIsAi: true, historyTitle: 'History', historyCount: String(T.INTERACTION_HISTORY.length),
+        history: T.INTERACTION_HISTORY.map(h => ({ title: h.a + ' × ' + h.b, sub: T.LEVEL_LABEL[h.level], when: h.when.slice(0, 10) })),
+      });
+    }
+    // 2 · bloodwork
+    if (tool === 'bloodwork' && isPro) {
+      const panels = T.BLOOD_PANELS, last = panels.length - 1, stage = this.state.bwStage;
+      const fmt = v => v === null ? '·' : String(v);
+      const rows = T.BLOOD_MARKERS.map(m => {
+        const vals = m.values.filter(v => v !== null), first = vals[0], lastV = vals[vals.length - 1];
+        const trend = vals.length < 2 ? '' : (lastV > first * 1.03 ? '↗' : (lastV < first * .97 ? '↘' : '→'));
+        return { label: m.label, group: m.group, ref: m.ref[0] + '–' + m.ref[1] + ' ' + m.unit, trend,
+          cells: m.values.map((v, i) => ({ v: fmt(v), ink: v === null ? '#9AA3A9' : '#1A1D1F', weight: i === last ? 500 : 400, deco: 'none' })) };
+      });
+      const review = Object.assign({}, Object.fromEntries(T.BLOOD_MARKERS.filter(m => m.values[last] !== null).map(m => [m.key, String(m.values[last])])), this.state.review);
+      Object.assign(base, {
+        bwTrend: stage === 'trend', bwUpload: stage === 'upload', bwReview: stage === 'review',
+        panelHeads: panels.map((p, i) => ({ date: p.date, lab: p.lab, ink: i === last ? '#1A1D1F' : '#7E878E' })), markerRows: rows,
+        latestDate: panels[last].date, bwHasOverview: this.state.bwOverview, bwNoOverview: !this.state.bwOverview,
+        overviewParas: T.BLOOD_OVERVIEW.analysis.map(t => ({ text: t })), overviewRefs: T.BLOOD_OVERVIEW.references,
+        bwStartUpload: () => this.setState({ bwStage: 'upload' }), bwBack: () => this.setState({ bwStage: 'trend', review: {} }),
+        bwSimulate: () => this.withConsent(() => this.setState({ bwStage: 'review' })),
+        bwAnalyse: () => this.withConsent(() => this.setState({ bwOverview: true })),
+        bwSave: () => this.setState({ bwStage: 'trend', bwOverview: false, review: {} }),
+        reviewCount: String(Object.keys(review).length),
+        reviewRows: T.BLOOD_MARKERS.filter(m => review[m.key] !== undefined).map(m => ({ label: m.label, unit: m.unit, value: review[m.key], set: e => this.setState(s => ({ review: Object.assign({}, s.review, { [m.key]: e.target.value }) })) })),
+        notes: [ { k: 'Trend', v: 'Columns are draws, oldest to newest. The last column is bold. Missing markers print a dot, not a zero.' }, { k: 'Range', v: 'The range is the one the lab printed on that report, not a target. Different labs print different ranges.' }, { k: 'Never', v: 'A verdict. The overview describes which peptides the literature has studied alongside these markers; it does not grade a value or suggest changing anything.' } ],
+        hasHistory: true, historyTitle: 'Panels', historyCount: String(panels.length),
+        history: panels.slice().reverse().map(p => ({ title: p.lab + ' · ' + p.date, sub: p.file, when: T.BLOOD_MARKERS.filter(m => m.values[panels.indexOf(p)] !== null).length + ' markers' })),
+      });
+    }
+    // 3 · planner
+    if (tool === 'planner' && isPro) {
+      const goals = this.state.goals, thread = this.state.thread || [];
+      Object.assign(base, {
+        goalChips: T.GOALS.map(g => { const on = goals.includes(g); return { label: g, pick: () => this.setState({ goals: on ? goals.filter(x => x !== g) : goals.concat(g) }), line: on ? '#1A1D1F' : 'rgba(26,29,31,.35)', bg: on ? '#1A1D1F' : 'transparent', ink: on ? '#F4F5F6' : '#1A1D1F' }; }),
+        stackRows: cat.STACK.map(s => { const C = lib.compound(s.id); return { name: C ? C.name : s.id, right: s.schedule + ' · ' + s.vialMg + ' mg in ' + s.waterMl + ' mL' }; }),
+        planOpacity: goals.length ? 1 : .4, planCta: this.state.hasPlan ? 'Redraft' : 'Draft a week', planNote: goals.length ? 'Sends your goals and the bench. Nothing else.' : 'Pick at least one goal.',
+        runPlan: () => { if (!goals.length) return; this.withConsent(() => this.setState({ hasPlan: true })); },
+        hasPlan: this.state.hasPlan, planGoals: goals.join(' · '),
+        week: T.PLAN_SAMPLE.weeklySchedule.map(d => ({ day: d.day, ink: d.doses.length ? '#1A1D1F' : '#7E878E', empty: !d.doses.length,
+          doses: d.doses.map(x => { const C = lib.LIST.find(c => c.name.toLowerCase() === x.peptide.toLowerCase());
+            const has = C && lib.hasHumanDose(C), src = has ? T.doseSource(C, C.grade) : null;
+            return Object.assign({}, x, { amount: has ? C.dosage : lib.NO_DOSE_LINE, amountFont: has ? mono : serif, amountSize: has ? '12.5px' : '15px',
+              amountStyle: has ? 'normal' : 'italic', amountInk: has ? '#1A1D1F' : '#3B4045', amountSrc: has ? src.kind : 'nothing to cite' }); }) })),
+        planNotes: T.PLAN_SAMPLE.notes.map(t => ({ text: t })),
+        thread: thread.map(m => ({ who: m.role === 'ai' ? 'AI · Claude' : 'You', ink: m.role === 'ai' ? '#1A8A9E' : '#7E878E', text: m.text, style: m.role === 'ai' ? 'normal' : 'italic' })),
+        refineText: this.state.refineText, setRefine: e => this.setState({ refineText: e.target.value }),
+        sendRefine: e => { e.preventDefault(); const t = this.state.refineText.trim(); if (!t) return; this.withConsent(() => this.setState(s => ({ refineText: '', thread: s.thread.concat({ role: 'user', text: t }, { role: 'ai', text: 'Adjusted. The week above reflects that change; the note beside the affected row records what the literature says about the new placement, so the trade is visible rather than silent.' }) }))); },
+        notes: [ { k: 'Fixed', v: 'The bench is context it plans around, not something it edits. Change the bench on the bench.' }, { k: 'Amounts', v: 'Every row carries the published figure and where it comes from. Where nothing is published the row says “no human dose established” — it never prints a number. Amounts come from the dosing reference, with their sources, or not at all.' }, { k: 'Argue', v: 'Every refinement is answered with what changed and what the literature says about it.' } ],
+        hasHistory: true, historyIsAi: true, historyTitle: 'Drafts', historyCount: '2',
+        history: [ { title: 'Fat loss · Recovery', sub: 'Tesamorelin moved to AM', when: '2026-09-05' }, { title: 'Recovery', sub: 'first draft', when: '2026-08-12' } ],
+      });
+    }
+    // 4 · dosing reference — never gated
+    if (tool === 'dosing') {
+      const q = this.state.doseQ.trim().toLowerCase(), f = this.state.doseFilter;
+      const all = lib.LIST.slice().sort((a, b) => a.name.localeCompare(b.name));
+      const withDose = all.filter(c => lib.hasHumanDose(c)), noDose = all.filter(c => !lib.hasHumanDose(c));
+      let list = f === 'range' ? withDose : (f === 'none' ? noDose : all);
+      if (q) list = list.filter(c => c.fullName.toLowerCase().includes(q));
+      const filt = (id, label, n) => ({ label, n: String(n), pick: () => this.setState({ doseFilter: id }), ink: f === id ? '#1A1D1F' : '#7E878E', line: f === id ? '#1A1D1F' : 'transparent' });
+      Object.assign(base, {
+        doseQ: this.state.doseQ, setDoseQ: e => this.setState({ doseQ: e.target.value }),
+        doseFilters: [filt('all', 'All', all.length), filt('range', 'With a published range', withDose.length), filt('none', 'No human dose', noDose.length)],
+        doseRows: list.map(c => { const has = lib.hasHumanDose(c), src = has ? T.doseSource(c, c.grade) : null;
+          return { name: c.name, grade: 'grade ' + c.grade, href: './App.dc.html?v=compound&c=' + c.id + '&tier=' + this.tier(),
+            dose: has ? c.dosage : lib.NO_DOSE_LINE, font: has ? mono : serif, size: has ? '13.5px' : '17px', ink: '#1A1D1F', style: has ? 'normal' : 'italic',
+            context: has ? '' : lib.noDoseContext(c), hasContext: !has && !!lib.noDoseContext(c),
+            srcKind: has ? src.kind : 'Nothing to cite', srcRef: has ? src.ref : 'research-tier · no approval', srcInk: has ? '#1A8A9E' : '#7E878E' }; }),
+        doseEmpty: !list.length,
+        notes: [ { k: 'Counts', v: withDose.length + ' of ' + all.length + ' carry a figure from a label, a prescribing information or a trial. ' + noDose.length + ' open with a no-dose statement and render “no human dose established”. Counts are computed from the entries, never hard-coded.' }, { k: 'Instead', v: 'Where a no-dose entry still carries preclinical, discontinued-programme or community-reported figures, they print below the line, labelled as not a dose. Discarding them printed an absence where there was cited material; printing them plainly would have printed a dose.' }, { k: 'Source', v: 'FDA label, regional label, product prescribing information, or a named human trial. The catalog should carry this as a field; here it is derived from the entry.' }, { k: 'Free', v: 'Never gated. Same rule as the math and side effects.' } ],
+        hasHistory: false,
+      });
+    }
+    // 5 · scanner
+    if (tool === 'scanner' && isPro) {
+      const st = this.state.scStage;
+      const seed = 7; const cells = []; for (let i = 0; i < 441; i++) { const r = Math.floor(i / 21), c = i % 21; const finder = (r < 7 && c < 7) || (r < 7 && c > 13) || (r > 13 && c < 7); let on;
+        if (finder) { const rr = r < 7 ? r : r - 14, cc = c < 7 ? c : c - 14; on = rr === 0 || rr === 6 || cc === 0 || cc === 6 || (rr >= 2 && rr <= 4 && cc >= 2 && cc <= 4); }
+        else on = ((r * 31 + c * 17 + seed * (r ^ c)) % 5) < 2; cells.push({ bg: on ? '#1A1D1F' : 'transparent' }); }
+      const match = lib.LIST.find(c => c.name.toLowerCase() === this.state.scanName.trim().toLowerCase());
+      Object.assign(base, {
+        scIdle: st === 'idle', scResult: st === 'result', scAdded: st === 'added', qrCells: cells,
+        phoneHref: this.href('scanner', { phone: '1' }),
+        waitingDot: React.createElement('span', { style: { width: 8, height: 8, borderRadius: '50%', background: '#1A8A9E', display: 'inline-block', animation: 'pcPulse 1.6s ease-in-out infinite' } }),
+        localCamLine: 'No camera was found on this device. Most desks have none and no vial within reach, which is what the phone route is for.', localCamOpacity: .4, scLocal: () => {},
+        scSimulate: () => this.withConsent(() => this.setState({ scStage: 'result' })),
+        scanMatch: match ? match.name + ' · ' + match.category + ' · grade ' + match.grade : 'No entry named that in the 124 — it can still be added.',
+        scAdd: () => this.setState({ scStage: 'added' }), scRetake: () => this.setState({ scStage: 'idle', scanName: T.SCAN_SAMPLE.name, scanAmount: T.SCAN_SAMPLE.amount }),
+        notes: [ { k: 'Two ends', v: 'The desktop shows the code and waits. The phone page is a camera, a shutter and a confirm — built to be used one-handed at a fridge.' }, { k: 'Before', v: 'Nothing enters the bench until the read is shown and confirmed. A silent misread is worse than typing.' }, { k: 'Reads', v: 'Peptide name and milligrams. Lot and dates when the label has them.' } ],
+        hasHistory: true, historyIsAi: true, historyTitle: 'Scanned', historyCount: '3',
+        history: [ { title: 'Tesamorelin · 10 mg', sub: 'batch JA-102109', when: '2026-08-30' }, { title: 'Retatrutide · 30 mg', sub: 'batch JA-102107', when: '2026-08-14' }, { title: 'BPC-157 · 10 mg', sub: 'corrected: read 1 mg', when: '2026-07-02' } ],
+      });
+    }
+    if (base.gated) Object.assign(base, { notes: [ { k: 'Free', v: 'The library, the dosing reference, the math and three interaction checks a day. Reading never costs anything.' }, { k: 'Pro', v: 'A kept bench, and the tools that read from it: bloodwork trends, the protocol planner, the scanner, unlimited checks.' } ], hasHistory: false });
+    return base;
+  }
+}
+</script>
+</body>
+</html>

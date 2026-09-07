@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background:#E6E9EB; }
+  * { box-sizing:border-box; }
+  body { -webkit-font-smoothing:antialiased; }
+  a { color:#1A1D1F; text-decoration:none; }
+  a:hover { color:#1A8A9E; }
+  ::selection { background:#1A8A9E; color:#F4F5F6; }
+  input, select { font: inherit; color:#1A1D1F; }
+  input:focus, select:focus { outline:none; border-color:#1A8A9E !important; }
+  input::placeholder { color:#9AA3A9; font-style:italic; }
+</style>
+</helmet>
+
+<div data-screen-label="Checkout" style="min-height:100vh; display:flex; flex-direction:column; background:#E6E9EB; color:#1A1D1F; font-family:'Cormorant Garamond',Georgia,serif;">
+  <header style="border-bottom:1px solid #1A1D1F; flex:none;">
+    <div style="padding:14px clamp(16px,3vw,32px); display:flex; align-items:center; gap:clamp(14px,2vw,28px); flex-wrap:wrap;">
+      <a href="./Home.dc.html" style="display:inline-flex; align-items:center; gap:9px; white-space:nowrap;"><span style="width:7px; height:7px; border-radius:50%; background:#1A8A9E; display:inline-block;"></span><span style="font-weight:500; font-size:15px; letter-spacing:.22em;">PEPTIDE CORTEX</span><span style="font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#7E878E; margin-left:6px;">Shop</span></a>
+      <nav style="margin-left:auto; display:flex; align-items:center; gap:clamp(12px,2vw,24px); flex-wrap:wrap; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase;">
+        <a href="./Shop.dc.html" style="white-space:nowrap;">Catalogue</a><a href="./Cart.dc.html" style="white-space:nowrap; font-family:'JetBrains Mono',monospace; letter-spacing:.1em;">Cart · {{ count }}</a><span style="border-bottom:1px solid #1A1D1F;">Checkout</span>
+      </nav>
+    </div>
+  </header>
+
+  <div style="flex:1; display:grid; grid-template-columns:{{ cols }};">
+    <div style="min-width:0; padding:clamp(24px,3vw,40px) clamp(16px,3vw,32px) 60px; border-right:{{ mainBorder }};">
+      <div style="display:flex; gap:18px; align-items:baseline; flex-wrap:wrap;">
+        <h1 style="font-weight:300; font-size:clamp(34px,4vw,46px); line-height:1; letter-spacing:-.028em; margin:0;">Checkout</h1>
+        <span style="font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; color:#7E878E;">US shipping only · 18+</span>
+      </div>
+
+      <!-- 1 account -->
+      <section style="margin-top:36px; border-top:1px solid #1A1D1F; padding-top:14px; display:grid; grid-template-columns:minmax(0,140px) minmax(0,1fr); gap:10px clamp(14px,2vw,28px);">
+        <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E; padding-top:4px;">01 · Account</span>
+        <div>
+          <div style="display:flex; gap:14px; align-items:baseline; flex-wrap:wrap;"><span style="font-family:'JetBrains Mono',monospace; font-size:14px;">k.reyes@—.com</span><span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#1A8A9E;">signed in · date of birth on file · 18+</span></div>
+          <p style="margin:6px 0 0; font-size:15.5px; color:#3B4045; line-height:1.4;">There is no guest checkout. Orders are tied to an account so a batch recall can reach you.</p>
+        </div>
+      </section>
+
+      <!-- 2 ship to -->
+      <section style="margin-top:28px; border-top:1px solid #1A1D1F; padding-top:14px; display:grid; grid-template-columns:minmax(0,140px) minmax(0,1fr); gap:10px clamp(14px,2vw,28px);">
+        <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E; padding-top:4px;">02 · Ship to</span>
+        <div style="display:grid; grid-template-columns:repeat(6, minmax(0,1fr)); gap:12px;">
+          <input value="{{ ship.name }}" onChange="{{ setName }}" placeholder="Full name" style="grid-column:span 6; height:44px; padding:0 12px; border:1px solid rgba(26,29,31,.45); background:#F4F5F6; font-size:17px;">
+          <input value="{{ ship.line1 }}" onChange="{{ setLine1 }}" placeholder="Street address" style="grid-column:span 4; height:44px; padding:0 12px; border:1px solid rgba(26,29,31,.45); background:#F4F5F6; font-size:17px;">
+          <input value="{{ ship.line2 }}" onChange="{{ setLine2 }}" placeholder="Apt, unit" style="grid-column:span 2; height:44px; padding:0 12px; border:1px solid rgba(26,29,31,.45); background:#F4F5F6; font-size:17px;">
+          <input value="{{ ship.city }}" onChange="{{ setCity }}" placeholder="City" style="grid-column:span 3; height:44px; padding:0 12px; border:1px solid rgba(26,29,31,.45); background:#F4F5F6; font-size:17px;">
+          <input value="{{ ship.state }}" onChange="{{ setState_ }}" placeholder="State" maxLength="2" style="grid-column:span 1; height:44px; padding:0 12px; border:1px solid rgba(26,29,31,.45); background:#F4F5F6; font-size:15px; font-family:'JetBrains Mono',monospace; text-transform:uppercase;">
+          <input value="{{ ship.zip }}" onChange="{{ setZip }}" placeholder="ZIP" inputMode="numeric" style="grid-column:span 2; height:44px; padding:0 12px; border:1px solid rgba(26,29,31,.45); background:#F4F5F6; font-size:15px; font-family:'JetBrains Mono',monospace;">
+          <div style="grid-column:span 6; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E;"><span>Country · United States (fixed)</span><span>Cold-chain pack · someone should be able to refrigerate on arrival</span></div>
+        </div>
+      </section>
+
+      <!-- 3 shipping method -->
+      <section style="margin-top:28px; border-top:1px solid #1A1D1F; padding-top:14px; display:grid; grid-template-columns:minmax(0,140px) minmax(0,1fr); gap:10px clamp(14px,2vw,28px);">
+        <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E; padding-top:4px;">03 · Shipping</span>
+        <div>
+          <sc-for list="{{ methods }}" as="m" hint-placeholder-count="3">
+            <button onClick="{{ m.pick }}" style="appearance:none; width:100%; text-align:left; background:{{ m.bg }}; border:none; border-bottom:1px solid rgba(26,29,31,.18); padding:12px 8px; display:grid; grid-template-columns:18px minmax(0,1fr) auto auto; gap:0 14px; align-items:baseline; cursor:pointer; color:#1A1D1F; font-family:inherit; min-height:44px;" style-hover="background:#EDF0F1;">
+              <span style="width:12px; height:12px; border-radius:50%; border:1px solid #1A1D1F; background:{{ m.dot }}; align-self:center;"></span>
+              <span style="min-width:0;"><span style="font-size:20px;">{{ m.name }}</span><span style="font-size:15px; font-style:italic; color:#3B4045; margin-left:10px;">{{ m.carrier }}</span></span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#3B4045; white-space:nowrap;">{{ m.eta }}</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:14px; text-align:right; white-space:nowrap; min-width:88px;">{{ m.price }}</span>
+            </button>
+          </sc-for>
+          <p style="margin:10px 0 0; font-size:15.5px; color:#3B4045; line-height:1.4; text-wrap:pretty;">{{ etaNote }}</p>
+        </div>
+      </section>
+
+      <!-- 4 refunds -->
+      <section style="margin-top:28px; border-top:1px solid #1A1D1F; padding-top:14px; display:grid; grid-template-columns:minmax(0,140px) minmax(0,1fr); gap:10px clamp(14px,2vw,28px);">
+        <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E; padding-top:4px;">04 · Refunds</span>
+        <div>
+          <p style="margin:0; font-size:17px; line-height:1.45; text-wrap:pretty; max-width:64ch;">{{ refund }}</p>
+          <div style="margin-top:8px; font-family:'JetBrains Mono',monospace; font-size:12px; color:#7E878E; border-bottom:1px dashed #7E878E; display:inline-block;">[ {{ refundStatus }} ]</div>
+        </div>
+      </section>
+
+      <!-- 5 payment -->
+      <section style="margin-top:28px; border-top:1px solid #1A1D1F; padding-top:14px; display:grid; grid-template-columns:minmax(0,140px) minmax(0,1fr); gap:10px clamp(14px,2vw,28px);">
+        <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E; padding-top:4px;">05 · Payment</span>
+        <div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:1px; background:#1A1D1F; border:1px solid #1A1D1F;">
+            <sc-for list="{{ payments }}" as="pm" hint-placeholder-count="2">
+              <button onClick="{{ pm.pick }}" style="appearance:none; text-align:left; background:{{ pm.bg }}; border:none; padding:16px; cursor:pointer; color:#1A1D1F; font-family:inherit; display:flex; flex-direction:column; gap:8px; min-height:44px;" style-hover="background:#EDF0F1;">
+                <span style="display:flex; align-items:center; gap:10px;"><span style="width:12px; height:12px; border-radius:50%; border:1px solid #1A1D1F; background:{{ pm.dot }};"></span><span style="font-size:24px; line-height:1;">{{ pm.name }}</span><span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E; margin-left:auto;">{{ pm.tag }}</span></span>
+                <span style="font-size:15.5px; line-height:1.4; color:#3B4045; text-wrap:pretty;">{{ pm.how }}</span>
+              </button>
+            </sc-for>
+          </div>
+          <p style="margin:10px 0 0; font-size:15.5px; color:#3B4045; line-height:1.4;">Neither rail has a card issuer behind it. Refunds are handled by us, by hand — see 04.</p>
+        </div>
+      </section>
+
+      <div style="margin-top:32px; display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+        <button onClick="{{ place }}" disabled="{{ notReady }}" style="appearance:none; border:1px solid #1A1D1F; background:#1A1D1F; color:#F4F5F6; font-family:Jost,sans-serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase; padding:14px 22px; cursor:pointer; min-height:44px; opacity:{{ ctaOpacity }};" style-hover="background:#1A8A9E; border-color:#1A8A9E;">{{ cta }}</button>
+        <span style="font-size:15.5px; font-style:italic; color:#3B4045;">{{ ctaNote }}</span>
+      </div>
+    </div>
+
+    <!-- summary -->
+    <aside style="min-width:0; background:#F4F5F6; padding:clamp(24px,3vw,40px) clamp(16px,3vw,32px);">
+      <div style="position:sticky; top:24px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#1A8A9E; border-bottom:1px solid #1A1D1F; padding-bottom:8px;"><span>Order</span><a href="./Cart.dc.html" style="color:#7E878E;">Edit</a></div>
+        <sc-for list="{{ lines }}" as="l" hint-placeholder-count="2">
+          <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:0 14px; padding:12px 0; border-bottom:1px solid rgba(26,29,31,.18); align-items:baseline;">
+            <span style="min-width:0;"><span style="font-size:20px;">{{ l.name }}</span><span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#3B4045; margin-left:10px;">{{ l.meta }}</span></span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:14px;">{{ l.total }}</span>
+          </div>
+        </sc-for>
+        <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:6px 14px; padding:12px 0; font-family:'JetBrains Mono',monospace; font-size:13px; color:#3B4045;">
+          <span>Subtotal</span><span style="text-align:right; color:#1A1D1F;">{{ subtotal }}</span>
+          <span>Shipping · {{ methodName }}</span><span style="text-align:right;">{{ shipPrice }}</span>
+        </div>
+        <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:0 14px; padding:12px 0; border-top:1px solid #1A1D1F; align-items:baseline; font-family:'JetBrains Mono',monospace;">
+          <span style="font-size:13px;">Total</span><span style="font-size:26px; font-weight:500; text-align:right;">{{ total }}</span>
+        </div>
+        <p style="margin:6px 0 0; font-size:14.5px; color:#7E878E; line-height:1.4; font-style:italic;">{{ totalNote }}</p>
+        <p style="margin:18px 0 0; font-size:15.5px; color:#3B4045; line-height:1.45; text-wrap:pretty;">Delivery estimates run from payment confirmation, not from placing the order. On Zelle that can be a day later.</p>
+      </div>
+    </aside>
+  </div>
+
+  <footer style="flex:none; border-top:1px solid #1A1D1F; background:#1A1D1F; color:#C9CED2; padding:14px clamp(16px,3vw,32px); font-family:Jost,sans-serif; font-size:10px; letter-spacing:.18em; text-transform:uppercase; line-height:1.8; display:flex; flex-wrap:wrap; gap:8px 24px; justify-content:space-between;"><span style="max-width:80ch;">{{ legal }}</span><span style="display:flex; gap:16px; flex-wrap:wrap;"><a href="./Legal.dc.html?page=terms" style="color:#C9CED2;">Terms</a><a href="./Legal.dc.html?page=privacy" style="color:#C9CED2;">Privacy</a><a href="./Legal.dc.html?page=refund" style="color:#C9CED2;">Refunds</a></span></footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { d: null, cart: null, lines: [], wide: true, ship: { name: '', line1: '', line2: '', city: '', state: '', zip: '' }, method: 'standard', pay: null };
+  componentDidMount() {
+    this.onResize = () => this.setState({ wide: window.innerWidth > 960 });
+    this.onResize(); window.addEventListener('resize', this.onResize); if (window.ResizeObserver) { this.ro = new ResizeObserver(this.onResize); this.ro.observe(document.documentElement); }
+    Promise.all([import('./shop-data.js'), import('./cart.js')]).then(([d, cart]) => this.setState({ d, cart, lines: cart.read() }));
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onResize); if (this.ro) this.ro.disconnect(); }
+  field(k) { return e => this.setState(s => ({ ship: { ...s.ship, [k]: e.target.value } })); }
+  renderVals() {
+    const { d, cart, lines, ship, method, pay, wide } = this.state;
+    const cols = wide ? 'minmax(0,1.5fr) minmax(320px,1fr)' : 'minmax(0,1fr)';
+    if (!d) return { lines: [], methods: [], payments: [], legal: '', count: 0, cols, mainBorder: 'none', ship, cta: 'Place order', notReady: true, ctaOpacity: .4 };
+    const sub = lines.reduce((s, l) => s + d.bySlug(l.slug).priceCents * l.qty, 0);
+    const m = d.SHIPPING.find(x => x.id === method);
+    const methods = d.SHIPPING.map(x => ({ name: x.name, carrier: x.carrier, eta: x.eta + (x.guaranteed ? ' · guaranteed' : ' · estimate'), price: x.priceCents != null ? cart.money(x.priceCents) : d.PRICE_TBC,
+      bg: x.id === method ? '#EDF0F1' : 'transparent', dot: x.id === method ? '#1A1D1F' : 'transparent', pick: () => this.setState({ method: x.id }) }));
+    const payments = d.PAYMENT.map(x => ({ name: x.name, how: x.how, tag: x.id === 'crypto' ? 'redirect · minutes' : 'in your bank app · ~1 business day',
+      bg: x.id === pay ? '#EDF0F1' : '#E6E9EB', dot: x.id === pay ? '#1A1D1F' : 'transparent', pick: () => this.setState({ pay: x.id }) }));
+    const p = d.PAYMENT.find(x => x.id === pay);
+    const addrOk = ship.name && ship.line1 && ship.city && ship.state && ship.zip;
+    const notReady = !lines.length || !addrOk || !pay;
+    const place = () => {
+      if (notReady) return;
+      cart.saveOrder({ ref: d.REF_CODE, lines, ship, method, pay, placedAt: new Date().toISOString(), subtotalCents: sub });
+      cart.clear();
+      window.location.href = pay === 'zelle' ? './Zelle.dc.html' : './Order.dc.html?s=confirming';
+    };
+    return {
+      legal: d.LEGAL, count: cart.count(), cols, mainBorder: wide ? '1px solid #1A1D1F' : 'none', ship,
+      setName: this.field('name'), setLine1: this.field('line1'), setLine2: this.field('line2'), setCity: this.field('city'), setState_: this.field('state'), setZip: this.field('zip'),
+      methods, payments, refund: d.REFUND, refundStatus: d.REFUND_STATUS,
+      etaNote: m.guaranteed ? 'Overnight is the only service the carrier guarantees. The clock starts when your payment is confirmed and the parcel is handed to USPS — not when you place the order.' : m.name + ' is an estimate of transit time, not a promise. The clock starts when your payment is confirmed and the parcel is handed to USPS — not when you place the order.',
+      lines: lines.map(l => { const pr = d.bySlug(l.slug); return { name: pr.name, meta: pr.size + ' ' + pr.unit + ' × ' + l.qty + (pr.lot.code ? ' · ' + pr.lot.code : ''), total: cart.money(pr.priceCents * l.qty) }; }),
+      subtotal: cart.money(sub), methodName: m.name, shipPrice: m.priceCents != null ? cart.money(m.priceCents) : d.PRICE_TBC,
+      total: cart.money(sub + (m.priceCents || 0)), totalNote: m.priceCents == null ? 'Shipping not yet priced; total shown before shipping.' : '',
+      cta: p ? p.cta : 'Choose a payment method', notReady, ctaOpacity: notReady ? .4 : 1, place,
+      ctaNote: !lines.length ? 'Your cart is empty.' : (!addrOk ? 'Fill in the US shipping address.' : (!pay ? 'Crypto and Zelle are different journeys — pick one.' : (pay === 'zelle' ? 'Next screen shows the handle, the exact amount and the memo code.' : 'You leave for the hosted checkout and return to your order page.'))),
+    };
+  }
+}
+</script>
+</body>
+</html>

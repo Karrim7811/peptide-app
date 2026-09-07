@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background:#E6E9EB; }
+  * { box-sizing:border-box; }
+  body { -webkit-font-smoothing:antialiased; }
+  a { color:#1A1D1F; text-decoration:none; }
+  a:hover { color:#1A8A9E; }
+  ::selection { background:#1A8A9E; color:#F4F5F6; }
+</style>
+</helmet>
+
+<div data-screen-label="Legal" style="min-height:100vh; display:flex; flex-direction:column; background:#E6E9EB; color:#1A1D1F; font-family:'Cormorant Garamond',Georgia,serif;">
+  <header style="border-bottom:1px solid #1A1D1F;">
+    <div style="padding:14px clamp(16px,3vw,32px); display:flex; align-items:center; gap:clamp(12px,2vw,28px); flex-wrap:wrap;">
+      <a href="./Home.dc.html" style="display:inline-flex; align-items:center; gap:9px; white-space:nowrap;"><span style="width:7px; height:7px; border-radius:50%; background:#1A8A9E; display:inline-block;"></span><span style="font-weight:500; font-size:15px; letter-spacing:.22em;">PEPTIDE CORTEX</span></a>
+      <nav style="margin-left:auto; display:flex; align-items:center; gap:clamp(12px,2vw,24px); flex-wrap:wrap; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase;">
+        <sc-if value="{{ notEu }}" hint-placeholder-val="{{ true }}"><a href="./App.dc.html?v=library">Library</a><a href="./Shop.dc.html">Shop</a></sc-if>
+      </nav>
+    </div>
+  </header>
+
+  <div style="flex:1; display:grid; grid-template-columns:{{ cols }};">
+    <aside style="padding:clamp(24px,3vw,40px) clamp(16px,3vw,32px) 0; border-right:{{ border }};">
+      <div style="display:flex; flex-direction:{{ tabDir }}; gap:10px 18px; flex-wrap:wrap; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; position:sticky; top:24px;">
+        <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4"><a href="{{ t.href }}" style="color:{{ t.ink }}; border-bottom:1px solid {{ t.line }}; padding-bottom:3px; white-space:nowrap; align-self:flex-start;">{{ t.label }}</a></sc-for>
+      </div>
+    </aside>
+    <article style="padding:clamp(24px,3vw,40px) clamp(16px,3vw,32px) 60px; max-width:760px;">
+      <div style="font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#7E878E;">{{ kicker }}</div>
+      <h1 style="margin:12px 0 0; font-weight:300; font-size:clamp(34px,4.4vw,56px); line-height:1; letter-spacing:-.028em; text-wrap:pretty;">{{ title }}</h1>
+      <div style="margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:12px; color:#7E878E;">{{ meta }}</div>
+      <p style="margin:22px 0 0; font-size:clamp(19px,1.7vw,22px); line-height:1.4; text-wrap:pretty;">{{ lede }}</p>
+      <div style="margin-top:28px; border-top:1px solid #1A1D1F;">
+        <sc-for list="{{ sections }}" as="s" hint-placeholder-count="5">
+          <div style="display:grid; grid-template-columns:minmax(0,{{ labelCol }}) minmax(0,1fr); gap:8px 24px; padding:16px 0; border-bottom:1px solid rgba(26,29,31,.16);">
+            <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E; padding-top:6px;">{{ s.k }}</span>
+            <p style="margin:0; font-size:17px; line-height:1.5; text-wrap:pretty; color:#1A1D1F;">{{ s.v }}</p>
+          </div>
+        </sc-for>
+      </div>
+      <sc-if value="{{ isEu }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:28px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+          <a href="mailto:hello@peptidecortex.com" style="display:inline-flex; align-items:center; border:1px solid #1A1D1F; font-family:Jost,sans-serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase; padding:14px 22px; min-height:44px;" style-hover="background:#1A1D1F; color:#F4F5F6;">Write to us</a>
+          <span style="font-size:15.5px; font-style:italic; color:#3B4045;">If you are outside the EU and seeing this, say so and include your location.</span>
+        </div>
+      </sc-if>
+    </article>
+  </div>
+
+  <footer style="background:#1A1D1F; color:#C9CED2; padding:14px clamp(16px,3vw,32px); font-family:Jost,sans-serif; font-size:10px; letter-spacing:.18em; text-transform:uppercase; line-height:1.8;">{{ legal }}</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;page&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;url&quot;,&quot;options&quot;:[&quot;url&quot;,&quot;terms&quot;,&quot;privacy&quot;,&quot;refund&quot;,&quot;eu&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Legal&quot;}}">
+class Component extends DCLogic {
+  state = { page: 'terms', wide: true, sd: null };
+  componentDidMount() {
+    this.onResize = () => this.setState({ wide: window.innerWidth > 760 });
+    this.onResize(); window.addEventListener('resize', this.onResize); if (window.ResizeObserver) { this.ro = new ResizeObserver(this.onResize); this.ro.observe(document.documentElement); }
+    const q = new URLSearchParams(window.location.search).get('page');
+    this.setState({ page: ['terms', 'privacy', 'refund', 'eu'].includes(q) ? q : 'terms' });
+    import('./shop-data.js').then(sd => this.setState({ sd }));
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onResize); if (this.ro) this.ro.disconnect(); }
+  renderVals() {
+    const { wide, sd } = this.state;
+    const page = (this.props.page && this.props.page !== 'url') ? this.props.page : this.state.page;
+    const isEu = page === 'eu';
+    const tab = (k, label) => ({ label, href: './Legal.dc.html?page=' + k, ink: page === k ? '#1A1D1F' : '#7E878E', line: page === k ? '#1A1D1F' : 'transparent' });
+    const refund = sd ? sd.REFUND : '';
+    const PAGES = {
+      terms: { kicker: 'Terms of use', title: 'Educational reference. Not medical advice.', meta: 'Effective 2026-09-04 · applies to the library, the bench and the shop', lede: 'Peptide Cortex publishes reference material about research peptides and sells research peptides to adults in the United States. Nothing here is a recommendation to use anything on a person or an animal.',
+        sections: [ ['Who', 'Adults 18 and over. Date of birth is collected at signup and checked again at checkout; accounts and orders that fail either check are refused.'], ['The library', 'Every entry is reference material. Where the source data states that no human dose is established, the page says exactly that and nothing is filled in.'], ['The math', 'The math panel describes solution chemistry — what a vial contains once water is added. It is not a dosing tool and issues no instruction to the reader.'], ['The shop', 'Peptides are sold for research and reference purposes only, not for human consumption. Independent lab assays are published per batch; where an assay is pending the product says so.'], ['Subscriptions', 'Pro is billed monthly or yearly after a one-month free trial. The amount, frequency and cancellation method are shown before payment and can be cancelled at any time from the account.'], ['Liability', 'The reference is provided as-is. Consult a licensed physician before any medical decision.'] ] },
+      privacy: { kicker: 'Privacy notice', title: 'What we store, and why.', meta: 'Effective 2026-09-04 · US only', lede: 'We keep the minimum needed to run an account, a bench and an order, and we do not sell it.',
+        sections: [ ['Account', 'Email, a hashed password and date of birth. The date is stored because we sell to adults only and verify it at signup and at sale.'], ['The bench', 'Vials, dose logs, notes, reminders and bloodwork you enter. Visible only to your account; row-level security enforces it.'], ['Orders', 'Shipping address, the items and their lot codes, and the payment reference. Lot codes are kept so a batch recall can reach exactly the people who hold it.'], ['Payments', 'We never see card numbers: there are none. Crypto is handled by a hosted checkout; Zelle payments arrive in our bank with your memo reference.'], ['Analytics', 'None. No third-party trackers, no advertising pixels.'], ['EU', 'Traffic from the EU is blocked at the edge and no EU personal data is processed. See the EU notice.'] ] },
+      refund: { kicker: 'Refund policy', title: 'Refunds are handled by hand.', meta: (sd ? '[ ' + sd.REFUND_STATUS + ' ]' : '') + ' · shop and subscription', lede: refund,
+        sections: [ ['Shop', 'Unopened vials, cold-chain seal intact, within 14 days of delivery: full refund including original shipping. Opened vials cannot be returned.'], ['How', 'Email us with your order reference (the four-character code from checkout). We confirm within one business day and refund the way you paid — to your Zelle account or your wallet.'], ['Why by hand', 'Neither payment rail has a card issuer behind it, so there is no chargeback. The policy is written down here and shown at checkout so it does not depend on one.'], ['Pro', 'Monthly: cancel within 7 days of a charge for a full refund. Yearly: 14 days. Cancelling stops future charges; the bench stays readable.'] ] },
+      eu: { kicker: 'European Union', title: 'Peptide Cortex is not available in the EU.', meta: 'Deliberate · not an outage', lede: 'Traffic from EU member states is blocked at the edge. This is a decision about where we operate, not an error, and nothing on your side needs fixing.',
+        sections: [ ['Why', 'We are a small US operation. Serving EU visitors would bring the reference, the bench and the shop under GDPR and EU medicines rules we are not set up to meet properly, and doing it badly is worse than not doing it.'], ['What is blocked', 'Everything: the library, the bench, the shop and account creation. No EU personal data is processed.'], ['Shipping', 'The shop ships to US addresses only, independently of this block.'], ['If this is wrong', 'Geolocation is imperfect. If you are outside the EU, write to us with your location and we will look.'] ] },
+    };
+    const p = PAGES[page];
+    return {
+      cols: wide && !isEu ? '200px minmax(0,1fr)' : 'minmax(0,1fr)', border: wide && !isEu ? '1px solid #1A1D1F' : 'none', tabDir: wide ? 'column' : 'row',
+      tabs: isEu ? [] : [tab('terms', 'Terms'), tab('privacy', 'Privacy'), tab('refund', 'Refunds')],
+      notEu: !isEu, isEu, labelCol: wide ? '140px' : '100px',
+      kicker: p.kicker, title: p.title, meta: p.meta, lede: p.lede, sections: p.sections.map(([k, v]) => ({ k, v })),
+      legal: sd ? sd.LEGAL : '',
+    };
+  }
+}
+</script>
+</body>
+</html>

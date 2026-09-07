@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background:#E6E9EB; }
+  * { box-sizing:border-box; }
+  body { -webkit-font-smoothing:antialiased; }
+  a { color:#1A1D1F; text-decoration:none; }
+  a:hover { color:#1A8A9E; }
+  input { font:inherit; color:#1A1D1F; background:none; border:none; outline:none; }
+  input::placeholder { color:#9AA3A9; font-style:italic; }
+  ::selection { background:#1A8A9E; color:#F4F5F6; }
+  @keyframes bnIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
+</style>
+</helmet>
+
+<div data-screen-label="App shell" style="min-height:100vh; display:flex; flex-direction:column; background:#E6E9EB; color:#1A1D1F; font-family:'Cormorant Garamond',Georgia,serif; overflow-x:clip;">
+
+  <header style="border-bottom:1px solid #1A1D1F; flex:none;">
+    <div style="padding:12px clamp(16px,3vw,32px); display:flex; align-items:center; gap:clamp(10px,2vw,28px); flex-wrap:wrap;">
+      <a href="./App.dc.html" style="display:inline-flex; align-items:center; gap:9px; white-space:nowrap;"><span style="width:7px; height:7px; border-radius:50%; background:#1A8A9E; display:inline-block;"></span><span style="font-weight:500; font-size:15px; letter-spacing:.22em;">PEPTIDE CORTEX</span></a>
+      <span style="font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#7E878E; white-space:nowrap;">The bench · {{ tierLabel }}</span>
+      <nav style="margin-left:auto; display:flex; align-items:center; gap:clamp(12px,2vw,24px); flex-wrap:wrap; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase;">
+        <sc-for list="{{ nav }}" as="n" hint-placeholder-count="3"><a href="{{ n.href }}" style="border-bottom:1px solid {{ n.line }}; padding-bottom:2px; white-space:nowrap;">{{ n.label }}</a></sc-for>
+        <a href="./Shop.dc.html" style="white-space:nowrap; color:#7E878E;">Shop ↗</a>
+        <span onClick="{{ toggleTier }}" title="Prototype: switch tier" style="font-family:'JetBrains Mono',monospace; letter-spacing:.06em; color:#7E878E; cursor:pointer; white-space:nowrap;">k.reyes</span>
+      </nav>
+    </div>
+    <div style="border-top:1px solid rgba(26,29,31,.18); padding:0 clamp(16px,3vw,32px); overflow-x:auto; scrollbar-width:none;">
+      <div style="display:flex; align-items:center; gap:clamp(18px,3vw,36px); font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; white-space:nowrap;">
+        <span style="color:#7E878E; padding:13px 0 11px;">Tools</span>
+        <sc-for list="{{ toolLinks }}" as="t" hint-placeholder-count="5"><a href="{{ t.href }}" style="padding:13px 0 11px; color:#1A1D1F; min-height:44px; display:inline-flex; align-items:center; border-bottom:2px solid transparent;" style-hover="border-bottom:2px solid #1A1D1F;">{{ t.label }}</a></sc-for>
+      </div>
+    </div>
+  </header>
+
+  <div style="flex:1; display:grid; grid-template-columns:{{ cols }}; min-height:0;">
+
+    <!-- main -->
+    <div style="min-width:0; display:flex; flex-direction:column; border-right:{{ mainBorder }}; order:{{ mainOrder }};">
+
+      <!-- BENCH -->
+      <sc-if value="{{ isBench }}" hint-placeholder-val="{{ true }}">
+        <div style="padding:clamp(22px,3vw,40px) clamp(16px,3vw,32px) 0; display:flex; gap:12px 18px; align-items:baseline; flex-wrap:wrap;">
+          <h1 style="font-weight:300; font-size:clamp(30px,3.6vw,46px); line-height:1; letter-spacing:-.028em; margin:0; text-wrap:pretty;">{{ benchTitle }}</h1>
+          <span style="font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; color:#7E878E;">{{ benchSub }}</span>
+        </div>
+        <div style="position:relative; padding:clamp(24px,4vw,48px) clamp(16px,3vw,32px) 0; background:linear-gradient(180deg,#E6E9EB 0%,#DFE3E6 100%);">
+          <div style="display:flex; align-items:flex-end; gap:clamp(12px,2.4vw,30px); flex-wrap:wrap;">
+            <sc-for list="{{ benchVials }}" as="v" hint-placeholder-count="3">
+              <a href="{{ v.href }}" title="{{ v.name }}" style="position:relative; width:74px; flex:none; display:flex; flex-direction:column; align-items:center; color:inherit;">
+                <div style="width:46px; height:16px; border-radius:3px 3px 0 0; background:linear-gradient(90deg,#9AA3A9,#D6DBDE 35%,#B7BFC4 60%,#7E878E); border:1px solid rgba(26,29,31,.45); border-bottom:none; position:relative;"><div style="position:absolute; left:50%; top:4px; transform:translateX(-50%); width:18px; height:8px; border-radius:2px; background:{{ v.cap }};"></div></div>
+                <div style="width:46px; height:8px; background:linear-gradient(90deg,#B7BFC4,#E3E7EA 40%,#C4CBD0); border:1px solid rgba(26,29,31,.4); border-top:none; border-bottom:none;"></div>
+                <div style="width:74px; height:158px; position:relative; border:1px solid rgba(26,29,31,.42); border-radius:10px 10px 12px 12px; background:linear-gradient(90deg, rgba(255,255,255,.85) 0%, rgba(255,255,255,.25) 22%, rgba(26,29,31,.04) 55%, rgba(255,255,255,.55) 86%, rgba(26,29,31,.08) 100%); box-shadow:inset 0 -6px 10px rgba(26,29,31,.06), 0 14px 22px rgba(26,29,31,.14); overflow:hidden;">
+                  <div style="position:absolute; left:6px; right:6px; bottom:6px; height:{{ v.fillH }}; background:{{ v.fillBg }}; border:1px solid {{ v.fillEdge }}; border-radius:3px 3px 8px 8px;"></div>
+                  <div style="position:absolute; left:0; right:0; top:34px; height:78px; background:#FAFAF8; border-top:1px solid rgba(26,29,31,.35); border-bottom:1px solid rgba(26,29,31,.35); padding:6px 7px; display:flex; flex-direction:column; gap:2px; overflow:hidden;">
+                    <div style="display:flex; align-items:center; gap:3px;"><span style="width:3px; height:3px; border-radius:50%; background:#1A8A9E;"></span><span style="font-weight:500; font-size:5px; letter-spacing:.14em;">PEPTIDE CORTEX</span></div>
+                    <div style="font-size:{{ v.nameSize }}; line-height:1; color:#1A8A9E; margin-top:6px; white-space:nowrap;">{{ v.name }}</div>
+                    <div style="font-family:Jost,sans-serif; font-size:4.6px; letter-spacing:.06em; color:#3B4045; margin-top:2px; white-space:nowrap;">{{ v.spec }}</div>
+                    <div style="margin-top:4px; border:1px dashed rgba(26,138,158,.5); height:6px;"></div>
+                    <div style="margin-top:auto; background:#1A1D1F; color:#FAFAF8; font-family:Jost,sans-serif; font-size:3.8px; letter-spacing:.08em; padding:2px 3px; white-space:nowrap;">RESEARCH USE ONLY · NOT FOR HUMAN USE</div>
+                  </div>
+                  <div style="position:absolute; inset:0; background:linear-gradient(90deg, rgba(26,29,31,.14), rgba(255,255,255,.35) 18%, transparent 40%, transparent 68%, rgba(26,29,31,.12)); pointer-events:none;"></div>
+                </div>
+                <span style="margin-top:10px; font-family:Jost,sans-serif; font-size:9.5px; letter-spacing:.18em; text-transform:uppercase; color:{{ v.captionInk }}; white-space:nowrap;">{{ v.caption }}</span>
+              </a>
+            </sc-for>
+          </div>
+          <div style="height:1px; background:#1A1D1F; margin-top:-25px; position:relative; z-index:1;"></div>
+          <div style="height:12px; background:linear-gradient(180deg, rgba(26,29,31,.10), transparent);"></div>
+        </div>
+
+        <div style="padding:clamp(20px,3vw,32px) clamp(16px,3vw,32px) clamp(24px,3vw,40px); display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,300px),1fr)); gap:clamp(20px,3vw,36px);">
+          <!-- schedule (pro) / one compound (free) -->
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:baseline; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#1A8A9E; border-bottom:1px solid #1A1D1F; padding-bottom:8px;"><span>{{ stackTitle }}</span><span style="color:#7E878E;">{{ stackSub }}</span></div>
+            <sc-for list="{{ stackRows }}" as="s" hint-placeholder-count="3">
+              <a href="{{ s.href }}" style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:0 14px; padding:12px 0; border-bottom:1px solid rgba(26,29,31,.18); align-items:baseline; color:inherit;">
+                <span style="min-width:0;"><span style="font-size:22px; line-height:1;">{{ s.name }}</span><span style="font-size:15px; font-style:italic; color:#3B4045; margin-left:10px;">{{ s.sub }}</span></span>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#3B4045; white-space:nowrap;">{{ s.right }}</span>
+              </a>
+            </sc-for>
+            <sc-if value="{{ isFree }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:16px; border:1px dashed rgba(26,138,158,.6); padding:16px 18px;">
+                <div style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#1A8A9E;">Pro keeps the rest</div>
+                <p style="margin:8px 0 0; font-size:20px; line-height:1.3; text-wrap:pretty;">A full bench: every vial you hold, a dose log with times and sites, reminders, cycles, notes and bloodwork read against your stack.</p>
+                <div style="margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.7; color:#3B4045;"><span style="color:#1A1D1F; font-weight:500;">{{ monthly }}</span> per month · <span style="color:#1A1D1F; font-weight:500;">{{ annual }}</span> per year<br>{{ footnote }}</div>
+                <span onClick="{{ goPro }}" style="cursor:pointer; display:inline-block; margin-top:14px; border:1px solid #1A1D1F; background:#1A1D1F; color:#F4F5F6; padding:12px 20px; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; min-height:44px; line-height:20px;" style-hover="background:#1A8A9E; border-color:#1A8A9E;">{{ proCta }}</span>
+              </div>
+            </sc-if>
+          </div>
+          <!-- library shortcuts + math -->
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:baseline; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#1A8A9E; border-bottom:1px solid #1A1D1F; padding-bottom:8px;"><span>The library</span><span style="color:#7E878E;">{{ nCompounds }} · free to read</span></div>
+            <form onSubmit="{{ goSearch }}" style="display:flex; gap:10px; align-items:center; padding:10px 0; border-bottom:1px solid rgba(26,29,31,.18);">
+              <span style="font-style:italic; font-size:18px; color:#7E878E; white-space:nowrap;">Look up —</span>
+              <input value="{{ q }}" onChange="{{ setQ }}" placeholder="a peptide, a brand, an indication" style="flex:1; font-style:italic; font-size:19px; min-height:32px; min-width:0;">
+            </form>
+            <div style="display:flex; flex-wrap:wrap; gap:8px 14px; padding:12px 0; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase;">
+              <sc-for list="{{ catChips }}" as="c" hint-placeholder-count="6"><a href="{{ c.href }}" style="color:#3B4045; white-space:nowrap;" style-hover="color:#1A8A9E">{{ c.name }} <span style="font-family:'JetBrains Mono',monospace; color:#7E878E;">{{ c.n }}</span></a></sc-for>
+            </div>
+            <div onClick="{{ openMath }}" style="margin-top:14px; cursor:pointer; border:1px solid #1A1D1F; padding:16px 18px; display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:center;" style-hover="background:#EDF0F1">
+              <div><div style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#1A8A9E;">The math</div><div style="margin-top:6px; font-size:20px; line-height:1.25; text-wrap:pretty;">Solution chemistry, working shown. What a vial contains once it is in solution.</div></div>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#3B4045; white-space:nowrap;">{{ prepLine }}</span>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- LIBRARY -->
+      <sc-if value="{{ isLibrary }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:clamp(22px,3vw,40px) clamp(16px,3vw,32px) 0; display:flex; gap:12px 18px; align-items:baseline; flex-wrap:wrap;">
+          <h1 style="font-weight:300; font-size:clamp(30px,3.6vw,46px); line-height:1; letter-spacing:-.028em; margin:0;">The library.</h1>
+          <span style="font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; color:#7E878E;">{{ libSub }}</span>
+        </div>
+        <div style="padding:clamp(16px,2vw,24px) clamp(16px,3vw,32px) 0;">
+          <form onSubmit="{{ stop }}" style="border:1px dashed rgba(26,138,158,.6); padding:8px 14px; display:flex; gap:12px; align-items:center;">
+            <span style="font-style:italic; font-size:19px; color:#7E878E; white-space:nowrap;">Look up —</span>
+            <input value="{{ q }}" onChange="{{ setQ }}" placeholder="a peptide, a brand name, an indication" style="flex:1; font-style:italic; font-size:21px; min-height:36px; min-width:0;">
+            <sc-if value="{{ hasQ }}" hint-placeholder-val="{{ false }}"><span onClick="{{ clearQ }}" style="cursor:pointer; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E;">Clear</span></sc-if>
+          </form>
+          <div style="display:flex; flex-wrap:wrap; gap:8px 14px; padding:12px 0 0; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase;">
+            <sc-for list="{{ catFilters }}" as="c" hint-placeholder-count="12"><span onClick="{{ c.pick }}" style="cursor:pointer; color:{{ c.ink }}; border-bottom:1px solid {{ c.line }}; padding-bottom:1px; white-space:nowrap;" style-hover="color:#1A8A9E">{{ c.name }} <span style="font-family:'JetBrains Mono',monospace; color:#7E878E;">{{ c.n }}</span></span></sc-for>
+          </div>
+        </div>
+        <div style="padding:clamp(16px,2vw,24px) clamp(16px,3vw,32px) clamp(24px,3vw,40px);">
+          <div style="display:grid; grid-template-columns:minmax(0,1fr) auto auto; gap:0 clamp(12px,2vw,24px); padding-bottom:8px; border-bottom:1px solid #1A1D1F; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E;"><span>Peptide · category</span><span style="text-align:right;">Grade</span><span style="text-align:right;">CV</span></div>
+          <sc-for list="{{ results }}" as="r" hint-placeholder-count="8">
+            <a href="{{ r.href }}" style="display:grid; grid-template-columns:minmax(0,1fr) auto auto; gap:0 clamp(12px,2vw,24px); align-items:baseline; padding:12px 0; border-bottom:1px solid rgba(26,29,31,.18); color:inherit;" style-hover="background:#EDF0F1">
+              <span style="min-width:0;"><span style="font-size:22px; line-height:1.1;">{{ r.name }}</span><span style="font-size:15px; font-style:italic; color:#3B4045; margin-left:10px;">{{ r.brand }}</span><div style="margin-top:4px; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E;">{{ r.category }} · {{ r.purpose }}</div></span>
+              <span style="font-family:'JetBrains Mono',monospace; font-weight:500; font-size:20px; text-align:right;">{{ r.grade }}</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:14px; color:#3B4045; text-align:right; min-width:36px;">{{ r.cv }}</span>
+            </a>
+          </sc-for>
+          <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:18px 0 0; font-size:20px; font-style:italic; line-height:1.3;">Nothing in the library matches “{{ q }}”. Search covers names, brand names and indications.</p>
+          </sc-if>
+          <p style="margin:18px 0 0; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E; line-height:1.8;">Grade maps one-to-one from regulatory status. CV is a cardiovascular score, 0–5, on its own axis; it never moves a grade.</p>
+        </div>
+      </sc-if>
+
+      <!-- COMPOUND -->
+      <sc-if value="{{ isCompound }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:clamp(22px,3vw,40px) clamp(16px,3vw,32px) 0;">
+          <a href="{{ backHref }}" style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E;">← {{ backLabel }}</a>
+          <div style="margin-top:12px; display:flex; gap:10px 18px; align-items:baseline; flex-wrap:wrap;">
+            <h1 style="font-weight:300; font-size:clamp(36px,5vw,64px); line-height:1; letter-spacing:-.028em; margin:0;">{{ c.name }}</h1>
+            <span style="font-size:clamp(17px,1.6vw,22px); font-style:italic; color:#3B4045;">{{ c.brand }}</span>
+            <span style="font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; color:#7E878E; margin-left:auto; white-space:nowrap;">{{ c.category }}</span>
+          </div>
+          <sc-if value="{{ c.notPeptide }}" hint-placeholder-val="{{ false }}"><p style="margin:12px 0 0; font-size:17px; font-style:italic; line-height:1.4; color:#3B4045; max-width:60ch; text-wrap:pretty;">{{ c.notPeptideLine }}</p></sc-if>
+        </div>
+        <div style="padding:clamp(18px,2.4vw,32px) clamp(16px,3vw,32px) 0; display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,260px),1fr)); gap:18px 32px; align-items:end;">
+          <div style="border-top:1px solid #1A1D1F; padding-top:12px;">
+            <div style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E;">Evidence grade</div>
+            <div style="display:flex; gap:14px; align-items:baseline; margin-top:6px;"><span style="font-family:'JetBrains Mono',monospace; font-weight:500; font-size:clamp(44px,5vw,72px); line-height:1; letter-spacing:-.02em;">{{ c.grade }}</span><span style="font-size:16px; line-height:1.3; color:#3B4045; text-wrap:pretty;">{{ c.evidence }}</span></div>
+          </div>
+          <div style="border-top:1px solid #1A1D1F; padding-top:12px;">
+            <div style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E;">Cardiovascular · 0–5 · separate axis</div>
+            <div style="display:flex; gap:14px; align-items:baseline; margin-top:6px;"><span style="font-family:'JetBrains Mono',monospace; font-weight:500; font-size:clamp(44px,5vw,72px); line-height:1; letter-spacing:-.02em;">{{ c.cv }}</span><span style="display:flex; gap:5px; align-items:center; transform:translateY(-6px);"><sc-for list="{{ c.cvDots }}" as="dot" hint-placeholder-count="5"><span style="width:10px; height:10px; border-radius:50%; border:1px solid #1A1D1F; background:{{ dot.bg }};"></span></sc-for></span></div>
+          </div>
+        </div>
+        <!-- actions: the only place an upgrade may appear on this page -->
+        <div style="padding:16px clamp(16px,3vw,32px) 0; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+          <span onClick="{{ openMath }}" style="cursor:pointer; display:inline-flex; align-items:center; border:1px solid #1A1D1F; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; padding:12px 18px; min-height:44px;" style-hover="background:#1A1D1F; color:#F4F5F6;">The math</span>
+          <sc-if value="{{ isPro }}" hint-placeholder-val="{{ true }}"><span style="display:inline-flex; align-items:center; border:1px solid #1A1D1F; background:#1A1D1F; color:#F4F5F6; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; padding:12px 18px; min-height:44px; cursor:pointer;" style-hover="background:#1A8A9E; border-color:#1A8A9E;">{{ benchAction }}</span></sc-if>
+          <sc-if value="{{ isFree }}" hint-placeholder-val="{{ false }}"><span onClick="{{ goPro }}" style="cursor:pointer; font-size:16px; font-style:italic; color:#3B4045;">Keeping this on a bench — vials, log, reminders — is Pro. <span style="font-family:'JetBrains Mono',monospace; font-style:normal; font-size:13px; color:#1A1D1F;">{{ monthly }}/mo · first month free →</span></span></sc-if>
+          <sc-if value="{{ c.inShop }}" hint-placeholder-val="{{ false }}"><a href="{{ c.shopHref }}" style="margin-left:auto; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; border-bottom:1px solid #1A1D1F; padding-bottom:2px; white-space:nowrap;">In the shop · assay ↗</a></sc-if>
+        </div>
+
+        <div style="padding:clamp(18px,2.4vw,28px) clamp(16px,3vw,32px) 0;">
+          <div style="border-top:1px solid #1A1D1F;">
+            <sc-for list="{{ c.facts }}" as="f" hint-placeholder-count="6">
+              <div style="display:grid; grid-template-columns:minmax(0,120px) minmax(0,1fr); gap:14px; padding:12px 0; border-bottom:1px solid rgba(26,29,31,.16); align-items:baseline;">
+                <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E;">{{ f.k }}</span>
+                <span style="font-family:{{ f.font }}; font-size:{{ f.size }}; line-height:1.5; min-width:0; color:{{ f.ink }}; text-wrap:pretty;">{{ f.v }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="margin-top:22px; display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,300px),1fr)); gap:24px 40px;">
+            <div>
+              <div style="display:flex; justify-content:space-between; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#1A8A9E; border-bottom:1px solid #1A1D1F; padding-bottom:8px;"><span>Batches on file</span><span style="color:#7E878E;">{{ c.vialCount }}</span></div>
+              <sc-for list="{{ c.vials }}" as="v" hint-placeholder-count="2">
+                <div style="display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:0 14px; padding:10px 0; border-bottom:1px solid rgba(26,29,31,.18); font-family:'JetBrains Mono',monospace; font-size:13px; align-items:baseline;">
+                  <span>{{ v.qty }}</span><span style="color:#3B4045; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ v.lot }}</span><span style="font-weight:500; font-size:15px; color:{{ v.ink }}; text-align:right; white-space:nowrap;">{{ v.purity }}</span>
+                </div>
+              </sc-for>
+              <sc-if value="{{ c.noVials }}" hint-placeholder-val="{{ false }}"><p style="margin:10px 0 0; font-size:16px; font-style:italic; color:#3B4045;">No tested batches on file.</p></sc-if>
+            </div>
+            <div>
+              <div style="display:flex; justify-content:space-between; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#1A8A9E; border-bottom:1px solid #1A1D1F; padding-bottom:8px;"><span>Read with</span><span style="color:#7E878E;">{{ c.stackCount }}</span></div>
+              <div style="display:flex; flex-wrap:wrap; gap:8px 16px; padding:12px 0;">
+                <sc-for list="{{ c.stacks }}" as="s" hint-placeholder-count="4"><a href="{{ s.href }}" style="font-size:18px; border-bottom:1px solid rgba(26,29,31,.35);">{{ s.name }}</a></sc-for>
+              </div>
+              <sc-if value="{{ c.noStacks }}" hint-placeholder-val="{{ false }}"><p style="margin:10px 0 0; font-size:16px; font-style:italic; color:#3B4045;">The library records no pairings for this entry.</p></sc-if>
+            </div>
+          </div>
+          <!-- safety last, on its own, nothing sold beside it -->
+          <div style="margin-top:28px; margin-bottom:clamp(24px,3vw,40px); border:1px solid #1A1D1F; padding:18px 20px;">
+            <div style="font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#1A1D1F;">Cautions & interactions</div>
+            <p style="margin:10px 0 0; font-size:19px; line-height:1.4; text-wrap:pretty;">{{ c.cautions }}</p>
+            <p style="margin:10px 0 0; font-size:17px; line-height:1.45; color:#3B4045; text-wrap:pretty;">{{ c.interactions }}</p>
+            <p style="margin:12px 0 0; font-size:15px; line-height:1.45; color:#3B4045;">{{ c.cvNotes }}</p>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+
+    <!-- side column · ruled -->
+    <div style="min-width:0; display:flex; flex-direction:column; background:#F4F5F6; background-image:repeating-linear-gradient(180deg, transparent 0 31px, rgba(26,29,31,.13) 31px 32px); background-position:0 17px; position:relative; order:{{ sideOrder }}; border-bottom:{{ sideBorder }};">
+      <div style="position:absolute; left:clamp(40px,4vw,56px); top:0; bottom:0; width:1px; background:rgba(26,138,158,.55);"></div>
+      <div style="position:sticky; top:0; padding:17px clamp(16px,3vw,32px) 24px clamp(56px,6vw,80px); display:flex; flex-direction:column;">
+
+        <sc-if value="{{ mathOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="height:32px; display:flex; align-items:center; justify-content:space-between; gap:12px; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#1A8A9E;"><span>The math</span><span onClick="{{ closeMath }}" style="cursor:pointer; color:#7E878E;">Close</span></div>
+          <div style="height:32px; display:flex; align-items:center; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E;">Solution chemistry · working shown</div>
+          <div style="margin:8px 0; border:1px solid #1A1D1F; background:#E6E9EB; padding:10px 12px; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.14em; text-transform:uppercase; line-height:1.7; color:#1A1D1F;">For research and reference purposes only. Not intended as dosing instructions for human or animal use. Consult a licensed physician before any medical decisions.</div>
+          <div style="height:32px; display:flex; align-items:center; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E;">Preparation</div>
+          <div style="min-height:32px; line-height:32px; display:grid; grid-template-columns:minmax(0,1fr) auto auto; gap:10px; align-items:center; font-family:'JetBrains Mono',monospace; font-size:14px;">
+            <span style="font-family:'Cormorant Garamond',Georgia,serif; font-size:17px; color:#3B4045; white-space:nowrap;">In the vial</span>
+            <input value="{{ mathMg }}" onChange="{{ setMg }}" inputMode="decimal" style="width:72px; text-align:right; font-family:'JetBrains Mono',monospace; font-size:16px; border-bottom:1px solid #1A1D1F; height:28px;"><span style="color:#7E878E;">mg</span>
+          </div>
+          <div style="min-height:32px; line-height:32px; display:grid; grid-template-columns:minmax(0,1fr) auto auto; gap:10px; align-items:center; font-family:'JetBrains Mono',monospace; font-size:14px;">
+            <span style="font-family:'Cormorant Garamond',Georgia,serif; font-size:17px; color:#3B4045; white-space:nowrap;">Water added</span>
+            <input value="{{ mathMl }}" onChange="{{ setMl }}" inputMode="decimal" style="width:72px; text-align:right; font-family:'JetBrains Mono',monospace; font-size:16px; border-bottom:1px solid #1A1D1F; height:28px;"><span style="color:#7E878E;">mL</span>
+          </div>
+          <div style="height:32px;"></div>
+          <div style="height:32px; display:flex; align-items:center; justify-content:space-between; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E; border-top:1px solid #1A1D1F;"><span>Vial contents</span><span>U-100 · 1 unit = 0.01 mL</span></div>
+          <sc-for list="{{ working }}" as="w" hint-placeholder-count="3">
+            <div style="min-height:32px; display:flex; flex-wrap:wrap; justify-content:space-between; gap:0 12px; align-items:baseline; font-family:'JetBrains Mono',monospace; font-size:13px; line-height:32px;"><span style="color:#3B4045; overflow-wrap:anywhere;">{{ w.k }}</span><span style="font-weight:500; font-size:15px; white-space:nowrap; margin-left:auto;">{{ w.v }}</span></div>
+          </sc-for>
+          <div style="height:32px; display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:12px; align-items:center; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:#7E878E; border-top:1px solid #1A1D1F;"><span>Units drawn</span><span style="text-align:right;">Volume</span><span style="text-align:right;">Contains</span></div>
+          <sc-for list="{{ table }}" as="t" hint-placeholder-count="5">
+            <div style="height:32px; display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:12px; align-items:center; font-family:'JetBrains Mono',monospace; font-size:14px;"><span>{{ t.u }}</span><span style="text-align:right; color:#3B4045;">{{ t.ml }}</span><span style="text-align:right; font-weight:500;">{{ t.mcg }}</span></div>
+          </sc-for>
+          <p style="margin:0; font-size:16px; line-height:32px; font-style:italic; color:#3B4045;">{{ mathSentence }}</p>
+          <div style="height:32px;"></div>
+          <div style="min-height:32px; display:flex; align-items:center; gap:6px 16px; flex-wrap:wrap; line-height:32px;">
+            <span onClick="{{ keepPrep }}" style="cursor:pointer; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; border-bottom:1px solid #1A1D1F; white-space:nowrap;" style-hover="color:#1A8A9E">{{ keepLabel }}</span>
+            <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:#7E878E;">A preparation, not a dose · same for everyone</span>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ notesOpen }}" hint-placeholder-val="{{ true }}">
+          <div style="height:32px; display:flex; align-items:center; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#1A8A9E;">Bench notes</div>
+          <div style="height:32px;"></div>
+          <sc-for list="{{ notes }}" as="n" hint-placeholder-count="3">
+            <div style="font-size:17px; line-height:32px; color:#3B4045; display:grid; grid-template-columns:minmax(0,84px) minmax(0,1fr); gap:12px; align-items:baseline;">
+              <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E; white-space:nowrap; line-height:32px;">{{ n.k }}</span>
+              <span style="min-width:0; text-wrap:pretty; overflow-wrap:anywhere;">{{ n.v }}</span>
+            </div>
+          </sc-for>
+          <div style="height:32px;"></div>
+          <div style="min-height:32px; display:flex; align-items:center; gap:6px 16px; flex-wrap:wrap; line-height:32px;">
+            <span onClick="{{ openMath }}" style="cursor:pointer; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; border-bottom:1px solid #1A1D1F; white-space:nowrap;" style-hover="color:#1A8A9E">Open the math</span>
+            <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:#7E878E;">{{ prepLine }}</span>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+
+  <footer style="flex:none; background:#1A1D1F; color:#C9CED2; padding:14px clamp(16px,3vw,32px); display:flex; flex-wrap:wrap; gap:8px 24px; justify-content:space-between; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.18em; text-transform:uppercase; line-height:1.8;">
+    <span style="max-width:80ch;">{{ legal }}</span>
+    <span style="display:flex; gap:16px; flex-wrap:wrap;"><a href="./Legal.dc.html?page=terms" style="color:#C9CED2;">Terms</a><a href="./Legal.dc.html?page=privacy" style="color:#C9CED2;">Privacy</a><a href="./Legal.dc.html?page=refund" style="color:#C9CED2;">Refunds</a></span>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;tier&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;url&quot;,&quot;options&quot;:[&quot;url&quot;,&quot;free&quot;,&quot;pro&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Account&quot;}}">
+class Component extends DCLogic {
+  state = { lib: null, vl: null, sd: null, cat: null, view: 'bench', cid: null, q: '', catFilter: null, tier: 'free', wide: true, mathOpen: false, mg: '', ml: '2', prep: null };
+  SHOP_BY_ID = { retatrutide: 'glp-3-30mg', 'mots-c': 'mots-c-10mg', 'vip-vip': 'vip-5mg', selank: 'selank-5mg', semax: 'semax-5mg', nad: 'nad-1000mg' };
+  componentDidMount() {
+    this.onResize = () => this.setState({ wide: window.innerWidth > 900 });
+    this.onResize(); window.addEventListener('resize', this.onResize); if (window.ResizeObserver) { this.ro = new ResizeObserver(this.onResize); this.ro.observe(document.documentElement); }
+    const u = new URLSearchParams(window.location.search);
+    const view = ['bench', 'library', 'compound'].includes(u.get('v')) ? u.get('v') : (u.get('c') ? 'compound' : 'bench');
+    let prep = null; try { prep = sessionStorage.getItem('pc-prep'); } catch (e) {}
+    this.setState({ view, cid: u.get('c'), q: u.get('q') || '', catFilter: u.get('cat'), tier: u.get('tier') === 'pro' ? 'pro' : 'free', prep });
+    Promise.all([import('./library.js'), import('./vials.js'), import('./shop-data.js'), import('./catalog.js')]).then(([lib, vl, sd, cat]) => this.setState({ lib, vl, sd, cat }));
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onResize); if (this.ro) this.ro.disconnect(); }
+  href(params) { const u = new URLSearchParams(params); u.set('tier', this.tier()); return './App.dc.html?' + u.toString(); }
+  tier() { return (this.props.tier && this.props.tier !== 'url') ? this.props.tier : this.state.tier; }
+  renderVals() {
+    const { lib, vl, sd, cat, view, wide, mathOpen, q } = this.state;
+    const tier = this.tier(), isPro = tier === 'pro', isFree = !isPro;
+    const cols = wide ? 'minmax(0,1.55fr) minmax(320px,1fr)' : 'minmax(0,1fr)';
+    const base = { cols, mainBorder: wide ? '1px solid #1A1D1F' : 'none', mainOrder: (!wide && mathOpen) ? 2 : 1, sideOrder: (!wide && mathOpen) ? 1 : 2, sideBorder: (!wide && mathOpen) ? '1px solid #1A1D1F' : 'none',
+      isBench: view === 'bench', isLibrary: view === 'library', isCompound: view === 'compound', isPro, isFree, tierLabel: isPro ? 'Pro' : 'Free',
+      mathOpen, notesOpen: !mathOpen, openMath: () => this.setState({ mathOpen: true }), closeMath: () => this.setState({ mathOpen: false }),
+      toggleTier: () => { const t = isPro ? 'free' : 'pro'; const u = new URLSearchParams(window.location.search); u.set('tier', t); window.history.replaceState(null, '', '?' + u.toString()); this.setState({ tier: t }); },
+      goPro: () => this.setState({ tier: 'pro' }), q, setQ: e => this.setState({ q: e.target.value }), stop: e => e.preventDefault(),
+      toolLinks: [['interactions','Interactions'],['bloodwork','Bloodwork'],['planner','Protocol planner'],['dosing','Dosing reference'],['scanner','Vial scanner']]
+        .map(([id, label]) => ({ label, href: './Tools.dc.html?tool=' + id + '&tier=' + this.tier() })),
+      nav: [{ label: 'Bench', href: this.href({ v: 'bench' }), line: view === 'bench' ? '#1A1D1F' : 'transparent' }, { label: 'Library', href: this.href({ v: 'library' }), line: view !== 'bench' ? '#1A1D1F' : 'transparent' }],
+      benchVials: [], stackRows: [], catChips: [], catFilters: [], results: [], notes: [], working: [], table: [], c: { facts: [], vials: [], stacks: [], cvDots: [] }, legal: '' };
+    if (!lib) return base;
+    const P = lib.PRICING, mono = "'JetBrains Mono',monospace", serif = "'Cormorant Garamond',Georgia,serif";
+    const compoundHref = id => this.href({ v: 'compound', c: id });
+    const firstVial = id => vl.VIALS.find(v => v.compoundId === id) || null;
+    // bench
+    const stackIds = isPro ? cat.STACK.map(s => s.id) : ['retatrutide'];
+    const stackById = {}; cat.STACK.forEach(s => { stackById[s.id] = s; });
+    const benchVials = stackIds.map(id => { const v = firstVial(id), C = lib.compound(id), s = isPro ? stackById[id] : null; if (!v || !C) return null;
+      const pct = s ? Math.max(6, Math.min(100, Math.round(s.supply))) : 0;
+      return { name: v.label, href: compoundHref(id), nameSize: v.label.length > 9 ? '8px' : '11px', spec: vl.qtyLine(v) + (v.purity === null ? '' : ' · ' + Math.floor(v.purity) + '%'),
+        cap: s && s.id === 'bpc-157' ? '#1A8A9E' : '#2C3236', fillH: s ? Math.round(pct * .9) + 'px' : '14px', fillBg: s ? 'linear-gradient(180deg, rgba(26,138,158,.10), rgba(26,138,158,.22))' : 'rgba(255,255,255,.92)', fillEdge: s ? 'rgba(26,138,158,.35)' : 'rgba(26,29,31,.18)',
+        caption: s ? s.supplyDays + ' days' : v.lot, captionInk: s && s.supplyDays < 20 ? '#1A1D1F' : '#7E878E' }; }).filter(Boolean);
+    const stackRows = stackIds.map(id => { const C = lib.compound(id), s = stackById[id]; if (!C) return null;
+      return { name: C.name, sub: isPro && s ? s.schedule : C.purpose, right: isPro && s ? s.vialMg + ' mg in ' + s.waterMl + ' mL · ' + s.site : 'grade ' + C.grade + ' · CV ' + C.cv, href: compoundHref(id) }; }).filter(Boolean);
+    const cats = lib.CATEGORIES.slice().sort((a, b) => a.order - b.order);
+    // library
+    let results = lib.search(q); if (this.state.catFilter) results = results.filter(c => c.catId === this.state.catFilter);
+    // compound
+    let c = base.c;
+    if (view === 'compound') {
+      const C = lib.compound(this.state.cid) || lib.LIST[0];
+      const noDose = !lib.hasHumanDose(C);
+      const mk = (k, v, m, ink) => ({ k, v, font: m ? mono : serif, size: m ? '14px' : '17px', ink: ink || '#1A1D1F' });
+      const facts = [ mk('Purpose', C.purpose), mk('Mechanism', C.action), mk('Effects', C.effects),
+        mk('Dosing', noDose ? lib.NO_DOSE_LINE : C.dosage, false, '#1A1D1F'), mk('Bottom line', C.bottomLine) ];
+      const vials = vl.vialsFor(C.id).map(v => ({ qty: vl.qtyLine(v), lot: (v.blendOf ? 'blend · ' : '') + v.lot + (v.mfg ? ' · ' + v.mfg : ' · undated'), purity: v.purity === null ? 'no purity figure' : v.purity.toFixed(2) + '%', ink: v.purity === null ? '#7E878E' : '#1A1D1F' }));
+      const stacks = (C.stacksWith || []).map(id => lib.compound(id)).filter(Boolean).map(s => ({ name: s.name, href: compoundHref(s.id) }));
+      const NOT_PEPTIDE = { 'nad': 'a dinucleotide coenzyme', 'vitamin-b12': 'a corrinoid vitamin', 'l-carnitine': 'an amino-acid derivative' };
+      const notPeptide = !!NOT_PEPTIDE[C.id];
+      const notPeptideLine = notPeptide ? 'Not a peptide — ' + NOT_PEPTIDE[C.id] + '. Listed because it is commonly discussed alongside them.' : '';
+      const shopSlug = this.SHOP_BY_ID[C.id];
+      const brand = C.fullName.replace(C.name, '').replace(/^\s*\((.*)\)\s*$/, '$1').trim();
+      c = { name: C.name, brand, category: C.category, grade: C.grade, evidence: C.evidence, cv: String(C.cv), cvDots: [0,1,2,3,4].map(i => ({ bg: i < C.cv ? '#1A1D1F' : 'transparent' })),
+        facts, vials, vialCount: vials.length ? vials.length + (vials.length === 1 ? ' vial' : ' vials') : 'none', noVials: !vials.length, stacks, stackCount: stacks.length ? String(stacks.length) : '', noStacks: !stacks.length,
+        cautions: C.cautions, interactions: C.interactions, cvNotes: 'CV ' + C.cv + ' of 5 — ' + C.cvNotes, inShop: !!shopSlug, shopHref: shopSlug ? './Product.dc.html?p=' + shopSlug : '', notPeptide, notPeptideLine };
+      if (!this.state.mg && this.state.mg !== '0') { const v = firstVial(C.id); if (v && v.unit === 'mg') this.state.mg = String(v.qty); }
+    }
+    // the math — third person only
+    const mg = parseFloat(this.state.mg) || 0, ml = parseFloat(this.state.ml) || 0;
+    const mgPerMl = ml ? mg / ml : 0, mcgPerUnit = mgPerMl * 10; // 1 unit = 0.01 mL; mg/mL × 0.01 mL × 1000 mcg/mg
+    const f = (n, d) => Number.isFinite(n) ? n.toFixed(d).replace(/\.?0+$/, '') : '—';
+    const working = ml && mg ? [ { k: mg + ' mg ÷ ' + ml + ' mL', v: f(mgPerMl, 3) + ' mg/mL' }, { k: f(mgPerMl, 3) + ' mg/mL × 0.01 mL', v: f(mcgPerUnit, 1) + ' mcg / unit' }, { k: 'Whole vial', v: ml * 100 + ' units' } ] : [ { k: 'Enter mg and mL', v: '' } ];
+    const table = ml && mg ? [5, 10, 20, 50, 100].filter(u => u <= ml * 100).map(u => ({ u: u + ' u', ml: f(u / 100, 2) + ' mL', mcg: f(u * mcgPerUnit, 1) + ' mcg' })) : [];
+    const prepStr = mg && ml ? mg + ' mg in ' + ml + ' mL' : '';
+    const stack = isPro && cat.STACK[0];
+    const notes = view === 'compound' ? [ { k: 'Grade', v: c.grade + ' — ' + c.evidence + '. Maps one-to-one from regulatory status; nothing else moves it.' }, { k: 'CV', v: c.cvNotes }, { k: 'On file', v: c.vialCount === 'none' ? 'No tested batches on file.' : c.vialCount + ' on file; where a batch prints no purity, the row says so.' } ]
+      : view === 'library' ? [ { k: 'Search', v: 'Names, brand names and indications. “Botox” and “fat loss” both resolve.' }, { k: 'Grades', v: 'A: labeled FDA use. B: approved elsewhere. C: mixed status. D: research only. —: a physiological target, not a therapy.' } ]
+      : [ isPro && stack ? { k: stack.schedule.split(' ')[0], v: lib.compound(stack.id).name + ' · ' + stack.vialMg + ' mg in ' + stack.waterMl + ' mL · ' + stack.site } : { k: 'Free', v: 'Reading is free and stays free. One peptide sits on a free bench; Pro keeps the rest.' },
+          { k: 'Batches', v: (() => { const s = vl.summary(); return s.total + ' vials on file. ' + s.assayed + ' assayed, ' + s.minPurity + '–' + s.maxPurity + '%. ' + s.unassayed + ' print no purity figure; ' + s.undated + ' went out undated.'; })() } ];
+    return Object.assign(base, {
+      benchTitle: isPro ? 'Your bench.' : 'Your bench, one peptide.', benchSub: isPro ? benchVials.length + ' vials on file · ' + cat.STACK.length + ' peptides on the schedule' : '1 vial · reading is free',
+      benchVials, stackTitle: isPro ? 'Schedule' : 'On the bench', stackSub: isPro ? 'next 24 h' : 'free tier', stackRows,
+      monthly: P.money(P.MONTHLY_PRICE), annual: P.money(P.ANNUAL_PRICE), footnote: P.priceFootnote('monthly'), proCta: P.proCta,
+      nCompounds: String(lib.LIST.length), catChips: cats.slice(0, 6).map(k => ({ name: k.name, n: String(lib.inCategory(k.id).length), href: this.href({ v: 'library', cat: k.id }) })),
+      goSearch: e => { e.preventDefault(); this.setState({ view: 'library' }); },
+      libSub: results.length + ' of ' + lib.LIST.length + (this.state.catFilter ? ' · ' + lib.CATEGORY_BY_ID[this.state.catFilter].name : '') + (q ? ' · “' + q + '”' : ''),
+      hasQ: !!q, clearQ: () => this.setState({ q: '' }),
+      catFilters: [{ id: null, name: 'All' }].concat(cats).map(k => ({ name: k.name, n: k.id ? String(lib.inCategory(k.id).length) : String(lib.LIST.length), ink: this.state.catFilter === k.id ? '#1A1D1F' : '#3B4045', line: this.state.catFilter === k.id ? '#1A1D1F' : 'transparent', pick: () => this.setState({ catFilter: k.id }) })),
+      results: results.map(r => ({ name: r.name, brand: r.fullName.replace(r.name, '').replace(/^\s*\((.*)\)\s*$/, '$1').trim(), category: r.category, purpose: r.purpose, grade: r.grade, cv: 'CV ' + r.cv, href: compoundHref(r.id) })),
+      noResults: !results.length,
+      backHref: this.href({ v: 'library' }), backLabel: 'The library', c, benchAction: 'Add to bench',
+      mathMg: this.state.mg, mathMl: this.state.ml, setMg: e => this.setState({ mg: e.target.value }), setMl: e => this.setState({ ml: e.target.value }),
+      working, table, mathSentence: mg && ml ? 'This solution contains ' + f(mcgPerUnit, 1) + ' mcg per unit on a U-100 syringe, ' + f(mgPerMl, 3) + ' mg per mL, ' + mg + ' mg in total.' : 'Enter what the vial holds and how much water is added; the panel describes the resulting solution.',
+      keepPrep: () => { if (!prepStr) return; try { sessionStorage.setItem('pc-prep', prepStr); } catch (e) {} this.setState({ prep: prepStr }); },
+      keepLabel: this.state.prep === prepStr && prepStr ? 'Preparation kept' : 'Keep this preparation',
+      prepLine: this.state.prep ? 'kept · ' + this.state.prep : 'nothing kept yet',
+      notes, legal: sd.LEGAL,
+    });
+  }
+}
+</script>
+</body>
+</html>

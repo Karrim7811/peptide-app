@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background:#E6E9EB; }
+  * { box-sizing:border-box; }
+  body { -webkit-font-smoothing:antialiased; }
+  a { color:#1A1D1F; text-decoration:none; }
+  a:hover { color:#1A8A9E; }
+  input { font:inherit; color:inherit; background:none; border:none; outline:none; }
+  input::placeholder { color:#9AA3A9; font-style:italic; }
+  ::selection { background:#1A8A9E; color:#F4F5F6; }
+</style>
+</helmet>
+
+<div data-screen-label="Home" style="min-height:100vh; display:flex; flex-direction:column; background:#E6E9EB; color:#1A1D1F; font-family:'Cormorant Garamond',Georgia,serif;">
+  <header style="border-bottom:1px solid #1A1D1F;">
+    <div style="padding:14px clamp(16px,3vw,32px); display:flex; align-items:center; gap:clamp(12px,2vw,28px); flex-wrap:wrap;">
+      <a href="./Home.dc.html" style="display:inline-flex; align-items:center; gap:9px; white-space:nowrap;"><span style="width:7px; height:7px; border-radius:50%; background:#1A8A9E; display:inline-block;"></span><span style="font-weight:500; font-size:15px; letter-spacing:.22em;">PEPTIDE CORTEX</span></a>
+      <nav style="margin-left:auto; display:flex; align-items:center; gap:clamp(12px,2vw,24px); flex-wrap:wrap; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase;">
+        <a href="./App.dc.html?v=library">Library</a><a href="./Shop.dc.html">Shop</a><a href="./Auth.dc.html?m=login" style="border-bottom:1px solid #1A1D1F; white-space:nowrap;">Sign in</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- hero -->
+  <section style="padding:clamp(40px,7vw,96px) clamp(16px,3vw,32px) clamp(32px,5vw,64px); border-bottom:1px solid #1A1D1F;">
+    <h1 style="margin:0; font-weight:300; font-size:clamp(38px,6.4vw,84px); line-height:.98; letter-spacing:-.03em; max-width:16ch; text-wrap:pretty;">Everyone else asks you to trust them. We publish the numbers.</h1>
+    <div style="margin-top:clamp(20px,3vw,32px); display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:20px 40px; align-items:end;">
+      <p style="margin:0; font-size:clamp(18px,1.7vw,22px); line-height:1.4; color:#3B4045; max-width:52ch; text-wrap:pretty;">An independent lab assay for every batch we sell, with the price per milligram beside it. A reference on {{ nCompounds }} peptides that says “no human dose established” when that is the truth. Read either for free; check the arithmetic yourself.</p>
+      <div style="display:flex; gap:12px; flex-wrap:wrap; justify-self:start;">
+        <a href="./App.dc.html?v=library" style="display:inline-flex; align-items:center; border:1px solid #1A1D1F; background:#1A1D1F; color:#F4F5F6; font-family:Jost,sans-serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase; padding:14px 22px; min-height:44px;" style-hover="background:#1A8A9E; border-color:#1A8A9E; color:#F4F5F6;">Read the library</a>
+        <a href="./Shop.dc.html" style="display:inline-flex; align-items:center; border:1px solid #1A1D1F; font-family:Jost,sans-serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase; padding:14px 22px; min-height:44px;" style-hover="background:#1A1D1F; color:#F4F5F6;">See the seven vials</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- the ledger -->
+  <section style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,420px),1fr)); border-bottom:1px solid #1A1D1F;">
+    <div style="padding:clamp(24px,3vw,40px) clamp(16px,3vw,32px); border-right:1px solid #1A1D1F;">
+      <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#1A8A9E;"><span>The ledger</span><span style="color:#7E878E;">GLP-3 · Retatrutide · 30 mg</span></div>
+      <h2 style="margin:14px 0 0; font-weight:300; font-size:clamp(28px,3vw,40px); line-height:1.05; letter-spacing:-.024em; text-wrap:pretty;">Nine months of consecutive batches. Every one above 99.4%.</h2>
+      <div style="margin-top:22px; display:grid; grid-template-columns:auto auto minmax(0,1fr) auto auto; gap:0 clamp(10px,1.6vw,18px); font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E; padding-bottom:8px; border-bottom:1px solid #1A1D1F;"><span>Assayed</span><span>Lot</span><span></span><span style="text-align:right;">Purity</span><span style="text-align:right;">Measured</span></div>
+      <sc-for list="{{ ledger }}" as="h" hint-placeholder-count="3">
+        <div style="display:grid; grid-template-columns:auto auto minmax(0,1fr) auto auto; gap:0 clamp(10px,1.6vw,18px); align-items:center; padding:12px 0; border-bottom:1px solid rgba(26,29,31,.18); font-family:'JetBrains Mono',monospace; font-size:clamp(12px,1.2vw,15px);">
+          <span style="font-weight:500;">{{ h.mfg }}</span>
+          <span style="color:{{ h.ink }}; white-space:nowrap;">{{ h.code }}</span>
+          <span style="height:1px; background:rgba(26,29,31,.14); position:relative; min-width:12px;"><span style="position:absolute; left:0; top:-1px; height:3px; width:{{ h.bar }}; background:{{ h.ink }};"></span></span>
+          <span style="font-weight:500; text-align:right; font-size:clamp(16px,1.6vw,20px);">{{ h.purity }}</span>
+          <span style="color:#3B4045; text-align:right; white-space:nowrap;">{{ h.measured }}</span>
+        </div>
+      </sc-for>
+      <div style="margin-top:10px; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; font-family:'JetBrains Mono',monospace; font-size:12px; color:#3B4045;"><span>30.00 mg labelled on every row</span><span style="color:#1A8A9E;">{{ ledgerCurrent }}</span></div>
+      <p style="margin:18px 0 0; font-size:17px; line-height:1.45; color:#3B4045; text-wrap:pretty;">One certificate covers one vial. A run of dated batches covers a supplier. The dates stay on every row because they are what make it a record.</p>
+      <a href="./Product.dc.html?p=glp-3-30mg" style="display:inline-block; margin-top:16px; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; border-bottom:1px solid #1A1D1F; padding-bottom:2px;">The full assay →</a>
+    </div>
+    <div style="padding:clamp(24px,3vw,40px) clamp(16px,3vw,32px); background:#F4F5F6;">
+      <div style="font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#1A8A9E;">Everything on file</div>
+      <div style="margin-top:18px; display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:1px; background:#1A1D1F; border:1px solid #1A1D1F;">
+        <sc-for list="{{ tally }}" as="t" hint-placeholder-count="4">
+          <div style="background:#F4F5F6; padding:16px 16px 14px; display:flex; flex-direction:column; gap:6px;">
+            <span style="font-family:'JetBrains Mono',monospace; font-weight:500; font-size:clamp(30px,3.6vw,44px); line-height:1; letter-spacing:-.02em;">{{ t.n }}</span>
+            <span style="font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E; line-height:1.5;">{{ t.k }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <p style="margin:18px 0 0; font-size:17px; line-height:1.45; color:#3B4045; text-wrap:pretty;">{{ tallyNote }}</p>
+      <div style="margin-top:22px; border-top:1px solid #1A1D1F; padding-top:14px; display:flex; flex-wrap:wrap; gap:8px 14px; font-family:'JetBrains Mono',monospace; font-size:13px;">
+        <sc-for list="{{ sold }}" as="s" hint-placeholder-count="7"><a href="{{ s.href }}" style="border-bottom:1px solid rgba(26,29,31,.35); padding-bottom:1px; white-space:nowrap;">{{ s.label }}</a></sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- the reference -->
+  <section style="padding:clamp(24px,3vw,40px) clamp(16px,3vw,32px); border-bottom:1px solid #1A1D1F;">
+    <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#1A8A9E;"><span>The reference</span><span style="color:#7E878E;">{{ nCompounds }} peptides · {{ nCategories }} categories · free to read</span></div>
+    <div style="margin-top:14px; display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,380px),1fr)); gap:24px 48px; align-items:start;">
+      <div>
+        <h2 style="margin:0; font-weight:300; font-size:clamp(28px,3vw,40px); line-height:1.05; letter-spacing:-.024em; text-wrap:pretty;">Graded by evidence, not by enthusiasm.</h2>
+        <p style="margin:14px 0 0; font-size:17px; line-height:1.45; color:#3B4045; max-width:56ch; text-wrap:pretty;">Each entry carries purpose, mechanism, effects, cautions, interactions and an evidence grade that maps one-to-one from regulatory status. A cardiovascular score sits on its own axis and never touches the grade. {{ nNoDose }} entries state that no human dose is established, and the page says exactly that.</p>
+        <form onSubmit="{{ go }}" style="margin-top:20px; border:1px dashed rgba(26,138,158,.6); padding:10px 14px; display:flex; gap:12px; align-items:center;">
+          <span style="font-style:italic; font-size:19px; color:#7E878E; white-space:nowrap;">Look up —</span>
+          <input value="{{ q }}" onChange="{{ setQ }}" placeholder="a peptide, a brand name, an indication" style="flex:1; font-style:italic; font-size:21px; min-height:32px; min-width:0;">
+          <button type="submit" style="appearance:none; background:none; border:none; cursor:pointer; font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; color:#1A1D1F; padding:6px 0; min-height:32px;">Search</button>
+        </form>
+      </div>
+      <div>
+        <div style="display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:0 14px; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#7E878E; padding-bottom:8px; border-bottom:1px solid #1A1D1F;"><span>Grade</span><span>Evidence</span><span style="text-align:right;">Count</span></div>
+        <sc-for list="{{ grades }}" as="g" hint-placeholder-count="5">
+          <div style="display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:0 14px; align-items:center; padding:10px 0; border-bottom:1px solid rgba(26,29,31,.18);">
+            <span style="font-family:'JetBrains Mono',monospace; font-weight:500; font-size:20px; width:24px;">{{ g.grade }}</span>
+            <span style="font-size:15.5px; line-height:1.3; color:#3B4045; min-width:0;">{{ g.evidence }}</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:15px; text-align:right;">{{ g.n }}</span>
+          </div>
+        </sc-for>
+        <div style="margin-top:14px; display:flex; flex-wrap:wrap; gap:8px 14px; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.2em; text-transform:uppercase;">
+          <sc-for list="{{ cats }}" as="c" hint-placeholder-count="12"><a href="{{ c.href }}" style="color:#3B4045; white-space:nowrap;" style-hover="color:#1A8A9E">{{ c.name }} <span style="font-family:'JetBrains Mono',monospace; color:#7E878E;">{{ c.n }}</span></a></sc-for>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- two businesses -->
+  <section style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,420px),1fr)); border-bottom:1px solid #1A1D1F;">
+    <div style="padding:clamp(24px,3vw,40px) clamp(16px,3vw,32px); border-right:1px solid #1A1D1F; display:flex; flex-direction:column; gap:14px;">
+      <span style="font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#7E878E;">The bench · a subscription</span>
+      <h3 style="margin:0; font-weight:300; font-size:clamp(26px,2.6vw,34px); line-height:1.08; letter-spacing:-.02em; text-wrap:pretty;">Reading is free. Keeping a bench — your vials, your log, your notes — is what Pro is for.</h3>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:14px; line-height:1.7; color:#3B4045;"><span style="color:#1A1D1F; font-weight:500;">{{ monthly }}</span> per month · <span style="color:#1A1D1F; font-weight:500;">{{ annual }}</span> per year<br>{{ footnote }}</div>
+      <a href="./Auth.dc.html?m=signup" style="align-self:flex-start; display:inline-flex; align-items:center; border:1px solid #1A1D1F; font-family:Jost,sans-serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase; padding:14px 22px; min-height:44px;" style-hover="background:#1A1D1F; color:#F4F5F6;">{{ proCta }}</a>
+    </div>
+    <div style="padding:clamp(24px,3vw,40px) clamp(16px,3vw,32px); display:flex; flex-direction:column; gap:14px;">
+      <span style="font-family:Jost,sans-serif; font-size:10.5px; letter-spacing:.26em; text-transform:uppercase; color:#7E878E;">The shop · seven peptides</span>
+      <h3 style="margin:0; font-weight:300; font-size:clamp(26px,2.6vw,34px); line-height:1.08; letter-spacing:-.02em; text-wrap:pretty;">Purity, measured content and price per milligram on every card. Where the assay is still at the lab, the card says so.</h3>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:14px; line-height:1.7; color:#3B4045;">{{ shopLine }}<br>cold chain · use within 28 days · 2–8 °C · US only</div>
+      <a href="./Shop.dc.html" style="align-self:flex-start; display:inline-flex; align-items:center; border:1px solid #1A1D1F; font-family:Jost,sans-serif; font-size:11px; letter-spacing:.24em; text-transform:uppercase; padding:14px 22px; min-height:44px;" style-hover="background:#1A1D1F; color:#F4F5F6;">The catalogue</a>
+    </div>
+  </section>
+
+  <footer style="margin-top:auto; background:#1A1D1F; color:#C9CED2; padding:14px clamp(16px,3vw,32px); display:flex; flex-wrap:wrap; gap:8px 24px; justify-content:space-between; font-family:Jost,sans-serif; font-size:10px; letter-spacing:.18em; text-transform:uppercase; line-height:1.8;">
+    <span style="max-width:80ch;">{{ legal }}</span>
+    <span style="display:flex; gap:16px; flex-wrap:wrap;"><a href="./Legal.dc.html?page=terms" style="color:#C9CED2;">Terms</a><a href="./Legal.dc.html?page=privacy" style="color:#C9CED2;">Privacy</a><a href="./Legal.dc.html?page=refund" style="color:#C9CED2;">Refunds</a></span>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { lib: null, sd: null, vl: null, q: '' };
+  componentDidMount() {
+    Promise.all([import('./library.js'), import('./shop-data.js'), import('./vials.js')]).then(([lib, sd, vl]) => this.setState({ lib, sd, vl }));
+  }
+  renderVals() {
+    const { lib, sd, vl, q } = this.state;
+    const go = e => { e.preventDefault(); window.location.href = './App.dc.html?v=library&q=' + encodeURIComponent(q); };
+    if (!lib) return { ledger: [], tally: [], sold: [], grades: [], cats: [], legal: '', q, setQ: e => this.setState({ q: e.target.value }), go };
+    const glp = sd.bySlug('glp-3-30mg');
+    const bar = p => Math.round(Math.max(4, Math.min(100, (p - 99) * 100))) + '%';
+    const ledger = glp.history.map(h => ({ mfg: h.mfg, code: h.code, purity: sd.fmtPct(h.purity), measured: sd.fmtMg(h.measuredMg) + ' mg', bar: bar(h.purity), ink: h.current ? '#1A8A9E' : '#1A1D1F' }));
+    const assayed = vl.VIALS.filter(v => v.purity !== null), undated = vl.VIALS.filter(v => !v.mfg);
+    const ps = assayed.map(v => v.purity);
+    const tally = [
+      { n: String(vl.VIALS.length), k: 'vials on file' },
+      { n: String(assayed.length), k: 'with a purity figure' },
+      { n: String(vl.VIALS.length - assayed.length), k: 'print no purity · shown as such' },
+      { n: String(undated.length), k: 'went out undated' },
+    ];
+    const pending = sd.PRODUCTS.filter(p => p.lot.state === 'pending').length;
+    const grades = Object.entries(lib.EVIDENCE_TO_GRADE).map(([evidence, grade]) => ({ grade, evidence, n: String(lib.LIST.filter(c => c.evidence === evidence).length) }));
+    const cats = lib.CATEGORIES.slice().sort((a, b) => a.order - b.order).map(c => ({ name: c.name, n: String(lib.inCategory(c.id).length), href: './App.dc.html?v=library&cat=' + c.id }));
+    const P = lib.PRICING;
+    return {
+      nCompounds: String(lib.LIST.length), nCategories: String(lib.CATEGORIES.length), nNoDose: String(lib.LIST.filter(c => !lib.hasHumanDose(c)).length),
+      ledger, ledgerCurrent: glp.lot.code + ' shipping now',
+      tally, tallyNote: 'Purity on the assayed batches runs ' + Math.min(...ps).toFixed(2) + '–' + Math.max(...ps).toFixed(2) + '%. The gaps are real and stay visible: a null is a state, not missing data.',
+      sold: sd.PRODUCTS.map(p => ({ label: p.name + ' ' + p.size + ' ' + p.unit, href: './Product.dc.html?p=' + p.slug })),
+      grades, cats,
+      monthly: P.money(P.MONTHLY_PRICE), annual: P.money(P.ANNUAL_PRICE), footnote: P.priceFootnote('monthly'), proCta: P.proCta,
+      shopLine: (sd.PRODUCTS.length - pending) + ' of ' + sd.PRODUCTS.length + ' assayed · ' + pending + ' pending, stated on the card',
+      legal: sd.LEGAL, q, setQ: e => this.setState({ q: e.target.value }), go,
+    };
+  }
+}
+</script>
+</body>
+</html>
