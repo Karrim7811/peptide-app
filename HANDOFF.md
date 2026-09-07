@@ -288,6 +288,48 @@ Unchanged from yesterday except where noted.
 
 ---
 
+## Order confirmation email — built 2026-09-07, needs DNS and a key
+
+Built on Resend. **It does not send yet** — `RESEND_API_KEY` is unset, and that
+is a supported state rather than a gap to fix in a hurry.
+
+**Nothing here can fail an order.** `send()` returns an outcome and never
+throws; `emailReceipt()` swallows everything and logs. The order is the record,
+the receipt is a copy of it, and a customer whose order was written must never
+see an error because a mail API was slow. With no key nothing sends and nothing
+complains.
+
+**The order page is authoritative, not the email.** The mail says so in as many
+words — "if any message disagrees with the page, including this one, trust the
+page… we will never email you to say our payment details have changed". That
+line is why a customer can safely act on a message that tells them where to
+send money, which is otherwise the exact shape of a business-email-compromise.
+A test asserts it is still there. **Do not cut it for brevity.**
+
+**There is no QR and no image in the email.** Gmail proxies remote images and
+Outlook often blocks them; a payment code that renders as a blank box for half
+the recipients is worse than none. The QR belongs on the order page. A test
+asserts the HTML contains no `<img>`.
+
+**`buyer_email` is a new column** —
+`supabase/shop_orders_buyer_email_migration.sql`, **not yet applied**. Additive
+and nullable. The order carries the address rather than the send path reading
+`auth.users`, so a receipt is reproducible from the order alone and a customer
+changing their account email cannot silently change where an old order's
+receipt would have gone. It is written before the send is attempted, so the
+record survives a send that fails.
+
+**Still needed before mail actually flows**, none of it code:
+
+1. A Resend account and `RESEND_API_KEY`.
+2. SPF and DKIM on `peptidecortex.com`, or it lands in spam. A new sending
+   domain needs warming regardless.
+3. Apply the `buyer_email` migration.
+
+`NEXT_PUBLIC_SITE_ORIGIN` overrides the link origin on preview deployments;
+unset it is the canonical domain, which is right in production and the safe
+answer everywhere else.
+
 ## The three addresses — 2026-09-07
 
 Karim registered all three on `peptidecortex.com`. They do different jobs and
