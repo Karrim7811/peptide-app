@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { PEPTIDE_KNOWLEDGE } from '@/lib/peptide-knowledge'
 import { getAuthenticatedUser } from '@/lib/supabase/server'
 import { requireAiConsent } from '@/lib/ai-consent'
+import { doseGuardrail } from '@/lib/ai-dose-guardrail'
 import { requirePro } from '@/lib/subscription'
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
@@ -72,7 +73,7 @@ IMPORTANT: Frame everything as educational reference from published literature, 
 You MUST:
 1. Reference published research on all peptides for interaction information and safety notes
 2. Create an example weekly reference schedule (Monday through Sunday) based on research literature
-3. Include commonly reported timing (Morning/Evening/Night), research-reported amounts, administration route, and site rotation references
+3. Include commonly reported timing (Morning/Evening/Night), administration route, and site rotation references. For amounts, obey the ABSOLUTE RULE below without exception — a peptide with no published human dose gets the sentence, never a number
 4. Flag any potentially concerning combinations with clear notes from research
 5. Note any research-reported contraindications relevant to the user's profile
 6. Adjust complexity based on experience level (Beginner = simpler schedules; Advanced = can handle complex timing)
@@ -128,6 +129,8 @@ Respond ONLY with a valid JSON object in this exact format (no markdown, no code
 The "level" for interactions must be one of: "safe", "caution", "danger".
 Days in suggestedReminders use: 0=Sunday, 1=Monday, ..., 6=Saturday.
 Include ALL 7 days in weeklySchedule even if some have no doses (empty doses array).
+
+${doseGuardrail()}
 CRITICAL: This is for educational reference only. Always include a reminder to consult a qualified healthcare professional. Never present information as personalized medical advice.`
 
     const response = await client.messages.create({

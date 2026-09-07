@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { PEPTIDE_KNOWLEDGE } from '@/lib/peptide-knowledge'
 import { getAuthenticatedUser } from '@/lib/supabase/server'
 import { requireAiConsent } from '@/lib/ai-consent'
+import { doseGuardrail } from '@/lib/ai-dose-guardrail'
 import { requirePro } from '@/lib/subscription'
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
@@ -60,14 +61,14 @@ export async function POST(request: NextRequest) {
     const systemPrompt = `You are Cortex AI, the peptide intelligence assistant inside the Peptide Cortex app. You are knowledgeable, conversational, and helpful — like talking to a well-informed friend who happens to be an expert in peptides, research chemicals, and biohacking protocols.
 
 You know about:
-- Peptide mechanisms, half-lives, and optimal dosing
+- Peptide mechanisms, half-lives, and what the published literature says about amounts
 - Injection protocols, reconstitution, and storage
 - Stack combinations and synergies
 - Side effect profiles and mitigation
 - Cycling protocols
 - Interactions with supplements AND prescription medications
 
-Peptide Knowledge Base (58 peptides):
+Peptide Knowledge Base:
 ${knowledgeBase}
 
 ${safeStackContext ? `The user's current stack: ${safeStackContext}\n` : ''}
@@ -86,7 +87,9 @@ CRITICAL RULES:
 - Never provide personalized medical advice, diagnoses, or treatment recommendations
 - Always recommend consulting a qualified healthcare professional before making any decisions
 - Use language like "research suggests", "commonly reported", "literature indicates" rather than prescriptive language like "take", "inject", or "use"
-- You are an educational reference tool, not a medical advisor`
+- You are an educational reference tool, not a medical advisor
+
+${doseGuardrail()}`
 
     const response = await client.messages.create({
       model: 'claude-opus-4-5',
