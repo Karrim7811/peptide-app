@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { COMPOUND_LIST } from '@/lib/catalog'
+import type { Grade } from '@/lib/catalog'
 import {
   NO_DOSE_LINE,
   doseCounts,
@@ -99,8 +100,8 @@ describe('the catalogue, counted live', () => {
 })
 
 describe('doseSource', () => {
-  const entry = (patch: Record<string, string>) => ({
-    dosage: '', fullName: '', name: 'X', grade: 'D', ...patch,
+  const entry = (patch: { dosage?: string; fullName?: string; name?: string; grade?: Grade }) => ({
+    dosage: '', fullName: '', name: 'X', grade: 'D' as Grade, ...patch,
   })
 
   it('says there is nothing to cite for a no-dose entry', () => {
