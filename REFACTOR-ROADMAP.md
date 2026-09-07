@@ -27,7 +27,7 @@ Effort sizes: XS≈<1h, S≈2–4h, M≈half-day, L≈full-day+.
 > - **Still open, not code:** C-4 (GitHub org), C-5 (FTC audit of Home and
 >   `MARKETING.md`), and everything under "Blocked on Karim" in `HANDOFF.md`.
 >
-> **Sprint 1 complete (2026-05-23)** — the "pre-launch legal / financial defensibility floor" landed in a single session: ✅ C-3 DOB age gate, ✅ C-6 domain cleanup, ✅ C-7 reconstitution reframing, ✅ C-8 interim refund policy + auto-renewal disclosure, ✅ C-9 EU/EEA/UK/CH geoblock, ✅ C-10 Stripe SKU restructure (monthly + lifetime), ✅ H-1 (partial — manifest text + colors; raster icons still pending), ✅ H-6 / H-7 prompt fixes, ✅ L-1 / L-2 / L-3 / L-5 hygiene wins. Sprint 2 (schema + security + continuity floor) is next: C-1, C-2, C-4, H-4, H-5, H-8.
+> **Sprint 1 complete (2026-05-23)** — the "pre-launch legal / financial defensibility floor" landed in a single session: ✅ C-3 DOB age gate, ✅ C-6 domain cleanup, ✅ C-7 reconstitution reframing, ✅ C-8 interim refund policy + auto-renewal disclosure, ✅ C-9 EU/EEA/UK/CH geoblock, ✅ C-10 Stripe SKU restructure (monthly + lifetime), ✅ H-1 (partial — manifest text + colors; raster icons still pending), ✅ H-6 / H-7 prompt fixes, ✅ L-1 / L-2 / L-3 hygiene wins. (**L-5 was listed here in error** — four addresses across two domains were still in the tree, and the live site published none of them. Actually closed 2026-09-07.) Sprint 2 (schema + security + continuity floor) is next: C-1, C-2, C-4, H-4, H-5, H-8.
 
 ---
 
@@ -293,8 +293,9 @@ JetBrains Mono adoption for data display is resolved per CLAUDE.md §16.3 and ha
 **Files**: `.gitignore`, `git rm --cached tsconfig.tsbuildinfo`.
 **Plugin lens**: simplify.
 
-### L-5 · Decide and document the canonical email address
+### L-5 · Decide and document the canonical email address — **CLOSED 2026-09-07**
 **Description**: Terms references `support@tigristechlabs.com`. Pricing FAQ references `support@peptidecortex.com`. Pick one as the public support address. Set up forwarding.
+**Outcome**: `support@peptidecortex.com`, exported once as `SUPPORT_EMAIL` from `src/lib/legal.ts`. It was marked resolved in the Sprint 1 header while it was not: both addresses in the tree lived in unimported footers (`src/components/home/`, `src/app/_landing/`), so the LIVE site published no contact address at all — while the refund policy and the Zelle fallback both told the reader to "email us". Three addresses now exist on the domain and do different jobs: `pay@` receives Zelle (env var `SHOP_ZELLE_HANDLE`, never a code constant), `order@` will be the From: once transactional email exists, and `support@` is the one a human writes to. The payment destination is deliberately not the sending identity — see the note in `legal.ts`.
 **Effort**: XS.
 **Files**: `src/app/terms/page.tsx`, `src/app/pricing/page.tsx`.
 **Plugin lens**: docs.

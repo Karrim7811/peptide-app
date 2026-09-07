@@ -247,7 +247,9 @@ What remains is **not code**. Nothing below can be done from this repo:
 2. `SHOP_ZELLE_HANDLE`, which needs a bank account under a shop entity.
 3. `SHOP_ADMIN_USER_ID`. **Easy to miss** — without it the admin queue 404s to
    everyone, so a Zelle payment can never be marked paid and nothing ever
-   ships, while checkout looks like it is working.
+   ships, while checkout looks like it is working. (Until 2026-09-07 setting it
+   would still not have been enough: the queue was read-only. See "The queue
+   had no buttons" below.)
 4. Lot codes and real assay dates for VIP, Selank, Semax and NAD+.
 5. The §16.12 attorney review on the refund policy.
 
@@ -286,6 +288,123 @@ Unchanged from yesterday except where noted.
 
 ---
 
+## Order confirmation email — built 2026-09-07, needs DNS and a key
+
+Built on Resend. **It does not send yet** — `RESEND_API_KEY` is unset, and that
+is a supported state rather than a gap to fix in a hurry.
+
+**Nothing here can fail an order.** `send()` returns an outcome and never
+throws; `emailReceipt()` swallows everything and logs. The order is the record,
+the receipt is a copy of it, and a customer whose order was written must never
+see an error because a mail API was slow. With no key nothing sends and nothing
+complains.
+
+**The order page is authoritative, not the email.** The mail says so in as many
+words — "if any message disagrees with the page, including this one, trust the
+page… we will never email you to say our payment details have changed". That
+line is why a customer can safely act on a message that tells them where to
+send money, which is otherwise the exact shape of a business-email-compromise.
+A test asserts it is still there. **Do not cut it for brevity.**
+
+**There is no QR and no image in the email.** Gmail proxies remote images and
+Outlook often blocks them; a payment code that renders as a blank box for half
+the recipients is worse than none. The QR belongs on the order page. A test
+asserts the HTML contains no `<img>`.
+
+**`buyer_email` is a new column** —
+`supabase/shop_orders_buyer_email_migration.sql`, **not yet applied**. Additive
+and nullable. The order carries the address rather than the send path reading
+`auth.users`, so a receipt is reproducible from the order alone and a customer
+changing their account email cannot silently change where an old order's
+receipt would have gone. It is written before the send is attempted, so the
+record survives a send that fails.
+
+**Still needed before mail actually flows**, none of it code:
+
+1. A Resend account and `RESEND_API_KEY`.
+2. SPF and DKIM on `peptidecortex.com`, or it lands in spam. A new sending
+   domain needs warming regardless.
+3. Apply the `buyer_email` migration.
+
+`NEXT_PUBLIC_SITE_ORIGIN` overrides the link origin on preview deployments;
+unset it is the canonical domain, which is right in production and the safe
+answer everywhere else.
+
+## The three addresses — 2026-09-07
+
+Karim registered all three on `peptidecortex.com`. They do different jobs and
+only one is a code constant.
+
+| Address | Role | Where it lives |
+|---|---|---|
+| `pay@` | receives money over Zelle | `SHOP_ZELLE_HANDLE`, env var only |
+| `orders@` | the `From:` on order mail | nowhere yet — nothing sends |
+| `support@` | the one a human writes to | `SUPPORT_EMAIL` in `src/lib/legal.ts` |
+
+**`pay@` must never become a code constant.** It is deployment config, and the
+app must not imply a destination for money that the deployment has not actually
+been given — which is why the Zelle sheet has no fallback handle and says the
+account does not exist yet instead.
+
+**`orders@` is deliberately not defined in code either.** Nothing sends, and a
+constant naming a sender that cannot send is a lie waiting to be read. Add it
+with the send path, not before.
+
+**Why `pay@` and `orders@` are not the same address**: if the address receiving
+money were also the sending identity, a spoofed `From:` would carry a far more
+convincing instruction to send money somewhere new. That is the whole shape of
+a business-email-compromise, and buyers would have been trained to accept it by
+your own genuine mail. Do not consolidate them to save a mailbox.
+
+**What this fixed**: the live site published no contact address at all. The two
+in the tree — `support@tigristechlabs.com` and `hello@peptidecortex.com` — were
+both in unimported footers (`src/components/home/`, `src/app/_landing/`), so
+the refund policy's "email us with your order reference" and the Zelle
+fallback's "email us with that reference" named nobody. Roadmap L-5 claimed
+this was closed in Sprint 1; it was not, and that is corrected in the roadmap.
+
+`.env.example` now documents every shop variable, which it did not while the
+README pointed at it claiming otherwise.
+
+## The queue had no buttons — fixed 2026-09-07
+
+`markPaid`, `markPacked` and `markShipped` were written, guarded and tested
+when the shop was built. **Nothing imported them.** `/admin/orders` rendered
+three read-only columns, so the queue could show a Zelle payment and offer no
+way to confirm it.
+
+This mattered because "Blocked on Karim" said `SHOP_ADMIN_USER_ID` was what
+stood between here and a shipped order. It was not the only thing: with the
+variable set, the queue would have rendered — and still had no control on any
+card. The page header said so ("Read-only for now… the buttons land once there
+are real rows to act on"), which reads as a note rather than as a blocker.
+
+`src/app/admin/orders/OrderActions.tsx` now supplies the three controls. The
+page stays a server component and does the reading — orders, their items, and
+the **coded** lots per product, in two queries rather than per card. The client
+component owns form state only. **Every guard is where it was**: `assertAdmin`
+runs server-side per action, `canTransition` decides legality, and
+`validatePackAssignment` refuses a pack with a missing lot. Nothing about
+authorisation moved into the browser.
+
+Four decisions worth not undoing:
+
+- **Only Zelle gets a Mark paid button.** A BTCPay order reaches `paid` through
+  the signed webhook; the point of the signature is that no human vouched for
+  it. Those cards say the webhook handles it.
+- **Mark paid takes two clicks**, naming the reference. `paid` cannot return to
+  `awaiting_payment` in the status machine, so there is no undo.
+- **A lot with no code is not offered.** The query filters `lot_code is not
+  null`, and an item whose product has none renders "no lot code on file"
+  rather than an empty dropdown. Four launch SKUs are in that state; that is
+  the recall path refusing, not a UI gap.
+- **Tracking is required to mark shipped.** `markShipped` stores null for a
+  blank string, which would leave a shipped order with no way to find the
+  parcel.
+
+Errors render inline beside the control, never as a toast — "reload and try
+again" from the lost-update guard is something the operator must read.
+
 ## Shipping, priced — 2026-09-07
 
 $7.00 standard · $12.00 priority · $49.00 overnight, **flat per order**, not
@@ -318,7 +437,8 @@ guard.
 **Checkout is not open.** It now completes on the code's side, but a Zelle
 order still cannot be marked paid without `SHOP_ADMIN_USER_ID`, and there is
 no handle without `SHOP_ZELLE_HANDLE`. Those two, not shipping, are what is
-between here and a first order.
+between here and a first order — and see the section below, because until
+2026-09-07 the queue those variables unlock had no buttons on it.
 
 ## Fixed this session, worth knowing about
 

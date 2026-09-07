@@ -14,6 +14,7 @@
 // and a labelled row is findable in a way a paragraph is not.
 
 import Link from 'next/link'
+import { SUPPORT_EMAIL } from '@/lib/legal'
 
 const INK = '#1A1D1F'
 const INK2 = '#3B4045'
@@ -265,6 +266,16 @@ export function LegalPage({
         }}
       >
         {LEGAL_FOOTER}
+        <span style={{ display: 'block', marginTop: 8 }}>
+          {/* Every legal page names a reachable address. These pages named
+              nobody until 2026-09-07, while the refund policy told the reader
+              to email us — and a storefront's terms are somewhere a payment
+              processor expects to find a contact. */}
+          Questions about these terms or an order:{' '}
+          <a href={`mailto:${SUPPORT_EMAIL}`} style={{ color: 'inherit' }}>
+            {SUPPORT_EMAIL}
+          </a>
+        </span>
       </footer>
 
       {/* The tab column collapses below 760px, matching the design's breakpoint.
