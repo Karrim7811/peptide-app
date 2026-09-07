@@ -268,7 +268,8 @@ button, a {
   opacity: 0.55;
   cursor: pointer;
 }
-:root[data-ground='daylight'] .cx-surface input[type='date']::-webkit-calendar-picker-indicator {
+[data-ground='daylight'] .cx-surface input[type='date']::-webkit-calendar-picker-indicator,
+[data-ground='paper'] .cx-surface input[type='date']::-webkit-calendar-picker-indicator {
   filter: none;
 }
 

@@ -1,16 +1,35 @@
-// Three grounds for the Mirror surface.
+// Grounds for the token-driven surfaces.
 //
-// Values are lifted verbatim from design_handoff_peptide_cortex/Peptide Cortex
-// Mirror.dc.html (THEMES). Every text tier clears 4.5:1 against its ground —
-// the values were tuned specifically to get there. Do not nudge them.
+// Midnight, dusk and daylight are lifted verbatim from
+// design_handoff_peptide_cortex/Peptide Cortex Mirror.dc.html (THEMES). Every
+// text tier clears 4.5:1 against its ground — the values were tuned
+// specifically to get there. Do not nudge them.
 //
-// Midnight is the default and is what the server renders, so there is no flash
-// on first paint.
+// Paper is the V3 site palette (design_handoff_peptide_cortex_site/README.md,
+// "Design tokens") expressed as a ground, so the Mirror can speak V3 without a
+// rewrite: every one of its components reads var(--ink) and friends, and the
+// ground is the one place those resolve. Two of V3's inks would not pass as
+// Mirror text — Ink-3 #7E878E sits at 3.0:1 on paper and Ink-4 #9AA3A9 at 2.1 —
+// and the Mirror sets 9–10px mono in those tiers, so `faint` and `faintest`
+// are darkened until they clear 4.5:1, and the accent teal steps from #1A8A9E
+// (3.3:1) to #156F80 (4.8:1) for the same reason. src/lib/design/grounds.test.ts
+// asserts the ratios for every ground.
+//
+// Midnight is the GLOBAL default and is what the server renders on <html>, so
+// there is no flash on first paint. The Mirror scopes its own ground onto its
+// root element instead (MirrorShell), with paper as ITS default: the dark
+// surfaces that still read the global variables — the AI consent screen, the
+// pricing page, the guides — keep midnight, and only the Mirror changes.
 
-export const GROUNDS = ['midnight', 'dusk', 'daylight'] as const
+export const GROUNDS = ['midnight', 'dusk', 'daylight', 'paper'] as const
 export type Ground = (typeof GROUNDS)[number]
 
+/** What <html> carries, and what the surfaces outside the Mirror render on. */
 export const DEFAULT_GROUND: Ground = 'midnight'
+
+/** The Mirror's own default, and the order its switcher offers. */
+export const MIRROR_GROUNDS: readonly Ground[] = ['paper', 'midnight', 'dusk', 'daylight']
+export const MIRROR_DEFAULT_GROUND: Ground = 'paper'
 
 /** The four category hue families. `go` doubles as the tension colour. */
 export const HUE_FAMILIES = ['cy', 'pu', 'gr', 'go'] as const
@@ -94,6 +113,30 @@ export const GROUND_DEFINITIONS: Record<Ground, GroundDefinition> = {
       '--dotA': 'rgba(107,79,168,0.8)',
       '--dotB': 'rgba(26,138,158,0.85)',
       '--dotC': 'rgba(184,134,11,0.95)',
+    },
+  },
+  paper: {
+    hues: { cy: '#156F80', pu: '#5B3F97', gr: '#176D48', go: '#7F5C00' },
+    vars: {
+      '--bg': '#E6E9EB',
+      '--panel': '#F4F5F6',
+      '--panelHi': '#EDF0F1',
+      '--panelHot': '#EDF0F1',
+      '--hair': 'rgba(26,29,31,0.18)',
+      '--ink': '#1A1D1F',
+      '--dim': '#3B4045',
+      '--faint': '#5B636A',
+      '--faintest': '#5F676D',
+      '--accent': '#156F80',
+      '--accentDim': 'rgba(21,111,128,0.4)',
+      '--accentWash': 'rgba(26,138,158,0.06)',
+      '--gold': '#7F5C00',
+      '--glowA': 'rgba(26,138,158,0.08)',
+      '--glowB': 'rgba(91,63,151,0.06)',
+      '--glowC': 'rgba(127,92,0,0.06)',
+      '--dotA': 'rgba(26,29,31,0.35)',
+      '--dotB': 'rgba(21,111,128,0.45)',
+      '--dotC': 'rgba(127,92,0,0.6)',
     },
   },
 }

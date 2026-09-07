@@ -20,7 +20,7 @@
 // routes now would delete the app's only data entry rather than replace it.
 // They stay reachable until the Mirror grows the corresponding writes.
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import MirrorShell, { type Crumb } from '@/components/mirror/MirrorShell'
 import MirrorField from '@/components/mirror/MirrorField'
 import MirrorPanel from '@/components/mirror/MirrorPanel'
@@ -28,7 +28,6 @@ import VerifyTabs from '@/components/mirror/VerifyTabs'
 import AskBar from '@/components/mirror/AskBar'
 import Ledger from '@/components/ledger/Ledger'
 import BloodworkOverlay from '@/components/bloodwork/BloodworkOverlay'
-import { useGround } from '@/components/GroundProvider'
 import {
   useMirrorNav,
   type MirrorNavState,
@@ -36,8 +35,14 @@ import {
 } from '@/lib/mirror/useMirrorNav'
 import { buildRegionLayer, buildWholeLayer, type GeometryPalette } from '@/lib/mirror/geometry'
 import { createEntitlements } from '@/lib/entitlement'
-import { GROUND_DEFINITIONS } from '@/lib/design/grounds'
-import { CATEGORIES, CATEGORY_BY_ID, COMPOUNDS, SITES } from '@/lib/catalog'
+import {
+  GROUND_DEFINITIONS,
+  MIRROR_DEFAULT_GROUND,
+  MIRROR_GROUNDS,
+  isGround,
+  type Ground,
+} from '@/lib/design/grounds'
+import { CATEGORIES, CATEGORY_BY_ID, COMPOUNDS, COUNTS, SITES } from '@/lib/catalog'
 import { isProTier } from '@/lib/tier'
 import type { MirrorData } from '@/lib/mirror/load'
 
@@ -56,6 +61,42 @@ function initialNavFrom(params: Record<string, string>): Partial<MirrorNavState>
   return {}
 }
 
+/** Where the Mirror remembers its ground. Separate from the site-wide key. */
+const GROUND_STORAGE_KEY = 'cortex-mirror-ground'
+
+/**
+ * The Mirror's own ground — paper by default, remembered per browser.
+ *
+ * Deliberately NOT the global GroundProvider: that one defaults to midnight
+ * for the dark surfaces that still read it, and this surface has moved to V3.
+ * MirrorShell writes the chosen ground onto its root element, so nothing
+ * outside the Mirror changes when this does. Restored after mount so server
+ * and client markup agree on first paint.
+ */
+function useMirrorGround(): [Ground, (next: Ground) => void] {
+  const [ground, setGround] = useState<Ground>(MIRROR_DEFAULT_GROUND)
+
+  useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem(GROUND_STORAGE_KEY)
+      if (isGround(stored) && MIRROR_GROUNDS.includes(stored)) setGround(stored)
+    } catch {
+      // Private mode / storage disabled — the default is fine.
+    }
+  }, [])
+
+  const select = useCallback((next: Ground) => {
+    setGround(next)
+    try {
+      window.localStorage.setItem(GROUND_STORAGE_KEY, next)
+    } catch {
+      // Non-fatal: the ground still applies for this session.
+    }
+  }, [])
+
+  return [ground, select]
+}
+
 export default function MirrorClient({
   data,
   params = {},
@@ -63,7 +104,7 @@ export default function MirrorClient({
   data: MirrorData
   params?: Record<string, string>
 }) {
-  const { ground } = useGround()
+  const [ground, selectGround] = useMirrorGround()
 
   // A Pro user may preview the free surface; a free user may NOT toggle to Pro.
   // The gate is server-side either way, but offering the switch at all would
@@ -178,6 +219,8 @@ export default function MirrorClient({
       layer={nav.layer}
       verifyTab={nav.verifyTab}
       onSelectVerifyTab={(tab: VerifyTab) => nav.setVerifyTab(tab)}
+      ground={ground}
+      onSelectGround={selectGround}
       isFree={ent.isFree}
       canPreviewFree={canPreviewFree}
       onToggleTier={() => setPreviewFree((prev) => !prev)}
@@ -192,7 +235,7 @@ export default function MirrorClient({
           onMeasure={setFieldSize}
           footerNote={
             ent.isFree
-              ? `FREE · ${ent.resolvedCount} OF ${ent.stackCount} RESOLVED · 58 IN LIBRARY, ALL READABLE`
+              ? `FREE · ${ent.resolvedCount} OF ${ent.stackCount} RESOLVED · ${COUNTS.compounds} IN LIBRARY, ALL READABLE`
               : undefined
           }
           footerSub={nav.layer === 3 ? 'DRAG TO ROTATE · SCROLL TO ZOOM · ESC TO STEP OUT' : undefined}

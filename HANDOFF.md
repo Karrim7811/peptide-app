@@ -88,13 +88,52 @@ five tools — interactions, bloodwork, planner, dosing, scanner.
 
 What is left:
 
-1. **The Mirror's own styling.** It sits at `/mirror` and is the only surface
-   not speaking V3. It is also the most complex thing in the repo and holds
-   every write path, so treat a rewrite as a project, not an afternoon. It
-   works today, and nothing is broken by leaving it.
+1. **The Mirror's own styling — first pass done 2026-09-07, see below.** It
+   sits at `/mirror`, holds every write path, and now speaks V3 by default.
+   What remains is optional: the panel and verify-tab LAYOUTS are the older
+   Mirror design's, not App.dc.html's side column. No V3 file draws the field,
+   so there is nothing to transcribe; treat any further pass as design work.
 
 That is the whole list of remaining code. Everything else blocking launch is in
 the shop section below and none of it can be done from this repo.
+
+## The Mirror on paper — 2026-09-07
+
+There is no V3 design for the Mirror. `design_handoff_peptide_cortex_site/`
+lists it as out of scope ("leave as-is and keep reachable from the new bench
+shell"), and `App.dc.html` draws the bench, not the field. So "make it speak
+V3" could not mean transcribing a prototype. It meant the palette and the
+chrome, and the Mirror's architecture made the palette almost free:
+
+- **Every Mirror component reads ground tokens** — `var(--ink)`, `var(--panel)`,
+  `bg-ground`, `text-faint` — resolved by `src/lib/design/grounds.ts`. So the
+  V3 palette was added as a fourth ground, `paper`, and became the Mirror's
+  default. Six hundred token usages followed without an edit.
+- **The ground is scoped to the Mirror, not to `<html>`.** `DEFAULT_GROUND`
+  is still midnight and must stay so: the AI consent screen, `/pricing`, the
+  guides, `/welcome` and `/reset-password` still read the global variables
+  and were designed dark. `MirrorShell` writes its own ground onto its root
+  element (custom properties cascade; nothing in the Mirror portals), and
+  `MirrorClient` remembers the choice under `cortex-mirror-ground`, separate
+  from the site key. Switching one never moves the other. **Do not "simplify"
+  this by changing `DEFAULT_GROUND`** — it repaints five other surfaces.
+- **Two V3 inks do not pass as Mirror text.** Ink-3 `#7E878E` is 3.0:1 on
+  paper and Ink-4 `#9AA3A9` is 2.1:1; the Mirror sets 9–10px mono in those
+  tiers. Paper's `faint`/`faintest` are darkened until they clear 4.5:1, and
+  the accent steps from `#1A8A9E` to `#156F80` for the same reason. The V3
+  pages keep the lighter inks; they set them larger. `grounds.test.ts` now
+  asserts the ratios for every ground — the file had promised 4.5:1 for two
+  months with nothing checking it.
+- **`MirrorShell` is the V3 chrome**: brand → bench, "The field · Free|Pro",
+  Bench | Library | Shop ↗, then the Mirror's own row — breadcrumb, ground,
+  tier preview, Bloodwork, Ledger — as segmented controls under a 1px ink
+  rule. Zero radius, no shadows, tokens throughout so the dark grounds still
+  work. Verified by screenshot in paper and midnight on a production build.
+- The free-tier footer note said **"58 IN LIBRARY"**; the library has held 124
+  for some time. It now reads `COUNTS.compounds`.
+- `src/app/mirror/MarketPulse.tsx` was dead — nothing imported it — and the
+  last file in the tree with `rounded-2xl` and a hex border. Removed.
+
 
 `/api/protocol-consult` is still uncalled. It is a PRE-plan intake (goals in,
 questions or a recommendation out) and was never the refinement thread — that

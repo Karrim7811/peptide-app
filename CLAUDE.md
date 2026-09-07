@@ -590,6 +590,13 @@ _Last full audit: 2026-05-23 by Claude (Opus 4.7, 1M context), repo head `b61189
 
 _Partial revision 2026-09-03 by Claude (Opus 5, 1M context) at head `b09b14c`, correcting sections verified against the code and the live database: §1 and §16.4/16.5 (pricing was still recorded as $9.99/mo plus a $99.99 lifetime; it is $14.99/mo or $119.88/yr with a one-month trial, and annual returned while lifetime was withdrawn), §11 (env vars, and the service-role claim that had already been disproved in §13.3), §13.1 (the four "missing" tables exist in production and in `supabase/mirror_schema_reconciliation.sql` — this was listed as the repo's biggest schema drift and had not been true for some time), §10, §4 and §7 (92 peptides → 124, plus 27 vials). Everything else in this file predates that pass and has not been re-verified — §13.4 through §13.8 especially._
 
+_Partial revision 2026-09-07 by Claude (Fable 5.1): §13.2 (the middleware had
+never compiled; moved to `src/middleware.ts`, and the §16.11 geoblock went live
+with that deploy), §16.13 (the sign-in wall and the 18-not-21 decision), and
+the Mirror's move to the V3 palette via a Mirror-scoped `paper` ground — see
+`HANDOFF.md` "The Mirror on paper" before touching `DEFAULT_GROUND`, which is
+still midnight on purpose._
+
 _Partial revision 2026-09-06 by Claude (Fable 5.1) at head `37337b4`+, recording
 the V3 site rebuild and correcting what this file asserted about it:_
 
