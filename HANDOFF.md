@@ -26,6 +26,54 @@ are a reference to read, not a prototype to execute.
 
 ---
 
+## NEW REQUIREMENT — 2026-09-07, from Karim. Not started.
+
+Asked for at the very end of the session and deliberately NOT begun, because
+two parts of it reverse decisions currently baked into the code and the wrong
+guess is expensive. Nothing was changed. What he said, verbatim in substance:
+
+> A login page ASAP. The site cannot be accessed without signing in, and
+> without asking if the user is 21 or older. They can see some info about what
+> the website is and what it does. They cannot go direct to the shop without
+> acknowledging they are 21+, and to go to the shop they need to sign up.
+
+**What this reverses, and why it needs confirming before anyone builds it:**
+
+1. **The library and dosing reference are currently public on purpose.** That
+   is principle 2 of the V3 design — "reading is free; keeping a bench is Pro" —
+   and the home page sells it in those words. Earlier this same session the
+   auth gate was REMOVED from `/reference` because the home page promised
+   something the next click refused. Gating them again is a legitimate business
+   call, but the home copy has to change in the same commit or the site starts
+   lying in the other direction.
+
+2. **Everything says 18+, not 21+.** `MIN_AGE_YEARS` in `src/lib/age.ts`,
+   `isAdult()` in `src/lib/shop/orders/age.ts`, the `handle_new_user` trigger
+   in `supabase/profile_dob_migration.sql` (production), the Terms "Who"
+   section, the signup form copy, and the footer on three different chromes.
+
+**Checked already, so nobody re-checks it:** of 12 production accounts, 2 have
+a date of birth and **zero would fail a 21+ check**. Raising the threshold
+locks nobody out. Do it as one change rather than leaving two ages in the
+codebase.
+
+**Also note §16.10:** self-attestation was rejected deliberately in favour of a
+stored date of birth. A "click to confirm you are 21+" interstitial ON ITS OWN
+would walk that back. It is fine as an additional friction before the shop; it
+is not fine as the only check.
+
+**The two questions to settle first:**
+
+- Does the sign-in wall cover the library and dosing reference, or only the
+  shop and bench? Note that Terms, Privacy and Refunds should stay reachable
+  either way — a paywalled refund policy beside a storefront is a bad look, and
+  payment processors expect them public.
+- Does 21+ REPLACE 18+ everywhere, or is it a shop-only threshold on top of an
+  18+ account? One age is strongly preferable; two is a bug factory and the
+  Terms then have to explain which applies where.
+
+---
+
 ## Where to start
 
 **All eleven V3 screens are built.** Home, Auth, Legal, the library, the
