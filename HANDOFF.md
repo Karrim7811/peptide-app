@@ -3,7 +3,7 @@
 Read `CLAUDE.md` first, then this. Where they disagree, this is newer.
 Supersedes the 2026-09-06 handoff.
 
-`main` = pushed and deployed. **336 tests passing, `tsc --noEmit` clean,
+`main` = pushed and deployed. **341 tests passing, `tsc --noEmit` clean,
 `next build` succeeds, no assay report codes in `.next/static`.**
 peptidecortex.com is serving the rebuilt site.
 
@@ -136,8 +136,8 @@ Unchanged from yesterday except where noted.
 
 1. **Three shipping prices.** `orderTotals()` throws until they are set, so
    checkout is disabled and says so. Carrier and service are chosen; only the
-   numbers are missing. *This is the single thing standing between the shop and
-   its first order.*
+   numbers are missing. Second in the order above, not first — the tables have
+   to exist before pricing is ever reached.
 2. **Apply the migrations**, in order: `shop_schema.sql`, `shop_seed.sql`,
    `shop_orders_schema.sql`. None are applied.
 3. **Env**: `SHOP_ADMIN_USER_ID`, `SHOP_ZELLE_HANDLE`, `BTCPAY_URL`,
@@ -231,7 +231,7 @@ same mistake is recorded in `046b7b6` from the previous session.
 
 ## Verification state
 
-`npm test` 336 passing across 24 files · `npx tsc --noEmit` clean ·
+`npm test` 341 passing across 24 files · `npx tsc --noEmit` clean ·
 `npx next build` succeeds · `grep -rlE "D14D7EHWHFH9|XAKRSW4WN85N|VJUDHK6MDGT3"
 .next/static` returns nothing · working tree clean · nothing unpushed ·
 production deployment READY.
