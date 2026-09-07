@@ -241,9 +241,9 @@ the planner estimate is 7. Count with `select count(*)` before panicking.*
 
 What remains is **not code**. Nothing below can be done from this repo:
 
-1. Set the three USPS prices in `src/lib/shop/orders/shipping.ts`. This one IS
-   a code change, but the numbers are a business decision — `orderTotals()`
-   throws rather than invent them, and that is deliberate.
+1. ~~Set the three USPS prices~~ — **DONE 2026-09-07.** $7.00 / $12.00 /
+   $49.00, flat per order. See "Shipping, priced" below. Checkout completes on
+   the code's side now; it still needs items 2 and 3.
 2. `SHOP_ZELLE_HANDLE`, which needs a bank account under a shop entity.
 3. `SHOP_ADMIN_USER_ID`. **Easy to miss** — without it the admin queue 404s to
    everyone, so a Zelle payment can never be marked paid and nothing ever
@@ -263,12 +263,8 @@ and says why.
 
 Unchanged from yesterday except where noted.
 
-1. **Three shipping prices.** `orderTotals()` throws until they are set, so
-   checkout is disabled and says so. Carrier and service are chosen; only the
-   numbers are missing. Second in the order above, not first — the tables have
-   to exist before pricing is ever reached.
-2. **Apply the migrations**, in order: `shop_schema.sql`, `shop_seed.sql`,
-   `shop_orders_schema.sql`. None are applied.
+1. ~~**Three shipping prices.**~~ Set 2026-09-07 — see below.
+2. ~~**Apply the migrations.**~~ Applied and verified 2026-09-07.
 3. **Env**: `SHOP_ADMIN_USER_ID`, `SHOP_ZELLE_HANDLE`, `BTCPAY_URL`,
    `BTCPAY_STORE_ID`, `BTCPAY_API_KEY`, `BTCPAY_WEBHOOK_SECRET`. The Zelle sheet
    has no fallback handle by design — with the var unset it tells the buyer the
@@ -289,6 +285,40 @@ Unchanged from yesterday except where noted.
    promise an emailed copy.
 
 ---
+
+## Shipping, priced — 2026-09-07
+
+$7.00 standard · $12.00 priority · $49.00 overnight, **flat per order**, not
+per vial and not by zone. Karim chose the set; the reasoning is in the header
+of `src/lib/shop/orders/shipping.ts`.
+
+**These are not quotes for a real parcel.** They were sized against typical
+USPS commercial rates for a sub-pound small box: each tier covers postage plus
+the box, and the two fast tiers also absorb a cold pack, which is why overnight
+is priced as the cold-chain option rather than a convenience upsell. Re-price
+them once a few orders have shipped and the real box weight is known —
+`orderTotals()` snapshots the charge onto the order, so changing a number here
+never rewrites what a past customer paid.
+
+**The overnight trap is handled by wording, not by hiding it.** All three
+methods stay available on both payment rails, and every window is quoted from
+PAYMENT CLEARING rather than from checkout — `TRANSIT_FROM` in `shipping.ts`,
+printed under the method list at checkout. On the Zelle rail confirmation is
+manual, so a window quoted from checkout would be a promise that rail cannot
+keep. The alternative — hiding overnight unless BTCPay is selected — was
+considered and turned down: it makes the method list depend on the payment
+rail, and two selections that quietly change each other are worse than one
+honest sentence. **Do not shorten that line to fit a layout.**
+
+**The refusal path is intact.** `sellableMethods()` still filters on a null
+price and `orderTotals()` still throws, both still tested — an unpriced method
+added later fails closed exactly as before. What changed is the data, not the
+guard.
+
+**Checkout is not open.** It now completes on the code's side, but a Zelle
+order still cannot be marked paid without `SHOP_ADMIN_USER_ID`, and there is
+no handle without `SHOP_ZELLE_HANDLE`. Those two, not shipping, are what is
+between here and a first order.
 
 ## Fixed this session, worth knowing about
 

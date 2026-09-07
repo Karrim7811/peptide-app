@@ -7,10 +7,15 @@
 // checkout; Zelle has nowhere to send anyone and shows a code to type into a
 // banking app instead.
 //
-// SHIPPING IS UNPRICED. Every method's price is null in the catalogue and
-// orderTotals() throws rather than assume one, so checkout cannot complete. That
-// is deliberate — the alternative is charging a number nobody chose. This screen
-// says so plainly rather than rendering a total it cannot stand behind.
+// Shipping was priced on 2026-09-07, so this screen can complete an order. The
+// unpriced path is kept exactly as it was: `sellableMethods()` decides, and if a
+// method ever loses its price the screen refuses and says why rather than
+// rendering a total it cannot stand behind.
+//
+// Every transit window is quoted from PAYMENT CLEARING, not from checkout —
+// TRANSIT_FROM, printed under the method list. On the Zelle rail confirmation
+// is manual, so a window quoted from checkout would be a promise that rail
+// cannot keep. Do not shorten that line to fit the layout.
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -18,7 +23,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { HAIR, KICKER, MONO, RULE } from '@/components/shop/ShopChrome'
 import { createOrder } from '@/app/shop/actions'
 import { cart, type CartLineView, cartLines, subtotalCents } from '@/lib/shop/cart'
-import { SHIPPING_METHODS, sellableMethods } from '@/lib/shop/orders/shipping'
+import { SHIPPING_METHODS, TRANSIT_FROM, sellableMethods } from '@/lib/shop/orders/shipping'
 import type { ShippingMethodId } from '@/lib/shop/orders/shipping'
 import type { PaymentProviderId } from '@/lib/shop/orders/types'
 import { formatPrice } from '@/lib/shop/pricing'
@@ -290,6 +295,17 @@ export function CheckoutClient({ needsDob = false }: { needsDob?: boolean }) {
               </label>
             ))}
           </div>
+          <p
+            style={{
+              margin: '12px 0 0',
+              fontSize: 15,
+              lineHeight: 1.45,
+              color: '#3B4045',
+              maxWidth: '62ch',
+            }}
+          >
+            {TRANSIT_FROM}
+          </p>
         </fieldset>
 
         <fieldset style={{ marginTop: 30, border: 'none', padding: 0, margin: '30px 0 0' }}>
