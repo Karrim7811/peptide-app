@@ -19,9 +19,10 @@ export const REFUND_STATUS = 'Draft · under legal review'
  *             SHOP_ZELLE_HANDLE, an env var, because it is deployment config
  *             and because the app must never imply a destination for money
  *             that the deployment has not actually been given.
- *   order@    the From: on order mail, once transactional email exists.
+ *   orders@   the From: on order mail, once transactional email exists.
  *             Nothing sends yet, so it is not defined here either — a constant
  *             naming a sender that cannot send is a lie waiting to be read.
+ *             The address exists on the domain; the code for it does not.
  *   support@  the one address a human writes to. That is this.
  *
  * Keeping the payment destination separate from the sending identity is a

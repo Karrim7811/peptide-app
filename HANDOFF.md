@@ -288,6 +288,42 @@ Unchanged from yesterday except where noted.
 
 ---
 
+## The three addresses — 2026-09-07
+
+Karim registered all three on `peptidecortex.com`. They do different jobs and
+only one is a code constant.
+
+| Address | Role | Where it lives |
+|---|---|---|
+| `pay@` | receives money over Zelle | `SHOP_ZELLE_HANDLE`, env var only |
+| `orders@` | the `From:` on order mail | nowhere yet — nothing sends |
+| `support@` | the one a human writes to | `SUPPORT_EMAIL` in `src/lib/legal.ts` |
+
+**`pay@` must never become a code constant.** It is deployment config, and the
+app must not imply a destination for money that the deployment has not actually
+been given — which is why the Zelle sheet has no fallback handle and says the
+account does not exist yet instead.
+
+**`orders@` is deliberately not defined in code either.** Nothing sends, and a
+constant naming a sender that cannot send is a lie waiting to be read. Add it
+with the send path, not before.
+
+**Why `pay@` and `orders@` are not the same address**: if the address receiving
+money were also the sending identity, a spoofed `From:` would carry a far more
+convincing instruction to send money somewhere new. That is the whole shape of
+a business-email-compromise, and buyers would have been trained to accept it by
+your own genuine mail. Do not consolidate them to save a mailbox.
+
+**What this fixed**: the live site published no contact address at all. The two
+in the tree — `support@tigristechlabs.com` and `hello@peptidecortex.com` — were
+both in unimported footers (`src/components/home/`, `src/app/_landing/`), so
+the refund policy's "email us with your order reference" and the Zelle
+fallback's "email us with that reference" named nobody. Roadmap L-5 claimed
+this was closed in Sprint 1; it was not, and that is corrected in the roadmap.
+
+`.env.example` now documents every shop variable, which it did not while the
+README pointed at it claiming otherwise.
+
 ## The queue had no buttons — fixed 2026-09-07
 
 `markPaid`, `markPacked` and `markShipped` were written, guarded and tested
