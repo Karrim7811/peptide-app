@@ -1,300 +1,270 @@
-'use client'
+// The library.
+//
+// Free to read, no account. Principle 2 of the V3 design, and the home page
+// sells it in exactly those words — until this commit /reference redirected to
+// /login, so the most public page on the site promised something the next click
+// refused.
+//
+// Server-rendered from the query string. Search and the category filter are a
+// GET form and a set of links, so the whole thing works with JavaScript off and
+// every result list has a URL someone can send to someone else.
 
-import { useState, useMemo } from 'react'
+import Link from 'next/link'
+import type { Metadata } from 'next'
 import {
-  Search, ChevronDown, ChevronUp, Library,
-  AlertTriangle, Pill, Zap, Heart, Brain, Shield, Dna,
-  Star, Info, BookOpen,
-} from 'lucide-react'
-import { PEPTIDE_KNOWLEDGE, GOAL_CATEGORIES, searchPeptides, getPeptidesByCategory, type PeptideKnowledge } from '@/lib/peptide-knowledge'
+  HAIR,
+  INK,
+  INK2,
+  INK3,
+  JOST,
+  KICKER,
+  LibraryChrome,
+  MONO,
+  RULE,
+} from '@/components/library/LibraryChrome'
+import { categoryChips, searchLibrary } from '@/lib/library'
+import { doseCounts } from '@/lib/dosing'
+import { createClient } from '@/lib/supabase/server'
 
-const CATEGORY_ICONS: Record<string, React.ReactNode> = {
-  'Metabolic/Weight': <Zap className="w-3.5 h-3.5" />,
-  'Healing/Recovery': <Heart className="w-3.5 h-3.5" />,
-  'GH Axis': <Dna className="w-3.5 h-3.5" />,
-  'Muscle/Performance': <Star className="w-3.5 h-3.5" />,
-  'Longevity': <BookOpen className="w-3.5 h-3.5" />,
-  'Cognition/Mood': <Brain className="w-3.5 h-3.5" />,
-  'Sleep': <Info className="w-3.5 h-3.5" />,
-  'Immune/Anti-inf': <Shield className="w-3.5 h-3.5" />,
-  'Skin/Hair': <Star className="w-3.5 h-3.5" />,
-  'Sexual Health': <Heart className="w-3.5 h-3.5" />,
-  'Cardio/Vascular': <Heart className="w-3.5 h-3.5" />,
-  'GI/Bone/Other': <Pill className="w-3.5 h-3.5" />,
+export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  title: 'The library · Peptide Cortex',
+  description:
+    'A reference on 124 peptides, graded by evidence rather than enthusiasm. Free to read, no account needed.',
 }
 
-const CATEGORY_COLORS: Record<string, string> = {
-  'Metabolic/Weight': 'bg-orange-500/15 text-orange-300 border-orange-500/30',
-  'Healing/Recovery': 'bg-green-500/15 text-green-300 border-green-500/30',
-  'GH Axis': 'bg-blue-500/15 text-blue-300 border-blue-500/30',
-  'Muscle/Performance': 'bg-purple-500/15 text-purple-300 border-purple-500/30',
-  'Longevity': 'bg-yellow-500/15 text-yellow-300 border-yellow-500/30',
-  'Cognition/Mood': 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',
-  'Sleep': 'bg-[#1A8A9E]/15 text-[#1A8A9E] border-[#1A8A9E]/30',
-  'Immune/Anti-inf': 'bg-teal-500/15 text-teal-300 border-teal-500/30',
-  'Skin/Hair': 'bg-pink-500/15 text-pink-300 border-pink-500/30',
-  'Sexual Health': 'bg-rose-500/15 text-rose-300 border-rose-500/30',
-  'Cardio/Vascular': 'bg-red-500/15 text-red-300 border-red-500/30',
-  'GI/Bone/Other': 'bg-slate-500/15 text-[#3A3730] border-[#B0AAA0]/30',
-}
+export default async function ReferencePage({
+  searchParams,
+}: {
+  searchParams: { q?: string; cat?: string }
+}) {
+  const query = (searchParams.q ?? '').slice(0, 100)
+  const category = searchParams.cat ?? null
 
-const EVIDENCE_BADGE: Record<string, string> = {
-  'FDA-approved Rx (labeled use)': 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
-  'FDA-approved Rx': 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
-}
+  const supabase = createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-function cvDots(rating: number) {
-  return Array.from({ length: 5 }, (_, i) => (
-    <span
-      key={i}
-      className={`inline-block w-2 h-2 rounded-full mx-0.5 ${i < rating ? 'bg-red-400' : 'bg-[#E8E5E0]'}`}
-    />
-  ))
-}
+  const chips = categoryChips()
+  const active = chips.find((chip) => chip.id === category) ?? chips[0]
+  const results = searchLibrary(query, active.id)
+  const counts = doseCounts()
 
-function PeptideCard({ peptide }: { peptide: PeptideKnowledge }) {
-  const [expanded, setExpanded] = useState(false)
-  const catColor = CATEGORY_COLORS[peptide.goalCategory] || 'bg-slate-500/15 text-[#3A3730] border-[#B0AAA0]/30'
-  const evidenceBadgeClass = EVIDENCE_BADGE[peptide.evidenceLevel] || 'bg-slate-500/15 text-[#3A3730] border-[#B0AAA0]/30'
+  const href = (cat: string | null) => {
+    const params = new URLSearchParams()
+    if (query) params.set('q', query)
+    if (cat) params.set('cat', cat)
+    const qs = params.toString()
+    return qs ? `/reference?${qs}` : '/reference'
+  }
 
   return (
-    <div className="bg-white border border-[#E8E5E0] rounded-xl overflow-hidden hover:border-[#D0CCC6] transition-colors">
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full text-left p-4"
-      >
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-[#1A1915] text-sm leading-tight mb-1.5">{peptide.name}</h3>
-            <div className="flex flex-wrap gap-1.5 mb-2">
-              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border ${catColor}`}>
-                {CATEGORY_ICONS[peptide.goalCategory]}
-                {peptide.goalCategory}
-              </span>
-              {peptide.goalCategories.filter(c => c !== peptide.goalCategory).slice(0, 2).map(c => (
-                <span key={c} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border ${CATEGORY_COLORS[c] || 'bg-slate-500/15 text-[#3A3730] border-[#B0AAA0]/30'}`}>
-                  {CATEGORY_ICONS[c]}
-                  {c}
-                </span>
-              ))}
-            </div>
-            <p className="text-[#B0AAA0] text-xs line-clamp-2">{peptide.whatItDoes}</p>
-          </div>
-          <div className="shrink-0 flex flex-col items-end gap-2">
-            <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${evidenceBadgeClass}`}>
-              {peptide.evidenceLevel.length > 25 ? 'Research' : peptide.evidenceLevel}
-            </span>
-            {expanded ? <ChevronUp className="w-4 h-4 text-[#B0AAA0]" /> : <ChevronDown className="w-4 h-4 text-[#B0AAA0]" />}
-          </div>
-        </div>
-      </button>
-
-      {expanded && (
-        <div className="px-4 pb-4 border-t border-[#E8E5E0] pt-4 space-y-4">
-          {/* Bottom Line */}
-          <div className="bg-[#1A8A9E]/8 border border-[#1A8A9E]/20 rounded-lg p-3">
-            <p className="text-[#1A8A9E] text-xs font-medium mb-0.5">Bottom Line</p>
-            <p className="text-[#1A1915] text-sm">{peptide.bottomLine}</p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Key Effects */}
-            <div>
-              <h4 className="text-[#B0AAA0] text-[11px] font-semibold uppercase tracking-wide mb-1.5">Key Effects</h4>
-              <p className="text-[#3A3730] text-xs">{peptide.keyEffects}</p>
-            </div>
-
-            {/* Best For */}
-            <div>
-              <h4 className="text-[#B0AAA0] text-[11px] font-semibold uppercase tracking-wide mb-1.5">Best For</h4>
-              <p className="text-[#3A3730] text-xs">{peptide.bestFor}</p>
-            </div>
-
-            {/* Common Uses */}
-            <div>
-              <h4 className="text-[#B0AAA0] text-[11px] font-semibold uppercase tracking-wide mb-1.5">Common Uses</h4>
-              <p className="text-[#3A3730] text-xs">{peptide.commonUseExamples}</p>
-            </div>
-
-            {/* Dosage */}
-            {peptide.dosageRange && (
-              <div>
-                <h4 className="text-[#B0AAA0] text-[11px] font-semibold uppercase tracking-wide mb-1.5">Dosage Range</h4>
-                <p className="text-[#3A3730] text-xs font-mono">{peptide.dosageRange}</p>
-              </div>
-            )}
-          </div>
-
-          {/* CV Rating */}
-          <div className="flex items-center gap-2">
-            <span className="text-[#B0AAA0] text-[11px] font-semibold uppercase tracking-wide">CV Impact</span>
-            <div className="flex items-center">{cvDots(peptide.cvRating)}</div>
-            <span className="text-[#B0AAA0] text-xs">({peptide.cvRating}/5)</span>
-          </div>
-          {peptide.cvNotes && (
-            <p className="text-[#B0AAA0] text-xs -mt-2">{peptide.cvNotes}</p>
-          )}
-
-          {/* Cautions */}
-          {peptide.riskCautions && (
-            <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3">
-              <div className="flex items-center gap-1.5 mb-1">
-                <AlertTriangle className="w-3.5 h-3.5 text-yellow-400" />
-                <span className="text-yellow-400 text-[11px] font-semibold uppercase tracking-wide">Cautions</span>
-              </div>
-              <p className="text-yellow-200/80 text-xs">{peptide.riskCautions}</p>
-            </div>
-          )}
-
-          {/* Avoid If */}
-          {peptide.avoidIf && peptide.avoidIf !== peptide.riskCautions && (
-            <div>
-              <h4 className="text-[#B0AAA0] text-[11px] font-semibold uppercase tracking-wide mb-1.5">Avoid If</h4>
-              <p className="text-[#3A3730] text-xs">{peptide.avoidIf}</p>
-            </div>
-          )}
-
-          {/* Drug Interactions */}
-          {peptide.drugInteractions && (
-            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
-              <div className="flex items-center gap-1.5 mb-1">
-                <Pill className="w-3.5 h-3.5 text-red-400" />
-                <span className="text-red-400 text-[11px] font-semibold uppercase tracking-wide">Drug Interactions</span>
-              </div>
-              <p className="text-red-200/80 text-xs">{peptide.drugInteractions}</p>
-            </div>
-          )}
-
-          {/* Evidence */}
-          <div className="pt-1 border-t border-[#E8E5E0]">
-            <span className="text-[#B0AAA0] text-[11px]">Evidence level: </span>
-            <span className="text-[#3A3730] text-[11px]">{peptide.evidenceLevel}</span>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
-
-export default function ReferencePage() {
-  const [query, setQuery] = useState('')
-  const [activeCategory, setActiveCategory] = useState<string | null>(null)
-
-  const filtered = useMemo(() => {
-    let results = query ? searchPeptides(query) : PEPTIDE_KNOWLEDGE
-    if (activeCategory) {
-      results = results.filter(p => p.goalCategory === activeCategory || p.goalCategories.includes(activeCategory))
-    }
-    return results
-  }, [query, activeCategory])
-
-  const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = {}
-    for (const cat of GOAL_CATEGORIES) {
-      counts[cat] = getPeptidesByCategory(cat).length
-    }
-    return counts
-  }, [])
-
-  return (
-    <div>
-      {/* Search + filters bar */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-xl font-semibold text-[#1A1915]" style={{ fontFamily: "'Gill Sans','Gill Sans MT',Calibri,sans-serif" }}>Peptide Bible</h1>
-            <p className="text-[#B0AAA0] text-xs mt-0.5">{PEPTIDE_KNOWLEDGE.length} peptides · complete reference guide</p>
-          </div>
+    <LibraryChrome signedIn={Boolean(user)}>
+      <div style={{ padding: 'clamp(22px,3vw,40px) clamp(16px,3vw,32px) 0' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'baseline',
+            gap: 12,
+            flexWrap: 'wrap',
+            ...KICKER,
+            color: '#1A8A9E',
+          }}
+        >
+          <span>The reference</span>
+          <span style={{ color: INK3 }}>
+            {results.length} of {chips[0].n} · {active.name}
+            {query ? ` · “${query}”` : ''}
+          </span>
         </div>
 
-        {/* Search */}
-        <div className="relative mb-3">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B0AAA0]" />
-          <input
-            type="text"
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            placeholder="Search peptides, effects, goals..."
-            className="w-full bg-white border border-[#E8E5E0] rounded-lg pl-9 pr-4 py-2.5 text-sm text-[#1A1915] placeholder-[#B0AAA0] focus:outline-none focus:border-[#1A8A9E] transition-colors"
-          />
-        </div>
-
-        {/* Category filters */}
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          <button
-            onClick={() => setActiveCategory(null)}
-            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-              activeCategory === null
-                ? 'bg-[#1A8A9E] text-white border-[#1A8A9E]'
-                : 'bg-white text-[#B0AAA0] border-[#E8E5E0] hover:border-[#B0AAA0]'
-            }`}
+        <form
+          action="/reference"
+          method="get"
+          style={{
+            marginTop: 16,
+            border: '1px dashed rgba(26,138,158,.6)',
+            padding: '8px 14px',
+            display: 'flex',
+            gap: 12,
+            alignItems: 'center',
+          }}
+        >
+          <span
+            style={{ fontStyle: 'italic', fontSize: 19, color: INK3, whiteSpace: 'nowrap' }}
           >
-            All ({PEPTIDE_KNOWLEDGE.length})
-          </button>
-          {GOAL_CATEGORIES.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
-              className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                activeCategory === cat
-                  ? `${CATEGORY_COLORS[cat]} border-current`
-                  : 'bg-white text-[#B0AAA0] border-[#E8E5E0] hover:border-[#B0AAA0]'
-              }`}
+            Look up —
+          </span>
+          <input
+            name="q"
+            defaultValue={query}
+            placeholder="a peptide, a brand name, an indication"
+            aria-label="Search the library"
+            style={{
+              flex: 1,
+              font: 'inherit',
+              fontStyle: 'italic',
+              fontSize: 21,
+              minHeight: 36,
+              minWidth: 0,
+              background: 'none',
+              border: 'none',
+              outline: 'none',
+              color: INK,
+            }}
+          />
+          {/* Preserves the category when searching within it. */}
+          {active.id && <input type="hidden" name="cat" value={active.id} />}
+          {query && (
+            <Link
+              href={href(active.id)}
+              style={{
+                fontFamily: JOST,
+                fontSize: 10,
+                letterSpacing: '.2em',
+                textTransform: 'uppercase',
+                color: INK3,
+                textDecoration: 'none',
+              }}
             >
-              {CATEGORY_ICONS[cat]}
-              {cat}
-              <span className="text-[10px] opacity-70">({categoryCounts[cat]})</span>
-            </button>
+              Clear
+            </Link>
+          )}
+        </form>
+
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '8px 14px',
+            padding: '12px 0 0',
+            fontFamily: JOST,
+            fontSize: 10,
+            letterSpacing: '.2em',
+            textTransform: 'uppercase',
+          }}
+        >
+          {chips.map((chip) => (
+            <Link
+              key={chip.id ?? 'all'}
+              href={href(chip.id)}
+              style={{
+                color: chip.id === active.id ? INK : INK2,
+                borderBottom: `1px solid ${chip.id === active.id ? INK : 'transparent'}`,
+                paddingBottom: 1,
+                whiteSpace: 'nowrap',
+                textDecoration: 'none',
+              }}
+            >
+              {chip.name} <span style={{ fontFamily: MONO, color: INK3 }}>{chip.n}</span>
+            </Link>
           ))}
         </div>
       </div>
 
-      {/* Results */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-[#B0AAA0] text-sm">
-            {filtered.length === PEPTIDE_KNOWLEDGE.length
-              ? `All ${filtered.length} peptides`
-              : `${filtered.length} of ${PEPTIDE_KNOWLEDGE.length} peptides`}
-            {activeCategory ? ` in ${activeCategory}` : ''}
-          </p>
-          {(query || activeCategory) && (
-            <button
-              onClick={() => { setQuery(''); setActiveCategory(null) }}
-              className="text-xs text-[#1A8A9E] hover:text-[#1A8A9E] transition-colors"
-            >
-              Clear filters
-            </button>
-          )}
+      <div style={{ padding: 'clamp(16px,2vw,24px) clamp(16px,3vw,32px) clamp(24px,3vw,40px)' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'minmax(0,1fr) auto auto',
+            gap: '0 clamp(12px,2vw,24px)',
+            paddingBottom: 8,
+            borderBottom: RULE,
+            fontFamily: JOST,
+            fontSize: 10,
+            letterSpacing: '.2em',
+            textTransform: 'uppercase',
+            color: INK3,
+          }}
+        >
+          <span>Peptide · category</span>
+          <span style={{ textAlign: 'right' }}>Grade</span>
+          <span style={{ textAlign: 'right' }}>CV</span>
         </div>
 
-        {filtered.length === 0 ? (
-          <div className="text-center py-16">
-            <Library className="w-10 h-10 text-[#B0AAA0] mx-auto mb-3" />
-            <p className="text-[#B0AAA0]">No peptides match your search.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {filtered.map(peptide => (
-              <PeptideCard key={peptide.name} peptide={peptide} />
-            ))}
-          </div>
+        {results.map((row) => (
+          <Link
+            key={row.id}
+            href={row.href}
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'minmax(0,1fr) auto auto',
+              gap: '0 clamp(12px,2vw,24px)',
+              alignItems: 'baseline',
+              padding: '12px 0',
+              borderBottom: HAIR,
+              color: 'inherit',
+              textDecoration: 'none',
+            }}
+          >
+            <span style={{ minWidth: 0 }}>
+              <span style={{ fontSize: 22, lineHeight: 1.1 }}>{row.name}</span>
+              {row.brand && (
+                <span
+                  style={{ fontSize: 15, fontStyle: 'italic', color: INK2, marginLeft: 10 }}
+                >
+                  {row.brand}
+                </span>
+              )}
+              <span
+                style={{
+                  display: 'block',
+                  marginTop: 4,
+                  fontFamily: JOST,
+                  fontSize: 10,
+                  letterSpacing: '.2em',
+                  textTransform: 'uppercase',
+                  color: INK3,
+                }}
+              >
+                {row.category} · {row.purpose}
+              </span>
+            </span>
+            <span
+              style={{ fontFamily: MONO, fontWeight: 500, fontSize: 20, textAlign: 'right' }}
+            >
+              {row.grade}
+            </span>
+            <span
+              style={{
+                fontFamily: MONO,
+                fontSize: 14,
+                color: INK2,
+                textAlign: 'right',
+                minWidth: 36,
+              }}
+            >
+              {row.cv}
+            </span>
+          </Link>
+        ))}
+
+        {results.length === 0 && (
+          <p style={{ margin: '18px 0 0', fontSize: 20, fontStyle: 'italic', lineHeight: 1.3 }}>
+            Nothing in the library matches “{query}”. Search covers names, brand names and
+            indications.
+          </p>
         )}
 
-        {/* Disclaimer */}
-        <div className="mt-8 bg-white/50 border border-[#E8E5E0] rounded-xl p-4">
-          <div className="flex items-start gap-2">
-            <AlertTriangle className="w-4 h-4 text-yellow-400 shrink-0 mt-0.5" />
-            <div>
-              <p className="text-yellow-400 text-xs font-semibold mb-1">Educational Use Only</p>
-              <p className="text-[#B0AAA0] text-xs">
-                This reference is for educational and research purposes only. Information comes from the Peptide Bible v2 and compiled research data.
-                Always consult a qualified healthcare provider before using any peptide or research compound. Nothing here constitutes medical advice.
-              </p>
-            </div>
-          </div>
-        </div>
+        <p
+          style={{
+            margin: '18px 0 0',
+            fontFamily: JOST,
+            fontSize: 10,
+            letterSpacing: '.2em',
+            textTransform: 'uppercase',
+            color: INK3,
+            lineHeight: 1.8,
+          }}
+        >
+          Grade maps one-to-one from regulatory status. CV is a cardiovascular score, 0–5, on
+          its own axis; it never moves a grade. {counts.none} of {counts.total} entries state
+          that no human dose is established.
+        </p>
       </div>
-    </div>
+    </LibraryChrome>
   )
 }
