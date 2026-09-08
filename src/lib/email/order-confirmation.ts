@@ -37,6 +37,13 @@ export interface ConfirmationInput {
   orderUrl: string
   /** Null until SHOP_ZELLE_HANDLE is set. The mail says so rather than guessing. */
   zelleHandle: string | null
+  /**
+   * The registered name the buyer's bank will show. The storefront and the
+   * account are not the same name — Peptide Cortex, Tigris Tech Labs LLC — and
+   * an unexplained mismatch on the screen where someone decides whether to send
+   * money reads exactly like a scam. Null when unconfigured; never guessed.
+   */
+  zelleName: string | null
 }
 
 export function confirmationSubject(input: ConfirmationInput): string {
@@ -77,6 +84,13 @@ function payingBlock(input: ConfirmationInput): string[] {
     `  Exact amount ${formatPrice(input.totalCents)}`,
     `  Memo         ${input.paymentReference}`,
     '',
+    ...(input.zelleName
+      ? [
+          `Your banking app will show this account as ${input.zelleName} — the`,
+          'company behind Peptide Cortex. That is the right account.',
+          '',
+        ]
+      : []),
     'The memo code is the only link between your payment and this order. A',
     'payment without it has to be matched by hand and will be slower.',
     '',
