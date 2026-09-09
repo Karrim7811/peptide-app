@@ -244,12 +244,16 @@ What remains is **not code**. Nothing below can be done from this repo:
 1. ~~Set the three USPS prices~~ — **DONE 2026-09-07.** $7.00 / $12.00 /
    $49.00, flat per order. See "Shipping, priced" below. Checkout completes on
    the code's side now; it still needs items 2 and 3.
-2. `SHOP_ZELLE_HANDLE`, which needs a bank account under a shop entity.
-3. `SHOP_ADMIN_USER_ID`. **Easy to miss** — without it the admin queue 404s to
-   everyone, so a Zelle payment can never be marked paid and nothing ever
-   ships, while checkout looks like it is working. (Until 2026-09-07 setting it
-   would still not have been enough: the queue was read-only. See "The queue
-   had no buttons" below.)
+2. ~~`SHOP_ZELLE_HANDLE`~~ — **SET 2026-09-09**, to `info@tigristechlabs.com`
+   with `SHOP_ZELLE_NAME` as `Tigris Tech Labs LLC`. `pay@peptidecortex.com`
+   exists on the domain but is not enrolled at a bank, so the shop pays into
+   the Tigris account and every surface names the entity. See "Name the Zelle
+   recipient" below.
+3. ~~`SHOP_ADMIN_USER_ID`~~ — **SET 2026-09-09.** `/admin/orders` returns 200
+   for `info@tigristechlabs.com` and the queue's three controls are live.
+   See "The admin queue that was never linked" below for how this was
+   diagnosed; it cost most of a session and the reason is worth reading before
+   the next variable goes in.
 4. Lot codes and real assay dates for VIP, Selank, Semax and NAD+.
 5. The §16.12 attorney review on the refund policy.
 
@@ -267,9 +271,11 @@ Unchanged from yesterday except where noted.
 
 1. ~~**Three shipping prices.**~~ Set 2026-09-07 — see below.
 2. ~~**Apply the migrations.**~~ Applied and verified 2026-09-07.
-3. **Env**: `SHOP_ADMIN_USER_ID`, `SHOP_ZELLE_HANDLE`, `BTCPAY_URL`,
-   `BTCPAY_STORE_ID`, `BTCPAY_API_KEY`, `BTCPAY_WEBHOOK_SECRET`. The Zelle sheet
-   has no fallback handle by design — with the var unset it tells the buyer the
+3. **Env**: ~~`SHOP_ADMIN_USER_ID`, `SHOP_ZELLE_HANDLE`~~ — both set
+   2026-09-09, along with `SHOP_ZELLE_NAME`. Still open: `RESEND_API_KEY` (see
+   item 9), and `BTCPAY_URL`, `BTCPAY_STORE_ID`, `BTCPAY_API_KEY`,
+   `BTCPAY_WEBHOOK_SECRET` if crypto ships at launch. The Zelle sheet has no
+   fallback handle by design — with the var unset it tells the buyer the
    account does not exist yet and that nothing was charged.
 4. **Shop entity + business bank account.** Blocks Zelle and both firewalls.
 5. **Real assay dates** for VIP, Selank, Semax, NAD+ — `2026-10` is a
@@ -282,9 +288,19 @@ Unchanged from yesterday except where noted.
    `SK-51825` Selank, `AD-51826` AOD-9604, all "99% HPLC". Nothing shipped;
    reprint, not recall. The current generator will not reproduce it.
 9. Carried from August: **live Stripe prices** (live monthly is still $9.99
-   against a $14.99 page; annual cannot be bought) and **Resend SMTP** — there
-   is no transactional email at all, which is why the Zelle sheet must not
-   promise an emailed copy.
+   against a $14.99 page) and **Resend** — `RESEND_API_KEY` is still unset, so
+   `emailReceipt()` no-ops and nothing sends. The mail path itself shipped
+   2026-09-07; it needs the key plus SPF and DKIM on `peptidecortex.com`.
+
+   **On annual, the reason was found 2026-09-09 and it is not Stripe's.** The
+   Vercel project stored the price as `STRIPE_PRO_YEARLY_PRICE_ID`. The code
+   reads `STRIPE_PRO_ANNUAL_PRICE_ID` (`src/lib/stripe.ts`), exactly as
+   CLAUDE.md §16.5 says it must — `YEARLY` has never been a name this codebase
+   uses. So the variable was present, correctly valued, and invisible to the
+   app, and annual checkout threw rather than falling back to monthly, which is
+   the deliberate refusal in `STRIPE_PRICES`. Renaming the Vercel key fixes it;
+   **verify with a real annual checkout before believing it**, because nothing
+   in the repo can see an environment variable's name.
 
 ---
 
@@ -400,6 +416,61 @@ this was closed in Sprint 1; it was not, and that is corrected in the roadmap.
 
 `.env.example` now documents every shop variable, which it did not while the
 README pointed at it claiming otherwise.
+
+## The admin queue that was never linked — 2026-09-09
+
+The shop went live on the code side and the operator could not reach the queue.
+Diagnosing that took most of a session, for reasons that will recur with the
+next variable, so they are written down rather than summarised.
+
+**Two separate faults, and the first one masked the second.**
+
+`/admin/orders` had existed since the shop was built and was linked from
+nowhere. No nav entry, no bench row, nothing. It was reachable only by typing
+the URL. So the first check — sign in, look at the bench — was never capable of
+answering the question, and its silence read as "the route is broken".
+
+Underneath that, `SHOP_ADMIN_USER_ID` had genuinely never been saved. The
+variables were believed added and the project redeployed twice on that belief.
+The Vercel environment list, sorted newest first, still began at a row from
+July. **A screenshot of that list settled in seconds what an hour of reasoning
+about the code could not.** Ask for it early.
+
+**Why the 404 was uninterpretable.** Four causes produce byte-identical output:
+the variable is absent, it carries a paste artefact, the value is a different
+id, or no session is on the request. The route returns 404 rather than 403 on
+purpose — an admin route should not confirm its existence to a non-admin — and
+that correct decision is exactly what removes the operator's only signal.
+
+Both faults are fixed, and the fix is the general one rather than the specific:
+
+- `src/lib/shop/admin-id.ts` is the only place the comparison happens. It was
+  previously written three ways in three files as a bare `===` on the raw
+  environment value.
+- The value is trimmed and stripped of wrapping quotes first. Neither is ever
+  part of a UUID and both are routine when pasting into a dashboard field, so
+  that cause is now impossible rather than merely diagnosable.
+- `adminRefusal()` names which of the remaining causes fired and the page logs
+  it before `notFound()`. The note carries neither id — only their lengths and
+  whether they differ only in letter case. A configured length that is not 36
+  is the answer on its own.
+- The bench shows an Order queue row when the signed-in id matches. It is a
+  convenience, not a gate: the page still 404s, `assertAdmin` still guards every
+  action, and an unset variable still means nobody is admin.
+
+**Two things about Vercel that cost time and will again.**
+
+Variables are scoped to Production, Preview and Development separately, and a
+variable saved without Production is invisible to the live site while looking
+present in the dashboard. And the redeploy control is in the row's `...` menu on
+the Deployments tab — there is no page-level button, which was read as "nothing
+to redeploy".
+
+**Verified 2026-09-09**: `GET /admin/orders 200` on
+`dpl_6A2E1mHjwrUEtj8tE95LggXvC4Gr`, the deployment holding the
+`peptidecortex.com` alias. Read that from the Vercel runtime logs, not by
+curling production — production is not reachable from the sandbox this repo
+builds in, so `curl` returns `000` and proves nothing either way.
 
 ## The queue had no buttons — fixed 2026-09-07
 
@@ -588,7 +659,12 @@ May. All of it is done; what is left is listed under "Blocked on Karim".
 
 ## Verification state
 
-`npm test` 398 passing across 29 files · `npx tsc --noEmit` clean ·
+`npm test` 477 passing across 35 files · `npx tsc --noEmit` clean ·
 `npx next build` succeeds · `grep -rlE "D14D7EHWHFH9|XAKRSW4WN85N|VJUDHK6MDGT3"
 .next/static` returns nothing · working tree clean · nothing unpushed ·
 production deployment READY.
+
+**Live, 2026-09-09**: production is `dpl_6A2E1mHjwrUEtj8tE95LggXvC4Gr` on
+`2c43d07`, holding the `peptidecortex.com` alias. Runtime logs over the
+deployment's first minutes show `/admin/orders` 200, `/dashboard` 200, and every
+tool and library route 200, with no errors at any level.
