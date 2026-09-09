@@ -241,9 +241,8 @@ the planner estimate is 7. Count with `select count(*)` before panicking.*
 
 What remains is **not code**. Nothing below can be done from this repo:
 
-1. ~~Set the three USPS prices~~ — **DONE 2026-09-07.** $7.00 / $12.00 /
-   $49.00, flat per order. See "Shipping, priced" below. Checkout completes on
-   the code's side now; it still needs items 2 and 3.
+1. ~~Set the three USPS prices~~ — **DONE 2026-09-07, revised 2026-09-09.**
+   Now $12.00 / $20.00 / $49.00, flat per order. See "Shipping, priced" below.
 2. ~~`SHOP_ZELLE_HANDLE`~~ — **SET 2026-09-09**, to `info@tigristechlabs.com`
    with `SHOP_ZELLE_NAME` as `Tigris Tech Labs LLC`. `pay@peptidecortex.com`
    exists on the domain but is not enrolled at a bank, so the shop pays into
@@ -511,11 +510,18 @@ Four decisions worth not undoing:
 Errors render inline beside the control, never as a toast — "reload and try
 again" from the lost-update guard is something the operator must read.
 
-## Shipping, priced — 2026-09-07
+## Shipping, priced — 2026-09-07, raised 2026-09-09
 
-$7.00 standard · $12.00 priority · $49.00 overnight, **flat per order**, not
+$12.00 standard · $20.00 priority · $49.00 overnight, **flat per order**, not
 per vial and not by zone. Karim chose the set; the reasoning is in the header
 of `src/lib/shop/orders/shipping.ts`.
+
+**Raised 2026-09-09** from $7 / $12 / $49. Standard and Priority went up
+because they carried the least margin over real postage plus packing;
+overnight already priced the cold pack in and did not move. Nothing else
+changed — no test edits were needed, because the tests assert the ordering and
+the shape rather than the figures, which was the point of writing them that
+way.
 
 **These are not quotes for a real parcel.** They were sized against typical
 USPS commercial rates for a sub-pound small box: each tier covers postage plus

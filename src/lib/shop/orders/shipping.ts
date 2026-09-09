@@ -4,19 +4,25 @@
 // order records which was chosen — a dispute about when something should have
 // arrived is unanswerable otherwise.
 //
-// ── Prices, set 2026-09-07 by Karim ───────────────────────────────────────
+// ── Prices ────────────────────────────────────────────────────────────────
 //
-// $7.00 / $12.00 / $49.00. Flat per order, not per vial and not by zone: one
-// number the buyer can see before they commit, and the spread between zones on
-// a sub-pound parcel is smaller than the packing cost either way. Each tier
-// covers USPS at current commercial rates plus the box; the two fast tiers also
-// absorb the cold pack, which is why overnight is priced as the cold-chain
-// option rather than as a convenience upsell.
+// $12.00 / $20.00 / $49.00, raised from $7 / $12 / $49 on 2026-09-09 by Karim.
+// Flat per order, not per vial and not by zone: one number the buyer can see
+// before they commit, and the spread between zones on a sub-pound parcel is
+// smaller than the packing cost either way. Each tier covers USPS at current
+// commercial rates plus the box; the two fast tiers also absorb the cold pack,
+// which is why overnight is priced as the cold-chain option rather than as a
+// convenience upsell.
 //
-// These are not quotes for a specific parcel. Re-price them against real
-// postage once a few orders have shipped and the actual box weight is known —
-// `orderTotals()` snapshots the charge onto the order, so changing a number
-// here never rewrites what a past customer paid.
+// The original numbers were set on 2026-09-07 before any parcel had shipped and
+// were deliberately marked as provisional. Standard and Priority went up first
+// because they were the two carrying the least margin over real postage plus
+// packing; overnight already priced the cold pack in and did not move.
+//
+// These are still not quotes for a specific parcel. Re-price them again against
+// real postage once a few orders have shipped and the actual box weight is
+// known — `orderTotals()` snapshots the charge onto the order, so changing a
+// number here never rewrites what a past customer paid.
 //
 // ── The trap in offering overnight, and how it is handled ─────────────────
 //
@@ -61,7 +67,7 @@ export const SHIPPING_METHODS: ShippingMethod[] = [
     label: 'Standard',
     carrier: 'USPS Ground Advantage',
     transit: '2–5 business days',
-    priceCents: 700,
+    priceCents: 1200,
     guaranteed: false,
   },
   {
@@ -69,7 +75,7 @@ export const SHIPPING_METHODS: ShippingMethod[] = [
     label: 'Priority',
     carrier: 'USPS Priority Mail',
     transit: '1–3 business days',
-    priceCents: 1200,
+    priceCents: 2000,
     guaranteed: false,
   },
   {
