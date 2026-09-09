@@ -6,12 +6,18 @@
 //
 // Prerendered per slug — the catalogue is typed constants, so there is nothing
 // to fetch.
+//
+// Chrome comes from ShopChrome, which is the only place the cart link exists.
+// This page and /shop drew their own header instead, identical to ShopChrome's
+// but without that link — and these two are the only pages carrying an Add to
+// cart button. So the cart filled and became unreachable. The back link the old
+// header carried is ShopChrome's "Shop"; same destination, one header.
 
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { AddToCart } from '@/components/shop/AddToCart'
 import { LotLedger } from '@/components/shop/LotLedger'
+import { LEGAL, ShopChrome } from '@/components/shop/ShopChrome'
 import { PRODUCTS } from '@/lib/shop/catalogue'
 import { productView } from '@/lib/shop/view'
 
@@ -25,9 +31,6 @@ const KICKER: React.CSSProperties = {
   textTransform: 'uppercase',
   color: '#7E878E',
 }
-
-const LEGAL =
-  'For research and reference purposes only. Not intended as dosing instructions for human or animal use, and not for human consumption. Consult a licensed physician before any medical decisions. Adults 18+. US shipping only.'
 
 export function generateStaticParams() {
   return PRODUCTS.filter((p) => p.active).map((p) => ({ slug: p.slug }))
@@ -50,53 +53,9 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   if (!p) notFound()
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        background: '#E6E9EB',
-        color: '#1A1D1F',
-        fontFamily: "'Cormorant Garamond', Georgia, serif",
-      }}
-    >
-      <header style={{ borderBottom: RULE, flex: 'none' }}>
-        <div
-          style={{
-            padding: '14px clamp(16px,3vw,32px)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 'clamp(14px,2vw,28px)',
-            flexWrap: 'wrap',
-          }}
-        >
-          <Link
-            href="/"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 9,
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            <span
-              style={{ width: 7, height: 7, borderRadius: '50%', background: '#1A8A9E' }}
-            />
-            <span style={{ fontWeight: 500, fontSize: 15, letterSpacing: '.22em' }}>
-              PEPTIDE CORTEX
-            </span>
-          </Link>
-          <Link
-            href="/shop"
-            style={{ ...KICKER, marginLeft: 'auto', color: '#1A1D1F', textDecoration: 'none' }}
-          >
-            ← All products
-          </Link>
-        </div>
-      </header>
+    <ShopChrome>
 
-      <main
+      <div
         style={{
           flex: 1,
           display: 'grid',
@@ -236,29 +195,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
             {LEGAL}
           </p>
         </div>
-      </main>
-
-      <footer style={{ background: '#1A1D1F', color: '#C9CED2', flex: 'none' }}>
-        <div
-          style={{
-            padding: '18px clamp(16px,3vw,32px)',
-            display: 'flex',
-            gap: 20,
-            flexWrap: 'wrap',
-            fontFamily: 'Jost, sans-serif',
-            fontSize: 10,
-            letterSpacing: '.18em',
-            textTransform: 'uppercase',
-          }}
-        >
-          <span style={{ maxWidth: '68ch', lineHeight: 1.8 }}>{LEGAL}</span>
-          <span style={{ marginLeft: 'auto', display: 'flex', gap: 18 }}>
-            <Link href="/terms" style={{ color: 'inherit' }}>Terms</Link>
-            <Link href="/privacy" style={{ color: 'inherit' }}>Privacy</Link>
-            <Link href="/refund-policy" style={{ color: 'inherit' }}>Refunds</Link>
-          </span>
-        </div>
-      </footer>
-    </div>
+      </div>
+    </ShopChrome>
   )
 }

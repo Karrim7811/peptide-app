@@ -7,10 +7,17 @@
 // The grid draws its structure with a 1px ink background showing through a
 // 1px gap between cards — no borders on the cards themselves. That is the
 // design's whole structural idiom and it is why nothing here has a radius.
+//
+// Chrome comes from ShopChrome. This page and the product page used to draw
+// their own header and footer, byte-for-byte the same as ShopChrome's except
+// for the one element that mattered: the cart link. So a shopper could add to
+// cart on either of the only two pages that offer the button and then have no
+// way to reach the cart. Duplicated chrome is how that happens; there is now
+// one header.
 
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { ShopCard } from '@/components/shop/ShopCard'
+import { LEGAL, ShopChrome } from '@/components/shop/ShopChrome'
 import { shopCards } from '@/lib/shop/view'
 
 export const metadata: Metadata = {
@@ -19,78 +26,12 @@ export const metadata: Metadata = {
     'Small-batch research peptides. Every batch shows its independent assay, its lot and its price per milligram.',
 }
 
-const LEGAL =
-  'For research and reference purposes only. Not intended as dosing instructions for human or animal use, and not for human consumption. Consult a licensed physician before any medical decisions. Adults 18+. US shipping only.'
-
 export default function ShopPage() {
   const cards = shopCards()
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        background: '#E6E9EB',
-        color: '#1A1D1F',
-        fontFamily: "'Cormorant Garamond', Georgia, serif",
-        fontWeight: 400,
-      }}
-    >
-      <header style={{ borderBottom: '1px solid #1A1D1F', flex: 'none' }}>
-        <div
-          style={{
-            padding: '14px clamp(16px,3vw,32px)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 'clamp(14px,2vw,28px)',
-            flexWrap: 'wrap',
-          }}
-        >
-          <Link
-            href="/"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 9,
-              whiteSpace: 'nowrap',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            <span
-              style={{
-                width: 7,
-                height: 7,
-                borderRadius: '50%',
-                background: '#1A8A9E',
-                display: 'inline-block',
-              }}
-            />
-            <span style={{ fontWeight: 500, fontSize: 15, letterSpacing: '.22em' }}>
-              PEPTIDE CORTEX
-            </span>
-          </Link>
-          <span style={{ marginLeft: 'auto' }} />
-          <Link
-            href="/shop"
-            style={{
-              fontFamily: 'Jost, sans-serif',
-              fontSize: 10.5,
-              letterSpacing: '.24em',
-              textTransform: 'uppercase',
-              color: '#1A1D1F',
-              textDecoration: 'none',
-              borderBottom: '1px solid #1A1D1F',
-              paddingBottom: 2,
-            }}
-          >
-            Shop
-          </Link>
-        </div>
-      </header>
-
-      <main style={{ flex: 1 }}>
+    <ShopChrome>
+      <>
         <div
           style={{
             padding: 'clamp(24px,3vw,40px) clamp(16px,3vw,32px) 0',
@@ -158,35 +99,7 @@ export default function ShopPage() {
         >
           {LEGAL}
         </p>
-      </main>
-
-      <footer style={{ background: '#1A1D1F', color: '#C9CED2', flex: 'none' }}>
-        <div
-          style={{
-            padding: '18px clamp(16px,3vw,32px)',
-            display: 'flex',
-            gap: 20,
-            flexWrap: 'wrap',
-            fontFamily: 'Jost, sans-serif',
-            fontSize: 10,
-            letterSpacing: '.18em',
-            textTransform: 'uppercase',
-          }}
-        >
-          <span style={{ maxWidth: '68ch', lineHeight: 1.8 }}>{LEGAL}</span>
-          <span style={{ marginLeft: 'auto', display: 'flex', gap: 18 }}>
-            <Link href="/terms" style={{ color: 'inherit' }}>
-              Terms
-            </Link>
-            <Link href="/privacy" style={{ color: 'inherit' }}>
-              Privacy
-            </Link>
-            <Link href="/refund-policy" style={{ color: 'inherit' }}>
-              Refunds
-            </Link>
-          </span>
-        </div>
-      </footer>
-    </div>
+      </>
+    </ShopChrome>
   )
 }
