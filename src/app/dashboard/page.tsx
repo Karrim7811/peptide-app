@@ -53,14 +53,28 @@ export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = { title: 'The bench · Peptide Cortex' }
 
+type Tool = [href: string, name: string, what: string]
+
 /** Where the Mirror's capabilities live now, and what each one is. */
-const TOOLS: Array<[string, string, string]> = [
+const TOOLS: Tool[] = [
   ['/mirror', 'The field', 'Your stack, dose log, cycles, sites and notes. Everything you can edit.'],
   ['/checker', 'Interactions', 'Any two things compared. Free, three checks a day.'],
   ['/dosing', 'Dosing reference', 'What the label or the trial says, with its source. Never gated.'],
   ['/bloodwork', 'Bloodwork', 'Your markers across panels. Pro.'],
   ['/protocol', 'Protocol planner', 'A week drafted around the bench. Pro.'],
   ['/scanner', 'Vial scanner', 'Photograph a shelf and check the reading. Pro.'],
+]
+
+// The order queue had no link anywhere in the app — /admin/orders was reachable
+// only by typing it, which is how the operator ends up believing the route is
+// broken when it is merely unlinked. It renders here for the one account whose
+// id matches SHOP_ADMIN_USER_ID and for nobody else. This is a convenience, not
+// a gate: the real check is server-side in /admin/orders and in every action it
+// calls, and an unset variable means no admin, so the row simply never appears.
+const ADMIN_TOOL: Tool = [
+  '/admin/orders',
+  'Order queue',
+  'Confirm Zelle payments, record lots, ship. Admin only.',
 ]
 
 export default async function BenchPage() {
@@ -71,6 +85,9 @@ export default async function BenchPage() {
   if (!user) redirect('/login')
 
   const isPro = await isProUser()
+
+  const adminId = process.env.SHOP_ADMIN_USER_ID
+  const tools = adminId && user.id === adminId ? [...TOOLS, ADMIN_TOOL] : TOOLS
 
   const [{ data: stackRows }, { data: inventoryRows }] = await Promise.all([
     supabase
@@ -379,7 +396,7 @@ export default async function BenchPage() {
 
         <div>
           <SectionHead left="Tools" right="" />
-          {TOOLS.map(([href, name, what]) => (
+          {tools.map(([href, name, what]) => (
             <Link
               key={href}
               href={href}
