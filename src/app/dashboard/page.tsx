@@ -45,6 +45,7 @@ import { benchView } from '@/lib/bench'
 import { COMPOUND_LIST } from '@/lib/catalog'
 import { categoryChips } from '@/lib/library'
 import { resolveCompoundId } from '@/lib/mirror/mapping'
+import { isAdminUserId } from '@/lib/shop/admin-id'
 import { ANNUAL_PRICE, MONTHLY_PRICE, money, priceFootnote, proCta } from '@/lib/pricing'
 import { createClient } from '@/lib/supabase/server'
 import { isProUser } from '@/lib/subscription'
@@ -86,8 +87,7 @@ export default async function BenchPage() {
 
   const isPro = await isProUser()
 
-  const adminId = process.env.SHOP_ADMIN_USER_ID
-  const tools = adminId && user.id === adminId ? [...TOOLS, ADMIN_TOOL] : TOOLS
+  const tools = isAdminUserId(user.id) ? [...TOOLS, ADMIN_TOOL] : TOOLS
 
   const [{ data: stackRows }, { data: inventoryRows }] = await Promise.all([
     supabase
