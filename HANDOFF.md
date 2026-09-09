@@ -510,6 +510,53 @@ Four decisions worth not undoing:
 Errors render inline beside the control, never as a toast — "reload and try
 again" from the lost-update guard is something the operator must read.
 
+## Address autocomplete, and Zelle as the default rail — 2026-09-09
+
+Both came out of Karim walking checkout for the first time.
+
+**Crypto was the pre-selected payment method and BTCPay has never been
+configured**, so the default path threw for every visitor. The default is now
+Zelle. Crypto stays selectable — Karim's call, asked and answered — so choosing
+it still fails with a configuration error until the four `BTCPAY_*` variables
+exist. That is a known, accepted state, not an oversight.
+
+Found while reading that code: **BTCPay's post-payment redirect pointed at
+`/shop/orders/<uuid>`.** The route is `/shop/order/<PC-XXXX>` — singular, and
+keyed by the payment reference, which `isValidReference()` checks and a UUID
+fails. The first customer to pay in crypto would have paid successfully and
+landed on a 404. Fixed. It was latent only because the rail has never been on,
+which is worth remembering about the other three `BTCPAY_*` paths: **nothing in
+that adapter has ever run against a real server.**
+
+**Address autocomplete** is Google Places (New), behind
+`GOOGLE_PLACES_API_KEY`. Three things about it are load-bearing:
+
+- **Unset is a supported state.** No key means no suggestions, no dropdown, and
+  the street line is the plain input it was before — still carrying
+  `autoComplete="address-line1"`, so the browser's own saved-address autofill
+  works. Same pattern as `RESEND_API_KEY`. Nothing warns and no order fails.
+- **The key is server-side only** (`src/lib/shop/address/places.ts`), reached
+  through `/api/shop/address`, which requires a signed-in user. Both matter for
+  the same reason: this is a metered API and an open endpoint in front of one is
+  somebody's free afternoon. The build is checked for the key name and the
+  Google host; neither reaches `.next/static`.
+- **Billing is per session, not per request.** The keystrokes while typing plus
+  the one details call that resolves the choice are a single charge, provided
+  they share a session token and the session is closed by that details call.
+  The client mints one token per address entry and discards it on resolve.
+  Break that and the same entry bills once per keystroke.
+
+Only the street line searches; picking a suggestion fills city, state and ZIP,
+and all four stay editable. A lookup that guesses wrong must never be the last
+word on where a parcel goes.
+
+`toAddress()` is pure and tested, because the mapping is what breaks, not the
+fetch. Writing those tests caught a real bug before it shipped: the first
+version joined street number and route unconditionally, so an address missing
+its route produced a `line1` of `1600`. It now requires the route and treats the
+number as optional — a street with no number is a line the buyer can see is
+incomplete and fix; a number with no street is garbage.
+
 ## Shipping, priced — 2026-09-07, raised 2026-09-09
 
 $12.00 standard · $20.00 priority · $49.00 overnight, **flat per order**, not
