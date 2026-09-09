@@ -9,6 +9,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { adminUserId, isAdminUserId } from '@/lib/shop/admin-id'
 import { canTransition } from '@/lib/shop/orders/status'
 import { validatePackAssignment } from '@/lib/shop/orders/admin'
 import type { OrderStatus } from '@/lib/shop/orders/types'
@@ -17,16 +18,15 @@ import type { OrderStatus } from '@/lib/shop/orders/types'
 // actions read the session from cookies instead — the pattern every existing
 // layout in this app already uses.
 async function assertAdmin() {
-  const adminId = process.env.SHOP_ADMIN_USER_ID
-  if (!adminId) throw new Error('SHOP_ADMIN_USER_ID is not set')
+  if (adminUserId() === null) throw new Error('SHOP_ADMIN_USER_ID is not set')
 
   const supabase = createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user || user.id !== adminId) throw new Error('not authorised')
-  return user
+  if (!isAdminUserId(user?.id)) throw new Error('not authorised')
+  return user!
 }
 
 async function advance(

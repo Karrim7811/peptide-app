@@ -17,6 +17,7 @@
 
 import { notFound } from 'next/navigation'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { adminRefusal, adminRefusalNote } from '@/lib/shop/admin-id'
 import { formatPrice } from '@/lib/shop/pricing'
 import { MarkPacked, MarkPaid, MarkShipped } from './OrderActions'
 
@@ -29,7 +30,6 @@ const COLUMNS = [
 ] as const
 
 export default async function AdminOrdersPage() {
-  const adminId = process.env.SHOP_ADMIN_USER_ID
   const supabase = createClient()
   const {
     data: { user },
@@ -37,7 +37,16 @@ export default async function AdminOrdersPage() {
 
   // 404 rather than 403. An admin route should not confirm it exists to someone
   // who is not the admin.
-  if (!adminId || !user || user.id !== adminId) notFound()
+  //
+  // The visitor learns nothing; the server log says which of the three causes
+  // fired. Without that line the operator sees the same blank 404 whether the
+  // variable is unset, the session is missing, or the id is simply another
+  // account's — and has no way to tell them apart from outside.
+  const refusal = adminRefusal(user?.id)
+  if (refusal) {
+    console.warn(`[admin/orders] refused — ${adminRefusalNote(refusal, user?.id)}`)
+    notFound()
+  }
 
   const service = createServiceClient()
   const { data: orders } = await service
