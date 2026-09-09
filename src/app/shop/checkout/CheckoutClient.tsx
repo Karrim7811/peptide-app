@@ -35,6 +35,7 @@ import { formatPrice } from '@/lib/shop/pricing'
 import { REFUND_POLICY, REFUND_STATUS } from '@/lib/legal'
 import { MIN_AGE_YEARS, ageFrom, isoDob } from '@/lib/age'
 import { recordDateOfBirth } from '@/app/shop/dob-actions'
+import { AddressAutocomplete } from '@/components/shop/AddressAutocomplete'
 
 const FIELDS = [
   ['name', 'Full name', 'name', true],
@@ -47,6 +48,19 @@ const FIELDS = [
 
 type AddressField = (typeof FIELDS)[number][0]
 
+/** Shared so the searchable line and the plain lines cannot drift apart. */
+const FIELD_STYLE: React.CSSProperties = {
+  width: '100%',
+  border: RULE,
+  background: '#F4F5F6',
+  padding: '12px 14px',
+  minHeight: 44,
+  fontFamily: MONO,
+  fontSize: 14,
+  color: '#1A1D1F',
+  borderRadius: 0,
+}
+
 const EMPTY: Record<AddressField, string> = {
   name: '', line1: '', line2: '', city: '', state: '', postal: '',
 }
@@ -55,7 +69,10 @@ export function CheckoutClient({ needsDob = false }: { needsDob?: boolean }) {
   const router = useRouter()
   const [lines, setLines] = useState<CartLineView[] | null>(null)
   const [method, setMethod] = useState<ShippingMethodId>('priority')
-  const [provider, setProvider] = useState<PaymentProviderId>('btcpay')
+  // Zelle, not crypto. Crypto stays selectable — Karim's call, 2026-09-09 —
+  // but it cannot complete until BTCPay is configured, and a default that
+  // throws for every visitor is not a default.
+  const [provider, setProvider] = useState<PaymentProviderId>('zelle')
   const [address, setAddress] = useState<Record<AddressField, string>>(EMPTY)
   const [placing, setPlacing] = useState(false)
   const [failure, setFailure] = useState<string | null>(null)
@@ -190,29 +207,44 @@ export function CheckoutClient({ needsDob = false }: { needsDob?: boolean }) {
           <div style={KICKER}>Ship to · US only</div>
           <div style={{ marginTop: 12, display: 'grid', gap: 12 }}>
             {FIELDS.map(([id, label, auto]) => (
-              <label key={id} style={{ display: 'block' }}>
+              <label key={id} htmlFor={`ship-${id}`} style={{ display: 'block' }}>
                 <span style={{ ...KICKER, fontSize: 9.5, display: 'block', marginBottom: 5 }}>
                   {label}
                 </span>
-                <input
-                  name={id}
-                  autoComplete={auto}
-                  value={address[id]}
-                  // Validation gates the button and writes a line saying why. It
-                  // never blocks typing and never marks a field in red mid-entry.
-                  onChange={(e) => setAddress((a) => ({ ...a, [id]: e.target.value }))}
-                  style={{
-                    width: '100%',
-                    border: RULE,
-                    background: '#F4F5F6',
-                    padding: '12px 14px',
-                    minHeight: 44,
-                    fontFamily: MONO,
-                    fontSize: 14,
-                    color: '#1A1D1F',
-                    borderRadius: 0,
-                  }}
-                />
+                {id === 'line1' ? (
+                  // Only the street line searches. Picking a suggestion fills
+                  // city, state and ZIP below it, and all three stay editable —
+                  // a lookup that guesses wrong must never be the last word on
+                  // where a parcel goes.
+                  <AddressAutocomplete
+                    id={`ship-${id}`}
+                    name={id}
+                    autoComplete={auto}
+                    value={address[id]}
+                    onChange={(next) => setAddress((a) => ({ ...a, [id]: next }))}
+                    onResolved={(resolved) =>
+                      setAddress((a) => ({
+                        ...a,
+                        line1: resolved.line1,
+                        city: resolved.city,
+                        state: resolved.state,
+                        postal: resolved.postal,
+                      }))
+                    }
+                    inputStyle={FIELD_STYLE}
+                  />
+                ) : (
+                  <input
+                    id={`ship-${id}`}
+                    name={id}
+                    autoComplete={auto}
+                    value={address[id]}
+                    // Validation gates the button and writes a line saying why. It
+                    // never blocks typing and never marks a field in red mid-entry.
+                    onChange={(e) => setAddress((a) => ({ ...a, [id]: e.target.value }))}
+                    style={FIELD_STYLE}
+                  />
+                )}
               </label>
             ))}
           </div>

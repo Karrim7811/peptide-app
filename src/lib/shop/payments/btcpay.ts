@@ -56,7 +56,12 @@ export const BTCPAY: PaymentProvider = {
         // settled invoice cannot be matched to anything.
         metadata: { orderId: order.id, reference: order.paymentReference },
         checkout: {
-          redirectURL: `https://peptidecortex.com/shop/orders/${order.id}`,
+          // The order page is /shop/order/<PC-XXXX>, singular and keyed by the
+          // payment reference. This pointed at /shop/orders/<uuid> — plural, and
+          // an id that isValidReference() rejects on sight — so the first buyer
+          // to pay in crypto would have paid successfully and landed on a 404.
+          // Latent only because the rail has never been configured.
+          redirectURL: `https://peptidecortex.com/shop/order/${encodeURIComponent(order.paymentReference)}`,
         },
       }),
     })
