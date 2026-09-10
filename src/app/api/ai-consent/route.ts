@@ -1,20 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient as createJsClient } from '@supabase/supabase-js'
-import { getAuthenticatedContext, createClient } from '@/lib/supabase/server'
-import { AI_CONSENT_VERSION } from '@/lib/ai-consent'
+import { getAuthenticatedContext, createServiceClient } from '@/lib/supabase/server'
+import { AI_CONSENT_VERSION, consentMetadata } from '@/lib/ai-consent'
 
 // Persists AI consent onto auth.users.user_metadata.
 //
-// WRITING USER METADATA NEEDS THE USER'S OWN ACCESS TOKEN, not merely a
-// validated identity. The previous version validated the caller with
-// getUser() (which works from cookies alone), then tried three different ways
-// to obtain a session to write with, and fell through to calling updateUser()
-// on a client that had none — surfacing "Auth session missing!" in the UI while
-// authentication itself was fine.
+// ── The bug this route had twice, and why the second fix failed ───────────
 //
-// The web client now sends the token explicitly, which is the same path the
-// iOS app has always used. The cookie lookup below remains only as a fallback
-// for any caller that does not.
+// Consent is stored in user_metadata, and writing that is an auth operation,
+// not a database one. The first version validated the caller with getUser()
+// and then called updateUser() on a client that held no session: "Auth session
+// missing!" in the UI while authentication itself was perfectly fine.
+//
+// The second version looked like a fix and was not. It took the access token
+// from the Authorization header and handed it to createClient() as
+// `global.headers`. But `global.headers` applies to PostgREST, Storage and
+// Functions — NOT to `client.auth`, which is GoTrue and builds its own
+// Authorization header from the session in its own storage. That storage was
+// empty, so updateUser() threw the identical "Auth session missing!" and the
+// header comment above it confidently described the problem as solved.
+//
+// The lesson generalises: passing a bearer token via `global.headers` does not
+// authenticate `supabase.auth.*` calls. It never has.
+//
+// ── What it does now ──────────────────────────────────────────────────────
+//
+// getAuthenticatedContext() establishes WHO is calling — Bearer for iOS, the
+// session cookie for web — and the write is then performed by the service role
+// through the admin API, which needs no user session at all. The id written to
+// is the validated caller's own and comes from the token, never from the
+// request body, so this cannot be pointed at another account.
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,55 +40,34 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const accessToken = await resolveAccessToken(request)
-    if (!accessToken) {
+    let service
+    try {
+      service = createServiceClient()
+    } catch {
+      // Throws only when SUPABASE_SERVICE_ROLE_KEY is absent. Say so plainly
+      // rather than showing the operator a Supabase internal string.
+      console.error('AI consent: SUPABASE_SERVICE_ROLE_KEY is not set')
       return NextResponse.json(
-        { error: 'Your session has expired. Please sign in again.', code: 'SESSION_EXPIRED' },
-        { status: 401 }
+        { error: 'Consent cannot be saved right now. Please try again later.' },
+        { status: 503 }
       )
     }
-
-    const client = createJsClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      { global: { headers: { Authorization: `Bearer ${accessToken}` } } }
-    )
 
     // Spread the existing metadata rather than trusting the update to merge.
     // `dob` is stored here at signup and backs the 18+ gate; losing it would be
     // silent and would not surface until someone went looking for it.
-    const { error } = await client.auth.updateUser({
-      data: {
-        ...(user.user_metadata ?? {}),
-        ai_consent_granted: true,
-        ai_consent_granted_at: new Date().toISOString(),
-        ai_consent_version: AI_CONSENT_VERSION,
-      },
+    const { error } = await service.auth.admin.updateUserById(user.id, {
+      user_metadata: consentMetadata(user.user_metadata),
     })
 
     if (error) {
       console.error('AI consent update failed:', error.message)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Failed to save consent.' }, { status: 500 })
     }
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true, version: AI_CONSENT_VERSION })
   } catch (error) {
     console.error('AI consent error:', error)
     return NextResponse.json({ error: 'Failed to save consent.' }, { status: 500 })
-  }
-}
-
-/** Bearer header first (web now, and iOS always); session cookie as a fallback. */
-async function resolveAccessToken(request: NextRequest): Promise<string | null> {
-  const header = request.headers.get('Authorization')
-  if (header?.startsWith('Bearer ')) return header.slice(7)
-
-  try {
-    const {
-      data: { session },
-    } = await createClient().auth.getSession()
-    return session?.access_token ?? null
-  } catch {
-    return null
   }
 }

@@ -5,6 +5,26 @@ export const AI_CONSENT_VERSION = '1.0'
 const CONSENT_KEY = 'ai_consent_granted'
 const CONSENT_VERSION_KEY = 'ai_consent_version'
 
+/**
+ * The metadata a granted consent writes.
+ *
+ * Pure, and exported so the route's one dangerous property is testable: the
+ * write REPLACES user_metadata rather than merging into it, so anything already
+ * there and not carried across is destroyed. `dob` lives there and backs the
+ * 18+ gate, and losing it would be silent — no error, no visible change, and
+ * nothing would notice until someone tried to check an age.
+ */
+export function consentMetadata(
+  existing: Record<string, unknown> | null | undefined,
+): Record<string, unknown> {
+  return {
+    ...(existing ?? {}),
+    ai_consent_granted: true,
+    ai_consent_granted_at: new Date().toISOString(),
+    ai_consent_version: AI_CONSENT_VERSION,
+  }
+}
+
 // Server-side: check if user has granted AI data consent
 export function hasAiConsent(user: User): boolean {
   return (
