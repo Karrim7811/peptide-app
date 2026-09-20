@@ -23,6 +23,7 @@ import { isValidReference } from '@/lib/shop/orders/reference'
 import { recipientNote, zelleAccount } from '@/lib/shop/zelle-account'
 import { orderByReference } from '@/lib/shop/orders/read.server'
 import { orderView } from '@/lib/shop/orders/view'
+import { pickupLocation } from '@/lib/shop/pickup'
 import type { TimelineStep } from '@/lib/shop/orders/view'
 import { formatPrice } from '@/lib/shop/pricing'
 
@@ -37,7 +38,9 @@ export default async function OrderPage({ params }: { params: { ref: string } })
   const order = await orderByReference(reference)
   if (!order) notFound()
 
-  const view = orderView(order)
+  // The collection location is server configuration, so it is read here and
+  // handed to the view rather than reached for inside it.
+  const view = orderView(order, pickupLocation())
   const account = zelleAccount()
   const handle = account?.handle ?? null
 
@@ -275,7 +278,7 @@ export default async function OrderPage({ params }: { params: { ref: string } })
           >
             <span>Subtotal</span>
             <span style={{ textAlign: 'right', color: '#1A1D1F' }}>{view.subtotal}</span>
-            <span>Shipping · {view.methodName}</span>
+            <span>{view.chargeLabel} · {view.methodName}</span>
             {/* Flagged, not zeroed. A dash here would read as free shipping. */}
             <span style={{ textAlign: 'right' }}>{view.shipping ?? '[ $ TBC ]'}</span>
           </div>
@@ -307,7 +310,7 @@ export default async function OrderPage({ params }: { params: { ref: string } })
               lineHeight: 1.4,
             }}
           >
-            <Label>Ship to</Label>
+            <Label>{view.addressLabel}</Label>
             <span style={{ whiteSpace: 'pre-line' }}>{view.address}</span>
             <Label>Service</Label>
             <span>{view.methodLong}</span>

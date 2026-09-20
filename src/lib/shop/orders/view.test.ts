@@ -184,3 +184,77 @@ describe('orderView', () => {
     expect(orderView(order({ status: 'expired' })).refundLine).toBeNull()
   })
 })
+
+describe('a collected order', () => {
+  // Local pickup, added 2026-09-19. It is the same order row; what changes is
+  // that nothing is posted, so every sentence about a carrier has to go.
+  const collected = (patch: Partial<Order> = {}) =>
+    order({
+      shippingMethod: 'pickup',
+      ship: {
+        name: 'K. Reyes',
+        line1: null,
+        line2: null,
+        city: null,
+        state: null,
+        postal: null,
+        country: 'US',
+      },
+      ...patch,
+    })
+
+  const LOCATION = {
+    area: 'Coral Gables, FL',
+    address: '1200 Ponce de Leon Blvd, Suite 300',
+    hours: 'Weekdays 10:00–17:00',
+    note: null,
+  }
+
+  it('labels the address row Collect at, and prints the configured location', () => {
+    const view = orderView(collected(), LOCATION)
+    expect(view.addressLabel).toBe('Collect at')
+    expect(view.address).toContain('K. Reyes')
+    expect(view.address).toContain('1200 Ponce de Leon Blvd')
+    expect(view.address).toContain('Coral Gables, FL')
+  })
+
+  it('says the details are coming rather than inventing an address it was not given', () => {
+    // The one failure mode worth failing loudly on: a fabricated street sends
+    // a real person to a real wrong door.
+    const view = orderView(collected(), null)
+    expect(view.address).toContain('K. Reyes')
+    expect(view.address).toMatch(/emailed/i)
+    expect(view.address).not.toMatch(/Ponce|null|undefined/)
+  })
+
+  it('names no carrier, in the service line or beside a tracking number', () => {
+    expect(orderView(collected(), LOCATION).methodLong).not.toMatch(/USPS/)
+    const withTracking = orderView(
+      collected({ status: 'shipped', paidAt: '2026-09-05T10:00:00.000Z', tracking: '9400111' }),
+      LOCATION,
+    )
+    expect(withTracking.carrier).toBeNull()
+  })
+
+  it('calls the zero charge Pickup, not Shipping', () => {
+    const view = orderView(collected(), LOCATION)
+    expect(view.chargeLabel).toBe('Pickup')
+    expect(view.shipping).toBe('$0.00')
+  })
+
+  it('replaces the carrier steps in the timeline with collection steps', () => {
+    const labels = orderTimeline(collected()).map((step) => step.label)
+    expect(labels).toContain('Ready to collect')
+    expect(labels).toContain('Collected')
+    expect(labels).not.toContain('Handed to USPS')
+    expect(labels).not.toContain('Delivered')
+  })
+
+  it('still reads as a posted order on every other method', () => {
+    const posted = orderView(order(), null)
+    expect(posted.addressLabel).toBe('Ship to')
+    expect(posted.chargeLabel).toBe('Shipping')
+    expect(posted.address).toContain('San Francisco, CA 94103')
+    expect(posted.methodLong).toMatch(/USPS/)
+  })
+})

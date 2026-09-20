@@ -25,6 +25,7 @@
 
 import { formatPrice } from '@/lib/shop/pricing'
 import { shippingMethod } from '@/lib/shop/orders/shipping'
+import { pickupLines, type PickupLocation } from '@/lib/shop/pickup'
 import { TERMINAL } from '@/lib/shop/orders/status'
 import type { Order, OrderStatus, PaymentProviderId } from '@/lib/shop/orders/types'
 
@@ -138,6 +139,7 @@ export function orderTimeline(order: Order): TimelineStep[] {
   const terminal = TERMINAL.includes(order.status)
   const at = reached(stage)
   const method = shippingMethod(order.shippingMethod)
+  const collect = method.fulfilment === 'collect'
   const zelle = order.paymentProvider === 'zelle'
 
   // A terminal order is not mid-journey, so nothing about it is forthcoming.
@@ -161,21 +163,28 @@ export function orderTimeline(order: Order): TimelineStep[] {
     },
     {
       index: 3,
-      label: 'Handed to USPS',
+      // A collected order is never handed to a carrier, so the row says what
+      // actually happens to it. shipped_at is still the column behind it — it
+      // is the moment the order left our hands either way.
+      label: collect ? 'Ready to collect' : 'Handed to USPS',
       when: stamp(order.shippedAt),
       estimate: order.shippedAt ? null : guess('within 1 business day of payment'),
     },
     {
       index: 4,
-      label: 'Delivered',
+      label: collect ? 'Collected' : 'Delivered',
       // No delivered_at column exists. Rather than compute one, this row carries
       // only what the carrier promised, and says which of the two it is.
       when: null,
-      estimate: guess(
-        method.guaranteed
-          ? `${method.transit} after hand-off · guaranteed`
-          : `${method.transit} after hand-off · estimate`,
-      ),
+      // Nobody promised a collection date but the buyer, so there is no window
+      // to quote on that path — only the fact that it is theirs to come for.
+      estimate: collect
+        ? guess('whenever you come for it, within our collection hours')
+        : guess(
+            method.guaranteed
+              ? `${method.transit} after hand-off · guaranteed`
+              : `${method.transit} after hand-off · estimate`,
+          ),
     },
   ]
 
@@ -222,6 +231,14 @@ export interface OrderView {
   shipping: string | null
   methodName: string
   methodLong: string
+  /** 'Shipping' or 'Pickup' — what the charge row above the total is called. */
+  chargeLabel: string
+  /**
+   * 'Ship to' or 'Collect at'. It is the same row either way; what it means is
+   * not, and a collected order labelled "Ship to" reads as a parcel that is
+   * on its way.
+   */
+  addressLabel: string
   address: string
   steps: TimelineStep[]
   tracking: string | null
@@ -250,10 +267,18 @@ function lineViews(order: Order): OrderLineView[] {
   }))
 }
 
-export function orderView(order: Order): OrderView {
+/**
+ * The order page, as data.
+ *
+ * `pickup` is the configured collection location, or null. It is passed in
+ * rather than read from the environment here so this module stays pure and
+ * testable; the page reads `pickupLocation()` and hands it over.
+ */
+export function orderView(order: Order, pickup: PickupLocation | null = null): OrderView {
   const stage = orderStage(order.status, order.paymentProvider)
   const isTerminal = TERMINAL.includes(order.status)
   const method = shippingMethod(order.shippingMethod)
+  const collect = method.fulfilment === 'collect'
 
   return {
     stage,
@@ -267,17 +292,38 @@ export function orderView(order: Order): OrderView {
     // A zero here would be a claim that shipping is free. It is not priced.
     shipping: method.priceCents === null ? null : formatPrice(order.shippingCents),
     methodName: method.label,
-    methodLong: `${method.label} · ${method.carrier} · ${method.transit}${
-      method.guaranteed ? ', carrier-guaranteed' : ', estimate'
-    }`,
-    address: [
-      order.ship.name,
-      [order.ship.line1, order.ship.line2].filter(Boolean).join(', '),
-      `${order.ship.city}, ${order.ship.state.toUpperCase()} ${order.ship.postal}`,
-    ].join('\n'),
+    chargeLabel: collect ? 'Pickup' : 'Shipping',
+    // A collected order has no carrier and no guaranteed-or-estimate window to
+    // qualify, so it gets neither — not an empty one.
+    methodLong: collect
+      ? `${method.label} · ${method.transit}`
+      : `${method.label} · ${method.carrier} · ${method.transit}${
+          method.guaranteed ? ', carrier-guaranteed' : ', estimate'
+        }`,
+    addressLabel: collect ? 'Collect at' : 'Ship to',
+    address: (collect
+      ? [
+          order.ship.name,
+          // No location configured is survivable and says so. Inventing a
+          // street here is the one failure that actually sends someone to the
+          // wrong door.
+          ...(pickup
+            ? pickupLines(pickup)
+            : ['Collection details will be emailed to you with this order.']),
+        ]
+      : [
+          order.ship.name,
+          [order.ship.line1, order.ship.line2].filter(Boolean).join(', '),
+          `${order.ship.city}, ${order.ship.state?.toUpperCase()} ${order.ship.postal}`,
+        ]
+    ).join('\n'),
     steps: orderTimeline(order),
     tracking: order.tracking,
-    carrier: order.tracking ? method.carrier : null,
+    // No carrier on a collected order even if a tracking number was typed into
+    // the admin field by mistake: naming USPS beside a box on a shelf is the
+    // kind of small wrongness that reads as the whole thing being automated
+    // badly.
+    carrier: order.tracking && !collect ? method.carrier : null,
     refundLine: isTerminal
       ? null
       : `Refunds are handled by hand. Unopened vials with the cold-chain seal intact can be returned within 14 days of delivery; email us with reference ${order.paymentReference}.`,

@@ -126,9 +126,14 @@ export default async function ZelleSheetPage({
             value={amount}
             valueSize="clamp(34px,5vw,44px)"
             note={
-              method.priceCents === null
-                ? `before shipping · ${method.label} [ $ TBC ]`
-                : `includes ${method.label} shipping`
+              method.fulfilment === 'collect'
+                ? // Nothing to include: there is no postage on a collected
+                  // order, and "includes Local pickup shipping" would be a
+                  // charge the buyer would then look for on the line above.
+                  `${method.label} · no shipping charged`
+                : method.priceCents === null
+                  ? `before shipping · ${method.label} [ $ TBC ]`
+                  : `includes ${method.label} shipping`
             }
             copy={amount.replace('$', '')}
           />

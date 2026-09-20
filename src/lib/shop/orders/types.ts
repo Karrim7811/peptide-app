@@ -17,13 +17,25 @@ export type OrderStatus =
 
 export type PaymentProviderId = 'btcpay' | 'zelle'
 
+/**
+ * Where an order goes, and who it goes to.
+ *
+ * The four address lines are nullable because a locally collected order has no
+ * address — nothing is posted anywhere. Null here means COLLECTED, never
+ * "unknown": the database refuses a null address on any method other than
+ * 'pickup' (posted_orders_have_an_address) and refuses a non-null one on
+ * pickup (collected_orders_have_no_address), so the two states cannot blur.
+ * See supabase/shop_orders_pickup_migration.sql.
+ *
+ * `name` is never null on either path. Somebody has to be handed the box.
+ */
 export interface ShippingAddress {
   name: string
-  line1: string
+  line1: string | null
   line2?: string | null
-  city: string
-  state: string
-  postal: string
+  city: string | null
+  state: string | null
+  postal: string | null
   /** US only at launch, consistent with the existing EU geoblock. */
   country: 'US'
 }

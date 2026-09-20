@@ -23,6 +23,7 @@
 
 import { formatPrice } from '@/lib/shop/pricing'
 import { shippingMethod, type ShippingMethodId } from '@/lib/shop/orders/shipping'
+import { pickupLines, type PickupLocation } from '@/lib/shop/pickup'
 import { SUPPORT_EMAIL } from '@/lib/legal'
 
 export interface ConfirmationInput {
@@ -31,6 +32,14 @@ export interface ConfirmationInput {
   subtotalCents: number
   shippingCents: number
   shippingMethodId: ShippingMethodId
+  /**
+   * The collection location on a pickup order, null on every posted one — and
+   * null too on a pickup order placed by a deployment that has since lost its
+   * SHOP_PICKUP_* config. The mail says the details are coming rather than
+   * naming a place it was not given; an address in a receipt is exactly the
+   * thing nobody should be inventing.
+   */
+  pickup: PickupLocation | null
   provider: 'zelle' | 'btcpay'
   lines: Array<{ productName: string; sizeDisplay: string; qty: number; lineCents: number }>
   /** Absolute, because an email has no origin to resolve against. */
@@ -95,8 +104,47 @@ function payingBlock(input: ConfirmationInput): string[] {
     'payment without it has to be matched by hand and will be slower.',
     '',
     'We confirm Zelle payments by hand, usually within one business day.',
-    'Delivery estimates start when your payment clears and the parcel is handed',
-    'to USPS — not when you placed the order.',
+    ...(shippingMethod(input.shippingMethodId).fulfilment === 'collect'
+      ? [
+          'Your order is ready to collect once that payment clears — not when you',
+          'placed it.',
+        ]
+      : [
+          'Delivery estimates start when your payment clears and the parcel is handed',
+          'to USPS — not when you placed the order.',
+        ]),
+  ]
+}
+
+/**
+ * Where to come and get it, on a collected order. Empty on every other one.
+ *
+ * Above the payment block on purpose: a buyer collecting in person is being
+ * asked to turn up somewhere, and that is the fact they will come back to this
+ * mail for. It is also the one the order page repeats, so the two agree.
+ */
+function collectionBlock(input: ConfirmationInput): string[] {
+  if (shippingMethod(input.shippingMethodId).fulfilment !== 'collect') return []
+
+  if (!input.pickup) {
+    return [
+      'COLLECTING IN PERSON',
+      '',
+      'You chose to collect this order. We will email you the address and a',
+      'time once your payment clears — nothing is being posted.',
+      '',
+    ]
+  }
+
+  return [
+    'COLLECTING IN PERSON',
+    '',
+    ...pickupLines(input.pickup).map((line) => `  ${line}`),
+    '',
+    'Bring this reference. Your order is ready to collect within one business',
+    'day of payment clearing, and we will email you when it is — please do not',
+    'travel before that.',
+    '',
   ]
 }
 
@@ -110,6 +158,8 @@ export function confirmationText(input: ConfirmationInput): string {
       `  ${formatPrice(line.lineCents)}`,
   )
 
+  const collect = method.fulfilment === 'collect'
+
   return [
     `Order ${input.paymentReference}`,
     '',
@@ -121,9 +171,12 @@ export function confirmationText(input: ConfirmationInput): string {
     ...items,
     '',
     `  Subtotal   ${formatPrice(input.subtotalCents)}`,
-    `  Shipping   ${formatPrice(input.shippingCents)}  ${method.label}, ${method.carrier}`,
+    `  ${collect ? 'Pickup    ' : 'Shipping  '} ${formatPrice(input.shippingCents)}  ${
+      collect ? method.label : `${method.label}, ${method.carrier}`
+    }`,
     `  Total      ${formatPrice(input.totalCents)}`,
     '',
+    ...collectionBlock(input),
     ...payingBlock(input),
     '',
     'YOUR ORDER PAGE',

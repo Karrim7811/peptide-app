@@ -44,6 +44,8 @@ create table if not exists public.shop_orders (
   -- Which service the customer chose and paid for. Recorded because a dispute
   -- about when something should have arrived is unanswerable without it, and
   -- because only 'overnight' carries a carrier guarantee.
+  -- Extended by shop_orders_pickup_migration.sql, which adds 'pickup' and
+  -- moves the address columns' NOT NULL into a method-scoped constraint.
   shipping_method    text not null check (shipping_method in ('standard','priority','overnight')),
   total_cents        integer not null check (total_cents >= 0),
 

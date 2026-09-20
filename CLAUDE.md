@@ -584,6 +584,51 @@ this order:
   be an open redirect. Every gate should write it via `loginUrl()` /
   `signupUrl()`, never by hand.
 
+
+### 16.14 Local pickup, not a promo code (2026-09-19, Karim)
+
+Karim asked for "a promo code or a local pickup in the shipping section,
+whichever is easier to build", then "easier and faster". Pickup, measured
+against the code that exists:
+
+- A promo code needs a code store, a validation path, a `discount_cents`
+  column, a rewrite of the `totals_add_up` CHECK, and a discount line on three
+  surfaces. Every one of those touches the arithmetic people dispute.
+- Pickup needs a fourth row in `SHIPPING_METHODS` and an address that is
+  allowed to be absent. `orderTotals()` already sums subtotal + shipping, and
+  0 is a legal shipping charge, so **no money constraint changed**.
+
+What shipped:
+
+- `pickup` is a shipping METHOD, not a flag beside one. Exactly one fulfilment
+  happens to an order, the buyer picks it in the same place, and the row
+  already records which — a parallel flag would have created a state where both
+  are set. `ShippingMethod.fulfilment` (`'post' | 'collect'`) is the
+  discriminant; nothing downstream string-matches `'pickup'`.
+- **The address is null, not blank.** `supabase/shop_orders_pickup_migration.sql`
+  drops NOT NULL from the four address columns and re-imposes it as
+  `posted_orders_have_an_address`, scoped to the methods it was ever true for,
+  plus `collected_orders_have_no_address` for the converse. Null means
+  COLLECTED; it never means unknown. `ship_name` stays NOT NULL — somebody is
+  still handed the box.
+- **It is off until configured.** `SHOP_PICKUP_AREA` is the switch, in the
+  pattern of `zelleAccount()`: unset, the method is absent from checkout and
+  `createOrder` refuses it, because a shop must not take money for collection
+  at a place it cannot name. The area is public (checkout); the street address
+  is shown after an order exists (order page, receipt).
+- Carrier language is removed on that path, not left to read oddly: the
+  timeline says Ready to collect / Collected rather than Handed to USPS /
+  Delivered, `methodLong` names no carrier, `carrier` is null even if a
+  tracking number was typed in by mistake, and the admin queue flags the order
+  so nobody packs it for the post.
+
+**The age gate, the 18+ rule and the sign-in wall are untouched.** Pickup is a
+fulfilment choice inside `/shop`, which is already behind both.
+
+_Not built, and not to be proposed as a smaller version of this: the promo
+code. If discounts are wanted, they are their own decision with their own money
+column and their own audit trail._
+
 ---
 
 _Last full audit: 2026-05-23 by Claude (Opus 4.7, 1M context), repo head `b611890`._

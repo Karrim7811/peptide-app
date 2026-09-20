@@ -52,7 +52,7 @@ export default async function AdminOrdersPage() {
   const { data: orders } = await service
     .from('shop_orders')
     .select(
-      'id, status, total_cents, payment_provider, payment_reference, created_at, ship_name',
+      'id, status, total_cents, payment_provider, payment_reference, created_at, ship_name, shipping_method',
     )
     .in('status', ['awaiting_payment', 'paid', 'packed'])
     .order('created_at', { ascending: true })
@@ -136,6 +136,15 @@ export default async function AdminOrdersPage() {
                       {formatPrice(order.total_cents)} · {order.payment_provider} ·{' '}
                       {new Date(order.created_at).toISOString().slice(0, 10)}
                     </p>
+                    {/* The one thing on this card that changes what you
+                        physically do with the box. A collected order has no
+                        address at all, so packing it for the post would stall
+                        at the label — better to see it here. */}
+                    {order.shipping_method === 'pickup' && (
+                      <p className="mt-1 font-sans text-xs uppercase tracking-widest text-cx-teal">
+                        Collecting in person
+                      </p>
+                    )}
 
                     {/* A BTCPay order reaches 'paid' through the signed webhook
                         and must never be advanced by hand — the whole point of

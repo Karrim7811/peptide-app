@@ -4,6 +4,20 @@
 // order records which was chosen — a dispute about when something should have
 // arrived is unanswerable otherwise.
 //
+// ── Local pickup is in this list, and that is the point ────────────────────
+//
+// Added 2026-09-19. Collecting in person is not shipping, but it IS the same
+// choice: exactly one of these happens to an order, the buyer makes the choice
+// in the same place, and the order has to record which. Modelling it as a
+// fourth method means the total, the snapshot, the order row and the admin
+// queue all keep working untouched; modelling it as a separate flag beside the
+// method would have created a second dimension that every one of them has to
+// remember to read, and a state where both are set.
+//
+// What genuinely differs is the address — a collected order has none — and
+// that difference is carried by `fulfilment` below and enforced by a CHECK
+// constraint in supabase/shop_orders_pickup_migration.sql, not by convention.
+//
 // ── Prices ────────────────────────────────────────────────────────────────
 //
 // $12.00 / $20.00 / $49.00, raised from $7 / $12 / $49 on 2026-09-09 by Karim.
@@ -57,9 +71,18 @@ export interface ShippingMethod {
   priceCents: number | null
   /** Whether the carrier guarantees the window or merely estimates it. */
   guaranteed: boolean
+  /**
+   * Whether a parcel is posted or handed over in person.
+   *
+   * This is the discriminant, not the id. Everything downstream that has to
+   * behave differently — the address requirement, the timeline wording, the
+   * email — branches on this rather than string-matching 'pickup', so adding a
+   * second collection point later is a row in this table and nothing else.
+   */
+  fulfilment: 'post' | 'collect'
 }
 
-export type ShippingMethodId = 'standard' | 'priority' | 'overnight'
+export type ShippingMethodId = 'standard' | 'priority' | 'overnight' | 'pickup'
 
 export const SHIPPING_METHODS: ShippingMethod[] = [
   {
@@ -69,6 +92,7 @@ export const SHIPPING_METHODS: ShippingMethod[] = [
     transit: '2–5 business days',
     priceCents: 1200,
     guaranteed: false,
+    fulfilment: 'post',
   },
   {
     id: 'priority',
@@ -77,6 +101,7 @@ export const SHIPPING_METHODS: ShippingMethod[] = [
     transit: '1–3 business days',
     priceCents: 2000,
     guaranteed: false,
+    fulfilment: 'post',
   },
   {
     id: 'overnight',
@@ -87,6 +112,23 @@ export const SHIPPING_METHODS: ShippingMethod[] = [
     // The only one of the three the carrier actually guarantees, which is why it
     // is also the only one worth promising a date on.
     guaranteed: true,
+    fulfilment: 'post',
+  },
+  {
+    id: 'pickup',
+    label: 'Local pickup',
+    // Filled in from SHOP_PICKUP_AREA wherever this is rendered — see
+    // `pickupLabel()`. The constant carries no place name, because this table
+    // ships in the repo and the location does not.
+    carrier: 'Collect in person',
+    transit: 'ready within 1 business day of payment clearing',
+    // Zero, and it means zero: nothing is posted, so there is no postage to
+    // charge. This is the one method where 0 is a price rather than a missing
+    // one, which is why `sellableMethods()` filters on null and never on
+    // falsiness — a `!method.priceCents` test would quietly delist it.
+    priceCents: 0,
+    guaranteed: false,
+    fulfilment: 'collect',
   },
 ]
 
@@ -99,7 +141,7 @@ export const SHIPPING_METHODS: ShippingMethod[] = [
  * slower rail cannot keep. See the note at the top of this file.
  */
 export const TRANSIT_FROM =
-  'Every window above starts when payment clears and the parcel is handed to USPS, not when the order is placed. On the Zelle rail that can be the next business day.'
+  'Every window above starts when payment clears — when the parcel is handed to USPS, or when your order is ready to collect — not when the order is placed. On the Zelle rail that can be the next business day.'
 
 export function shippingMethod(id: string): ShippingMethod {
   const method = SHIPPING_METHODS.find((candidate) => candidate.id === id)
@@ -110,8 +152,31 @@ export function shippingMethod(id: string): ShippingMethod {
 /**
  * The methods that can currently be sold. A method with no price is filtered
  * out rather than shown at zero, which is what stops an unpriced method
- * reaching a checkout screen. All three are priced as of 2026-09-07.
+ * reaching a checkout screen. All four are priced as of 2026-09-19.
+ *
+ * Note the test is against null, not against falsiness: local pickup is priced
+ * at zero on purpose and must survive this filter.
  */
 export function sellableMethods(): ShippingMethod[] {
   return SHIPPING_METHODS.filter((method) => method.priceCents !== null)
+}
+
+/** Whether this method is collected in person rather than posted. */
+export function isCollection(id: ShippingMethodId): boolean {
+  return shippingMethod(id).fulfilment === 'collect'
+}
+
+/**
+ * The methods to offer on a checkout screen.
+ *
+ * Collection methods disappear entirely when the deployment has no pickup
+ * location configured (`pickupLocation()` returns null). Offering a place we
+ * cannot name would be worse than not offering it: the buyer would pick it,
+ * pay, and then have nowhere to go. `createOrder` refuses the same case on the
+ * server, so this filter is the courtesy and that one is the guard.
+ */
+export function checkoutMethods(pickupAvailable: boolean): ShippingMethod[] {
+  return sellableMethods().filter(
+    (method) => method.fulfilment !== 'collect' || pickupAvailable,
+  )
 }
