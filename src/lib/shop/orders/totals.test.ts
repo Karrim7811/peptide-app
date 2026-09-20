@@ -11,6 +11,8 @@ import { orderTotals, priceLine } from '@/lib/shop/orders/totals'
 import {
   SHIPPING_METHODS,
   TRANSIT_FROM,
+  checkoutMethods,
+  isCollection,
   sellableMethods,
   shippingMethod,
 } from '@/lib/shop/orders/shipping'
@@ -46,8 +48,23 @@ describe('pricing a line', () => {
 })
 
 describe('shipping methods', () => {
-  it('offers a slow, a middle and a guaranteed option', () => {
-    expect(SHIPPING_METHODS.map((m) => m.id)).toEqual(['standard', 'priority', 'overnight'])
+  it('offers a slow, a middle, a guaranteed option and a collection', () => {
+    expect(SHIPPING_METHODS.map((m) => m.id)).toEqual([
+      'standard',
+      'priority',
+      'overnight',
+      'pickup',
+    ])
+  })
+
+  it('marks exactly one method as collected rather than posted', () => {
+    // The discriminant everything downstream branches on — the address rule,
+    // the timeline wording, the email. If a second collection point is ever
+    // added this assertion is the one to change, deliberately.
+    const collected = SHIPPING_METHODS.filter((m) => m.fulfilment === 'collect').map((m) => m.id)
+    expect(collected).toEqual(['pickup'])
+    expect(isCollection('pickup')).toBe(true)
+    expect(isCollection('overnight')).toBe(false)
   })
 
   it('guarantees only the overnight window', () => {
@@ -66,29 +83,66 @@ describe('shipping methods', () => {
     expect(() => shippingMethod('teleport')).toThrow(/no such shipping method/)
   })
 
-  it('prices every method, in whole cents, cheapest first', () => {
+  it('prices every posted method, in whole cents, cheapest first', () => {
     // Priced 2026-09-07: $7.00 / $12.00 / $49.00. The assertion is on the
     // ORDER and the shape, not the figures — re-pricing against real postage
     // is expected and must not have to edit a test. What must not happen is a
     // faster service costing less than a slower one, or a price arriving as
     // dollars.
-    const prices = SHIPPING_METHODS.map((m) => m.priceCents)
+    const prices = SHIPPING_METHODS.filter((m) => m.fulfilment === 'post').map(
+      (m) => m.priceCents,
+    )
     expect(prices.every((p) => typeof p === 'number' && Number.isInteger(p) && p > 0)).toBe(true)
     expect(prices).toEqual([...(prices as number[])].sort((a, b) => a - b))
+  })
+
+  it('prices collection at zero — a real price, not a missing one', () => {
+    // The distinction the whole module turns on: null means "we cannot sell
+    // this yet", zero means "there is genuinely nothing to charge". A filter
+    // written against falsiness would delist pickup and nobody would notice
+    // until a buyer asked where it went.
+    expect(shippingMethod('pickup').priceCents).toBe(0)
+    expect(sellableMethods().map((m) => m.id)).toContain('pickup')
   })
 
   it('sells every priced method, and only priced methods', () => {
     // sellableMethods() is what keeps an unpriced method off a checkout screen,
     // rather than trusting a UI to filter. With all three priced it returns all
     // three; the filter is still load-bearing for anything added later.
-    expect(sellableMethods().map((m) => m.id)).toEqual(['standard', 'priority', 'overnight'])
+    expect(sellableMethods().map((m) => m.id)).toEqual([
+      'standard',
+      'priority',
+      'overnight',
+      'pickup',
+    ])
 
     vi.spyOn(SHIPPING_METHODS[1], 'priceCents', 'get').mockReturnValue(null)
     try {
-      expect(sellableMethods().map((m) => m.id)).toEqual(['standard', 'overnight'])
+      expect(sellableMethods().map((m) => m.id)).toEqual(['standard', 'overnight', 'pickup'])
     } finally {
       vi.restoreAllMocks()
     }
+  })
+
+  it('hides collection entirely when no pickup location is configured', () => {
+    // Not greyed out, not shown-and-refused: absent. Offering a place the
+    // deployment cannot name would let someone pick it, pay, and have nowhere
+    // to go. createOrder refuses the same case server-side.
+    expect(checkoutMethods(false).map((m) => m.id)).toEqual([
+      'standard',
+      'priority',
+      'overnight',
+    ])
+    expect(checkoutMethods(true).map((m) => m.id)).toContain('pickup')
+  })
+
+  it('totals a collected order at the subtotal, with nothing added', () => {
+    // Zero shipping is arithmetic here, not a special case: totals_add_up in
+    // the schema still holds, which is why pickup needed no money-column change.
+    const totals = orderTotals([priceLine('glp-3-30mg', 1)], 'pickup')
+    expect(totals.shippingCents).toBe(0)
+    expect(totals.totalCents).toBe(totals.subtotalCents)
+    expect(totals.shippingMethodId).toBe('pickup')
   })
 
   it('says where the transit windows start, because the Zelle rail is manual', () => {

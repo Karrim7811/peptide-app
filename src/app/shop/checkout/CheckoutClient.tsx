@@ -24,12 +24,12 @@ import { HAIR, KICKER, MONO, RULE } from '@/components/shop/ShopChrome'
 import { createOrder } from '@/app/shop/actions'
 import { cart, type CartLineView, cartLines, subtotalCents } from '@/lib/shop/cart'
 import {
-  SHIPPING_METHODS,
   TRANSIT_FROM,
-  sellableMethods,
+  checkoutMethods,
   shippingMethod,
 } from '@/lib/shop/orders/shipping'
 import type { ShippingMethodId } from '@/lib/shop/orders/shipping'
+import type { PickupLocation } from '@/lib/shop/pickup'
 import type { PaymentProviderId } from '@/lib/shop/orders/types'
 import { formatPrice } from '@/lib/shop/pricing'
 import { REFUND_POLICY, REFUND_STATUS } from '@/lib/legal'
@@ -65,7 +65,19 @@ const EMPTY: Record<AddressField, string> = {
   name: '', line1: '', line2: '', city: '', state: '', postal: '',
 }
 
-export function CheckoutClient({ needsDob = false }: { needsDob?: boolean }) {
+export function CheckoutClient({
+  needsDob = false,
+  pickup = null,
+}: {
+  needsDob?: boolean
+  /**
+   * The collection location, or null when this deployment has none configured.
+   * Null hides local pickup from the method list entirely — see
+   * `checkoutMethods`. It arrives as a prop because SHOP_PICKUP_* is server
+   * configuration and this screen is a client component.
+   */
+  pickup?: PickupLocation | null
+}) {
   const router = useRouter()
   const [lines, setLines] = useState<CartLineView[] | null>(null)
   const [method, setMethod] = useState<ShippingMethodId>('priority')
@@ -111,11 +123,15 @@ export function CheckoutClient({ needsDob = false }: { needsDob?: boolean }) {
   // was unknown. A checkout must show what it is about to charge.
   const chosenShipping = shippingMethod(method).priceCents
   const total = chosenShipping === null ? null : subtotal + chosenShipping
-  const sellable = sellableMethods()
-  const priced = sellable.length > 0
-  const addressComplete = FIELDS.every(
-    ([id, , , required]) => !required || address[id].trim().length > 0,
-  )
+  const methods = checkoutMethods(pickup !== null)
+  const priced = methods.length > 0
+  // Collecting in person needs a name and nothing else: there is no parcel and
+  // no address to get wrong. The fields are not merely optional on this path —
+  // they are not asked for, and nothing is sent.
+  const collect = shippingMethod(method).fulfilment === 'collect'
+  const addressComplete = collect
+    ? address.name.trim().length > 0
+    : FIELDS.every(([id, , , required]) => !required || address[id].trim().length > 0)
   // Two independent reasons an order cannot be placed, and the screen says which
   // one applies rather than presenting one dead button for both.
   const age = ageFrom(dob.m, dob.d, dob.y)
@@ -125,7 +141,9 @@ export function CheckoutClient({ needsDob = false }: { needsDob?: boolean }) {
   const blockedBecause = !priced
     ? 'Shipping is not priced yet, so orders cannot be completed. Nothing here will charge you a figure nobody chose.'
     : !addressComplete
-      ? 'Fill in the shipping address to place the order.'
+      ? collect
+        ? 'Add the name of whoever is collecting to place the order.'
+        : 'Fill in the shipping address to place the order.'
       : !dobSatisfied
         ? age !== null && age < MIN_AGE_YEARS
           ? 'Peptide Cortex is for adults. Orders cannot be placed under 18.'
@@ -151,15 +169,29 @@ export function CheckoutClient({ needsDob = false }: { needsDob?: boolean }) {
 
       const { paymentReference, intent } = await createOrder(
         lines!.map((line) => ({ slug: line.slug, qty: line.qty })),
-        {
-          name: address.name.trim(),
-          line1: address.line1.trim(),
-          line2: address.line2.trim() || null,
-          city: address.city.trim(),
-          state: address.state.trim(),
-          postal: address.postal.trim(),
-          country: 'US',
-        },
+        // Nulls, not empty strings, on a collected order. The database tells
+        // the two apart — null means "collected", and the constraint refuses a
+        // pickup row that carries an address — so sending '' here would write a
+        // row that reads like a parcel with the address fields blanked.
+        collect
+          ? {
+              name: address.name.trim(),
+              line1: null,
+              line2: null,
+              city: null,
+              state: null,
+              postal: null,
+              country: 'US',
+            }
+          : {
+              name: address.name.trim(),
+              line1: address.line1.trim(),
+              line2: address.line2.trim() || null,
+              city: address.city.trim(),
+              state: address.state.trim(),
+              postal: address.postal.trim(),
+              country: 'US',
+            },
         method,
         provider,
       )
@@ -204,9 +236,20 @@ export function CheckoutClient({ needsDob = false }: { needsDob?: boolean }) {
         </h1>
 
         <div style={{ marginTop: 28 }}>
-          <div style={KICKER}>Ship to · US only</div>
+          <div style={KICKER}>{collect ? 'Collecting · who' : 'Ship to · US only'}</div>
+          {collect && pickup && (
+            // The area, not the street. The exact address goes on the order
+            // page and in the confirmation email, to someone who has actually
+            // bought something rather than to every visitor who gets this far.
+            <p style={{ margin: '10px 0 0', fontSize: 17, lineHeight: 1.45, maxWidth: '58ch' }}>
+              Collect from {pickup.area}
+              {pickup.hours ? ` · ${pickup.hours}` : ''}. We email the address
+              and confirm when it is ready — nothing is posted, and no shipping
+              is charged.
+            </p>
+          )}
           <div style={{ marginTop: 12, display: 'grid', gap: 12 }}>
-            {FIELDS.map(([id, label, auto]) => (
+            {(collect ? FIELDS.filter(([id]) => id === 'name') : FIELDS).map(([id, label, auto]) => (
               <label key={id} htmlFor={`ship-${id}`} style={{ display: 'block' }}>
                 <span style={{ ...KICKER, fontSize: 9.5, display: 'block', marginBottom: 5 }}>
                   {label}
@@ -303,7 +346,7 @@ export function CheckoutClient({ needsDob = false }: { needsDob?: boolean }) {
         <fieldset style={{ marginTop: 30, border: 'none', padding: 0, margin: '30px 0 0' }}>
           <legend style={{ ...KICKER, padding: 0 }}>Shipping</legend>
           <div style={{ marginTop: 12, borderTop: RULE }}>
-            {SHIPPING_METHODS.map((m) => (
+            {methods.map((m) => (
               <label
                 key={m.id}
                 style={{
@@ -326,10 +369,20 @@ export function CheckoutClient({ needsDob = false }: { needsDob?: boolean }) {
                 <span>
                   <span style={{ fontSize: 19 }}>{m.label}</span>
                   <span style={{ display: 'block', fontSize: 15, color: '#3B4045' }}>
-                    {m.carrier} · {m.transit}
-                    {/* Only overnight is guaranteed. The other two are estimates
-                        and must read as estimates. */}
-                    {!m.guaranteed && <span style={{ fontStyle: 'italic' }}> (estimate)</span>}
+                    {m.fulfilment === 'collect' ? (
+                      // No carrier, and no "(estimate)" — nothing is in transit,
+                      // so there is no window anyone else is promising.
+                      <>
+                        {pickup?.area ?? m.carrier} · {m.transit}
+                      </>
+                    ) : (
+                      <>
+                        {m.carrier} · {m.transit}
+                        {/* Only overnight is guaranteed. The other two are estimates
+                            and must read as estimates. */}
+                        {!m.guaranteed && <span style={{ fontStyle: 'italic' }}> (estimate)</span>}
+                      </>
+                    )}
                   </span>
                 </span>
                 <span style={{ fontFamily: MONO, fontSize: 14, color: '#7E878E' }}>
@@ -419,9 +472,10 @@ export function CheckoutClient({ needsDob = false }: { needsDob?: boolean }) {
             color: '#7E878E',
           }}
         >
-          <span>Shipping</span>
+          <span>{collect ? 'Pickup' : 'Shipping'}</span>
           {/* Still says TBC when a method genuinely has no price — that path is
-              live for anything added later. It just is not the normal case. */}
+              live for anything added later. It just is not the normal case.
+              $0.00 on pickup is a real price, not a missing one. */}
           <span>{chosenShipping === null ? '[ $ TBC ]' : formatPrice(chosenShipping)}</span>
         </div>
 

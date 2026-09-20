@@ -18,6 +18,7 @@ const base: ConfirmationInput = {
   shippingCents: 1200,
   totalCents: 13700,
   shippingMethodId: 'priority',
+  pickup: null,
   provider: 'zelle',
   lines: [
     { productName: 'GLP-3 (Retatrutide)', sizeDisplay: '30 mg', qty: 1, lineCents: 12500 },
@@ -142,5 +143,58 @@ describe('the html body', () => {
     // Gmail proxies remote images and Outlook often blocks them. Anything that
     // matters is text; the QR lives on the order page.
     expect(confirmationHtml(base)).not.toContain('<img')
+  })
+})
+
+describe('the receipt for a collected order', () => {
+  // Local pickup, 2026-09-19. The buyer is being asked to turn up somewhere,
+  // and this mail is what they will come back to for the address.
+  const collected: ConfirmationInput = {
+    ...base,
+    shippingMethodId: 'pickup',
+    shippingCents: 0,
+    totalCents: 12500,
+    pickup: {
+      area: 'Coral Gables, FL',
+      address: '1200 Ponce de Leon Blvd, Suite 300',
+      hours: 'Weekdays 10:00–17:00',
+      note: null,
+    },
+  }
+
+  it('gives the address, the area and the hours', () => {
+    const text = confirmationText(collected)
+    expect(text).toContain('COLLECTING IN PERSON')
+    expect(text).toContain('1200 Ponce de Leon Blvd')
+    expect(text).toContain('Coral Gables, FL')
+    expect(text).toContain('Weekdays 10:00–17:00')
+  })
+
+  it('promises the details rather than naming a place it was not given', () => {
+    const text = confirmationText({ ...collected, pickup: null })
+    expect(text).toContain('COLLECTING IN PERSON')
+    expect(text).toMatch(/email you the address/i)
+    expect(text).not.toMatch(/Ponce|undefined|null/)
+  })
+
+  it('never tells a collecting buyer their parcel is going to USPS', () => {
+    const text = confirmationText(collected)
+    expect(text).not.toMatch(/USPS/)
+    expect(text).toMatch(/ready to collect/i)
+  })
+
+  it('shows the zero as a pickup line, not as shipping', () => {
+    const text = confirmationText(collected)
+    expect(text).toMatch(/Pickup\s+\$0\.00/)
+    expect(text).toContain('Total      $125.00')
+  })
+
+  it('leaves a posted receipt talking about USPS', () => {
+    expect(confirmationText(base)).toMatch(/USPS/)
+    expect(confirmationText(base)).not.toContain('COLLECTING IN PERSON')
+  })
+
+  it('still escapes into the HTML copy', () => {
+    expect(confirmationHtml(collected)).toContain('COLLECTING IN PERSON')
   })
 })

@@ -30,7 +30,9 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { isAdult } from '@/lib/shop/orders/age'
 import { generateReference } from '@/lib/shop/orders/reference'
 import { orderTotals, priceLine } from '@/lib/shop/orders/totals'
+import { isCollection } from '@/lib/shop/orders/shipping'
 import type { ShippingMethodId } from '@/lib/shop/orders/shipping'
+import { pickupLocation, type PickupLocation } from '@/lib/shop/pickup'
 import type { PaymentProviderId, ShippingAddress } from '@/lib/shop/orders/types'
 import type { ChargeIntent } from '@/lib/shop/payments/provider'
 import { BTCPAY } from '@/lib/shop/payments/btcpay'
@@ -57,6 +59,20 @@ export interface CreateOrderResult {
 
 const PROVIDERS = { btcpay: BTCPAY, zelle: ZELLE } as const
 
+/**
+ * Whether there is somewhere to post this.
+ *
+ * The four lines are nullable on the type because a collected order has none.
+ * On every other method they are mandatory, and this is the server-side half of
+ * that rule — the database carries the other half in
+ * posted_orders_have_an_address. A whitespace-only line is not an address.
+ */
+function hasPostalAddress(ship: ShippingAddress): boolean {
+  return [ship.line1, ship.city, ship.state, ship.postal].every(
+    (field) => typeof field === 'string' && field.trim().length > 0,
+  )
+}
+
 /** How many times to retry a payment-reference collision before giving up. */
 const REFERENCE_ATTEMPTS = 5
 
@@ -80,6 +96,8 @@ async function emailReceipt(args: {
   priced: ReturnType<typeof priceLine>[]
   totals: ReturnType<typeof orderTotals>
   providerId: PaymentProviderId
+  /** The collection location on a pickup order; null on every posted one. */
+  pickup: PickupLocation | null
 }): Promise<void> {
   try {
     const service = createServiceClient()
@@ -100,6 +118,7 @@ async function emailReceipt(args: {
       subtotalCents: args.totals.subtotalCents,
       shippingCents: args.totals.shippingCents,
       shippingMethodId: args.totals.shippingMethodId,
+      pickup: args.pickup,
       provider: args.providerId,
       lines: args.priced.map((line) => ({
         productName: line.productName,
@@ -162,6 +181,24 @@ export async function createOrder(
   const provider = PROVIDERS[providerId]
   if (!provider) throw new Error(`unknown payment method: ${providerId}`)
 
+  // Fulfilment. Two refusals, both fail-closed, because the client cannot be
+  // trusted about either and the database will refuse the row anyway — better a
+  // sentence the buyer can act on than a constraint violation.
+  //
+  // The first is the one that matters: a deployment with no SHOP_PICKUP_AREA
+  // has nowhere for anyone to collect from, and the checkout does not offer the
+  // method there. A stale tab or a crafted request must not be able to place an
+  // order against a place we cannot name.
+  const collect = isCollection(shippingMethodId)
+  const pickup = collect ? pickupLocation() : null
+
+  if (collect && !pickup) {
+    throw new Error('local pickup is not available at the moment')
+  }
+  if (!collect && !hasPostalAddress(ship)) {
+    throw new Error('a full shipping address is required for a posted order')
+  }
+
   // Priced once, here. Throws on an unknown product, a bad quantity, or a
   // shipping method with no price set.
   const priced = lines.map((line) => priceLine(line.slug, line.qty))
@@ -200,11 +237,15 @@ export async function createOrder(
         payment_provider: providerId,
         payment_reference: paymentReference,
         ship_name: ship.name,
-        ship_line1: ship.line1,
-        ship_line2: ship.line2 ?? null,
-        ship_city: ship.city,
-        ship_state: ship.state,
-        ship_postal: ship.postal,
+        // Nulled wholesale on a collected order rather than trusting the client
+        // to have sent nothing: collected_orders_have_no_address refuses a
+        // pickup row that carries an address, and a half-updated checkout that
+        // still posts the fields would otherwise fail the insert outright.
+        ship_line1: collect ? null : ship.line1,
+        ship_line2: collect ? null : (ship.line2 ?? null),
+        ship_city: collect ? null : ship.city,
+        ship_state: collect ? null : ship.state,
+        ship_postal: collect ? null : ship.postal,
         ship_country: 'US',
       })
       .select('id')
@@ -258,6 +299,7 @@ export async function createOrder(
     priced,
     totals,
     providerId,
+    pickup,
   })
 
   return { orderId, paymentReference, intent }
