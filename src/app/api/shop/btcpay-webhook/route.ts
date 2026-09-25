@@ -9,6 +9,7 @@
 // this is the one place a second process could race us.
 
 import { NextResponse } from 'next/server'
+import { emailPaymentReceipt } from '@/lib/shop/orders/receipt.server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { verifySignature } from '@/lib/shop/payments/btcpay-signature'
 
@@ -71,6 +72,9 @@ export async function POST(request: Request) {
     // Already advanced, or never existed. A retry, not a problem — but worth a
     // line, because it is also what a replayed event looks like.
     console.warn('[btcpay] order was not awaiting payment', orderId)
+  } else {
+    // Only on the transition, so a replayed event does not send a second copy.
+    await emailPaymentReceipt(orderId)
   }
 
   return NextResponse.json({ ok: true })

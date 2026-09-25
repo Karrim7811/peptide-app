@@ -207,7 +207,7 @@ const ESCAPES: Record<string, string> = {
 }
 
 /** Order data is ours, but a product name is still not markup. */
-function escapeHtml(value: string): string {
+export function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (char) => ESCAPES[char]!)
 }
 

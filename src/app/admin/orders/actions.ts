@@ -10,6 +10,7 @@
 import { revalidatePath } from 'next/cache'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { adminUserId, isAdminUserId } from '@/lib/shop/admin-id'
+import { emailPaymentReceipt } from '@/lib/shop/orders/receipt.server'
 import { canTransition } from '@/lib/shop/orders/status'
 import { validatePackAssignment } from '@/lib/shop/orders/admin'
 import type { OrderStatus } from '@/lib/shop/orders/types'
@@ -73,6 +74,9 @@ async function advance(
  */
 export async function markPaid(orderId: string): Promise<void> {
   await advance(orderId, 'paid', { paid_at: new Date().toISOString() })
+  // After the status moves, never instead of it: advance() throws on a lost
+  // update, so a second click cannot send the buyer a second receipt.
+  await emailPaymentReceipt(orderId)
 }
 
 /**

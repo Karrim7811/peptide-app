@@ -30,7 +30,7 @@ export type SendOutcome =
   | { ok: false; reason: 'not-configured' | 'no-recipient' | 'failed'; detail?: string }
 
 export interface Mail {
-  to: string
+  to: string | string[]
   subject: string
   /** Always required. HTML is optional because text always renders. */
   text: string
@@ -46,13 +46,14 @@ export interface Mail {
 export async function send(mail: Mail): Promise<SendOutcome> {
   const key = process.env.RESEND_API_KEY?.trim()
   if (!key) return { ok: false, reason: 'not-configured' }
-  if (!mail.to.trim()) return { ok: false, reason: 'no-recipient' }
+  const to = (Array.isArray(mail.to) ? mail.to : [mail.to]).map((a) => a.trim()).filter(Boolean)
+  if (to.length === 0) return { ok: false, reason: 'no-recipient' }
 
   try {
     const resend = new Resend(key)
     const { data, error } = await resend.emails.send({
       from: ORDERS_FROM,
-      to: mail.to,
+      to,
       subject: mail.subject,
       text: mail.text,
       ...(mail.html ? { html: mail.html } : {}),
