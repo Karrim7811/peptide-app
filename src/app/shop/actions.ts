@@ -43,6 +43,7 @@ import {
   confirmationSubject,
   confirmationText,
 } from '@/lib/email/order-confirmation'
+import { alertRecipients, alertSubject, alertText } from '@/lib/email/order-alert'
 import { SITE_ORIGIN } from '@/lib/site'
 import { zelleAccount } from '@/lib/shop/zelle-account'
 
@@ -144,6 +145,11 @@ async function emailReceipt(args: {
       // Logged, not raised. Somebody reading the function logs after a customer
       // says "I never got an email" needs this; the customer does not.
       console.error('[shop] receipt failed to send', args.paymentReference, outcome.detail)
+    }
+    if (!outcome.ok && outcome.reason === 'not-configured') {
+      // Supported, but not silent: in September 2026 three orders went out
+      // with no mail at all and nothing in the logs said so.
+      console.warn('[shop] receipt not sent: RESEND_API_KEY is unset', args.paymentReference)
     }
   } catch (failure) {
     console.error('[shop] receipt threw', args.paymentReference, failure)
@@ -302,5 +308,64 @@ export async function createOrder(
     pickup,
   })
 
+  await alertShop({
+    paymentReference,
+    buyerEmail: user.email ?? null,
+    ship,
+    collect,
+    priced,
+    totals,
+    providerId,
+  })
+
   return { orderId, paymentReference, intent }
+}
+
+/**
+ * Tells the shop an order exists. Same contract as emailReceipt: swallows
+ * everything, because the order is already written and the buyer is waiting.
+ */
+async function alertShop(args: {
+  paymentReference: string
+  buyerEmail: string | null
+  ship: ShippingAddress
+  collect: boolean
+  priced: ReturnType<typeof priceLine>[]
+  totals: ReturnType<typeof orderTotals>
+  providerId: PaymentProviderId
+}): Promise<void> {
+  try {
+    const input = {
+      paymentReference: args.paymentReference,
+      totalCents: args.totals.totalCents,
+      shippingMethodId: args.totals.shippingMethodId,
+      provider: args.providerId,
+      buyerEmail: args.buyerEmail,
+      shipName: args.ship.name,
+      shipTo: args.collect
+        ? null
+        : [args.ship.line1, args.ship.line2, args.ship.city, args.ship.state, args.ship.postal]
+            .filter(Boolean)
+            .join(', '),
+      lines: args.priced.map((line) => ({
+        productName: line.productName,
+        sizeDisplay: line.sizeDisplay,
+        qty: line.qty,
+        lineCents: line.lineCents,
+      })),
+      adminUrl: `${SITE_ORIGIN}/admin/orders`,
+    }
+
+    const outcome = await send({
+      to: alertRecipients(),
+      subject: alertSubject(input),
+      text: alertText(input),
+    })
+
+    if (!outcome.ok && outcome.reason !== 'no-recipient') {
+      console.error('[shop] order alert not sent', args.paymentReference, outcome.reason, outcome.detail)
+    }
+  } catch (failure) {
+    console.error('[shop] order alert threw', args.paymentReference, failure)
+  }
 }
