@@ -160,6 +160,14 @@ export default function MirrorShell({
         {/* ── Header · row 2: the Mirror's own controls ───────────────────── */}
         <div className="flex flex-wrap items-center justify-between gap-x-[18px] gap-y-2 border-t border-hair px-[clamp(16px,3vw,32px)]">
           <div className="flex min-w-0 flex-wrap items-center gap-[10px]">
+            {/* The way home, where the eye already is. The header's BENCH link
+                sits in the far corner and people did not find it. */}
+            <Link
+              href="/dashboard"
+              className="mr-[6px] flex min-h-[44px] items-center border-r border-hair pr-[16px] font-mono text-[10px] tracking-[0.14em] text-accent hover:text-ink"
+            >
+              ← YOUR BENCH
+            </Link>
             <span
               className="h-[7px] w-[7px] flex-shrink-0 rounded-full bg-hue-cy"
               style={{ animation: 'cxpulse 2.4s ease-in-out infinite' }}
