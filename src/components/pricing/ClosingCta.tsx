@@ -9,13 +9,13 @@ export default function ClosingCta() {
         className="max-w-[620px] font-display text-[clamp(26px,3.4vw,38px)] font-light leading-[1.2] text-ink"
         style={{ textWrap: 'pretty' }}
       >
-        Start with one compound. The form will show you the rest of the shape.
+        Start with one peptide. Add the rest of your stack when you are ready.
       </span>
       <Link
         href="/signup"
         className="flex min-h-[52px] items-center justify-center bg-accent px-8 font-mono text-[10.5px] tracking-[0.16em] text-ground"
       >
-        CREATE YOUR FIELD →
+        START MY STACK →
       </Link>
     </div>
   )

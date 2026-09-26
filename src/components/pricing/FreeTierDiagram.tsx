@@ -21,13 +21,12 @@ export default function FreeTierDiagram() {
             A single compound is not a single dot.
           </span>
           <span className="text-[15px] leading-[1.8] text-dim" style={{ textWrap: 'pretty' }}>
-            Free resolves one of your compounds — but the form still draws every relationship
-            that compound has, out into the ones you have not unlocked. You can see what sits
-            adjacent to what you take, and where the tension would form, before you pay
-            anything.
+            Free shows one peptide from your stack in full — and still shows what it is often
+            stacked with, including the rest of your stack, dimmed. You can see how your stack
+            fits together before you pay anything.
           </span>
           <span className="font-mono text-[10px] leading-[1.9] tracking-[0.1em] text-faint">
-            SOLID = RESOLVED · DASHED = YOURS, LOCKED · FAINT = NOT YOURS
+            SOLID = SHOWN IN FULL · DASHED = IN YOUR STACK, LOCKED · FAINT = NOT IN YOUR STACK
           </span>
         </div>
 

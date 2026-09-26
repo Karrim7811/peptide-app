@@ -17,7 +17,7 @@ import { useMemo, useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Check, Loader2, Search, X } from 'lucide-react'
-import { CATEGORY_BY_ID, COMPOUND_LIST, type Compound } from '@/lib/catalog'
+import { CATEGORY_BY_ID, COMPOUND_LIST, COUNTS, type Compound } from '@/lib/catalog'
 import { completeOnboarding, type ExperienceLevel, type OnboardingCompoundInput } from './actions'
 
 const DISCLAIMER =
@@ -59,23 +59,23 @@ interface StepCopy {
 
 const STEP_COPY: Record<number, StepCopy> = {
   1: {
-    title: 'Before the field fills in.',
-    body: 'A few quick questions, all skippable. They just help me narrate your stack instead of a stranger’s.',
+    title: 'Before your stack fills in.',
+    body: 'A few quick questions, all skippable. They just help me describe your stack instead of a stranger’s.',
     meta: 'STEP 1 OF 4 · YOUR NAME',
   },
   2: {
     title: 'How much do you already know?',
-    body: 'This only changes how much I explain — never what I show you. Nothing on the Mirror is gated behind it.',
+    body: 'This only changes how much I explain — never what I show you. Nothing in the app is hidden because of it.',
     meta: 'STEP 2 OF 4 · EXPERIENCE',
   },
   3: {
     title: 'What are you already running?',
-    body: 'Search all 58 compounds in the library. Pick what you have on hand right now — or nothing, if you’re here to browse first.',
+    body: `Search all ${COUNTS.compounds} compounds in the library. Pick what you have on hand right now — or nothing, if you’re here to browse first.`,
     meta: 'STEP 3 OF 4 · CURRENT STACK',
   },
   4: {
     title: 'Make the numbers mean something.',
-    body: 'Dose, vial size, what’s left — these are what let the field tell you when something is running low. Skip any field you don’t know yet.',
+    body: 'Dose, vial size, what’s left — these are what let the app tell you when something is running low. Skip anything you don’t know yet.',
     meta: 'STEP 4 OF 4 · SUPPLY DETAILS',
   },
 }
@@ -455,7 +455,7 @@ function Step3({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           type="text"
-          placeholder="Search 58 compounds…"
+          placeholder={`Search ${COUNTS.compounds} compounds by name…`}
           className={`${fieldClass} pl-[42px]`}
           style={fieldStyle}
         />

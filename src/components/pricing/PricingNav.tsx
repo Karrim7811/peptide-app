@@ -25,7 +25,7 @@ export default function PricingNav() {
           href="/dashboard"
           className="flex min-h-[44px] items-center whitespace-nowrap px-3.5 font-mono text-[10px] tracking-[0.14em] text-dim"
         >
-          SEE THE FIELD
+          MY STACK
         </Link>
         <Link
           href="/login"

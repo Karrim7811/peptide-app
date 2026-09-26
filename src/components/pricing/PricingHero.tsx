@@ -46,7 +46,7 @@ export default function PricingHero({ cycle, onChangeCycle }: PricingHeroProps) 
       </span>
       <span className="relative max-w-[580px] text-base leading-[1.8] text-dim" style={{ textWrap: 'pretty' }}>
         All {COUNTS.compounds} compounds, every evidence grade and every source stay open at both
-        tiers. Pro is for when the form has to weigh your compounds against each other.
+        tiers. Pro is for when you want your whole stack compared, tracked and checked together.
       </span>
 
       <BillingToggle cycle={cycle} onChange={onChangeCycle} />
