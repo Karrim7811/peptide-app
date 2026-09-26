@@ -66,6 +66,8 @@ const TOOLS: Tool[] = [
   ['/bloodwork', 'Bloodwork', 'Your markers across panels. Pro.'],
   ['/protocol', 'Protocol planner', 'A week drafted around the bench. Pro.'],
   ['/scanner', 'Vial scanner', 'Photograph a shelf and check the reading. Pro.'],
+  // Orders had no way back once the confirmation tab was closed.
+  ['/shop/orders', 'Your orders', 'Every order you have placed, with its status and tracking.'],
 ]
 
 // The order queue had no link anywhere in the app — /admin/orders was reachable

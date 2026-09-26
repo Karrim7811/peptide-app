@@ -13,6 +13,7 @@
 import { createClient } from '@/lib/supabase/server'
 import type { Order, OrderStatus, PaymentProviderId } from '@/lib/shop/orders/types'
 import type { ShippingMethodId } from '@/lib/shop/orders/shipping'
+import type { OrderSummary } from '@/lib/shop/orders/view'
 
 const ORDER_COLUMNS = `
   id, user_id, status, subtotal_cents, shipping_cents, total_cents,
@@ -28,6 +29,46 @@ const ITEM_COLUMNS = `
   id, order_id, product_id, lot_id, qty, unit_price_cents, product_name, size_display,
   shop_lots ( lot_code )
 `
+
+/**
+ * The signed-in user's orders, newest first, for /shop/orders.
+ *
+ * Same anon client and the same `shop_orders_read_own` / `shop_order_items_read_own`
+ * policies as orderByReference, so RLS is what scopes this to the caller. The
+ * user_id filter is belt-and-braces, not the check. No address columns: the
+ * list does not show them and has no reason to carry them.
+ */
+export async function ordersForCurrentUser(limit = 100): Promise<OrderSummary[]> {
+  const supabase = createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return []
+
+  const { data: rows } = await supabase
+    .from('shop_orders')
+    .select(
+      `payment_reference, status, payment_provider, shipping_method, total_cents, created_at,
+       shop_order_items ( product_name, qty )`,
+    )
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+
+  return (rows ?? []).map((row) => {
+    const items = (row.shop_order_items ?? []) as Array<{ product_name: string; qty: number }>
+    return {
+      paymentReference: row.payment_reference,
+      status: row.status as OrderStatus,
+      paymentProvider: row.payment_provider as PaymentProviderId,
+      shippingMethod: row.shipping_method,
+      totalCents: row.total_cents,
+      createdAt: row.created_at,
+      items: items.map((item) => ({ productName: item.product_name, qty: item.qty })),
+    }
+  })
+}
 
 /**
  * The order behind a payment reference, or null. Null covers every reason —
