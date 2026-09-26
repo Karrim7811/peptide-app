@@ -1,31 +1,33 @@
 'use client'
 
+// ── UNUSED since 2026-09-26 ──────────────────────────────────────────────
+// No layout renders this any more: every page that did moved to LibraryChrome
+// (the site's one menu, Bench · Library · Shop — src/lib/nav.ts), and the
+// redirect-stub routes dropped their never-visible chrome. The file is kept,
+// not deleted (C:\dev\CLAUDE.md: nothing is deleted outright), with its links
+// corrected so it is not wrong if someone mounts it again.
+
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  LayoutDashboard, Shield, Layers, Bell, BookOpen, Calculator,
-  FlaskRound, MapPin, Package, FileText, AlertCircle, MessageSquare, RotateCcw, Library, Sparkles, Scale, Store,
+  LayoutDashboard, Shield, Layers, BookOpen, Calculator,
+  FlaskRound, MapPin, RotateCcw, Library, Scale, Store,
 } from 'lucide-react'
 
+// Bench · Library · Shop first, then the tools with a URL of their own. The
+// redirect stubs, /ai-chat and /stack-finder (both bounce to /upgrade) are gone.
 const navLinks = [
-  { href: '/dashboard', label: 'Home', icon: LayoutDashboard },
-  { href: '/stack', label: 'My Stack', icon: Layers },
+  { href: '/dashboard', label: 'Bench', icon: LayoutDashboard },
+  { href: '/reference', label: 'Library', icon: Library },
+  { href: '/shop', label: 'Shop', icon: Store },
   { href: '/checker', label: 'Checker', icon: Shield },
-  { href: '/stack-finder', label: 'Stacks', icon: Sparkles },
-  { href: '/ai-chat', label: 'AI Chat', icon: MessageSquare },
+  { href: '/bloodwork', label: 'Bloodwork', icon: FlaskRound },
+  { href: '/mirror?ledger=1', label: 'Log', icon: BookOpen },
+  { href: '/mirror?tab=cycle', label: 'Cycles', icon: RotateCcw },
+  { href: '/mirror?tab=rotation', label: 'Sites', icon: MapPin },
   { href: '/dosing', label: 'Dosing', icon: Calculator },
-  { href: '/reconstitution', label: 'Recon', icon: FlaskRound },
-  { href: '/cycle', label: 'Cycles', icon: RotateCcw },
-  { href: '/sites', label: 'Sites', icon: MapPin },
-  { href: '/inventory', label: 'Inventory', icon: Package },
   { href: '/stacks', label: 'Popular', icon: Layers },
-  { href: '/notes', label: 'Notes', icon: FileText },
-  { href: '/side-effects', label: 'Side FX', icon: AlertCircle },
-  { href: '/reminders', label: 'Reminders', icon: Bell },
-  { href: '/log', label: 'Log', icon: BookOpen },
-  { href: '/reference', label: 'Bible', icon: Library },
   { href: '/regulatory', label: 'Legal', icon: Scale },
-  { href: '/vendors', label: 'Vendors', icon: Store },
 ]
 
 export default function BottomNav() {

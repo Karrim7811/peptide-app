@@ -1,5 +1,12 @@
 'use client'
 
+// ── UNUSED since 2026-09-26 ──────────────────────────────────────────────
+// No layout renders this any more: every page that did moved to LibraryChrome
+// (the site's one menu, Bench · Library · Shop — src/lib/nav.ts), and the
+// redirect-stub routes dropped their never-visible chrome. The file is kept,
+// not deleted (C:\dev\CLAUDE.md: nothing is deleted outright), with its links
+// corrected so it is not wrong if someone mounts it again.
+
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -8,7 +15,6 @@ import {
   LayoutDashboard,
   Shield,
   Layers,
-  Bell,
   BookOpen,
   LogOut,
   Menu,
@@ -18,27 +24,23 @@ import {
   MapPin,
   Package,
   FileText,
-  AlertCircle,
-  MessageSquare,
   RotateCcw,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
+// Bench · Library · Shop first, then the tools with a URL of their own. The
+// redirect stubs (/stack, /reminders, /log …) and /ai-chat are gone.
 const navLinks = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/dashboard', label: 'Bench', icon: LayoutDashboard },
+  { href: '/reference', label: 'Library', icon: BookOpen },
+  { href: '/shop', label: 'Shop', icon: Package },
   { href: '/checker', label: 'Checker', icon: Shield },
-  { href: '/stack', label: 'My Stack', icon: Layers },
-  { href: '/reminders', label: 'Reminders', icon: Bell },
-  { href: '/log', label: 'Dose Log', icon: BookOpen },
+  { href: '/bloodwork', label: 'Bloodwork', icon: FlaskRound },
+  { href: '/mirror?ledger=1', label: 'Dose Log', icon: FileText },
+  { href: '/mirror?tab=cycle', label: 'Cycles', icon: RotateCcw },
+  { href: '/mirror?tab=rotation', label: 'Injection Sites', icon: MapPin },
   { href: '/dosing', label: 'Dosing', icon: Calculator },
   { href: '/stacks', label: 'Popular Stacks', icon: Layers },
-  { href: '/reconstitution', label: 'Reconstitution', icon: FlaskRound },
-  { href: '/cycle', label: 'Cycles', icon: RotateCcw },
-  { href: '/sites', label: 'Injection Sites', icon: MapPin },
-  { href: '/inventory', label: 'Inventory', icon: Package },
-  { href: '/notes', label: 'Research Notes', icon: FileText },
-  { href: '/side-effects', label: 'Side Effects', icon: AlertCircle },
-  { href: '/ai-chat', label: 'PeptideAI', icon: MessageSquare },
 ]
 
 export default function Navbar() {

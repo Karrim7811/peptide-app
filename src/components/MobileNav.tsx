@@ -1,40 +1,48 @@
 'use client'
 
+// ── UNUSED since 2026-09-26 ──────────────────────────────────────────────
+// No layout renders this any more: every page that did moved to LibraryChrome
+// (the site's one menu, Bench · Library · Shop — src/lib/nav.ts), and the
+// redirect-stub routes dropped their never-visible chrome. The file is kept,
+// not deleted (C:\dev\CLAUDE.md: nothing is deleted outright), with its links
+// corrected so it is not wrong if someone mounts it again.
+
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
-  LayoutDashboard, MessageSquare, Sparkles, Layers, FlaskRound, RotateCcw,
+  LayoutDashboard, Shield, Layers, FlaskRound, RotateCcw,
   MapPin, BookOpen, Library, Scale, Store, LogOut, Menu, X, ChevronRight,
   FlaskConical,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
-// Mirrors Sidebar.tsx exactly — see the reconciliation note there for why the
-// eight bare-/dashboard entries were removed and the four deep links kept.
-// Keep the two in step; they are the same nav at two breakpoints.
+// Mirrors Sidebar.tsx exactly — see the notes there for why the deep links
+// go to /mirror, bloodwork and the checker to their own pages, and Peptide AI
+// and Stack Finder are gone. Keep the two in step; they are the same nav at
+// two breakpoints.
 const NAV_SECTIONS = [
   {
-    label: 'Intelligence',
+    label: 'Primary',
     links: [
-      { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-      { href: '/ai-chat', label: 'Peptide AI', icon: MessageSquare },
-      { href: '/stack-finder', label: 'Stack Finder', icon: Sparkles },
+      { href: '/dashboard', label: 'Bench', icon: LayoutDashboard },
+      { href: '/reference', label: 'Library', icon: Library },
+      { href: '/shop', label: 'Shop', icon: Store },
     ],
   },
   {
     label: 'Tracking',
     links: [
-      { href: '/dashboard?ledger=1', label: 'Dose Log', icon: BookOpen },
-      { href: '/dashboard?tab=cycle', label: 'Cycle Tracker', icon: RotateCcw },
-      { href: '/dashboard?tab=rotation', label: 'Injection Sites', icon: MapPin },
-      { href: '/dashboard?bloodwork=1', label: 'Bloodwork Analyzer', icon: FlaskConical },
+      { href: '/checker', label: 'Interaction Checker', icon: Shield },
+      { href: '/mirror?ledger=1', label: 'Dose Log', icon: BookOpen },
+      { href: '/mirror?tab=cycle', label: 'Cycle Tracker', icon: RotateCcw },
+      { href: '/mirror?tab=rotation', label: 'Injection Sites', icon: MapPin },
+      { href: '/bloodwork', label: 'Bloodwork', icon: FlaskConical },
     ],
   },
   {
     label: 'Reference',
     links: [
-      { href: '/reference', label: 'Peptide Bible', icon: Library },
       { href: '/stacks', label: 'Popular Stacks', icon: Layers },
       { href: '/guides/retatrutide-reconstitution', label: 'Retatrutide Prep', icon: FlaskRound },
       { href: '/regulatory', label: 'Legal & Regulatory', icon: Scale },

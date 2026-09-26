@@ -1,5 +1,10 @@
 'use client'
 
+// ── UNUSED since 2026-09-26 ──────────────────────────────────────────────
+// No layout renders this (or CortexStrip) any more: the pages that did moved
+// to LibraryChrome and the site's one menu (src/lib/nav.ts). Kept, not
+// deleted (C:\dev\CLAUDE.md: nothing is deleted outright).
+
 import { usePathname } from 'next/navigation'
 
 const PAGE_META: Record<string, { section: string; title: string }> = {
