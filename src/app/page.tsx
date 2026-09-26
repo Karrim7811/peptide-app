@@ -14,6 +14,7 @@
 // library page already reads ?q, so there is nothing to hydrate.
 
 import Link from 'next/link'
+import { PrimaryNav } from '@/components/nav/PrimaryNav'
 import {
   CATEGORIES,
   COMPOUND_LIST,
@@ -93,8 +94,9 @@ export default function HomePage() {
     >
       <header style={{ borderBottom: RULE }}>
         <div
+          className="py-1.5 md:py-[14px]"
           style={{
-            padding: '14px clamp(16px,3vw,32px)',
+            paddingInline: 'clamp(16px,3vw,32px)',
             display: 'flex',
             alignItems: 'center',
             gap: 'clamp(12px,2vw,28px)',
@@ -117,37 +119,10 @@ export default function HomePage() {
               PEPTIDE CORTEX
             </span>
           </Link>
-          <nav
-            style={{
-              marginLeft: 'auto',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 'clamp(12px,2vw,24px)',
-              flexWrap: 'wrap',
-              fontFamily: JOST,
-              fontSize: 10.5,
-              letterSpacing: '.26em',
-              textTransform: 'uppercase',
-            }}
-          >
-            <Link href="/reference" style={{ color: INK, textDecoration: 'none' }}>
-              Library
-            </Link>
-            <Link href="/shop" style={{ color: INK, textDecoration: 'none' }}>
-              Shop
-            </Link>
-            <Link
-              href="/login"
-              style={{
-                color: INK,
-                textDecoration: 'none',
-                borderBottom: RULE,
-                whiteSpace: 'nowrap',
-              }}
-            >
-              Sign in
-            </Link>
-          </nav>
+          {/* The site's one menu (src/lib/nav.ts). Home is static and cannot
+              see a session, so it always offers Sign in; Bench goes to
+              /dashboard, whose own gate handles a signed-out visitor. */}
+          <PrimaryNav signedIn={false} />
         </div>
       </header>
 

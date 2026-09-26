@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { primaryNav } from '@/lib/nav'
 
 // Ports the header band from
 // design_handoff_peptide_cortex/Peptide Cortex Pricing.dc.html (lines 32-41).
@@ -8,6 +9,10 @@ import Link from 'next/link'
 // (marketing landing — still the pre-redesign page until the Home screen
 // lands), `/dashboard` (the Mirror's route target per the migration doc), and
 // `/login`.
+//
+// 2026-09-26: "SEE THE FIELD" is replaced by the site's one menu — Bench ·
+// Library · Shop (src/lib/nav.ts) — in this surface's own mono idiom, since
+// pricing is a ground-token page and cannot borrow the paper header.
 
 export default function PricingNav() {
   return (
@@ -20,20 +25,23 @@ export default function PricingNav() {
         />
         <span className="font-mono text-[11px] tracking-[0.3em]">PEPTIDE CORTEX</span>
       </Link>
-      <div className="flex items-center gap-2">
-        <Link
-          href="/dashboard"
-          className="flex min-h-[44px] items-center whitespace-nowrap px-3.5 font-mono text-[10px] tracking-[0.14em] text-dim"
-        >
-          SEE THE FIELD
-        </Link>
+      <nav aria-label="Site" className="flex flex-wrap items-center gap-2">
+        {primaryNav().map((item) => (
+          <Link
+            key={item.section}
+            href={item.href}
+            className="flex min-h-[44px] items-center whitespace-nowrap px-3 font-mono text-[12px] uppercase tracking-[0.14em] text-dim md:text-[10px]"
+          >
+            {item.label}
+          </Link>
+        ))}
         <Link
           href="/login"
-          className="flex min-h-[44px] items-center whitespace-nowrap border border-hair px-4 font-mono text-[10px] tracking-[0.14em] text-ink"
+          className="flex min-h-[44px] items-center whitespace-nowrap border border-hair px-4 font-mono text-[12px] tracking-[0.14em] text-ink md:text-[10px]"
         >
           SIGN IN
         </Link>
-      </div>
+      </nav>
     </div>
   )
 }

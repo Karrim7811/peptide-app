@@ -1,11 +1,15 @@
-// Chrome for the free library.
+// Chrome for the free library — and, since the V3 rebuild, for the bench and
+// its tools (/dashboard, /checker, /bloodwork, /protocol, /scanner) too.
 //
 // The library is readable signed out, so this header cannot assume a session.
-// It shows "Sign in" to a visitor and "The bench" to someone who has one, and
-// that is the only difference — nothing about the content changes, because
-// nothing about the content is gated.
+// The menu is the site's one primary menu (Bench · Library · Shop, see
+// src/lib/nav.ts); the section label and the underlined link follow the URL,
+// so the bench reads "The bench" even though it borrows this chrome. A visitor
+// also gets "Sign in"; nothing about the content changes, because nothing
+// about the content is gated.
 
 import Link from 'next/link'
+import { PrimaryNav, SectionLabel } from '@/components/nav/PrimaryNav'
 
 export const INK = '#1A1D1F'
 export const INK2 = '#3B4045'
@@ -43,9 +47,12 @@ export function LibraryChrome({
       }}
     >
       <header style={{ borderBottom: RULE, flex: 'none' }}>
+        {/* Phones: the 44px links carry the height, so the band's own
+            vertical padding shrinks to keep the header from doubling. */}
         <div
+          className="py-1.5 md:py-[14px]"
           style={{
-            padding: '14px clamp(16px,3vw,32px)',
+            paddingInline: 'clamp(16px,3vw,32px)',
             display: 'flex',
             alignItems: 'center',
             gap: 'clamp(12px,2vw,28px)',
@@ -54,6 +61,7 @@ export function LibraryChrome({
         >
           <Link
             href="/"
+            className="min-h-[44px] md:min-h-0"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -67,37 +75,9 @@ export function LibraryChrome({
             <span style={{ fontWeight: 500, fontSize: 15, letterSpacing: '.22em' }}>
               PEPTIDE CORTEX
             </span>
-            <span style={{ ...KICKER, marginLeft: 6 }}>The library</span>
+            <SectionLabel />
           </Link>
-          <nav
-            style={{
-              marginLeft: 'auto',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 'clamp(12px,2vw,24px)',
-              flexWrap: 'wrap',
-              fontFamily: JOST,
-              fontSize: 10.5,
-              letterSpacing: '.26em',
-              textTransform: 'uppercase',
-            }}
-          >
-            <Link
-              href="/reference"
-              style={{ color: INK, textDecoration: 'none', borderBottom: RULE }}
-            >
-              Library
-            </Link>
-            <Link href="/shop" style={{ color: INK3, textDecoration: 'none' }}>
-              Shop ↗
-            </Link>
-            <Link
-              href={signedIn ? '/dashboard' : '/login'}
-              style={{ color: INK, textDecoration: 'none', whiteSpace: 'nowrap' }}
-            >
-              {signedIn ? 'The bench' : 'Sign in'}
-            </Link>
-          </nav>
+          <PrimaryNav signedIn={signedIn} />
         </div>
       </header>
 
