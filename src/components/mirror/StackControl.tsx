@@ -13,6 +13,7 @@
 // the solution, never an amount to take (CLAUDE.md §16.9, §16.9a).
 
 import { useState, useTransition } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { addStackItem, removeStackItem, setInventory, setStackDose } from '@/app/dashboard/actions'
 import type { Compound, StackEntry } from '@/lib/catalog'
 import { NO_DOSE_LINE, doseSource, doseState } from '@/lib/dosing'
@@ -68,7 +69,10 @@ const inputClass =
   'min-h-[44px] w-full border border-hair bg-panelHi px-3 font-mono text-[14px] text-ink outline-none focus:border-accent'
 
 export default function StackControl({ compound, entry, defaultOpen = false }: StackControlProps) {
-  const [open, setOpen] = useState(defaultOpen)
+  // The bench's Edit link lands here with ?compound=<id>&edit=1.
+  const params = useSearchParams()
+  const editing = params?.get('edit') === '1' && params?.get('compound') === compound.id
+  const [open, setOpen] = useState(defaultOpen || editing)
   const [error, setError] = useState<string | null>(null)
   const [pending, startTransition] = useTransition()
 
@@ -252,15 +256,32 @@ export default function StackControl({ compound, entry, defaultOpen = false }: S
                 placeholder={vialMg > 0 ? `up to ${vialMg}` : 'mg left'}
                 className={inputClass}
               />
+              {entry && (
+                // Finishing one vial and opening the next is the common edit.
+                <button
+                  type="button"
+                  onClick={() => setOpened(false)}
+                  className="self-start font-mono text-[9.5px] tracking-[0.12em] text-accent underline hover:text-ink"
+                >
+                  STARTED A NEW VIAL
+                </button>
+              )}
             </label>
           ) : (
-            <button
-              type="button"
-              onClick={() => setOpened(true)}
-              className="self-start font-mono text-[9.5px] tracking-[0.12em] text-faint underline hover:text-ink"
-            >
-              NOT A NEW VIAL?
-            </button>
+            <div className="flex flex-col gap-1">
+              {entry && (
+                <span className="font-mono text-[10px] tracking-[0.1em] text-ink">
+                  NEW VIAL · {vialMg > 0 ? `${vialMg} mg` : ''} FULL
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => setOpened(true)}
+                className="self-start font-mono text-[9.5px] tracking-[0.12em] text-faint underline hover:text-ink"
+              >
+                NOT A NEW VIAL?
+              </button>
+            </div>
           )}
 
           <div className="flex flex-wrap gap-px bg-hair">

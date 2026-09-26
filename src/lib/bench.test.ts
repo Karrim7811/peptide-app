@@ -50,6 +50,15 @@ describe('what a row prints on the right', () => {
     expect(row.right).toBe('250 mcg')
   })
 
+  it('leads with syringe units when the form recorded them', () => {
+    const [row] = benchView(
+      [stackItem({ dose: '500', unit: 'mcg', notes: '20 units per shot · 5 mg in 2 mL' })],
+      [],
+      true,
+    ).rows
+    expect(row.right).toBe('20 units · 500 mcg')
+  })
+
   // The bench must not become a back door to a dose figure this app chose.
   it('falls back to the grade, never to a number, when no amount was recorded', () => {
     const [row] = benchView([stackItem()], [], true).rows
@@ -88,12 +97,25 @@ describe('vial glyphs', () => {
     }
   })
 
-  // Quantity counts vials; it is not a fill level. Interpolating one from the
-  // other would draw a half-full vial from a number that never meant that.
-  it('draws full or empty from a count, and nothing from an unknown', () => {
-    expect(benchView([], [vial({ quantityRemaining: 2 })], true).vials[0].fill).toBe(100)
+  // Quantity is milligrams left, as the Mirror writes it — not a vial count.
+  it('draws the level from mg left over vial size, and nothing from an unknown', () => {
+    expect(benchView([], [vial({ quantityRemaining: 2 })], true).vials[0].fill).toBe(40)
+    expect(benchView([], [vial({ quantityRemaining: 5 })], true).vials[0].caption).toBe('5 mg left')
     expect(benchView([], [vial({ quantityRemaining: 0 })], true).vials[0].fill).toBe(0)
     expect(benchView([], [vial({ quantityRemaining: null })], true).vials[0].fill).toBeNull()
+  })
+
+  it('shows every peptide on the schedule, with an outline where no vial is recorded', () => {
+    const view = benchView(
+      [stackItem({ id: 'a' }), stackItem({ id: 'b', name: 'Semax', compoundId: 'semax' })],
+      [vial()],
+      true,
+    )
+    expect(view.vials.map((v) => [v.name, v.recorded])).toEqual([
+      ['BPC-157', true],
+      ['Semax', false],
+    ])
+    expect(view.vials[1].editHref).toBe('/mirror?compound=semax&edit=1')
   })
 
   it('omits a size it does not have rather than printing zero', () => {

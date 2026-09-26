@@ -41,6 +41,7 @@ import {
   RULE,
   TEAL,
 } from '@/components/library/LibraryChrome'
+import { AddVialTile, BenchVial } from '@/components/bench/BenchVial'
 import { benchView } from '@/lib/bench'
 import { COMPOUND_LIST } from '@/lib/catalog'
 import { categoryChips } from '@/lib/library'
@@ -92,7 +93,7 @@ export default async function BenchPage() {
   const [{ data: stackRows }, { data: inventoryRows }] = await Promise.all([
     supabase
       .from('stack_items')
-      .select('id, name, dose, unit, active')
+      .select('id, name, dose, unit, notes, active')
       .eq('user_id', user.id)
       .eq('active', true),
     supabase
@@ -108,6 +109,7 @@ export default async function BenchPage() {
       compoundId: resolveCompoundId(row.name),
       dose: row.dose,
       unit: row.unit,
+      notes: row.notes,
     })),
     (inventoryRows ?? []).map((row) => ({
       id: row.id,
@@ -160,119 +162,15 @@ export default async function BenchPage() {
             style={{
               marginTop: 28,
               display: 'flex',
-              alignItems: 'flex-end',
-              gap: 'clamp(12px,2.4vw,30px)',
+              alignItems: 'flex-start',
+              gap: 'clamp(14px,2.4vw,30px)',
               flexWrap: 'wrap',
             }}
           >
-            {view.vials.map((glyph) => (
-              <Link
-                key={glyph.id}
-                href={glyph.href}
-                title={glyph.name}
-                style={{
-                  width: 74,
-                  flex: 'none',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  color: 'inherit',
-                  textDecoration: 'none',
-                }}
-              >
-                <span
-                  style={{
-                    width: 46,
-                    height: 16,
-                    borderRadius: '3px 3px 0 0',
-                    background: 'linear-gradient(90deg,#9AA3A9,#D6DBDE 35%,#B7BFC4 60%,#7E878E)',
-                    border: '1px solid rgba(26,29,31,.45)',
-                    borderBottom: 'none',
-                  }}
-                />
-                <span
-                  style={{
-                    width: 74,
-                    height: 130,
-                    position: 'relative',
-                    border: '1px solid rgba(26,29,31,.42)',
-                    borderRadius: '10px 10px 12px 12px',
-                    background:
-                      'linear-gradient(90deg, rgba(255,255,255,.85) 0%, rgba(255,255,255,.25) 22%, rgba(26,29,31,.04) 55%, rgba(255,255,255,.55) 86%, rgba(26,29,31,.08) 100%)',
-                    overflow: 'hidden',
-                    display: 'block',
-                  }}
-                >
-                  {/* Drawn only where a level is actually known. */}
-                  {glyph.fill !== null && glyph.fill > 0 && (
-                    <span
-                      style={{
-                        position: 'absolute',
-                        left: 6,
-                        right: 6,
-                        bottom: 6,
-                        height: `${Math.min(glyph.fill, 100) * 0.55}%`,
-                        background: 'rgba(26,138,158,.18)',
-                        border: '1px solid rgba(26,138,158,.5)',
-                        borderRadius: '3px 3px 8px 8px',
-                      }}
-                    />
-                  )}
-                  <span
-                    style={{
-                      position: 'absolute',
-                      left: 0,
-                      right: 0,
-                      top: 28,
-                      height: 62,
-                      background: '#FAFAF8',
-                      borderTop: '1px solid rgba(26,29,31,.35)',
-                      borderBottom: '1px solid rgba(26,29,31,.35)',
-                      padding: '5px 6px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 2,
-                      overflow: 'hidden',
-                    }}
-                  >
-                    <span style={{ fontSize: 5, letterSpacing: '.14em', fontWeight: 500 }}>
-                      PEPTIDE CORTEX
-                    </span>
-                    <span
-                      style={{
-                        fontSize: 8,
-                        lineHeight: 1,
-                        color: TEAL,
-                        marginTop: 4,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                    >
-                      {glyph.name}
-                    </span>
-                    {glyph.size && (
-                      <span style={{ fontFamily: JOST, fontSize: 5, color: INK2 }}>
-                        {glyph.size}
-                      </span>
-                    )}
-                  </span>
-                </span>
-                <span
-                  style={{
-                    marginTop: 10,
-                    fontFamily: JOST,
-                    fontSize: 9.5,
-                    letterSpacing: '.18em',
-                    textTransform: 'uppercase',
-                    color: INK3,
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {glyph.caption}
-                </span>
-              </Link>
+            {view.vials.map((vial) => (
+              <BenchVial key={vial.id} vial={vial} />
             ))}
+            <AddVialTile />
           </div>
         )}
       </div>
@@ -289,21 +187,18 @@ export default async function BenchPage() {
         <div>
           <SectionHead left={view.tableTitle} right={`${view.rows.length}`} />
           {view.rows.map((row) => (
-            <Link
+            <div
               key={row.id}
-              href={row.href}
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'minmax(0,1fr) auto',
+                gridTemplateColumns: 'minmax(0,1fr) auto auto',
                 gap: '0 14px',
                 padding: '12px 0',
                 borderBottom: HAIR,
                 alignItems: 'baseline',
-                color: 'inherit',
-                textDecoration: 'none',
               }}
             >
-              <span style={{ minWidth: 0 }}>
+              <Link href={row.href} style={{ minWidth: 0, color: 'inherit', textDecoration: 'none' }}>
                 <span style={{ fontSize: 22, lineHeight: 1 }}>{row.name}</span>
                 <span
                   style={{
@@ -316,13 +211,26 @@ export default async function BenchPage() {
                 >
                   {row.subtitle}
                 </span>
-              </span>
+              </Link>
               <span
                 style={{ fontFamily: MONO, fontSize: 13, color: INK2, whiteSpace: 'nowrap' }}
               >
                 {row.right}
               </span>
-            </Link>
+              <Link
+                href={row.editHref}
+                style={{
+                  fontFamily: JOST,
+                  fontSize: 10,
+                  letterSpacing: '.18em',
+                  textTransform: 'uppercase',
+                  color: INK,
+                  textDecoration: 'underline',
+                }}
+              >
+                Edit
+              </Link>
+            </div>
           ))}
 
           {view.rows.length === 0 && (
