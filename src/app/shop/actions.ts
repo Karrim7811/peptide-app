@@ -215,7 +215,10 @@ export async function createOrder(
     .from('shop_products')
     .select('id, slug')
     .in('slug', slugs)
-  if (productError || !products) throw new Error('could not resolve products')
+  if (productError || !products) {
+    if (productError) console.error('[shop] product lookup failed', productError.code ?? '', productError.message)
+    throw new Error('the order could not be placed; please try again')
+  }
 
   const idBySlug = new Map(products.map((product) => [product.slug, product.id]))
   const unresolved = slugs.filter((slug) => !idBySlug.has(slug))
@@ -262,7 +265,11 @@ export async function createOrder(
       break
     }
     // 23505 is unique_violation. Anything else is a real failure.
-    if (error && error.code !== '23505') throw new Error(error.message)
+    if (error && error.code !== '23505') {
+      // Logged in full; the buyer sees a sentence, not a Postgres error.
+      console.error('[shop] order insert failed', error.code ?? '', error.message)
+      throw new Error('the order could not be placed; please try again')
+    }
   }
 
   if (!orderId) throw new Error('could not allocate a payment reference; please try again')
@@ -282,7 +289,8 @@ export async function createOrder(
   if (itemsError) {
     // An order with no items would sit in the queue looking real. Remove it.
     await service.from('shop_orders').delete().eq('id', orderId)
-    throw new Error(itemsError.message)
+    console.error('[shop] order items insert failed', itemsError.code ?? '', itemsError.message)
+    throw new Error('the order could not be placed; please try again')
   }
 
   const intent = await provider.createCharge({

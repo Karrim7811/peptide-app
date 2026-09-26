@@ -30,6 +30,22 @@ function fail(error: string): ActionResult {
   return { ok: false, error }
 }
 
+/** What the user sees when the database refuses a write or read. */
+const SAVE_FAILED = 'Couldn’t save — please try again.'
+
+/**
+ * A database error, logged in full on the server and returned as a plain
+ * sentence. Raw Postgres/PostgREST messages ("new row violates row-level
+ * security policy…") used to reach the Mirror's error line verbatim; they
+ * say nothing a user can act on and leak table names. The human-written
+ * validation messages above each call stay as they are — only errors that
+ * come back from Supabase go through here.
+ */
+function dbFail(action: string, error: { message: string; code?: string }): ActionResult {
+  console.error(`[dashboard/actions] ${action} failed`, error.code ?? '', error.message)
+  return fail(SAVE_FAILED)
+}
+
 async function authed() {
   const supabase = createClient()
   const {
@@ -64,7 +80,7 @@ export async function logDose(input: {
     .eq('user_id', user.id)
     .eq('active', true)
 
-  if (readError) return fail(readError.message)
+  if (readError) return dbFail('logDose', readError)
 
   const match = (rows ?? []).find((row) => resolveCompoundId(row.name) === input.compoundId)
   if (!match) return fail(`${compound.name} is not in your stack.`)
@@ -75,7 +91,7 @@ export async function logDose(input: {
     dose: input.dose ?? '',
     notes: input.notes ?? '',
   })
-  if (error) return fail(error.message)
+  if (error) return dbFail('logDose', error)
 
   // The site is a separate record — injection_sites is its own log, not a
   // column on the dose. Written alongside so rotation stays derivable.
@@ -85,7 +101,7 @@ export async function logDose(input: {
       site: input.site,
       peptide_name: match.name,
     })
-    if (siteError) return fail(siteError.message)
+    if (siteError) return dbFail('logDose', siteError)
   }
 
   revalidatePath('/mirror')
@@ -131,7 +147,7 @@ export async function addStackItem(input: {
     notes: input.notes ?? '',
     active: true,
   })
-  if (error) return fail(error.message)
+  if (error) return dbFail('addStackItem', error)
 
   revalidatePath('/mirror')
   return OK
@@ -159,7 +175,7 @@ export async function removeStackItem(compoundId: string): Promise<ActionResult>
     .eq('id', match.id)
     .eq('user_id', user.id)
 
-  if (error) return fail(error.message)
+  if (error) return dbFail('removeStackItem', error)
 
   revalidatePath('/mirror')
   return OK
@@ -194,7 +210,7 @@ export async function setStackDose(input: {
     .eq('id', match.id)
     .eq('user_id', user.id)
 
-  if (error) return fail(error.message)
+  if (error) return dbFail('setStackDose', error)
 
   revalidatePath('/mirror')
   return OK
@@ -240,7 +256,7 @@ export async function setInventory(input: {
     ? await supabase.from('inventory').update(payload).eq('id', match.id).eq('user_id', user.id)
     : await supabase.from('inventory').insert(payload)
 
-  if (error) return fail(error.message)
+  if (error) return dbFail('setInventory', error)
 
   revalidatePath('/mirror')
   return OK
@@ -281,7 +297,7 @@ export async function setReminder(input: {
     dose: input.dose ?? '',
     active: true,
   })
-  if (error) return fail(error.message)
+  if (error) return dbFail('setReminder', error)
 
   revalidatePath('/mirror')
   return OK
@@ -296,7 +312,7 @@ export async function removeReminder(reminderId: string): Promise<ActionResult> 
     .delete()
     .eq('id', reminderId)
     .eq('user_id', user.id)
-  if (error) return fail(error.message)
+  if (error) return dbFail('removeReminder', error)
 
   revalidatePath('/mirror')
   return OK
@@ -321,7 +337,7 @@ export async function addNote(input: {
     note: input.note.trim(),
     url: input.url?.trim() ?? '',
   })
-  if (error) return fail(error.message)
+  if (error) return dbFail('addNote', error)
 
   revalidatePath('/mirror')
   return OK
@@ -336,7 +352,7 @@ export async function removeNote(noteId: string): Promise<ActionResult> {
     .delete()
     .eq('id', noteId)
     .eq('user_id', user.id)
-  if (error) return fail(error.message)
+  if (error) return dbFail('removeNote', error)
 
   revalidatePath('/mirror')
   return OK
@@ -372,7 +388,7 @@ export async function logSideEffect(input: {
     severity,
     notes: input.notes?.trim() ?? '',
   })
-  if (error) return fail(error.message)
+  if (error) return dbFail('logSideEffect', error)
 
   revalidatePath('/mirror')
   return OK
@@ -387,7 +403,7 @@ export async function removeSideEffect(id: string): Promise<ActionResult> {
     .delete()
     .eq('id', id)
     .eq('user_id', user.id)
-  if (error) return fail(error.message)
+  if (error) return dbFail('removeSideEffect', error)
 
   revalidatePath('/mirror')
   return OK
@@ -414,7 +430,7 @@ export async function startCycle(input: {
     status: 'on',
     peptide_names: [],
   })
-  if (error) return fail(error.message)
+  if (error) return dbFail('startCycle', error)
 
   revalidatePath('/mirror')
   return OK

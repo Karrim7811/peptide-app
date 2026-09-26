@@ -89,7 +89,11 @@ export async function completeOnboarding(input: OnboardingInput): Promise<Onboar
     })
     .eq('id', user.id)
 
-  if (profileError) return { ok: false, error: profileError.message }
+  if (profileError) {
+    // Logged in full here; the raw Postgres text is not something a user can act on.
+    console.error('[welcome/actions] completeOnboarding profile update failed', profileError.code ?? '', profileError.message)
+    return { ok: false, error: 'Couldn’t save — please try again.' }
+  }
 
   const skipped: string[] = []
 
