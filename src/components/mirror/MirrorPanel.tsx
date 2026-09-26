@@ -580,9 +580,11 @@ function LayerCompound({
           <span className="font-mono text-[9.5px] tracking-[0.14em] text-faint">{compound.purpose}</span>
         </div>
 
-        {/* Not yet owned: the add form sits at the top, already open. A
-            collapsed toggle below the fold read as no way to add at all. */}
-        {!entry && <StackControl compound={compound} entry={null} defaultOpen />}
+        {/* The add/edit form sits at the top: open when the compound is not
+            yet owned, or when the bench's Edit link sent you here. A collapsed
+            toggle below the fold read as no way to add at all. Keyed so its
+            fields reset when you move to another compound. */}
+        <StackControl key={compound.id} compound={compound} entry={entry} defaultOpen={!entry} />
 
         <p className="text-[15px] leading-[1.8] text-dim">{compound.action}</p>
 
@@ -652,7 +654,6 @@ function LayerCompound({
           </div>
         </div>
 
-        {entry && <StackControl compound={compound} entry={entry} />}
 
         {/* The old routes, arrived at as contextual tools. Each is the user's
             own record and therefore tier-blind — side effects especially: a

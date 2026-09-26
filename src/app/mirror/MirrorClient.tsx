@@ -59,6 +59,15 @@ function initialNavFrom(params: Record<string, string>): Partial<MirrorNavState>
   if (params.bloodwork === '1') return { bloodworkOpen: true }
   if (params.tab === 'cycle') return { layer: 4, verifyTab: 'cycle' }
   if (params.tab === 'rotation') return { layer: 4, verifyTab: 'rotation' }
+  // The bench's Edit links: straight to the compound, where StackControl reads
+  // `edit=1` and opens itself.
+  if (params.compound && COMPOUNDS[params.compound]) {
+    return {
+      layer: 3,
+      compoundId: params.compound,
+      regionId: COMPOUNDS[params.compound]!.catId,
+    }
+  }
   return {}
 }
 
