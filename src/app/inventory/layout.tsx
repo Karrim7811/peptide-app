@@ -1,5 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { loginUrl } from '@/lib/auth/next'
+import { currentPath } from '@/lib/auth/pathname'
 import Sidebar from '@/components/Sidebar'
 import MobileNav from '@/components/MobileNav'
 import TopBar from '@/components/TopBar'
@@ -8,7 +10,7 @@ import CortexStrip from '@/components/CortexStrip'
 export default async function InventoryLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  if (!user) redirect(loginUrl(currentPath('/inventory')))
   return (
     <div className="min-h-screen bg-[#F5F0E8]">
       <Sidebar />

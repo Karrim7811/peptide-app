@@ -42,6 +42,7 @@ import {
   TEAL,
 } from '@/components/library/LibraryChrome'
 import { AddVialTile, BenchVial } from '@/components/bench/BenchVial'
+import { loginUrl } from '@/lib/auth/next'
 import { benchView } from '@/lib/bench'
 import { COMPOUND_LIST } from '@/lib/catalog'
 import { categoryChips } from '@/lib/library'
@@ -84,7 +85,9 @@ export default async function BenchPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  // /dashboard is also DEFAULT_NEXT, so loginUrl() omits the parameter here;
+  // written through the helper anyway so every gate reads the same.
+  if (!user) redirect(loginUrl('/dashboard'))
 
   const isPro = await isProUser()
 
