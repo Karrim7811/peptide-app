@@ -6,11 +6,17 @@
 // products should not be thrown to the cart on every click.
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { cart } from '@/lib/shop/cart'
 import { RULE } from '@/components/shop/ShopChrome'
 
-export function AddToCart({ slug }: { slug: string }) {
+/**
+ * `buyNow` is the catalogue card's button: add and go straight to the cart,
+ * because from the grid a click means "I want this one".
+ */
+export function AddToCart({ slug, buyNow = false }: { slug: string; buyNow?: boolean }) {
   const [added, setAdded] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     if (!added) return
@@ -23,7 +29,8 @@ export function AddToCart({ slug }: { slug: string }) {
       type="button"
       onClick={() => {
         cart.add(slug)
-        setAdded(true)
+        if (buyNow) router.push('/shop/cart')
+        else setAdded(true)
       }}
       style={{
         appearance: 'none',
@@ -41,7 +48,7 @@ export function AddToCart({ slug }: { slug: string }) {
         marginTop: 18,
       }}
     >
-      {added ? 'Added to cart' : 'Add to cart'}
+      {buyNow ? 'Buy' : added ? 'Added to cart' : 'Add to cart'}
     </button>
   )
 }
