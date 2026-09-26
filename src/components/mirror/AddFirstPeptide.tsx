@@ -16,7 +16,18 @@ import { useMemo, useState } from 'react'
 import { COUNTS } from '@/lib/catalog'
 import { matchCompounds } from '@/lib/mirror/search'
 
-export default function AddFirstPeptide({ onSelectCompound }: { onSelectCompound: (id: string) => void }) {
+export default function AddFirstPeptide({
+  onSelectCompound,
+  title = 'ADD YOUR FIRST PEPTIDE',
+  blurb = 'Search the library by name. Open a result and record the vial — the field draws itself from what you hold.',
+  floating = true,
+}: {
+  onSelectCompound: (id: string) => void
+  title?: string
+  blurb?: string | null
+  /** Centred card over the field (empty stack) vs. inline in the panel. */
+  floating?: boolean
+}) {
   const [query, setQuery] = useState('')
   const results = useMemo(() => matchCompounds(query), [query])
 
@@ -26,16 +37,17 @@ export default function AddFirstPeptide({ onSelectCompound }: { onSelectCompound
       // off the form so typing and clicking a result do not drag the field.
       onPointerDown={(e) => e.stopPropagation()}
       onWheel={(e) => e.stopPropagation()}
-      className="pointer-events-auto flex w-[min(420px,calc(100%-32px))] flex-col gap-3 border border-hair bg-panel p-5"
+      className={
+        floating
+          ? 'pointer-events-auto flex w-[min(420px,calc(100%-32px))] flex-col gap-3 border border-hair bg-panel p-5'
+          : 'flex flex-col gap-3'
+      }
     >
-      <span className="font-mono text-[9px] tracking-[0.26em] text-accent">ADD YOUR FIRST PEPTIDE</span>
-      <p className="text-[14px] leading-[1.7] text-dim">
-        Search the library by name. Open a result and record the vial — the field draws itself from
-        what you hold.
-      </p>
+      <span className="font-mono text-[9px] tracking-[0.26em] text-accent">{title}</span>
+      {blurb && <p className="text-[14px] leading-[1.7] text-dim">{blurb}</p>}
       <input
         type="search"
-        autoFocus
+        autoFocus={floating}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={(e) => {

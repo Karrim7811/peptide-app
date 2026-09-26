@@ -335,6 +335,14 @@ export default async function BenchPage() {
             </p>
           )}
 
+          {view.rows.length > 0 && (
+            <p style={{ margin: '14px 0 0', fontSize: 16 }}>
+              <Link href="/mirror" style={{ color: INK, textDecoration: 'underline' }}>
+                + Add a peptide
+              </Link>
+            </p>
+          )}
+
           <p style={{ margin: '14px 0 0', fontSize: 15.5, color: INK2, maxWidth: '54ch' }}>
             {view.tableNote}
           </p>

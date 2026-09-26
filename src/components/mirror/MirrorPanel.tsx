@@ -33,6 +33,7 @@ import { money, MONTHLY_PRICE } from '@/lib/pricing'
 import type { MirrorLayer, VerifyTab } from '@/lib/mirror/useMirrorNav'
 import LogDoseButton from '@/components/mirror/LogDoseButton'
 import StackControl from '@/components/mirror/StackControl'
+import AddFirstPeptide from '@/components/mirror/AddFirstPeptide'
 import InteractionCheck from '@/components/mirror/InteractionCheck'
 import RemindersTool from '@/components/mirror/tools/RemindersTool'
 import NotesTool from '@/components/mirror/tools/NotesTool'
@@ -155,10 +156,12 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 function LayerWhole({
   ent,
   onSelectRegion,
+  onSelectCompound,
   onOpenBloodwork,
 }: {
   ent: Entitlements
   onSelectRegion?: (id: string) => void
+  onSelectCompound: (id: string) => void
   onOpenBloodwork?: () => void
 }) {
   const owned = CATEGORIES.filter((c) => ent.ownedIn(c.id).length > 0).sort((a, b) => a.order - b.order)
@@ -192,6 +195,17 @@ function LayerWhole({
 
   return (
     <div className="flex flex-col gap-5 px-[22px] py-5">
+      {/* Adding is always one search away. With an empty stack the same box
+          sits on the field itself (MirrorClient), so it is not repeated here. */}
+      {ent.stackCount > 0 && (
+        <AddFirstPeptide
+          onSelectCompound={onSelectCompound}
+          title="ADD A PEPTIDE"
+          blurb={null}
+          floating={false}
+        />
+      )}
+
       <div className="flex flex-col gap-3">
         <SectionLabel>YOUR GOALS · CLICK TO ENTER</SectionLabel>
         <div className="flex flex-col gap-px bg-hair">
@@ -406,8 +420,8 @@ function LayerRegion({ ent, regionId, onSelectCompound }: { ent: Entitlements; r
     const heldEntry = held ? ent.ownedEntry(c.id) : null
     const lockedEntry = ent.lockedEntry(c.id)
     const tense = !!heldEntry && heldEntry.supplyDays <= 7
-    const tag = tense ? `${heldEntry!.supplyDays}D` : heldEntry ? 'YOURS' : lockedEntry ? 'LOCKED' : '—'
-    const tagColor = tense ? hueVar('go') : heldEntry ? hueVar(region.hue) : lockedEntry ? 'var(--faint)' : 'var(--faintest)'
+    const tag = tense ? `${heldEntry!.supplyDays}D` : heldEntry ? 'YOURS' : lockedEntry ? 'LOCKED' : 'ADD +'
+    const tagColor = tense ? hueVar('go') : heldEntry ? hueVar(region.hue) : lockedEntry ? 'var(--faint)' : 'var(--accent)'
     const dotColor = heldEntry || lockedEntry ? (tense ? hueVar('go') : hueVar(region.hue)) : 'var(--faintest)'
     const dotOpacity = heldEntry ? 1 : lockedEntry ? 0.45 : 0.5
     return { c, tag, tagColor, dotColor, dotOpacity }
@@ -566,10 +580,9 @@ function LayerCompound({
           <span className="font-mono text-[9.5px] tracking-[0.14em] text-faint">{compound.purpose}</span>
         </div>
 
-        {/* Not yet owned: the add form sits at the top, and opens itself when
-            the stack is empty — the bench's "Add your first peptide" lands
-            here, and a collapsed toggle below the fold read as no way to add. */}
-        {!entry && <StackControl compound={compound} entry={null} defaultOpen={ent.stackCount === 0} />}
+        {/* Not yet owned: the add form sits at the top, already open. A
+            collapsed toggle below the fold read as no way to add at all. */}
+        {!entry && <StackControl compound={compound} entry={null} defaultOpen />}
 
         <p className="text-[15px] leading-[1.8] text-dim">{compound.action}</p>
 
@@ -741,7 +754,7 @@ export default function MirrorPanel({
     return (
       <div className="flex flex-col">
         <NarrationHeader label="CORTEX · NARRATING" text={narration} meta={meta} />
-        <LayerWhole ent={ent} onSelectRegion={onSelectRegion} onOpenBloodwork={onOpenBloodwork} />
+        <LayerWhole ent={ent} onSelectRegion={onSelectRegion} onSelectCompound={onSelectCompound} onOpenBloodwork={onOpenBloodwork} />
       </div>
     )
   }
