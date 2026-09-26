@@ -165,6 +165,41 @@ export async function removeStackItem(compoundId: string): Promise<ActionResult>
   return OK
 }
 
+/** Change the amount recorded per dose on a compound already in the stack. */
+export async function setStackDose(input: {
+  compoundId: string
+  dose: string
+  unit?: string
+  notes?: string
+}): Promise<ActionResult> {
+  const { supabase, user } = await authed()
+  if (!user) return fail('Please sign in.')
+
+  const { data: rows } = await supabase
+    .from('stack_items')
+    .select('id, name')
+    .eq('user_id', user.id)
+    .eq('active', true)
+
+  const match = (rows ?? []).find((row) => resolveCompoundId(row.name) === input.compoundId)
+  if (!match) return fail('Not in your stack.')
+
+  const { error } = await supabase
+    .from('stack_items')
+    .update({
+      dose: input.dose,
+      unit: input.unit ?? 'mcg',
+      ...(input.notes !== undefined ? { notes: input.notes } : {}),
+    })
+    .eq('id', match.id)
+    .eq('user_id', user.id)
+
+  if (error) return fail(error.message)
+
+  revalidatePath('/mirror')
+  return OK
+}
+
 /**
  * Set the remaining quantity for a compound's vial.
  *
