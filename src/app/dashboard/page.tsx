@@ -198,41 +198,56 @@ export default async function BenchPage() {
                 gap: '0 14px',
                 padding: '12px 0',
                 borderBottom: HAIR,
-                alignItems: 'baseline',
+                alignItems: 'center',
               }}
             >
-              <Link href={row.href} style={{ minWidth: 0, color: 'inherit', textDecoration: 'none' }}>
-                <span style={{ fontSize: 22, lineHeight: 1 }}>{row.name}</span>
-                <span
+              {/* The name opens the compound in the Mirror, where the person's
+                  record is; the library entry is the small link beneath. It
+                  used to go to the library, so the bench's own rows led away
+                  from the bench's own data. */}
+              <div style={{ minWidth: 0 }}>
+                <Link href={row.href} style={{ color: 'inherit', textDecoration: 'none' }}>
+                  <span style={{ fontSize: 22, lineHeight: 1 }}>{row.name}</span>
+                  <span
+                    style={{
+                      display: 'block',
+                      fontSize: 15,
+                      fontStyle: 'italic',
+                      color: INK2,
+                      marginTop: 3,
+                    }}
+                  >
+                    {row.subtitle}
+                  </span>
+                </Link>
+                <Link
+                  href={row.libraryHref}
                   style={{
-                    display: 'block',
-                    fontSize: 15,
-                    fontStyle: 'italic',
-                    color: INK2,
-                    marginTop: 3,
+                    display: 'inline-block',
+                    marginTop: 4,
+                    fontFamily: JOST,
+                    fontSize: 12,
+                    letterSpacing: '.08em',
+                    color: INK3,
+                    textDecoration: 'underline',
                   }}
                 >
-                  {row.subtitle}
-                </span>
-              </Link>
+                  Library entry
+                </Link>
+              </div>
               <span
                 style={{ fontFamily: MONO, fontSize: 13, color: INK2, whiteSpace: 'nowrap' }}
               >
                 {row.right}
               </span>
-              <Link
-                href={row.editHref}
-                style={{
-                  fontFamily: JOST,
-                  fontSize: 10,
-                  letterSpacing: '.18em',
-                  textTransform: 'uppercase',
-                  color: INK,
-                  textDecoration: 'underline',
-                }}
-              >
-                Edit
-              </Link>
+              <span style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                <Link href={row.logHref} style={ROW_PRIMARY}>
+                  Log dose
+                </Link>
+                <Link href={row.editHref} style={ROW_SECONDARY}>
+                  Edit
+                </Link>
+              </span>
             </div>
           ))}
 
@@ -406,6 +421,25 @@ export default async function BenchPage() {
     </LibraryChrome>
   )
 }
+
+// A row's two actions. Both are 44px tall — they are tap targets on a phone —
+// and Log dose is filled because it is the thing done most often here.
+const ROW_ACTION: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  minHeight: 44,
+  padding: '0 12px',
+  fontFamily: JOST,
+  fontSize: 12,
+  letterSpacing: '.14em',
+  textTransform: 'uppercase',
+  whiteSpace: 'nowrap',
+  textDecoration: 'none',
+  border: RULE,
+}
+const ROW_PRIMARY: React.CSSProperties = { ...ROW_ACTION, background: INK, color: '#F4F5F6' }
+const ROW_SECONDARY: React.CSSProperties = { ...ROW_ACTION, background: 'transparent', color: INK }
 
 function Label({ children }: { children: React.ReactNode }) {
   return (

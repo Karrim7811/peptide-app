@@ -128,3 +128,30 @@ describe('vial glyphs', () => {
     expect(benchView([], [vial({ compoundId: null })], true).vials[0].href).toBe('/reference')
   })
 })
+
+describe('where a row goes', () => {
+  // Logging a dose from the bench was five steps; these links make it one.
+  it('sends the name to the compound in the Mirror, not the library', () => {
+    const [row] = benchView([stackItem()], [], true).rows
+    expect(row.href).toBe('/mirror?compound=bpc-157')
+    expect(row.libraryHref).toBe('/reference/bpc-157')
+  })
+
+  it('opens the dose logger directly from Log dose', () => {
+    const [row] = benchView([stackItem()], [], true).rows
+    expect(row.logHref).toBe('/mirror?compound=bpc-157&log=1')
+    expect(row.editHref).toBe('/mirror?compound=bpc-157&edit=1')
+  })
+
+  it('falls back to the field and the library for a name that does not resolve', () => {
+    const [row] = benchView([stackItem({ compoundId: null, name: 'Zzzq-9' })], [], true).rows
+    expect(row.href).toBe('/mirror')
+    expect(row.logHref).toBe('/mirror')
+    expect(row.libraryHref).toBe('/reference')
+  })
+
+  it('escapes the compound id in the query string', () => {
+    const [row] = benchView([stackItem({ compoundId: 'a&b' })], [], true).rows
+    expect(row.logHref).toBe('/mirror?compound=a%26b&log=1')
+  })
+})
