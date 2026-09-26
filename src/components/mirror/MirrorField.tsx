@@ -19,6 +19,8 @@ interface MirrorFieldProps {
   }
   footerNote?: string
   footerSub?: string
+  /** Rendered centred over the field — used for the empty-stack way in. */
+  overlay?: React.ReactNode
   /**
    * Reports the measured field size upward so the caller can build geometry
    * against the size actually rendered. The field owns the measurement — a
@@ -73,6 +75,7 @@ export default function MirrorField({
   handlers,
   footerNote,
   footerSub,
+  overlay,
   onMeasure,
 }: MirrorFieldProps) {
   const { ref, size } = useFieldSize()
@@ -232,6 +235,12 @@ export default function MirrorField({
           </span>
         </div>
       ))}
+
+      {overlay && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          {overlay}
+        </div>
+      )}
 
       {(footerNote || footerSub) && (
         <div className="pointer-events-none absolute bottom-0 left-0 right-0 flex h-12 flex-col justify-center gap-1 px-3">
