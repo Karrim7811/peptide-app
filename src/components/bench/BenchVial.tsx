@@ -231,15 +231,15 @@ export function BenchVial({ vial }: { vial: Vial }) {
       {vial.recorded && (
         <Link
           href={vial.editHref}
+          // Phones: a 44px, 12px target. From md up, the original 24px / 9.5px.
+          className="inline-flex min-h-[44px] items-center text-[12px] md:block md:min-h-[24px] md:text-[9.5px]"
           style={{
             marginTop: 6,
             fontFamily: SANS,
-            fontSize: 9.5,
             letterSpacing: '.18em',
             textTransform: 'uppercase',
             color: INK,
             textDecoration: 'underline',
-            minHeight: 24,
           }}
         >
           Edit

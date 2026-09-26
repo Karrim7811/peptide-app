@@ -22,14 +22,19 @@
 // Everything below is still expressed in ground tokens, so the dark grounds
 // keep working; on paper the tokens resolve to the V3 palette exactly.
 //
-// RESPONSIVE WITH NO MEDIA QUERIES. The stage is a wrapping flex row: the panel
-// sits as a right rail on desktop and stacks under the field below ~800px.
-// Reproduce with flex-wrap, not breakpoints.
+// RESPONSIVE. The stage is a wrapping flex row: the panel sits as a right rail
+// on desktop and stacks under the field below ~800px. Below md (768px) the
+// shell also stops being a 100vh app frame: the page scrolls like any other,
+// the field is capped at 40vh so the panel (the add form, LOG A DOSE) is one
+// short scroll away instead of below a full-height canvas, and the ground and
+// tier switches are hidden — the ground is a desktop nicety and the tier
+// preview is an owner's tool. From md up nothing here changes.
 
 import Link from 'next/link'
 import type { CSSProperties, ReactNode } from 'react'
 import { MIRROR_GROUNDS, groundVars, type Ground } from '@/lib/design/grounds'
 import { VERIFY_TABS, type MirrorLayer, type VerifyTab } from '@/lib/mirror/useMirrorNav'
+import { NAV_LINK } from '@/components/nav/PrimaryNav'
 
 export interface Crumb {
   label: string
@@ -70,7 +75,7 @@ const LAYER_MARKS: ReadonlyArray<{ layer: MirrorLayer; label: string }> = [
 const KICKER = 'font-sans text-[10.5px] uppercase tracking-[0.26em]'
 
 /** A 44px-tall control in the header's second row. */
-const CONTROL = 'flex min-h-[44px] items-center px-3 font-mono text-[10px] tracking-[0.12em]'
+const CONTROL = 'flex min-h-[44px] items-center px-3 font-mono text-[12px] tracking-[0.12em] md:text-[10px]'
 
 function Segmented<T extends string>({
   options,
@@ -124,16 +129,16 @@ export default function MirrorShell({
 }: MirrorShellProps) {
   return (
     <div
-      className="cx-surface relative flex h-screen flex-col overflow-hidden bg-ground font-display text-ink"
+      className="cx-surface relative flex min-h-screen flex-col bg-ground font-display text-ink md:h-screen md:overflow-hidden"
       style={groundVars(ground) as CSSProperties}
       data-ground={ground}
     >
       {/* ── Header · row 1: the site's chrome ─────────────────────────────── */}
       <header className="flex-shrink-0 border-b border-ink">
-        <div className="flex flex-wrap items-center gap-x-[clamp(10px,2vw,28px)] gap-y-2 px-[clamp(16px,3vw,32px)] py-3">
+        <div className="flex flex-wrap items-center gap-x-[clamp(10px,2vw,28px)] px-[clamp(16px,3vw,32px)] py-1 md:gap-y-2 md:py-3">
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-[9px] whitespace-nowrap text-ink no-underline"
+            className="inline-flex min-h-[44px] items-center gap-[9px] whitespace-nowrap text-ink no-underline md:min-h-0"
           >
             <span className="h-[7px] w-[7px] rounded-full bg-accent" aria-hidden />
             <span className="text-[15px] font-medium tracking-[0.22em]">PEPTIDE CORTEX</span>
@@ -143,15 +148,19 @@ export default function MirrorShell({
           </span>
           <nav
             aria-label="Site"
-            className={`${KICKER} ml-auto flex flex-wrap items-center gap-x-[clamp(12px,2vw,24px)] gap-y-2`}
+            className="ml-auto flex flex-wrap items-center gap-x-[clamp(12px,2vw,24px)] font-sans text-[12px] uppercase tracking-[0.26em] md:gap-y-2 md:text-[10.5px]"
           >
-            <Link href="/dashboard" className="whitespace-nowrap text-ink no-underline hover:text-accent">
-              Bench
+            <Link
+              href="/dashboard"
+              aria-current="page"
+              className={`${NAV_LINK} text-ink`}
+            >
+              <span className="border-b border-ink">Bench</span>
             </Link>
-            <Link href="/reference" className="whitespace-nowrap text-ink no-underline hover:text-accent">
+            <Link href="/reference" className={`${NAV_LINK} text-dim`}>
               Library
             </Link>
-            <Link href="/shop" className="whitespace-nowrap text-faint no-underline hover:text-accent">
+            <Link href="/shop" className={`${NAV_LINK} text-dim`}>
               Shop ↗
             </Link>
           </nav>
@@ -164,7 +173,7 @@ export default function MirrorShell({
                 sits in the far corner and people did not find it. */}
             <Link
               href="/dashboard"
-              className="mr-[6px] flex min-h-[44px] items-center border-r border-hair pr-[16px] font-mono text-[10px] tracking-[0.14em] text-accent hover:text-ink"
+              className="mr-[6px] flex min-h-[44px] items-center border-r border-hair pr-[16px] font-mono text-[12px] tracking-[0.14em] text-accent hover:text-ink md:text-[10px]"
             >
               ← YOUR BENCH
             </Link>
@@ -181,12 +190,12 @@ export default function MirrorShell({
                     <button
                       type="button"
                       onClick={crumb.onClick}
-                      className="min-h-[44px] font-mono text-[10px] tracking-[0.14em] text-dim hover:text-ink"
+                      className="min-h-[44px] font-mono text-[12px] tracking-[0.14em] text-dim hover:text-ink md:text-[10px]"
                     >
                       {crumb.label}
                     </button>
                   ) : (
-                    <span className="font-mono text-[10px] tracking-[0.14em] text-ink">
+                    <span className="font-mono text-[12px] tracking-[0.14em] text-ink md:text-[10px]">
                       {crumb.label}
                     </span>
                   )}
@@ -196,6 +205,8 @@ export default function MirrorShell({
           </div>
 
           <div className="flex flex-wrap items-center gap-[10px] py-[6px]">
+            {/* Ground and tier preview: desktop only (see the header note). */}
+            <div className="hidden flex-wrap items-center gap-[10px] md:flex">
             <Segmented
               options={MIRROR_GROUNDS}
               value={ground}
@@ -216,6 +227,7 @@ export default function MirrorShell({
             ) : (
               <span className="font-mono text-[10px] tracking-[0.12em] text-faintest">FREE</span>
             )}
+            </div>
             <button type="button" onClick={onOpenBloodwork} className={`${CONTROL} text-dim hover:text-ink`}>
               BLOODWORK
             </button>
@@ -227,8 +239,8 @@ export default function MirrorShell({
       </header>
 
       {/* ── Stage ──────────────────────────────────────────────────────── */}
-      <div className="flex min-h-0 flex-1 flex-wrap overflow-auto">
-        <div className="relative flex h-full min-w-[300px] flex-[1_1_480px]">
+      <div className="flex flex-1 flex-wrap md:min-h-0 md:overflow-auto">
+        <div className="relative flex h-[40vh] min-w-[300px] flex-[1_1_480px] md:h-full">
           {field}
           {/* Zoom rail — marks the current layer, WHOLE at top, MOLECULE at foot. */}
           <div
@@ -246,7 +258,7 @@ export default function MirrorShell({
           </div>
         </div>
 
-        <aside className="min-w-[300px] max-w-[520px] flex-[1_1_360px] overflow-auto border-l border-ink bg-panel">
+        <aside className="min-w-[300px] max-w-full flex-[1_1_360px] border-t border-ink bg-panel md:max-w-[520px] md:overflow-auto md:border-l md:border-t-0">
           {layer === 4 && (
             <div className="flex flex-wrap border-b border-hair">
               {VERIFY_TABS.map((tab) => (
@@ -275,7 +287,12 @@ export default function MirrorShell({
 
       {/* The Ledger is full-bleed and deliberately styleless by comparison:
           the form is for understanding, the Ledger is for proving. */}
-      {ledger}
+      {/* On phones the page scrolls, so an overlay pinned to this root could
+          open above the fold; pin it to the viewport instead. The wrapper
+          takes no clicks itself — only the overlay inside it does. */}
+      <div className="pointer-events-none fixed inset-0 z-20 md:absolute [&>*]:pointer-events-auto">
+        {ledger}
+      </div>
     </div>
   )
 }
