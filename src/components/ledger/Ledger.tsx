@@ -23,7 +23,8 @@
 // This component must NOT add its own `keydown` listener — that would
 // double-handle the same keystroke.
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useTransition } from 'react'
+import { deleteDoseLog } from '@/app/dashboard/actions'
 import { COMPOUNDS } from '@/lib/catalog'
 import type { Entitlements } from '@/lib/entitlement'
 
@@ -42,6 +43,8 @@ interface Row {
   site: string
   whenSort: number
   doseSort: number
+  /** The dose_logs row, when there is one to delete. */
+  logId?: string
 }
 
 const MONTHS: Record<string, number> = {
@@ -83,21 +86,46 @@ export default function Ledger({ ent, onClose }: LedgerProps) {
   const [query, setQuery] = useState('')
   const [sortKey, setSortKey] = useState<SortKey>('when')
   const [sortDir, setSortDir] = useState<SortDir>('desc')
+  // Deleting a dose is two taps: Delete, then an inline "Delete it" / "Keep"
+  // on that row. No window.confirm — it is unstyled, blocks the page, and is
+  // suppressed outright in some installed-PWA contexts.
+  const [confirming, setConfirming] = useState<string | null>(null)
+  const [removed, setRemoved] = useState<ReadonlySet<string>>(new Set())
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [deleting, startDelete] = useTransition()
+
+  function remove(logId: string) {
+    setDeleteError(null)
+    startDelete(async () => {
+      const outcome = await deleteDoseLog({ logId })
+      if (outcome.ok) {
+        // Hidden at once; the revalidated Mirror data drops it for good.
+        setRemoved((prev) => new Set(prev).add(logId))
+        setConfirming(null)
+      } else {
+        setDeleteError(outcome.error ?? 'Could not delete that dose.')
+      }
+    })
+  }
 
   // The user's live history, tier-blind. The Ledger is the record of what they
   // took, and the tier withholds resolution rather than ownership — the pricing
   // page lists the dose log as open on Free. Rotation and supply comparison are
   // the surfaces that filter, and they do so through siteUsage().
   const rows = useMemo<Row[]>(() => {
-    return ent.history().map((entry) => ({
-      when: entry.when,
-      name: COMPOUNDS[entry.id]?.name ?? entry.id,
-      dose: entry.dose,
-      site: entry.site,
-      whenSort: whenToSortable(entry.when),
-      doseSort: doseToSortable(entry.dose),
-    }))
-  }, [ent])
+    return ent
+      .history()
+      .filter((entry) => !entry.logId || !removed.has(entry.logId))
+      .map((entry) => ({
+        when: entry.when,
+        name: COMPOUNDS[entry.id]?.name ?? entry.id,
+        dose: entry.dose,
+        site: entry.site,
+        whenSort: whenToSortable(entry.when),
+        doseSort: doseToSortable(entry.dose),
+        logId: entry.logId,
+      }))
+  }, [ent, removed])
 
   const filteredRows = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -214,6 +242,7 @@ export default function Ledger({ ent, onClose }: LedgerProps) {
                       </th>
                     )
                   })}
+                  <th className="p-0" aria-label="Actions" />
                 </tr>
               </thead>
               <tbody>
@@ -227,11 +256,45 @@ export default function Ledger({ ent, onClose }: LedgerProps) {
                     <td className="whitespace-nowrap px-2 py-3 text-right font-mono text-[10px] text-faintest">
                       {row.site}
                     </td>
+                    <td className="whitespace-nowrap px-2 py-1 text-right">
+                      {row.logId &&
+                        (confirming === row.logId ? (
+                          <span className="inline-flex gap-px bg-hair">
+                            <button
+                              type="button"
+                              onClick={() => remove(row.logId!)}
+                              disabled={deleting}
+                              className="min-h-[44px] bg-panel px-3 font-mono text-[12px] tracking-[0.06em] text-gold hover:text-ink disabled:opacity-50"
+                            >
+                              {deleting ? 'Deleting…' : 'Delete it'}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setConfirming(null)}
+                              className="min-h-[44px] bg-panelHi px-3 font-mono text-[12px] tracking-[0.06em] text-dim hover:text-ink"
+                            >
+                              Keep
+                            </button>
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setDeleteError(null)
+                              setConfirming(row.logId!)
+                            }}
+                            aria-label={`Delete the ${row.name} dose from ${row.when}`}
+                            className="min-h-[44px] px-2 font-mono text-[12px] tracking-[0.06em] text-faint underline hover:text-ink"
+                          >
+                            Delete
+                          </button>
+                        ))}
+                    </td>
                   </tr>
                 ))}
                 {filteredRows.length === 0 && (
                   <tr>
-                    <td colSpan={4} className="px-2 py-8 text-center font-mono text-[11px] text-faint">
+                    <td colSpan={5}className="px-2 py-8 text-center font-mono text-[11px] text-faint">
                       {rows.length === 0 ? 'NOTHING RESOLVED YET' : 'NO MATCHES'}
                     </td>
                   </tr>
@@ -239,6 +302,12 @@ export default function Ledger({ ent, onClose }: LedgerProps) {
               </tbody>
             </table>
           </div>
+
+          {deleteError && (
+            <span role="alert" className="font-mono text-[12px] text-gold">
+              {deleteError}
+            </span>
+          )}
 
           <span className="font-mono text-[10px] tracking-[0.1em] text-faint">
             A LOCKED COMPOUND&rsquo;S ROWS NEVER APPEAR HERE ON FREE

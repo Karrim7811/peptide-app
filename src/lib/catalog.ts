@@ -151,6 +151,11 @@ export interface DoseLogEntry {
   id: string
   dose: string
   site: string
+  /**
+   * The dose_logs row this came from, so the Ledger can delete it. Absent on
+   * the design's sample log, which has no row to delete.
+   */
+  logId?: string
 }
 
 export interface Marker {
