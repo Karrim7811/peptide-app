@@ -61,7 +61,11 @@ export async function recordDateOfBirth(iso: string): Promise<DobResult> {
     .update({ dob: iso })
     .eq('id', user.id)
 
-  if (error) return { ok: false, error: error.message }
+  if (error) {
+    // Logged in full here; the raw Postgres text is not something a user can act on.
+    console.error('[shop/dob-actions] recordDateOfBirth failed', error.code ?? '', error.message)
+    return { ok: false, error: 'Couldn’t save your date of birth — please try again.' }
+  }
   return { ok: true }
 }
 

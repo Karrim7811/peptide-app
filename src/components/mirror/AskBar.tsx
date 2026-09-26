@@ -70,10 +70,10 @@ function answerFor(
     if (ent.isFree) {
       return {
         text:
-          `I can only weigh supply across compounds I can resolve, and right now that is ` +
-          `${ent.resolvedCount === 1 ? 'one' : ent.resolvedCount}. ${ent.lockedCount} more are on your field but ` +
-          `locked — the comparison that finds the real decision needs all of them.`,
-        cite: `FREE TIER · ${ent.resolvedCount} OF ${ent.stackCount} RESOLVED`,
+          `On Free I can only compare supply for the peptides shown in full — right now that is ` +
+          `${ent.resolvedCount === 1 ? 'one' : ent.resolvedCount}. ${ent.lockedCount} more are in your stack but ` +
+          `locked, and a useful comparison needs all of them.`,
+        cite: `FREE TIER · ${ent.resolvedCount} OF ${ent.stackCount} SHOWN`,
       }
     }
     const held = resolvedStack(ent)
@@ -86,9 +86,8 @@ function answerFor(
     onNavigate({ regionId: c?.catId })
     return {
       text:
-        `${c?.name ?? low.id} has about ${low.supplyDays} days left at your logged rate, against ` +
-        `${cycle ? cycle.daysLeft : '—'} days remaining in the cycle. Everything else in your stack has more ` +
-        `than a fortnight.`,
+        `${c?.name ?? low.id} is lowest: about ${low.supplyDays} days left on your current schedule` +
+        `${cycle ? `, with ${cycle.daysLeft} days to go in your cycle` : ''}.`,
       cite: 'FROM YOUR INVENTORY AND DOSE LOG · NOT A DOSING INSTRUCTION',
     }
   }
@@ -99,9 +98,9 @@ function answerFor(
     if (ent.isFree) {
       return {
         text:
-          `Every compound’s own interaction and caution text stays readable, locked or not — open any node ` +
-          `to see it. What I cannot do on Free is weigh them against each other, because that needs the whole ` +
-          `stack resolved.`,
+          `Every compound’s own interaction and caution text stays readable, locked or not — open any peptide ` +
+          `to see it. What Free cannot do is compare them against each other, because that needs your whole ` +
+          `stack shown.`,
         cite: 'SAFETY TEXT IS NEVER GATED · VERIFY AGAINST PRIMARY LITERATURE AND A PHYSICIAN',
       }
     }
@@ -111,7 +110,7 @@ function answerFor(
     return {
       text:
         `${pairs} pairs across your ${pool.length} compounds. ${flagged.length} of them carry documented ` +
-        `interaction notes in the library — read each on its own node rather than trusting a single verdict.`,
+        `interaction notes in the library — open each one and read them rather than trusting a single verdict.`,
       cite: `INTERACTION TEXT IS THE LIBRARY’S OWN · VERIFY AGAINST PRIMARY LITERATURE AND A PHYSICIAN`,
     }
   }
@@ -120,15 +119,15 @@ function answerFor(
     if (ent.isFree) {
       return {
         text:
-          `Bloodwork is a Pro capability. It re-tunes the whole form against your real values, and that only ` +
-          `means something once every compound is resolved — right now ${ent.lockedCount} of yours are locked.`,
+          `Bloodwork comes with Pro. It flags markers outside range against the goals in your stack, which only ` +
+          `works once your whole stack is shown — right now ${ent.lockedCount} of yours are locked.`,
         cite: 'FREE TIER · BLOODWORK NOT ATTACHED',
       }
     }
     const markers = ent.markers(MARKERS)
     if (markers.length === 0) {
       return {
-        text: 'No bloodwork attached yet. Attach it from the field to re-tune the form against your real values.',
+        text: 'No bloodwork attached yet. Use BLOODWORK at the top to add your lab results.',
         cite: 'BLOODWORK NOT ATTACHED',
       }
     }
@@ -136,8 +135,8 @@ function answerFor(
     return {
       text:
         `${markers.length} markers attached. ${off.length} sit outside range` +
-        `${off.length ? ' — ' + off.map((m) => m.label).join(', ') : ''}. Those goals have been re-tuned on ` +
-        `the form; the rest are unchanged.`,
+        `${off.length ? ' — ' + off.map((m) => m.label).join(', ') : ''}. The goals they relate to are flagged ` +
+        `in the panel.`,
       cite: `MARKER KEYS AND UNITS AS DEFINED IN THE APP’S OWN MARKER CATALOG · NOT A DIAGNOSIS`,
     }
   }
@@ -153,8 +152,8 @@ function answerFor(
 
   return {
     text:
-      `I answer from what is on your field: ${COUNTS.compounds} compounds in the library, ${ent.stackCount} in ` +
-      `your stack,  goals. Name a compound, or ask about supply, labs, the cycle, or how ` +
+      `I answer from your stack and the library: ${COUNTS.compounds} compounds in the library, ${ent.stackCount} in ` +
+      `your stack. Type a peptide name to open it, or ask about supply, labs, the cycle, or how ` +
       `things sit together.`,
     cite: 'CORTEX ANSWERS FROM YOUR OWN DATA AND THE REFERENCED LIBRARY',
   }
@@ -207,7 +206,7 @@ export default function AskBar({ ent, onNavigate }: AskBarProps) {
             onKeyDown={(e) => {
               if (e.key === 'Enter') submit()
             }}
-            placeholder={`Ask, or search ${COUNTS.compounds} compounds`}
+            placeholder={`Search ${COUNTS.compounds} peptides by name, or ask a question`}
             className="min-w-0 flex-1 bg-transparent text-[15px] text-ink placeholder:text-faint focus:outline-none"
           />
           <button
@@ -235,9 +234,6 @@ export default function AskBar({ ent, onNavigate }: AskBarProps) {
           ))}
         </div>
 
-        <span className="whitespace-nowrap font-mono text-[10px] tracking-[0.12em] text-faint">
-          SCROLL OVER THE FORM = ZOOM · ESC = OUT
-        </span>
       </div>
     </div>
   )

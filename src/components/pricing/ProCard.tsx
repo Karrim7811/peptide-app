@@ -64,7 +64,7 @@ export default function ProCard({ cycle, loading, onUpgrade }: ProCardProps) {
         )}
         <span className="font-mono text-[10px] tracking-[0.1em] text-faint">{priceFootnote(cycle)}</span>
         <span className="text-[14.5px] leading-[1.75] text-dim" style={{ textWrap: 'pretty' }}>
-          Every compound resolved, weighed against each other, and read against your bloodwork.
+          Every peptide in your stack shown in full, compared against each other, and read against your bloodwork.
         </span>
       </div>
 

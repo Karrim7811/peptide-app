@@ -327,7 +327,7 @@ export default function StackFinderPage() {
               <Bot className="w-4 h-4 text-[#1A8A9E]" />
             </div>
             <span className="text-[#1A1915] font-semibold text-sm">PeptideAI Stack Analysis</span>
-            <span className="text-xs text-[#B0AAA0] ml-auto">Based on 58-peptide knowledge base</span>
+            <span className="text-xs text-[#B0AAA0] ml-auto">Based on {PEPTIDE_KNOWLEDGE.length}-peptide knowledge base</span>
           </div>
           <div className="space-y-0.5">
             {renderResult(result)}
@@ -362,7 +362,7 @@ export default function StackFinderPage() {
           <Layers className="w-10 h-10 text-[#B0AAA0] mx-auto mb-3" />
           <p className="text-[#B0AAA0] text-sm font-medium mb-1">Search any peptide to get started</p>
           <p className="text-[#B0AAA0] text-xs">
-            AI analyzes your peptide against all 58 compounds in the knowledge base and suggests optimal combinations.
+            AI analyzes your peptide against all {PEPTIDE_KNOWLEDGE.length} compounds in the knowledge base and suggests optimal combinations.
           </p>
         </div>
       )}

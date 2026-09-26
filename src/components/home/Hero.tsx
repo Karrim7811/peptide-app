@@ -132,9 +132,9 @@ export default function Hero() {
           className="m-0 max-w-[620px] text-[clamp(16px,1.6vw,20px)] leading-[1.75] text-dim"
           style={{ textWrap: 'pretty', animation: 'cxup 700ms 160ms cubic-bezier(.2,.7,.2,1) both' }}
         >
-          Peptide Cortex renders everything you take as one living surface. Evidence is
-          brightness. Adherence is density. A conflict or a supply gap shows up as tension you
-          can see before you can name it.
+          Peptide Cortex puts everything you take on one screen: how strong the evidence is,
+          what you have logged, and what is running low — so you spot a gap before it catches
+          you out.
         </p>
 
         <div
@@ -146,7 +146,7 @@ export default function Hero() {
             href="/signup"
             className="flex h-[52px] items-center whitespace-nowrap bg-accent px-7 font-mono text-[11px] tracking-[0.18em] text-ground transition-shadow hover:shadow-[0_0_24px_var(--accentDim)]"
           >
-            CREATE YOUR FIELD →
+            START MY STACK →
           </Link>
           <Link
             href="/login"

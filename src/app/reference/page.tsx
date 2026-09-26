@@ -22,6 +22,7 @@ import {
   MONO,
   RULE,
 } from '@/components/library/LibraryChrome'
+import { COUNTS } from '@/lib/catalog'
 import { categoryChips, searchLibrary } from '@/lib/library'
 import { doseCounts } from '@/lib/dosing'
 import { createClient } from '@/lib/supabase/server'
@@ -31,7 +32,7 @@ export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
   title: 'The library · Peptide Cortex',
   description:
-    'A reference on 124 peptides, graded by evidence rather than enthusiasm. Free to read, no account needed.',
+    `A reference on ${COUNTS.compounds} peptides, graded by evidence rather than enthusiasm. Free to read, no account needed.`,
 }
 
 export default async function ReferencePage({

@@ -60,7 +60,7 @@ type Tool = [href: string, name: string, what: string]
 
 /** Where the Mirror's capabilities live now, and what each one is. */
 const TOOLS: Tool[] = [
-  ['/mirror', 'The field', 'Your stack, dose log, cycles, sites and notes. Everything you can edit.'],
+  ['/mirror', 'My stack', 'Your stack, dose log, cycles, sites and notes. Everything you can edit.'],
   ['/checker', 'Interactions', 'Any two things compared. Free, three checks a day.'],
   ['/dosing', 'Dosing reference', 'What the label or the trial says, with its source. Never gated.'],
   ['/bloodwork', 'Bloodwork', 'Your markers across panels. Pro.'],

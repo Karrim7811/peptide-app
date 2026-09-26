@@ -15,7 +15,7 @@ export default function SafetyBlock() {
         </span>
         <span className="max-w-[720px] text-[15px] leading-[1.8] text-dim" style={{ textWrap: 'pretty' }}>
           Reconstitution arithmetic, cautions, contraindications and documented interactions stay
-          readable at every tier, including for compounds your plan has not resolved. We will not
+          readable at every tier, including for peptides that are locked on your plan. We will not
           put a dosing calculation behind a card form.
         </span>
       </div>

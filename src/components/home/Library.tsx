@@ -61,10 +61,6 @@ export default function Library() {
             the record — where the library says a dosage field is unestablished, that is
             exactly what you see.
           </p>
-          <p className="text-base leading-[1.8] text-dim" style={{ textWrap: 'pretty' }}>
-            When two fields of the record disagree with each other, the interface says so
-            rather than picking a side.
-          </p>
         </div>
 
         <div className="flex min-w-[300px] flex-[1_1_380px] flex-col gap-px bg-hair">
