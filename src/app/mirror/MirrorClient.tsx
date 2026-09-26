@@ -42,6 +42,7 @@ import {
   isGround,
   type Ground,
 } from '@/lib/design/grounds'
+import AddFirstPeptide from '@/components/mirror/AddFirstPeptide'
 import { CATEGORIES, CATEGORY_BY_ID, COMPOUNDS, COUNTS, SITES } from '@/lib/catalog'
 import { isProTier } from '@/lib/tier'
 import type { MirrorData } from '@/lib/mirror/load'
@@ -237,6 +238,11 @@ export default function MirrorClient({
             ent.isFree
               ? `FREE · ${ent.resolvedCount} OF ${ent.stackCount} RESOLVED · ${COUNTS.compounds} IN LIBRARY, ALL READABLE`
               : undefined
+          }
+          overlay={
+            ent.stackCount === 0 && nav.layer === 1 ? (
+              <AddFirstPeptide onSelectCompound={nav.openCompound} />
+            ) : undefined
           }
           footerSub={nav.layer === 3 ? 'DRAG TO ROTATE · SCROLL TO ZOOM · ESC TO STEP OUT' : undefined}
         />

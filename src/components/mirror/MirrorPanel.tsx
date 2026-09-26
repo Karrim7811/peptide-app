@@ -222,8 +222,8 @@ function LayerWhole({
             // which is empty. These are the way in.
             <div className="flex flex-col gap-[14px] bg-panel px-4 py-[18px]">
               <p className="text-[14px] leading-[1.7] text-dim">
-                Nothing mapped yet. Open any compound in the library to add it to your stack — the
-                form draws itself from what you hold.
+                Nothing mapped yet. Search by name in the box on the field, or browse a goal below —
+                open any compound and use ADD TO STACK. The form draws itself from what you hold.
               </p>
               <div className="flex flex-col gap-px bg-hair">
                 {STARTING_GOALS.map((category) => (
@@ -566,6 +566,11 @@ function LayerCompound({
           <span className="font-mono text-[9.5px] tracking-[0.14em] text-faint">{compound.purpose}</span>
         </div>
 
+        {/* Not yet owned: the add form sits at the top, and opens itself when
+            the stack is empty — the bench's "Add your first peptide" lands
+            here, and a collapsed toggle below the fold read as no way to add. */}
+        {!entry && <StackControl compound={compound} entry={null} defaultOpen={ent.stackCount === 0} />}
+
         <p className="text-[15px] leading-[1.8] text-dim">{compound.action}</p>
 
         <div className="flex flex-wrap gap-[26px]">
@@ -634,7 +639,7 @@ function LayerCompound({
           </div>
         </div>
 
-        <StackControl compound={compound} entry={ent.ownedEntry(compound.id)} />
+        {entry && <StackControl compound={compound} entry={entry} />}
 
         {/* The old routes, arrived at as contextual tools. Each is the user's
             own record and therefore tier-blind — side effects especially: a
@@ -712,7 +717,7 @@ export default function MirrorPanel({
     // nonsense against nothing at all.
     const narration =
       ent.stackCount === 0
-        ? 'Nothing on the form yet. Search the library below and open any compound to add it — the moment you do, this becomes a map of your own protocol rather than an empty one.'
+        ? 'Nothing on the form yet. Search for a peptide in the box on the field, open it, and add it — the moment you do, this becomes a map of your own protocol rather than an empty one.'
         : ent.isFree
           ? `${ent.resolvedCount === 1 ? 'One compound resolved, ' : `${ent.resolvedCount} compounds resolved, `}${ent.lockedCount} held back. The dashed goals are yours — I can see them pulling, I just cannot read them for you yet.`
           : ent.labsOn

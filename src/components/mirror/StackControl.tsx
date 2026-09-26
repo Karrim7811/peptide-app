@@ -15,10 +15,12 @@ interface StackControlProps {
   compound: Compound
   /** Tier-blind — a locked compound is still owned, and still editable. */
   entry: StackEntry | null
+  /** Start expanded — used when the stack is empty and adding is the point. */
+  defaultOpen?: boolean
 }
 
-export default function StackControl({ compound, entry }: StackControlProps) {
-  const [open, setOpen] = useState(false)
+export default function StackControl({ compound, entry, defaultOpen = false }: StackControlProps) {
+  const [open, setOpen] = useState(defaultOpen)
   const [error, setError] = useState<string | null>(null)
   const [pending, startTransition] = useTransition()
 
