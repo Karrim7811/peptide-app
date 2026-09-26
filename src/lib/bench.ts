@@ -43,9 +43,17 @@ export interface BenchRow {
   name: string
   /** The italic line beneath — what it is, not what to do with it. */
   subtitle: string
+  /**
+   * Where the name goes: this compound in the Mirror, where the person's own
+   * record and every write path live. The library page is `libraryHref`.
+   */
   href: string
+  /** The library entry for this compound — read-only reference. */
+  libraryHref: string
   /** Opens the add/edit form for this compound in the Mirror. */
   editHref: string
+  /** Opens this compound in the Mirror with the dose logger already open. */
+  logHref: string
   /** The right-hand mono column. Never blank. */
   right: string
 }
@@ -96,6 +104,26 @@ function sizeOf(mg: number | null): string | null {
 
 export function editHref(compoundId: string | null): string {
   return compoundId ? `/mirror?compound=${encodeURIComponent(compoundId)}&edit=1` : '/mirror'
+}
+
+/** This compound in the Mirror, where its record lives. */
+export function mirrorHref(compoundId: string | null): string {
+  return compoundId ? `/mirror?compound=${encodeURIComponent(compoundId)}` : '/mirror'
+}
+
+/**
+ * This compound in the Mirror with the dose logger already open. Logging from
+ * the bench used to be five steps — open the field, find the region, find the
+ * compound, scroll to the button, open it. LogDoseButton reads `log=1`, opens
+ * itself and scrolls into view. An unresolved name has no compound view to
+ * land on, so it falls back to the field like editHref does.
+ */
+export function logHref(compoundId: string | null): string {
+  return compoundId ? `/mirror?compound=${encodeURIComponent(compoundId)}&log=1` : '/mirror'
+}
+
+function libraryHref(compoundId: string | null): string {
+  return compoundId ? `/reference/${compoundId}` : '/reference'
 }
 
 const UNITS_NOTE = /^\s*([\d.]+)\s*units per shot/i
@@ -173,8 +201,10 @@ export function benchView(
       id: item.id,
       name: compound?.name ?? item.name,
       subtitle: compound?.purpose ?? 'Not in the library',
-      href: item.compoundId ? `/reference/${item.compoundId}` : '/reference',
+      href: mirrorHref(item.compoundId),
+      libraryHref: libraryHref(item.compoundId),
       editHref: editHref(item.compoundId),
+      logHref: logHref(item.compoundId),
       // A recorded amount is what the person typed, so it prints as typed. Where
       // there is none, the grade — never a number this app chose.
       right: recorded

@@ -232,6 +232,11 @@ describe('toDoseLog', () => {
     expect(out[0]!.id).toBe('bpc-157')
   })
 
+  // The Ledger's Delete needs the row it came from.
+  it('carries the dose_logs row id', () => {
+    expect(toDoseLog(logs, [item()], [])[0]!.logId).toBe('d1')
+  })
+
   it('credits a site only when one was logged near the dose', () => {
     const near: InjectionSiteRow[] = [
       { site: 'ABDOMEN L', peptide_name: 'BPC-157', logged_at: '2026-08-06T07:40:00Z' },

@@ -34,6 +34,11 @@ const DAYS = [
   { label: 'SAT', value: 6 },
 ] as const
 
+// A new reminder starts on every day. It used to start on none, and the action
+// refuses an empty day list, so the obvious path — pick a time, tap ADD —
+// failed with "Pick at least one day." Every day is also the common case.
+const EVERY_DAY: number[] = DAYS.map((d) => d.value)
+
 function formatTime(time: string): string {
   const [hStr, mStr] = time.split(':')
   const h = Number(hStr)
@@ -54,7 +59,7 @@ function formatDays(daysOfWeek: number[]): string {
 export default function RemindersTool({ compoundId, reminders, inStack }: RemindersToolProps) {
   const [open, setOpen] = useState(false)
   const [time, setTime] = useState('08:00')
-  const [days, setDays] = useState<number[]>([])
+  const [days, setDays] = useState<number[]>(EVERY_DAY)
   const [dose, setDose] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [pending, startTransition] = useTransition()
@@ -72,7 +77,7 @@ export default function RemindersTool({ compoundId, reminders, inStack }: Remind
       const outcome = await setReminder({ compoundId, time, daysOfWeek: days, dose: dose || undefined })
       if (outcome.ok) {
         setTime('08:00')
-        setDays([])
+        setDays(EVERY_DAY)
         setDose('')
       } else {
         setError(outcome.error ?? 'Could not save that reminder.')
@@ -98,14 +103,18 @@ export default function RemindersTool({ compoundId, reminders, inStack }: Remind
         aria-expanded={open}
         className="flex min-h-[44px] w-full items-center justify-between gap-3 bg-panel px-[14px] font-mono text-[9.5px] tracking-[0.1em] text-dim hover:text-ink"
       >
-        <span>SCHEDULE{reminders.length ? ` · ${reminders.length}` : ''}</span>
+        <span>Reminders{reminders.length ? ` · ${reminders.length}` : ''}</span>
       </button>
 
       {open && (
         <div className="flex flex-col gap-[14px] bg-panel p-[14px]">
+          {/* There is no Web Push in this codebase (§16.6 is still open), so
+              nothing fires at the reminder time. Saying so plainly, rather
+              than letting "reminder" imply an alert that never comes. */}
           <p className="text-[13px] leading-[1.7] text-dim">
-            A schedule is not just a notification — it is the input the supply-days arithmetic reads. Add one and
-            &ldquo;days left&rdquo; on this compound starts meaning something.
+            Reminders are shown here in the app. Phone and browser alerts are not available yet, so nothing
+            will notify you at this time. The schedule also tells the app how often you use this vial, which is
+            what makes &ldquo;days left&rdquo; mean something.
           </p>
 
           {reminders.length > 0 && (
@@ -147,8 +156,11 @@ export default function RemindersTool({ compoundId, reminders, inStack }: Remind
                   type="text"
                   value={dose}
                   onChange={(e) => setDose(e.target.value)}
-                  placeholder="DOSE OVERRIDE (OPTIONAL)"
-                  className="min-h-[44px] min-w-0 flex-1 basis-[160px] bg-panelHi px-3 font-mono text-[9.5px] tracking-[0.08em] text-ink placeholder:text-faintest"
+                  // Free text: stored in reminders.dose and only ever displayed
+                  // beside the time. Nothing reads it as an amount.
+                  placeholder="Note (optional)"
+                  aria-label="Note (optional)"
+                  className="min-h-[44px] min-w-0 flex-1 basis-[160px] bg-panelHi px-3 font-mono text-[12px] tracking-[0.04em] text-ink placeholder:text-faintest"
                 />
               </div>
 

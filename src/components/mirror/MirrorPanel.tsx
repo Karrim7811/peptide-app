@@ -495,11 +495,13 @@ function LayerCompound({
   compoundId,
   records,
   onOpenVerify,
+  onSelectCompound,
 }: {
   ent: Entitlements
   compoundId: string | null
   records: CompoundRecords
   onOpenVerify: (tab: VerifyTab) => void
+  onSelectCompound: (id: string) => void
 }) {
   const compound = compoundId ? COMPOUNDS[compoundId] : null
 
@@ -640,7 +642,11 @@ function LayerCompound({
               <button
                 key={o.id}
                 type="button"
-                onClick={() => onOpenVerify('math')}
+                // Opens the partner. It used to open THE MATH for the compound
+                // already in view, which is not what a row naming another
+                // compound promises.
+                onClick={() => onSelectCompound(o.id)}
+                aria-label={`Open ${o.name}`}
                 className="flex min-h-[44px] items-center gap-[11px] text-left"
               >
                 <span className="w-5 flex-shrink-0" style={{ height: bold ? 2 : 1, backgroundColor: color }} />
@@ -771,6 +777,7 @@ export default function MirrorPanel({
         compoundId={compoundId}
         records={records}
         onOpenVerify={onOpenVerify}
+        onSelectCompound={onSelectCompound}
       />
     )
   }

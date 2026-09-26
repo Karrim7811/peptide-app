@@ -49,7 +49,7 @@ export async function logDose(input: {
   dose?: string
   site?: string
   notes?: string
-}): Promise<ActionResult> {
+}): Promise<LogDoseResult> {
   const { supabase, user } = await authed()
   if (!user) return fail('Please sign in.')
 
@@ -69,22 +69,81 @@ export async function logDose(input: {
   const match = (rows ?? []).find((row) => resolveCompoundId(row.name) === input.compoundId)
   if (!match) return fail(`${compound.name} is not in your stack.`)
 
-  const { error } = await supabase.from('dose_logs').insert({
-    user_id: user.id,
-    stack_item_id: match.id,
-    dose: input.dose ?? '',
-    notes: input.notes ?? '',
-  })
+  // The ids come back so the button can offer Undo against exactly these rows.
+  const { data: logRow, error } = await supabase
+    .from('dose_logs')
+    .insert({
+      user_id: user.id,
+      stack_item_id: match.id,
+      dose: input.dose ?? '',
+      notes: input.notes ?? '',
+    })
+    .select('id, taken_at')
+    .single()
   if (error) return fail(error.message)
 
   // The site is a separate record — injection_sites is its own log, not a
   // column on the dose. Written alongside so rotation stays derivable.
+  let siteId: string | undefined
   if (input.site) {
-    const { error: siteError } = await supabase.from('injection_sites').insert({
-      user_id: user.id,
-      site: input.site,
-      peptide_name: match.name,
-    })
+    const { data: siteRow, error: siteError } = await supabase
+      .from('injection_sites')
+      .insert({
+        user_id: user.id,
+        site: input.site,
+        peptide_name: match.name,
+      })
+      .select('id')
+      .single()
+    if (siteError) return fail(siteError.message)
+    siteId = siteRow?.id
+  }
+
+  revalidatePath('/mirror')
+  return { ok: true, logId: logRow?.id, siteId, takenAt: logRow?.taken_at }
+}
+
+export interface LogDoseResult extends ActionResult {
+  /** The dose_logs row just written — what Undo deletes. */
+  logId?: string
+  /** The injection_sites row written alongside, when a site was picked. */
+  siteId?: string
+  /** When the database stamped the dose, for the confirmation line. */
+  takenAt?: string
+}
+
+/**
+ * Delete one dose from the log.
+ *
+ * A logged dose used to be permanent: a mis-tap on CONFIRM stayed in the
+ * record, skewing adherence and supply, with no way back. This backs both the
+ * Undo that follows a fresh log and the Ledger's per-row Delete. RLS on
+ * dose_logs is `for all using (auth.uid() = user_id)`, so the policy is the
+ * enforcement; the user_id filter is there so a stranger's id deletes nothing
+ * rather than relying on the policy alone.
+ *
+ * `siteId` is only passed by Undo, which knows the injection_sites row it
+ * wrote a moment ago. The Ledger does not — sites are their own log, matched
+ * to doses by time — so a Delete there leaves the site record alone.
+ */
+export async function deleteDoseLog(input: { logId: string; siteId?: string }): Promise<ActionResult> {
+  const { supabase, user } = await authed()
+  if (!user) return fail('Please sign in.')
+  if (!input.logId) return fail('Nothing to delete.')
+
+  const { error } = await supabase
+    .from('dose_logs')
+    .delete()
+    .eq('id', input.logId)
+    .eq('user_id', user.id)
+  if (error) return fail(error.message)
+
+  if (input.siteId) {
+    const { error: siteError } = await supabase
+      .from('injection_sites')
+      .delete()
+      .eq('id', input.siteId)
+      .eq('user_id', user.id)
     if (siteError) return fail(siteError.message)
   }
 
