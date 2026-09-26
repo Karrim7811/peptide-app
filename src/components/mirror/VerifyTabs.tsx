@@ -134,7 +134,7 @@ function SolutionMath({ compound, entry }: { compound: Compound; entry: StackEnt
       </div>
 
       <div className="flex flex-col gap-2">
-        <TabLabel color="var(--gold)">SOLUTION CHEMISTRY · WORKING SHOWN</TabLabel>
+        <TabLabel color="var(--gold)">MIXING CALCULATOR · WORKING SHOWN</TabLabel>
         <Headline>
           {hasVolume
             ? `${concentration.toFixed(2)} mg per mL of solution`
@@ -231,7 +231,7 @@ function MathTab({ compound, entry }: { compound: Compound; entry: StackEntry | 
     return (
       <div className="flex max-w-[640px] flex-col gap-5">
         <div className="flex flex-col gap-2">
-          <TabLabel color="var(--gold)">RECONSTITUTION · WORKING SHOWN</TabLabel>
+          <TabLabel color="var(--gold)">MIXING CALCULATOR · WORKING SHOWN</TabLabel>
           <Headline>No vial recorded for {compound.name}</Headline>
         </div>
         <div className="flex flex-col gap-px bg-hair">
@@ -239,7 +239,7 @@ function MathTab({ compound, entry }: { compound: Compound; entry: StackEntry | 
           <Row k="LIBRARY DOSAGE FIELD" v={compound.dosage || 'N/A'} />
         </div>
         <span className="font-mono text-[10px] leading-[1.9] tracking-[0.06em] text-faint">
-          ADD IT TO YOUR STACK TO SEE THE ARITHMETIC
+          ADD IT TO YOUR STACK TO USE THE CALCULATOR
         </span>
 
         {/* The guide is reference, not arithmetic — it stands on its own without
@@ -277,7 +277,7 @@ function RecordTab({ compound, ent }: { compound: Compound; ent: Entitlements })
   return (
     <div className="flex max-w-[640px] flex-col gap-5">
       <div className="flex flex-col gap-2">
-        <TabLabel>THE RECORD · DOSE LOG</TabLabel>
+        <TabLabel>DOSE HISTORY</TabLabel>
         <Headline>
           {entries.length === 0
             ? `No doses logged for ${compound.name}.`
@@ -301,7 +301,7 @@ function RecordTab({ compound, ent }: { compound: Compound; ent: Entitlements })
       )}
 
       <span className="font-mono text-[10px] leading-[1.9] tracking-[0.06em] text-faint">
-        FROM YOUR OWN LOG · OWNERSHIP IS TIER-BLIND, SO THIS STAYS OPEN FOR A LOCKED COMPOUND TOO
+        FROM YOUR OWN LOG · ALWAYS OPEN, EVEN FOR A LOCKED PEPTIDE
       </span>
     </div>
   )
@@ -320,22 +320,22 @@ function RotationTab({ ent }: { ent: Entitlements }) {
 
   const headline =
     totalInj === 0
-      ? 'No injections logged for the compounds I can resolve.'
+      ? 'No injections logged yet.'
       : `${hot!.label} has taken ${hot!.uses} of your last ${totalInj} logged injection${totalInj === 1 ? '' : 's'}.`
 
   const note =
     totalInj === 0
-      ? 'Rotation is drawn from your dose log. Nothing here yet for the compounds this tier resolves.'
+      ? 'Injection sites come from your dose log. Log a dose with a site and it shows up here.'
       : `Cortex suggests ${cold!.label} next — it has taken ${cold!.uses} of the last ${totalInj}.` +
         (ent.isFree
-          ? ` Counted from your ${totalInj} resolved injection${totalInj === 1 ? '' : 's'} only; locked compounds are not included.`
+          ? ` Counted from the ${totalInj} injection${totalInj === 1 ? '' : 's'} for peptides shown on Free; locked peptides are not included.`
           : '') +
-        ' Rotation is your record, not a prescription.'
+        ' This is your own record, not a prescription.'
 
   return (
     <div className="flex max-w-[640px] flex-col gap-5">
       <div className="flex flex-col gap-2">
-        <TabLabel>ROTATION · LAST INJECTIONS</TabLabel>
+        <TabLabel>INJECTION SITES · LAST INJECTIONS</TabLabel>
         <Headline>{headline}</Headline>
       </div>
 
@@ -442,8 +442,8 @@ export default function VerifyTabs({ tab, compoundId, ent }: VerifyTabsProps) {
   if (!compound) {
     return (
       <div className="flex max-w-[640px] flex-col gap-3">
-        <TabLabel color="var(--faint)">VERIFY</TabLabel>
-        <Headline>Select a compound to verify.</Headline>
+        <TabLabel color="var(--faint)">DETAILS</TabLabel>
+        <Headline>Pick a peptide to see its details.</Headline>
       </div>
     )
   }

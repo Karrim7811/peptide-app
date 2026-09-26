@@ -25,9 +25,9 @@ export type MirrorLayer = 1 | 2 | 3 | 4
 export type VerifyTab = 'math' | 'record' | 'rotation' | 'cycle'
 
 export const VERIFY_TABS: ReadonlyArray<{ id: VerifyTab; label: string }> = [
-  { id: 'math', label: 'THE MATH' },
-  { id: 'record', label: 'THE RECORD' },
-  { id: 'rotation', label: 'ROTATION' },
+  { id: 'math', label: 'MIXING CALCULATOR' },
+  { id: 'record', label: 'DOSE HISTORY' },
+  { id: 'rotation', label: 'INJECTION SITES' },
   { id: 'cycle', label: 'CYCLE' },
 ]
 

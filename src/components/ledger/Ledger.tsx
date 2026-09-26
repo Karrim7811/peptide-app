@@ -67,11 +67,6 @@ function doseToSortable(dose: string): number {
   return m[2].toLowerCase() === 'mg' ? value * 1000 : value
 }
 
-const ROUTES = ['/log', '/reminders', '/inventory', '/side-effects', '/notes', '/cycle', '/sites', '/bloodwork']
-
-const DATA_NOTE =
-  'STACK → stack_items · LOG → dose_logs · LABS → bloodwork_results · CYCLE → cycles · SITES → injection_sites'
-
 const COLUMNS: ReadonlyArray<{ key: SortKey; label: string; width: string }> = [
   { key: 'when', label: 'WHEN', width: '120px' },
   { key: 'name', label: 'COMPOUND', width: 'auto' },
@@ -161,7 +156,7 @@ export default function Ledger({ ent, onClose }: LedgerProps) {
     <div className="absolute inset-0 z-20 flex flex-col bg-ground">
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <div className="flex flex-shrink-0 items-center justify-between gap-4 border-b border-hair px-[14px] py-3">
-        <span className="font-mono text-[11px] tracking-[0.24em] text-ink">LEDGER</span>
+        <span className="font-mono text-[11px] tracking-[0.24em] text-ink">DOSE LOG</span>
         <button
           type="button"
           onClick={onClose}
@@ -186,7 +181,7 @@ export default function Ledger({ ent, onClose }: LedgerProps) {
             type="text"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search the record — compound, dose, site…"
+            placeholder="Search your log — peptide, dose, site…"
             className="min-h-[44px] border border-hair bg-panel px-3 font-mono text-[12px] text-ink placeholder:text-faintest focus:border-accent focus:outline-none"
           />
 
@@ -232,7 +227,7 @@ export default function Ledger({ ent, onClose }: LedgerProps) {
                 {filteredRows.length === 0 && (
                   <tr>
                     <td colSpan={4} className="px-2 py-8 text-center font-mono text-[11px] text-faint">
-                      {rows.length === 0 ? 'NOTHING RESOLVED YET' : 'NO MATCHES'}
+                      {rows.length === 0 ? 'NO DOSES LOGGED YET' : 'NO MATCHES'}
                     </td>
                   </tr>
                 )}
@@ -241,15 +236,15 @@ export default function Ledger({ ent, onClose }: LedgerProps) {
           </div>
 
           <span className="font-mono text-[10px] tracking-[0.1em] text-faint">
-            A LOCKED COMPOUND&rsquo;S ROWS NEVER APPEAR HERE ON FREE
+            EVERY DOSE YOU LOG SHOWS HERE, ON FREE AND PRO
           </span>
         </div>
 
-        {/* Inventory + explanation + provenance */}
+        {/* Inventory + a one-line explanation */}
         <div className="flex flex-[1_1_340px] min-w-[300px] flex-col gap-6 border-l border-hair p-6">
           <div className="flex flex-col gap-3">
             <span className="font-mono text-[9px] tracking-[0.24em] text-faint">
-              INVENTORY · WHAT FEEDS THE TENSION
+              INVENTORY · DAYS OF SUPPLY LEFT
             </span>
             <div className="flex flex-col gap-px bg-hair">
               {inventory.map((item) => (
@@ -276,31 +271,9 @@ export default function Ledger({ ent, onClose }: LedgerProps) {
             </div>
           </div>
 
-          <div className="flex flex-col gap-[11px]">
-            <span className="font-mono text-[9px] tracking-[0.24em] text-faint">WHY THE LEDGER IS PLAIN</span>
-            <span className="text-[14.5px] leading-[1.8] text-dim">
-              The form is for understanding. The Ledger is for proving. Records get no atmosphere,
-              no motion and no interpretation — they are searchable, sortable and boring on
-              purpose.
-            </span>
-          </div>
-
-          <div className="flex flex-col gap-[10px]">
-            <span className="font-mono text-[9px] tracking-[0.24em] text-faint">WHERE THIS DATA LIVES</span>
-            <div className="flex flex-wrap gap-[6px]">
-              {ROUTES.map((route) => (
-                <span
-                  key={route}
-                  className="border border-hair px-[10px] py-[9px] font-mono text-[10px] tracking-[0.08em] text-dim"
-                >
-                  {route}
-                </span>
-              ))}
-            </div>
-            <span className="font-mono text-[10px] leading-[1.9] tracking-[0.06em] text-faint">
-              {DATA_NOTE}
-            </span>
-          </div>
+          <p className="text-[14.5px] leading-[1.8] text-dim">
+            The dose log lists every dose you have logged, newest first. Tap a column heading to sort, or use the search box to filter.
+          </p>
         </div>
       </div>
     </div>

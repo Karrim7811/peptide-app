@@ -60,10 +60,10 @@ interface MirrorShellProps {
 }
 
 const LAYER_MARKS: ReadonlyArray<{ layer: MirrorLayer; label: string }> = [
-  { layer: 1, label: 'WHOLE' },
+  { layer: 1, label: 'ALL' },
   { layer: 2, label: 'GOAL' },
-  { layer: 3, label: 'MOLECULE' },
-  { layer: 4, label: 'VERIFY' },
+  { layer: 3, label: 'PEPTIDE' },
+  { layer: 4, label: 'DETAILS' },
 ]
 
 /** V3 label: Jost, 10.5px, .26em, uppercase. */
@@ -139,7 +139,7 @@ export default function MirrorShell({
             <span className="text-[15px] font-medium tracking-[0.22em]">PEPTIDE CORTEX</span>
           </Link>
           <span className={`${KICKER} whitespace-nowrap text-faint`}>
-            The field · {isFree ? 'Free' : 'Pro'}
+            My stack · {isFree ? 'Free' : 'Pro'}
           </span>
           <nav
             aria-label="Site"
@@ -220,7 +220,7 @@ export default function MirrorShell({
               BLOODWORK
             </button>
             <button type="button" onClick={onOpenLedger} className={`${CONTROL} text-dim hover:text-ink`}>
-              LEDGER
+              DOSE LOG
             </button>
           </div>
         </div>

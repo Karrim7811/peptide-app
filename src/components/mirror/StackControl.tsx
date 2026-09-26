@@ -63,7 +63,7 @@ function Chip({
 }
 
 function Question({ children }: { children: React.ReactNode }) {
-  return <span className="font-mono text-[9.5px] tracking-[0.16em] text-faint">{children}</span>
+  return <span className="font-mono text-[11px] tracking-[0.14em] text-faint">{children}</span>
 }
 
 const inputClass =
@@ -281,7 +281,7 @@ export default function StackControl({ compound, entry, defaultOpen = false }: S
           {/* A new vial is full, so only ask what is left when it is not. */}
           {opened ? (
             <label className="flex flex-col gap-2">
-              <Question>ABOUT HOW MUCH IS LEFT? · mg</Question>
+              <Question>ABOUT HOW MUCH IS LEFT IN THE VIAL? (mg)</Question>
               <input
                 inputMode="decimal"
                 value={remaining}
@@ -340,7 +340,7 @@ export default function StackControl({ compound, entry, defaultOpen = false }: S
 
           {entry && (
             <span className="font-mono text-[9px] leading-[1.8] tracking-[0.1em] text-faintest">
-              REMOVING KEEPS YOUR DOSE HISTORY · THE RECORD IS NOT REWRITTEN
+              REMOVING IT KEEPS YOUR DOSE HISTORY
             </span>
           )}
 

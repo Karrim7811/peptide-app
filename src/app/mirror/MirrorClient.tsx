@@ -189,7 +189,7 @@ export default function MirrorClient({
 
   const crumbs: Crumb[] = useMemo(() => {
     const out: Crumb[] = [
-      { label: 'WHOLE', onClick: nav.layer > 1 ? () => nav.zoomOut() : undefined },
+      { label: 'ALL', onClick: nav.layer > 1 ? () => nav.zoomOut() : undefined },
     ]
     if (nav.layer >= 2 && nav.regionId) {
       out.push({
@@ -203,7 +203,7 @@ export default function MirrorClient({
         onClick: nav.layer > 3 ? () => nav.openCompound(nav.compoundId!) : undefined,
       })
     }
-    if (nav.layer === 4) out.push({ label: 'VERIFY' })
+    if (nav.layer === 4) out.push({ label: 'DETAILS' })
     return out
   }, [nav])
 
@@ -245,7 +245,7 @@ export default function MirrorClient({
           onMeasure={setFieldSize}
           footerNote={
             ent.isFree
-              ? `FREE · ${ent.resolvedCount} OF ${ent.stackCount} RESOLVED · ${COUNTS.compounds} IN LIBRARY, ALL READABLE`
+              ? `FREE · ${ent.resolvedCount} OF ${ent.stackCount} SHOWN · ${COUNTS.compounds} IN LIBRARY, ALL READABLE`
               : undefined
           }
           overlay={
