@@ -5,9 +5,15 @@
 // read intended use from how a seller presents its own content, so the two
 // reading as structurally different things is a legal posture rather than a
 // visual preference. Same brand, same account, different chrome.
+//
+// Different chrome, same menu: the header carries the site's primary links
+// (Bench · Library · Shop, src/lib/nav.ts) so nobody who reaches the shop is
+// stranded in it, plus the shop's own Your orders and Cart. The body and the
+// footer are what keep the shop reading as commerce.
 
 import Link from 'next/link'
 import { CartCount } from '@/components/shop/CartCount'
+import { NAV_LINK, NAV_TYPE, PrimaryNav, SectionLabel } from '@/components/nav/PrimaryNav'
 
 export const LEGAL =
   'For research and reference purposes only. Not intended as dosing instructions for human or animal use, and not for human consumption. Consult a licensed physician before any medical decisions. Adults 18+. US shipping only.'
@@ -27,9 +33,15 @@ export const KICKER: React.CSSProperties = {
 export function ShopChrome({
   children,
   showCart = true,
+  signedIn = true,
 }: {
   children: React.ReactNode
   showCart?: boolean
+  /**
+   * Every shop route is behind the sign-in wall (src/app/shop/layout.tsx), so
+   * this is true everywhere except the AgeGate a visitor sees in its place.
+   */
+  signedIn?: boolean
 }) {
   return (
     <div
@@ -44,8 +56,9 @@ export function ShopChrome({
     >
       <header style={{ borderBottom: RULE, flex: 'none' }}>
         <div
+          className="py-1.5 md:py-[14px]"
           style={{
-            padding: '14px clamp(16px,3vw,32px)',
+            paddingInline: 'clamp(16px,3vw,32px)',
             display: 'flex',
             alignItems: 'center',
             gap: 'clamp(14px,2vw,28px)',
@@ -54,6 +67,7 @@ export function ShopChrome({
         >
           <Link
             href="/"
+            className="min-h-[44px] md:min-h-0"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -69,12 +83,20 @@ export function ShopChrome({
             <span style={{ fontWeight: 500, fontSize: 15, letterSpacing: '.22em' }}>
               PEPTIDE CORTEX
             </span>
+            <SectionLabel section="shop" />
           </Link>
-          <span style={{ marginLeft: 'auto' }} />
-          <Link href="/shop" style={{ ...KICKER, color: '#1A1D1F', textDecoration: 'none' }}>
-            Shop
-          </Link>
-          {showCart && <CartCount />}
+          <PrimaryNav signedIn={signedIn} section="shop">
+            {signedIn && (
+              <Link
+                href="/shop/orders"
+                className={NAV_LINK}
+                style={{ ...NAV_TYPE, color: '#7E878E' }}
+              >
+                Your orders
+              </Link>
+            )}
+            {showCart && <CartCount />}
+          </PrimaryNav>
         </div>
       </header>
 

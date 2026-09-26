@@ -2,26 +2,21 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { loginUrl } from '@/lib/auth/next'
 import { currentPath } from '@/lib/auth/pathname'
-import Sidebar from '@/components/Sidebar'
-import MobileNav from '@/components/MobileNav'
-import TopBar from '@/components/TopBar'
-import CortexStrip from '@/components/CortexStrip'
+import { LibraryChrome } from '@/components/library/LibraryChrome'
 
+// Vendor directory: part of the library.
+//
+// Moved off the legacy Sidebar / MobileNav / TopBar frame onto LibraryChrome
+// (2026-09-26) so this page carries the same Bench · Library · Shop menu as
+// the rest of the site. The page body is unchanged; the container below keeps
+// the width and padding the old frame gave it.
 export default async function VendorsLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect(loginUrl(currentPath('/vendors')))
   return (
-    <div className="min-h-screen bg-[#F5F0E8]">
-      <Sidebar />
-      <MobileNav />
-      <div className="md:ml-[256px]">
-        <div className="hidden md:block">
-          <TopBar />
-          <CortexStrip />
-        </div>
-        <main className="max-w-7xl mx-auto px-4 md:px-6 pt-20 md:pt-6 pb-8">{children}</main>
-      </div>
-    </div>
+    <LibraryChrome signedIn>
+      <div className="mx-auto max-w-7xl px-4 pb-8 pt-6 font-sans md:px-6">{children}</div>
+    </LibraryChrome>
   )
 }

@@ -114,9 +114,11 @@ export function CartClient() {
               <button
                 type="button"
                 onClick={() => cart.remove(line.slug)}
+                // Phones: a 44px, 12px target. From md up, the original 9.5px label.
+                className="min-h-[44px] text-[12px] md:min-h-0 md:text-[9.5px]"
                 style={{
                   ...KICKER,
-                  fontSize: 9.5,
+                  fontSize: undefined,
                   background: 'none',
                   border: 'none',
                   padding: '6px 0 0',
