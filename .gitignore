@@ -43,3 +43,6 @@ design/vial-labels/*.zip
 # Generated label output — regenerate with design/vial-labels/*.mjs
 design/liene-labels/
 design/liene-4x7/
+
+# Claude Code agent worktrees (local only)
+.claude/worktrees/
