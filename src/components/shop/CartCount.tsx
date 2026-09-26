@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { cart } from '@/lib/shop/cart'
 import { KICKER, MONO } from '@/components/shop/ShopChrome'
+import { NAV_LINK } from '@/components/nav/PrimaryNav'
 
 export function CartCount() {
   const [count, setCount] = useState<number | null>(null)
@@ -29,7 +30,8 @@ export function CartCount() {
   return (
     <Link
       href="/shop/cart"
-      style={{ ...KICKER, fontFamily: MONO, letterSpacing: '.1em', color: '#1A1D1F' }}
+      className={NAV_LINK}
+      style={{ ...KICKER, fontSize: undefined, fontFamily: MONO, letterSpacing: '.1em', color: '#1A1D1F' }}
     >
       Cart ({count})
     </Link>

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { COUNTS } from '@/lib/catalog'
 import { MONTHLY_PRICE, annualPerMonth, annualSaving, money, priceFootnote, proCta } from '@/lib/pricing'
 
 /**
@@ -36,13 +37,13 @@ export default function Pricing() {
             <span className="font-sans text-[46px] font-extralight leading-none text-ink">$0</span>
             <div className="flex flex-col gap-2.5">
               <span className="text-[14.5px] leading-[1.7] text-dim">
-                The full 58-compound library, evidence grades and sources
+                The full {COUNTS.compounds}-compound library, evidence grades and sources
               </span>
               <span className="text-[14.5px] leading-[1.7] text-dim">
                 Your stack, dose log, cycle and reconstitution maths
               </span>
               <span className="text-[14.5px] leading-[1.7] text-dim">
-                One resolved compound — everything else stays visible
+                One peptide from your stack shown in full — the rest stays visible
               </span>
             </div>
             <Link
@@ -68,10 +69,10 @@ export default function Pricing() {
             <div className="flex flex-col gap-2.5">
               <span className="text-[14.5px] leading-[1.7] text-dim">Everything in Free</span>
               <span className="text-[14.5px] leading-[1.7] text-dim">
-                Bloodwork that re-tunes the form
+                Bloodwork: see which markers are outside range
               </span>
               <span className="text-[14.5px] leading-[1.7] text-dim">
-                Unlimited resolved compounds and unlimited Cortex
+                Your whole stack shown in full, and unlimited Cortex
               </span>
             </div>
             <Link

@@ -18,7 +18,7 @@ const JOST = 'Jost, sans-serif'
 
 export function AgeGate({ next }: { next: string }) {
   return (
-    <ShopChrome showCart={false}>
+    <ShopChrome showCart={false} signedIn={false}>
       <div
         style={{
           maxWidth: 'min(100%, 1120px)',

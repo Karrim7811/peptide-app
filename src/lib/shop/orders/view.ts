@@ -331,3 +331,62 @@ export function orderView(order: Order, pickup: PickupLocation | null = null): O
     items: lineViews(order),
   }
 }
+
+// ── The orders list ─────────────────────────────────────────────────────────
+//
+// An order page was reachable only from the confirmation that follows checkout
+// and from the receipt email. Close the tab and lose the email, and there was
+// no way back to it. /shop/orders lists them; this is each row, as data.
+
+/** What the list reads per order — less than a full Order, no address. */
+export interface OrderSummary {
+  paymentReference: string
+  status: OrderStatus
+  paymentProvider: PaymentProviderId
+  shippingMethod: string
+  totalCents: number
+  createdAt: string | null
+  items: Array<{ productName: string; qty: number }>
+}
+
+export interface OrderListRow {
+  reference: string
+  href: string
+  /** The same customer-facing label the order page uses. */
+  label: string
+  placed: string | null
+  total: string
+  /** '2 × BPC-157 5 mg, TB-500 …' — enough to tell two orders apart. */
+  what: string
+}
+
+export function orderListRow(order: OrderSummary): OrderListRow {
+  const stage = orderStage(order.status, order.paymentProvider)
+  // A collected order is never "Shipped". Same wording as its timeline.
+  let collect = false
+  try {
+    collect = shippingMethod(order.shippingMethod).fulfilment === 'collect'
+  } catch {
+    // A retired method id must not take the whole list down; it only loses
+    // the collection wording.
+  }
+  const label =
+    collect && stage === 'shipped'
+      ? 'Ready to collect'
+      : collect && stage === 'delivered'
+        ? 'Collected'
+        : STAGE_COPY[stage].label
+
+  const names = order.items.map((item) =>
+    item.qty > 1 ? `${item.qty} × ${item.productName}` : item.productName,
+  )
+
+  return {
+    reference: order.paymentReference,
+    href: `/shop/order/${encodeURIComponent(order.paymentReference)}`,
+    label,
+    placed: stamp(order.createdAt),
+    total: formatPrice(order.totalCents),
+    what: names.length === 0 ? 'No items recorded' : names.join(', '),
+  }
+}

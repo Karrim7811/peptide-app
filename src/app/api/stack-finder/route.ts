@@ -54,7 +54,7 @@ Drug Interactions: ${peptide.drugInteractions}`
 
     const systemPrompt = `You are Cortex AI, an educational peptide research reference tool. You summarize what published research literature reports about how peptides are commonly combined. Everything you provide is for educational and research reference only — NOT medical advice, diagnosis, or treatment recommendations.
 
-## All 58 peptides in the knowledge base:
+## All ${PEPTIDE_KNOWLEDGE.length} peptides in the knowledge base:
 ${allPeptides}
 
 Your task: Given a specific peptide, summarize complementary peptides that research literature commonly references alongside it.

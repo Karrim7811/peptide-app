@@ -2,7 +2,7 @@ const CARDS = [
   {
     tag: 'SOURCED',
     varName: '--hue-cy',
-    body: 'Every claim traces to the reference library, and every number on your field traces to something you logged.',
+    body: 'Every claim traces to the reference library, and every number about your stack traces to something you logged.',
   },
   {
     tag: 'REFERENCE, NOT RX',

@@ -1,9 +1,9 @@
 // One vial on the bench, dressed in the label we print for real vials.
 //
-// The label follows design/vial-labels/generate-labels.mjs, paper skin: paper
-// ground, ink rules, a teal dot beside the serif wordmark, the compound in
-// Cormorant, the spec in JetBrains Mono, a dashed batch zone, and the ink
-// "research use only" band along the bottom. Where the printed label carries a
+// The label follows the teal print artwork (liene-labels-teal): teal ground, a
+// white dot and spaced serif wordmark, the compound in black Cormorant with a
+// rule under it, the spec in white JetBrains Mono, a white-ruled batch box, and
+// the black band with "research use only" in condensed red. Where the printed label carries a
 // lot number, this one carries what the person recorded — how much is left.
 //
 // The liquid is drawn only where a level is actually known (see bench.ts).
@@ -12,16 +12,19 @@ import Link from 'next/link'
 import type { BenchVial as Vial } from '@/lib/bench'
 
 const INK = '#1A1D1F'
-const INK2 = '#3B4045'
 const INK3 = '#7E878E'
-const PAPER = '#E6E9EB'
 const TEAL = '#1A8A9E'
 const SERIF = "'Cormorant Garamond', Georgia, serif"
 const SANS = 'Jost, sans-serif'
 const MONO = "'JetBrains Mono', ui-monospace, monospace"
+// Sampled from liene-labels-teal/*.png, the print artwork.
+const LABEL_TEAL = '#2E9AA6'
+const LABEL_BAND = '#0E1418'
+const LABEL_RED = '#AE2828'
+const CONDENSED = "'Bebas Neue', 'Oswald', Impact, 'Arial Narrow', sans-serif"
 
-const W = 112
-const BODY_H = 190
+const W = 136
+const BODY_H = 206
 
 export function BenchVial({ vial }: { vial: Vial }) {
   const empty = !vial.recorded
@@ -117,63 +120,70 @@ export function BenchVial({ vial }: { vial: Vial }) {
               </span>
             </span>
           ) : (
-            // The label: wraps the glass from 36px down, as a printed one would.
+            // The label: the teal print label (liene-labels-teal), front panel.
+            // The write-on reconstitution box sits on the back of the real
+            // wrap, so it is not drawn; everything else keeps its colour, type
+            // and order. Where the print carries lot and dates, this carries
+            // what the person recorded — how much is left.
             <span
               style={{
                 position: 'absolute',
                 left: 0,
                 right: 0,
-                top: 34,
-                background: PAPER,
-                borderTop: `1px solid ${INK}`,
-                borderBottom: `1px solid ${INK}`,
+                top: 30,
+                background: LABEL_TEAL,
                 display: 'flex',
                 flexDirection: 'column',
               }}
             >
-              <span style={{ padding: '7px 8px 0', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ padding: '8px 9px 0', display: 'flex', alignItems: 'center', gap: 5 }}>
                 <span
-                  style={{ width: 4, height: 4, borderRadius: '50%', background: TEAL, flex: 'none' }}
+                  style={{ width: 5, height: 5, borderRadius: '50%', background: '#FFFFFF', flex: 'none' }}
                 />
                 <span
                   style={{
                     fontFamily: SERIF,
                     fontSize: 6.5,
                     fontWeight: 500,
-                    letterSpacing: '.16em',
-                    color: INK,
+                    letterSpacing: '.3em',
+                    color: '#FFFFFF',
                     whiteSpace: 'nowrap',
                   }}
                 >
                   PEPTIDE CORTEX
                 </span>
               </span>
+              <span style={{ padding: '5px 9px 0', display: 'flex' }}>
+                <span
+                  style={{
+                    fontFamily: SERIF,
+                    fontSize: 24,
+                    fontWeight: 500,
+                    lineHeight: 1,
+                    color: '#000000',
+                    borderBottom: '1.5px solid #000000',
+                    paddingBottom: 1,
+                    maxWidth: '100%',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    fontVariantNumeric: 'lining-nums',
+                  }}
+                >
+                  {vial.name}
+                </span>
+              </span>
+              <span style={{ padding: '6px 9px 0', fontFamily: MONO, fontSize: 11, color: '#FFFFFF' }}>
+                {vial.size ?? 'size —'}
+              </span>
               <span
                 style={{
-                  padding: '6px 8px 0',
-                  fontFamily: SERIF,
-                  fontSize: 19,
-                  lineHeight: 1,
-                  color: INK,
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  fontVariantNumeric: 'lining-nums',
-                }}
-              >
-                {vial.name}
-              </span>
-              <span style={{ padding: '4px 8px 0', fontFamily: MONO, fontSize: 8.5, color: INK2 }}>
-                {vial.size ?? 'size not recorded'}
-              </span>
-              <span
-                style={{
-                  margin: '6px 7px 7px',
-                  padding: '3px 4px',
-                  border: `1px dashed rgba(26,29,31,.45)`,
+                  margin: '6px 9px 0',
+                  padding: '3px 5px',
+                  border: '1px solid rgba(255,255,255,.85)',
                   fontFamily: MONO,
-                  fontSize: 8,
-                  color: INK,
+                  fontSize: 8.5,
+                  color: '#FFFFFF',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -181,15 +191,19 @@ export function BenchVial({ vial }: { vial: Vial }) {
               >
                 {vial.caption.toUpperCase()}
               </span>
+              <span style={{ padding: '6px 9px 8px', fontFamily: MONO, fontSize: 7, color: '#FFFFFF' }}>
+                peptidecortex.com
+              </span>
               <span
                 style={{
-                  background: INK,
-                  color: '#FAFAF8',
-                  fontFamily: SANS,
-                  fontSize: 5.2,
-                  fontWeight: 500,
-                  letterSpacing: '.04em',
-                  padding: '3px 4px',
+                  background: LABEL_BAND,
+                  color: LABEL_RED,
+                  fontFamily: CONDENSED,
+                  fontSize: 10,
+                  fontWeight: 400,
+                  letterSpacing: '.03em',
+                  lineHeight: 1,
+                  padding: '5px 4px',
                   textAlign: 'center',
                   whiteSpace: 'nowrap',
                 }}
@@ -217,15 +231,15 @@ export function BenchVial({ vial }: { vial: Vial }) {
       {vial.recorded && (
         <Link
           href={vial.editHref}
+          // Phones: a 44px, 12px target. From md up, the original 24px / 9.5px.
+          className="inline-flex min-h-[44px] items-center text-[12px] md:block md:min-h-[24px] md:text-[9.5px]"
           style={{
             marginTop: 6,
             fontFamily: SANS,
-            fontSize: 9.5,
             letterSpacing: '.18em',
             textTransform: 'uppercase',
             color: INK,
             textDecoration: 'underline',
-            minHeight: 24,
           }}
         >
           Edit

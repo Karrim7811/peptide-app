@@ -7,31 +7,31 @@
 const LAYERS = [
   {
     n: '01',
-    tag: 'WHOLE',
+    tag: 'ALL',
     hueClass: 'text-accent',
-    title: 'The form',
-    body: 'Your whole protocol as one surface. Cortex says one thing, then goes quiet.',
+    title: 'Your whole stack',
+    body: 'Everything you take on one screen, with a one-line summary of where it stands.',
   },
   {
     n: '02',
     tag: 'GOAL',
     hueClass: 'text-hue-cy',
-    title: 'A system',
-    body: 'Repair, GH axis, metabolic. Interactions live here as geometry, not as a form you fill in.',
+    title: 'One goal',
+    body: 'Repair, GH axis, metabolic. The peptides you take for that goal, and what the library has for it.',
   },
   {
     n: '03',
-    tag: 'COMPOUND',
+    tag: 'PEPTIDE',
     hueClass: 'text-hue-cy',
-    title: 'One molecule',
-    body: 'The reference entry and your own history with it are the same object, seen at the same depth.',
+    title: 'One peptide',
+    body: 'The library entry and your own history with it, side by side.',
   },
   {
     n: '04',
-    tag: 'VERIFY',
+    tag: 'DETAILS',
     hueClass: 'text-gold',
-    title: 'The claim, the math',
-    body: 'Deliberately plain. The arithmetic with its working shown, and the record behind every grade.',
+    title: 'The details',
+    body: 'Deliberately plain. The mixing calculator with its working shown, your dose history and your injection sites.',
   },
 ] as const
 

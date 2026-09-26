@@ -189,7 +189,7 @@ export function buildWholeLayer(input: GeometryInput): FieldGeometry {
         ? `${count} LOCKED`
         : tense
           ? `${worst!.supplyDays}D LEFT`
-          : `${count} RESOLVED`,
+          : `${count} IN STACK`,
       size: 10.5,
       maxWidth: 104,
       ux: n === 1 ? 0 : Math.cos(angle),
@@ -365,7 +365,7 @@ export function buildRegionLayer(
         ? `${compound.grade} · ${resolved.supply}%`
         : locked
           ? `${compound.grade} · LOCKED`
-          : `${compound.grade} · NOT YOURS`
+          : `${compound.grade} · NOT IN STACK`
 
     labels.push({
       x: p.x,

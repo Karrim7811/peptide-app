@@ -59,6 +59,23 @@ export default async function OrderPage({ params }: { params: { ref: string } })
             padding: 'clamp(24px,3vw,40px) clamp(16px,3vw,32px) 60px',
           }}
         >
+          {/* The way back to every other order; there was none before. */}
+          <Link
+            href="/shop/orders"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              minHeight: 44,
+              marginBottom: 8,
+              fontFamily: 'Jost, sans-serif',
+              fontSize: 12,
+              letterSpacing: '.18em',
+              textTransform: 'uppercase',
+              color: '#1A1D1F',
+            }}
+          >
+            ← Your orders
+          </Link>
           <div style={{ display: 'flex', gap: 18, alignItems: 'baseline', flexWrap: 'wrap' }}>
             <span style={KICKER}>Order</span>
             <span

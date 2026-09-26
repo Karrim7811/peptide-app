@@ -19,7 +19,7 @@ import { matchCompounds } from '@/lib/mirror/search'
 export default function AddFirstPeptide({
   onSelectCompound,
   title = 'ADD YOUR FIRST PEPTIDE',
-  blurb = 'Search the library by name. Open a result and record the vial — the field draws itself from what you hold.',
+  blurb = 'Search the library by name, open a result and add your vial. Everything you add shows up here.',
   floating = true,
 }: {
   onSelectCompound: (id: string) => void

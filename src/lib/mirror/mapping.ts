@@ -272,7 +272,7 @@ export function toDoseLog(
   )
 
   return doseLogs
-    .map((row) => {
+    .map((row): DoseLogEntry | null => {
       const compoundId = compoundByItemId.get(row.stack_item_id)
       if (!compoundId) return null
       const takenAt = new Date(row.taken_at)
@@ -281,6 +281,7 @@ export function toDoseLog(
         id: compoundId,
         dose: row.dose ?? '',
         site: nearestSite(takenAt, injectionSites) ?? '—',
+        logId: row.id,
       }
     })
     .filter((entry): entry is DoseLogEntry => entry !== null)

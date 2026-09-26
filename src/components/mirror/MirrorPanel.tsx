@@ -23,7 +23,6 @@ import {
   COUNTS,
   CYCLE,
   compoundsInCategory,
-  taxonomyMismatch,
   type Category,
   type Compound,
 } from '@/lib/catalog'
@@ -180,11 +179,11 @@ function LayerWhole({
       .join(' · ')
 
     const state = tense
-      ? 'THINNING'
+      ? 'RUNNING LOW'
       : locked.length
         ? `${locked.length} LOCKED`
         : marks.length
-          ? 'RE-TUNED'
+          ? 'OUT OF RANGE'
           : 'STEADY'
 
     const stateColor = tense ? hueVar('go') : locked.length ? 'var(--faint)' : marks.length ? 'var(--accent)' : 'var(--faint)'
@@ -207,7 +206,7 @@ function LayerWhole({
       )}
 
       <div className="flex flex-col gap-3">
-        <SectionLabel>YOUR GOALS · CLICK TO ENTER</SectionLabel>
+        <SectionLabel>YOUR GOALS · TAP TO OPEN</SectionLabel>
         <div className="flex flex-col gap-px bg-hair">
           {regionRows.map((r) => (
             <button
@@ -236,8 +235,8 @@ function LayerWhole({
             // which is empty. These are the way in.
             <div className="flex flex-col gap-[14px] bg-panel px-4 py-[18px]">
               <p className="text-[14px] leading-[1.7] text-dim">
-                Nothing mapped yet. Search by name in the box on the field, or browse a goal below —
-                open any compound and use ADD TO STACK. The form draws itself from what you hold.
+                Your stack is empty. Search for a peptide by name, or browse a goal below — open any
+                peptide and tap ADD TO STACK.
               </p>
               <div className="flex flex-col gap-px bg-hair">
                 {STARTING_GOALS.map((category) => (
@@ -266,19 +265,19 @@ function LayerWhole({
       </div>
 
       <div className="flex flex-col gap-3">
-        <SectionLabel>LABS · AN INPUT, NOT A PAGE</SectionLabel>
+        <SectionLabel>BLOODWORK</SectionLabel>
         {ent.isFree ? (
           <div className="flex flex-col gap-[9px] border border-hair p-[18px]">
             <span className="font-mono text-[10px] tracking-[0.16em] text-faint">BLOODWORK · PRO</span>
             <p className="text-[13.5px] leading-[1.75] text-dim">
-              Bloodwork re-tunes the whole form against your real values. It needs the full stack to be worth
-              reading, so it unlocks with Pro.
+              Add your lab results and any marker outside its normal range is flagged on the goal it relates
+              to. It needs your full stack to be useful, so it comes with Pro.
             </p>
           </div>
         ) : ent.labsOn ? (
           <div className="flex flex-col gap-3">
             <span className="font-mono text-[10px] tracking-[0.12em] text-accent">
-              {ent.markers(MARKERS).length} MARKERS · FORM RE-TUNED
+              {ent.markers(MARKERS).length} MARKERS ATTACHED
             </span>
             <div className="flex flex-col gap-px bg-hair">
               {ent.markers(MARKERS).map((m) => {
@@ -315,8 +314,8 @@ function LayerWhole({
           <div className="flex flex-col gap-[9px] border border-dashed border-hair p-[18px]">
             <p className="text-[14.5px] leading-[1.6] text-ink">No bloodwork attached yet.</p>
             <p className="text-[13px] leading-[1.7] text-faint">
-              Eight markers re-tune the whole form. Regions brighten or thin against your real values instead of
-              producing a separate report.
+              Add your lab results and any marker outside its normal range is flagged on the goal it relates
+              to, right here — no separate report.
             </p>
             {onOpenBloodwork && (
               <button
@@ -343,9 +342,8 @@ function LayerWhole({
               : `${ent.lockedCount} of your compounds are locked`}
           </span>
           <p className="text-[14px] leading-[1.75] text-dim">
-            Free holds one. The rest of your stack is still drawn on the form — dashed, dimmed, and still pulling
-            edges toward what you hold — so you can see the shape of what you are not seeing. Unlock to resolve
-            them.
+            Free shows one peptide in full. The rest of your stack still appears, dimmed, so you know it is
+            there. Upgrade to open them all.
           </p>
           <Link
             href="/pricing"
@@ -360,11 +358,11 @@ function LayerWhole({
       )}
 
       <div className="flex flex-col gap-[10px]">
-        <SectionLabel>THE REST OF THE FIELD</SectionLabel>
+        <SectionLabel>THE REST OF THE LIBRARY</SectionLabel>
         <p className="text-[14px] leading-[1.8] text-dim">
-          {empties.length} of the library&rsquo;s {COUNTS.categories} goals hold nothing of yours yet &mdash;{' '}
-          {COUNTS.compounds - ent.stackCount} compounds you have not mapped. They stay faint on the form until you
-          do.
+          {empties.length} of the library&rsquo;s {COUNTS.categories} goals have nothing from your stack yet &mdash;{' '}
+          {COUNTS.compounds - ent.stackCount} compounds you have not added. They stay faint until you add
+          them.
         </p>
         <div className="flex flex-wrap gap-px bg-hair">
           {empties.map((c) => (
@@ -399,15 +397,15 @@ function LayerRegion({ ent, regionId, onSelectCompound }: { ent: Entitlements; r
   const worstHere = [...mineHere].sort((a, b) => a.supplyDays - b.supplyDays)[0]
 
   const narration = worstHere && worstHere.supplyDays <= 7
-    ? `${COMPOUNDS[worstHere.id]?.name ?? worstHere.id} runs this goal down in ${worstHere.supplyDays} days. Everything else here is steady.`
+    ? `${COMPOUNDS[worstHere.id]?.name ?? worstHere.id} is running low — about ${worstHere.supplyDays} days left. Everything else here is fine.`
     : mineHere.length
-      ? `This goal is steady. ${mineHere.length} of the library’s ${catalogHere.length} compounds here ${isAre(mineHere.length)} yours.`
+      ? `${mineHere.length} of the library’s ${catalogHere.length} compounds for this goal ${isAre(mineHere.length)} in your stack.`
       : lockedHere.length
-        ? `${lockedHere.length} compounds here ${isAre(lockedHere.length)} yours, ${lockedHere.length === 1 ? 'and it is' : 'and they are'} locked. I can list them and read each one — I cannot weigh them against each other yet.`
-        : `You hold nothing in this goal yet. ${catalogHere.length} compounds sit here in the library.`
+        ? `${lockedHere.length} compounds here ${isAre(lockedHere.length)} in your stack, but locked on Free. You can still read each one.`
+        : `Nothing from your stack in this goal yet. The library has ${catalogHere.length} compounds here.`
 
   const meta = `${catalogHere.length} IN CATALOG · ${
-    lockedHere.length ? `${mineHere.length} RESOLVED · ${lockedHere.length} LOCKED` : heldLabel(ownedHere.length)
+    lockedHere.length ? `${mineHere.length} SHOWN · ${lockedHere.length} LOCKED` : heldLabel(ownedHere.length)
   } · BEST GRADE ${bestGrade(catalogHere)}`
 
   const grade = bestGrade(catalogHere)
@@ -432,7 +430,7 @@ function LayerRegion({ ent, regionId, onSelectCompound }: { ent: Entitlements; r
       <NarrationHeader label={`CORTEX · GOAL ${region.label}`} text={narration} meta={meta} />
       <div className="flex flex-col gap-5 px-[22px] pb-5">
         <div className="flex flex-col gap-[11px]">
-          <SectionLabel>GOAL STATE</SectionLabel>
+          <SectionLabel>THIS GOAL</SectionLabel>
           <div className="flex flex-wrap gap-5">
             <Stat value={grade} label="BEST EVIDENCE" color="var(--accent)" />
             <Stat value={String(catalogHere.length)} label="IN CATALOG" />
@@ -453,7 +451,7 @@ function LayerRegion({ ent, regionId, onSelectCompound }: { ent: Entitlements; r
         )}
 
         <div className="flex flex-col gap-[10px]">
-          <SectionLabel>COMPOUNDS · CLICK TO RESOLVE</SectionLabel>
+          <SectionLabel>COMPOUNDS · TAP TO OPEN</SectionLabel>
           <div className="flex flex-col gap-px bg-hair">
             {rows.map(({ c, tag, tagColor, dotColor, dotOpacity }) => (
               <button
@@ -495,11 +493,13 @@ function LayerCompound({
   compoundId,
   records,
   onOpenVerify,
+  onSelectCompound,
 }: {
   ent: Entitlements
   compoundId: string | null
   records: CompoundRecords
   onOpenVerify: (tab: VerifyTab) => void
+  onSelectCompound: (id: string) => void
 }) {
   const compound = compoundId ? COMPOUNDS[compoundId] : null
 
@@ -518,26 +518,22 @@ function LayerCompound({
   const cycle = ent.cycleReport()
 
   const narration = heldEntry && heldEntry.supplyDays <= 7
-    ? `This is the thinning node — ${heldEntry.supplyDays} days of supply against ${cycle ? cycle.daysLeft : '—'} days left in the cycle.`
+    ? `Running low — about ${heldEntry.supplyDays} days left${cycle ? `, with ${cycle.daysLeft} days to go in your cycle` : ''}.`
     : heldEntry
-      ? `This node is stable — ${heldEntry.supplyDays} days of supply against ${heldEntry.days} days logged. On the evidence, ${evidenceProse(compound.evidence)}.`
+      ? `Enough for about ${heldEntry.supplyDays} more days on your current schedule. On the evidence, ${evidenceProse(compound.evidence)}.`
       : lockedEntry
-        ? `This one is yours — ${lockedEntry.days} days logged — but Free will not resolve it. The arithmetic and the record below stay open regardless.`
-        : `Not in your stack. ${compound.name} sits adjacent to what you already hold.`
+        ? 'This one is in your stack, but Free shows one peptide in full and this one is locked. The mixing calculator and your dose history stay open.'
+        : `${compound.name} is not in your stack yet.`
 
   const meta = `EVIDENCE ${compound.grade} · ${
     heldEntry ? `${heldEntry.supply}% REMAINING` : entry ? 'IN YOUR STACK · LOCKED' : 'NOT IN YOUR STACK'
   }`
 
-  const mismatch = taxonomyMismatch(compound)
-
+  // taxonomyMismatch() in src/lib/catalog.ts still flags entries whose filed
+  // category and stated purpose disagree. That is a data-quality note for
+  // whoever edits the source spreadsheet, not something a reader can act on,
+  // so it is not rendered here. Audit with mismatchedCompounds().
   const facts: Array<{ k: string; v: string }> = [
-    mismatch
-      ? {
-          k: 'FLAGGED · LIBRARY DISAGREES WITH ITSELF',
-          v: `Filed under ${compound.category}, but its stated purpose — "${compound.purpose}" — points to ${mismatch.name}. The effect text below may carry over from ${compound.category}. Cortex shows the record as written rather than guessing which field is right — worth a look at the source spreadsheet.`,
-        }
-      : null,
     { k: 'KEY EFFECTS', v: compound.effects },
     { k: 'DOSAGE FIELD · LIBRARY WORDING, UNEDITED', v: compound.dosage || 'N/A' },
     { k: 'CAUTIONS', v: compound.cautions },
@@ -549,9 +545,9 @@ function LayerCompound({
   const historyUnit = entry ? 'days' : 'links'
   const historyNote = entry
     ? lockedEntry
-      ? `${entry.schedule} · ${entry.site} most often. Logged and yours — Free just will not resolve it on the form.`
+      ? `${entry.schedule} · ${entry.site} most often. Your log is kept — Free just does not show it in full.`
       : `${entry.schedule} · ${entry.site} most often`
-    : `Not in your stack. Adjacent to ${compound.stacksWith.length} compounds you hold or could.`
+    : `Not in your stack. Often stacked with ${compound.stacksWith.length} compounds in the library.`
 
   const edgeRows = compound.stacksWith
     .map((id) => COMPOUNDS[id])
@@ -563,7 +559,7 @@ function LayerCompound({
       const oLocked = ent.lockedEntry(o.id)
       const tense = !!oEntry && oEntry.supplyDays <= 7
       const color = tense ? hueVar('go') : oEntry ? hueVar(CATEGORIES.find((c) => c.id === o.catId)?.hue ?? 'pu') : 'var(--faint)'
-      const kind = tense ? 'TENSION' : oEntry ? 'BOTH YOURS' : oLocked ? 'LOCKED' : 'ADJACENT'
+      const kind = tense ? 'LOW SUPPLY' : oEntry ? 'IN YOUR STACK' : oLocked ? 'LOCKED' : 'NOT IN YOUR STACK'
       const label = `${o.name} — ${oEntry ? 'in your stack' : oLocked ? 'in your stack, locked' : o.category.toLowerCase()}`
       return { o, label, kind, color, bold: !!oEntry }
     })
@@ -634,13 +630,17 @@ function LayerCompound({
         </div>
 
         <div className="flex flex-col gap-[10px]">
-          <SectionLabel>EDGES · {compound.stacksWith.length} STACKING RELATIONSHIPS</SectionLabel>
+          <SectionLabel>OFTEN STACKED WITH ({compound.stacksWith.length})</SectionLabel>
           <div className="flex flex-col gap-[9px]">
             {edgeRows.map(({ o, label, kind, color, bold }) => (
               <button
                 key={o.id}
                 type="button"
-                onClick={() => onOpenVerify('math')}
+                // Opens the partner. It used to open THE MATH for the compound
+                // already in view, which is not what a row naming another
+                // compound promises.
+                onClick={() => onSelectCompound(o.id)}
+                aria-label={`Open ${o.name}`}
                 className="flex min-h-[44px] items-center gap-[11px] text-left"
               >
                 <span className="w-5 flex-shrink-0" style={{ height: bold ? 2 : 1, backgroundColor: color }} />
@@ -671,14 +671,14 @@ function LayerCompound({
         <InteractionCheck compoundId={compound.id} ent={ent} />
 
         <div className="flex flex-col gap-[10px]">
-          <SectionLabel>TOOLS THIS COMPOUND MAKES RELEVANT</SectionLabel>
+          <SectionLabel>TOOLS</SectionLabel>
           <div className="flex flex-wrap gap-px bg-hair">
             <button
               type="button"
               onClick={() => onOpenVerify('math')}
               className="flex min-h-[44px] flex-1 basis-[130px] items-center justify-center bg-panel font-mono text-[9.5px] tracking-[0.1em] text-gold"
             >
-              RECONSTITUTE
+              MIXING CALCULATOR
             </button>
             <LogDoseButton
               compoundId={compound.id}
@@ -691,14 +691,14 @@ function LayerCompound({
               onClick={() => onOpenVerify('rotation')}
               className="flex min-h-[44px] flex-1 basis-[130px] items-center justify-center bg-panel font-mono text-[9.5px] tracking-[0.1em] text-dim"
             >
-              ROTATION
+              INJECTION SITES
             </button>
             <button
               type="button"
               onClick={() => onOpenVerify('record')}
               className="flex min-h-[44px] flex-1 basis-[130px] items-center justify-center bg-panel font-mono text-[9.5px] tracking-[0.1em] text-dim"
             >
-              THE RECORD
+              DOSE HISTORY
             </button>
           </div>
           <p className="font-mono text-[10px] leading-[1.9] tracking-[0.06em] text-faint">{DISCLAIMER}</p>
@@ -731,19 +731,19 @@ export default function MirrorPanel({
     // nonsense against nothing at all.
     const narration =
       ent.stackCount === 0
-        ? 'Nothing on the form yet. Search for a peptide in the box on the field, open it, and add it — the moment you do, this becomes a map of your own protocol rather than an empty one.'
+        ? 'Your stack is empty. Search for a peptide by name, open it and tap ADD TO STACK — this page then shows your own stack.'
         : ent.isFree
-          ? `${ent.resolvedCount === 1 ? 'One compound resolved, ' : `${ent.resolvedCount} compounds resolved, `}${ent.lockedCount} held back. The dashed goals are yours — I can see them pulling, I just cannot read them for you yet.`
+          ? `${ent.resolvedCount === 1 ? 'One peptide shown, ' : `${ent.resolvedCount} peptides shown, `}${ent.lockedCount} locked. Free shows one peptide in full — the dimmed ones are in your stack too.`
           : ent.labsOn
-            ? `Your labs are attached, and ${offMarkers.length} markers sit outside range. Those goals have thinned; the rest of the form is steady.`
-            : `Your ${mine.length} active goals are holding. One is pulling against the rest.`
+            ? `Your labs are attached, and ${offMarkers.length} ${offMarkers.length === 1 ? 'marker is' : 'markers are'} outside range. The goals they relate to are flagged below.`
+            : `Your stack covers ${mine.length} ${mine.length === 1 ? 'goal' : 'goals'}. Tap one below to see what is in it.`
 
     // Read the cycle through its accessor, never the sample constant: it is
     // live data now, and cycleReport() is the single owner of how the cycle is
     // reported at each tier.
     const report = ent.cycleReport()
     const meta = ent.isFree
-      ? `FREE · ${ent.resolvedCount} OF ${ent.stackCount} RESOLVED · ${COUNTS.compounds} IN LIBRARY, ALL READABLE`
+      ? `FREE · ${ent.resolvedCount} OF ${ent.stackCount} SHOWN · ${COUNTS.compounds} IN LIBRARY, ALL READABLE`
       : [
           report ? `${report.day} DAYS` : null,
           `${ent.stackCount} COMPOUNDS`,
@@ -754,7 +754,7 @@ export default function MirrorPanel({
 
     return (
       <div className="flex flex-col">
-        <NarrationHeader label="CORTEX · NARRATING" text={narration} meta={meta} />
+        <NarrationHeader label="CORTEX · OVERVIEW" text={narration} meta={meta} />
         <LayerWhole ent={ent} onSelectRegion={onSelectRegion} onSelectCompound={onSelectCompound} onOpenBloodwork={onOpenBloodwork} />
       </div>
     )
@@ -771,6 +771,7 @@ export default function MirrorPanel({
         compoundId={compoundId}
         records={records}
         onOpenVerify={onOpenVerify}
+        onSelectCompound={onSelectCompound}
       />
     )
   }

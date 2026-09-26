@@ -1,5 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { loginUrl } from '@/lib/auth/next'
+import { currentPath } from '@/lib/auth/pathname'
 
 // The Mirror is a full-bleed, self-chroming surface: it owns its own header,
 // breadcrumb, ground toggle and footer, and sizes itself to exactly 100vh with
@@ -9,24 +11,18 @@ import { createClient } from '@/lib/supabase/server'
 // viewport. That chrome still serves the legacy CRUD routes (/stack, /log,
 // /cycle …), which keep their own layouts; it just has no place here.
 //
-// The auth gate stays, plus one more: a user who has never finished
-// onboarding (profiles.onboarded_at IS NULL) is sent to /welcome first. That
-// flow is what seeds a real stack, so the field means something the first
-// time this layout's children ever render for them.
+// Only the auth gate stays. This layout used to send anyone with
+// profiles.onboarded_at IS NULL to /welcome first, which meant a new account
+// that clicked "Log dose" or "Edit" on the bench was detoured through a
+// four-step form instead of landing where it clicked. The bench now has its
+// own add form, so the Mirror opens directly; /welcome is still there for
+// anyone who wants it, it is just not forced.
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('onboarded_at')
-    .eq('id', user.id)
-    .maybeSingle()
-
-  if (!profile?.onboarded_at) redirect('/welcome')
+  if (!user) redirect(loginUrl(currentPath('/mirror')))
 
   return <>{children}</>
 }

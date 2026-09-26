@@ -17,7 +17,7 @@ export default function FreeCard() {
           <span className="font-mono text-[11px] text-faint">forever</span>
         </div>
         <span className="text-[14.5px] leading-[1.75] text-dim" style={{ textWrap: 'pretty' }}>
-          The whole reference library, one compound of your own resolved on the form.
+          The whole reference library, plus one peptide from your own stack shown in full.
         </span>
       </div>
 

@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest'
 import {
   STAGE_COPY,
   orderStage,
+  orderListRow,
   orderTimeline,
   orderView,
+  type OrderSummary,
 } from '@/lib/shop/orders/view'
 import type { Order } from '@/lib/shop/orders/types'
 
@@ -256,5 +258,42 @@ describe('a collected order', () => {
     expect(posted.chargeLabel).toBe('Shipping')
     expect(posted.address).toContain('San Francisco, CA 94103')
     expect(posted.methodLong).toMatch(/USPS/)
+  })
+})
+
+describe('orderListRow', () => {
+  const summary = (patch: Partial<OrderSummary> = {}): OrderSummary => ({
+    paymentReference: 'PC-7K3M',
+    status: 'awaiting_payment',
+    paymentProvider: 'zelle',
+    shippingMethod: 'priority',
+    totalCents: 15500,
+    createdAt: '2026-09-04T14:12:00.000Z',
+    items: [{ productName: 'BPC-157 5 mg', qty: 2 }],
+    ...patch,
+  })
+
+  it('links to the order page and uses its label', () => {
+    const row = orderListRow(summary())
+    expect(row.href).toBe('/shop/order/PC-7K3M')
+    expect(row.label).toBe(STAGE_COPY.awaiting.label)
+    expect(row.placed).toBe('2026-09-04 14:12')
+    expect(row.what).toBe('2 × BPC-157 5 mg')
+  })
+
+  it('never calls a collected order shipped', () => {
+    expect(orderListRow(summary({ status: 'shipped', shippingMethod: 'pickup' })).label).toBe(
+      'Ready to collect',
+    )
+    expect(orderListRow(summary({ status: 'delivered', shippingMethod: 'pickup' })).label).toBe(
+      'Collected',
+    )
+    expect(orderListRow(summary({ status: 'shipped' })).label).toBe('Shipped')
+  })
+
+  it('survives a retired shipping method and an empty order', () => {
+    const row = orderListRow(summary({ shippingMethod: 'gone', items: [] }))
+    expect(row.label).toBe(STAGE_COPY.awaiting.label)
+    expect(row.what).toBe('No items recorded')
   })
 })

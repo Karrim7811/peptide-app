@@ -13,6 +13,7 @@
 // the solution, never an amount to take (CLAUDE.md §16.9, §16.9a).
 
 import { useState, useTransition } from 'react'
+import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { addStackItem, removeStackItem, setInventory, setStackDose } from '@/app/dashboard/actions'
 import type { Compound, StackEntry } from '@/lib/catalog'
@@ -62,7 +63,7 @@ function Chip({
 }
 
 function Question({ children }: { children: React.ReactNode }) {
-  return <span className="font-mono text-[9.5px] tracking-[0.16em] text-faint">{children}</span>
+  return <span className="font-mono text-[11px] tracking-[0.14em] text-faint">{children}</span>
 }
 
 const inputClass =
@@ -102,12 +103,19 @@ export default function StackControl({ compound, entry, defaultOpen = false }: S
   const source = doseSource(compound)
   const reference = state === 'none' ? NO_DOSE_LINE : `${compound.dosage} — ${source.kind}: ${source.ref}`
 
-  function run(work: () => Promise<{ ok: boolean; error?: string }>) {
+  // What just happened, said plainly, with the two places people go next.
+  // Saving used to just collapse the form, which read as nothing happening.
+  const [done, setDone] = useState<string | null>(null)
+
+  function run(work: () => Promise<{ ok: boolean; error?: string }>, message: string) {
     setError(null)
+    setDone(null)
     startTransition(async () => {
       const result = await work()
-      if (result.ok) setOpen(false)
-      else setError(result.error ?? 'Something went wrong.')
+      if (result.ok) {
+        setOpen(false)
+        setDone(message)
+      } else setError(result.error ?? 'Something went wrong.')
     })
   }
 
@@ -131,20 +139,45 @@ export default function StackControl({ compound, entry, defaultOpen = false }: S
         : await addStackItem({ compoundId: compound.id, dose, unit: 'mcg', notes })
       if (!saved.ok) return saved
       return setInventory({ compoundId: compound.id, vialSizeMg: vialMg, quantityRemaining: left })
-    })
+    }, entry ? `${compound.name} saved.` : `${compound.name} is on your bench.`)
   }
 
   return (
     <div className="flex flex-col gap-px bg-hair">
       <button
         type="button"
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={() => {
+          setDone(null)
+          setOpen((prev) => !prev)
+        }}
         aria-expanded={open}
         className="flex min-h-[44px] items-center justify-between bg-panel px-[18px] font-mono text-[9.5px] tracking-[0.14em] text-dim hover:text-ink"
       >
         <span>{entry ? 'YOUR VIAL · EDIT' : 'ADD TO YOUR STACK'}</span>
         <span className="text-faintest">{open ? '−' : '+'}</span>
       </button>
+
+      {done && !open && (
+        <div role="status" className="flex flex-col gap-3 bg-panelHi p-[18px]">
+          <span className="font-display text-[20px] leading-[1.3] text-ink">✓ {done}</span>
+          <div className="flex flex-wrap gap-px bg-hair">
+            <Link
+              href="/dashboard"
+              className="flex min-h-[44px] flex-1 basis-[150px] items-center justify-center bg-accent font-mono text-[10px] tracking-[0.14em] text-ground"
+            >
+              ← BACK TO YOUR BENCH
+            </Link>
+            {/* A full load, not a client transition: the Mirror reads where to
+                start only on mount, so a same-route Link would stay here. */}
+            <a
+              href="/mirror"
+              className="flex min-h-[44px] flex-1 basis-[150px] items-center justify-center bg-panel font-mono text-[10px] tracking-[0.14em] text-ink hover:bg-panelHi"
+            >
+              + ADD ANOTHER PEPTIDE
+            </a>
+          </div>
+        </div>
+      )}
 
       {open && (
         <div className="flex flex-col gap-[18px] bg-panel p-[18px]">
@@ -248,7 +281,7 @@ export default function StackControl({ compound, entry, defaultOpen = false }: S
           {/* A new vial is full, so only ask what is left when it is not. */}
           {opened ? (
             <label className="flex flex-col gap-2">
-              <Question>ABOUT HOW MUCH IS LEFT? · mg</Question>
+              <Question>ABOUT HOW MUCH IS LEFT IN THE VIAL? (mg)</Question>
               <input
                 inputMode="decimal"
                 value={remaining}
@@ -296,7 +329,7 @@ export default function StackControl({ compound, entry, defaultOpen = false }: S
             {entry && (
               <button
                 type="button"
-                onClick={() => run(() => removeStackItem(compound.id))}
+                onClick={() => run(() => removeStackItem(compound.id), `${compound.name} removed from your bench.`)}
                 disabled={pending}
                 className="min-h-[44px] basis-[130px] bg-panelHi font-mono text-[9.5px] tracking-[0.14em] text-gold hover:text-ink disabled:opacity-50"
               >
@@ -307,7 +340,7 @@ export default function StackControl({ compound, entry, defaultOpen = false }: S
 
           {entry && (
             <span className="font-mono text-[9px] leading-[1.8] tracking-[0.1em] text-faintest">
-              REMOVING KEEPS YOUR DOSE HISTORY · THE RECORD IS NOT REWRITTEN
+              REMOVING IT KEEPS YOUR DOSE HISTORY
             </span>
           )}
 
